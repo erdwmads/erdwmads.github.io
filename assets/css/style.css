@@ -5599,3 +5599,327 @@ html:not([data-theme="space"]) .action-row a[href="research.html"] {
     background-position: center center !important;
   }
 }
+
+
+/* ============================================================
+   Experimental footer background: Hubble Ultra Deep Field
+   Header remains unchanged. Footer only.
+   ============================================================ */
+
+.site-footer::before {
+  background-image:
+    linear-gradient(rgba(3, 7, 14, .30), rgba(3, 7, 14, .58)),
+    url("../img/Hubble_ultra_deep_field.jpg") !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  filter: saturate(1.06) contrast(1.04) brightness(.92) !important;
+}
+
+html:not([data-theme="space"]) .site-footer::before {
+  background-image:
+    linear-gradient(rgba(242, 247, 252, .10), rgba(3, 7, 14, .34)),
+    url("../img/Hubble_ultra_deep_field.jpg") !important;
+  filter: saturate(1.02) contrast(1.02) brightness(.98) !important;
+}
+
+html[data-theme="space"] .site-footer::before,
+html[data-theme-space] .site-footer::before,
+body.space-mode .site-footer::before {
+  background-image:
+    linear-gradient(rgba(3, 7, 14, .18), rgba(3, 7, 14, .62)),
+    url("../img/Hubble_ultra_deep_field.jpg") !important;
+  filter: saturate(1.10) contrast(1.08) brightness(.90) !important;
+}
+
+.site-footer {
+  overflow: hidden !important;
+}
+
+
+/* ============================================================
+   Footer Hubble background — Light / Space Mode tone matching
+   Footer keeps the Hubble Ultra Deep Field image, but the overlay,
+   brightness, and footer text panel now follow each mode.
+   ============================================================ */
+
+/* Base / Space-leaning footer */
+.site-footer::before {
+  background-image:
+    radial-gradient(circle at 18% 35%, rgba(139,199,255,.14), transparent 32%),
+    linear-gradient(180deg, rgba(3, 7, 14, .22), rgba(3, 7, 14, .70)),
+    url("../img/Hubble_ultra_deep_field.jpg") !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  filter: saturate(1.10) contrast(1.08) brightness(.88) !important;
+}
+
+/* Light Mode: softer, brighter, slightly silvery; still readable */
+html:not([data-theme="space"]) .site-footer::before {
+  background-image:
+    radial-gradient(circle at 18% 35%, rgba(255,255,255,.22), transparent 34%),
+    linear-gradient(180deg, rgba(238, 245, 252, .34), rgba(15, 32, 52, .48)),
+    url("../img/Hubble_ultra_deep_field.jpg") !important;
+  filter: saturate(.92) contrast(.98) brightness(1.10) !important;
+}
+
+/* Space Mode: deeper, bluer, more cosmic */
+html[data-theme="space"] .site-footer::before,
+html[data-theme-space] .site-footer::before,
+body.space-mode .site-footer::before {
+  background-image:
+    radial-gradient(circle at 20% 34%, rgba(139,199,255,.18), transparent 34%),
+    linear-gradient(180deg, rgba(3, 8, 18, .10), rgba(3, 8, 18, .76)),
+    url("../img/Hubble_ultra_deep_field.jpg") !important;
+  filter: saturate(1.22) contrast(1.12) brightness(.78) !important;
+}
+
+/* Footer text glass strip follows mode too */
+.site-footer .footer-inner {
+  border-radius: 22px !important;
+  border: 1px solid rgba(210, 232, 250, .16) !important;
+  background:
+    linear-gradient(180deg, rgba(8, 18, 34, .36), rgba(8, 18, 34, .18)) !important;
+  box-shadow:
+    0 14px 34px rgba(0,0,0,.18),
+    inset 0 1px 0 rgba(255,255,255,.10) !important;
+  backdrop-filter: blur(12px) saturate(1.06) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(1.06) !important;
+  color: rgba(239, 247, 255, .92) !important;
+}
+
+html:not([data-theme="space"]) .site-footer .footer-inner {
+  border-color: rgba(255,255,255,.28) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.42), rgba(255,255,255,.18)) !important;
+  box-shadow:
+    0 14px 30px rgba(18,45,75,.10),
+    inset 0 1px 0 rgba(255,255,255,.42) !important;
+  color: rgba(10, 28, 48, .86) !important;
+}
+
+html[data-theme="space"] .site-footer .footer-inner,
+html[data-theme-space] .site-footer .footer-inner,
+body.space-mode .site-footer .footer-inner {
+  border-color: rgba(139,199,255,.18) !important;
+  background:
+    linear-gradient(180deg, rgba(4, 12, 24, .48), rgba(4, 12, 24, .24)) !important;
+  box-shadow:
+    0 16px 38px rgba(0,0,0,.24),
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 0 24px rgba(139,199,255,.08) !important;
+  color: rgba(239, 247, 255, .94) !important;
+}
+
+
+/* ============================================================
+   Footer Hubble correction
+   The whole footer is the visual surface.
+   Remove the oversized inner glass bar and let the Hubble image
+   read as the actual footer background.
+   ============================================================ */
+
+.site-footer {
+  position: relative !important;
+  min-height: 150px !important;
+  display: flex !important;
+  align-items: center !important;
+  overflow: hidden !important;
+}
+
+.site-footer::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  background-image:
+    radial-gradient(circle at 20% 38%, rgba(139,199,255,.12), transparent 34%),
+    linear-gradient(180deg, rgba(3, 7, 14, .18), rgba(3, 7, 14, .66)),
+    url("../img/Hubble_ultra_deep_field.jpg") !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  filter: saturate(1.12) contrast(1.08) brightness(.86) !important;
+}
+
+.site-footer .footer-inner {
+  position: relative !important;
+  z-index: 1 !important;
+  width: 100% !important;
+  max-width: var(--max) !important;
+  min-height: auto !important;
+  margin: 0 auto !important;
+  padding: 0 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+
+  /* remove the giant glass rectangle */
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+
+  color: rgba(239, 247, 255, .92) !important;
+  text-shadow:
+    0 1px 2px rgba(0,0,0,.40),
+    0 0 18px rgba(0,0,0,.22) !important;
+}
+
+/* Light Mode: the whole footer becomes softer and lighter, not a grey inner box */
+html:not([data-theme="space"]) .site-footer::before {
+  background-image:
+    radial-gradient(circle at 20% 38%, rgba(255,255,255,.22), transparent 36%),
+    linear-gradient(180deg, rgba(235, 242, 248, .22), rgba(15, 32, 52, .46)),
+    url("../img/Hubble_ultra_deep_field.jpg") !important;
+  filter: saturate(.94) contrast(1.00) brightness(1.08) !important;
+}
+
+html:not([data-theme="space"]) .site-footer .footer-inner {
+  color: rgba(236, 244, 252, .94) !important;
+  text-shadow:
+    0 1px 2px rgba(0,0,0,.42),
+    0 0 18px rgba(0,0,0,.26) !important;
+}
+
+/* Space Mode: darker and bluer */
+html[data-theme="space"] .site-footer::before,
+html[data-theme-space] .site-footer::before,
+body.space-mode .site-footer::before {
+  background-image:
+    radial-gradient(circle at 20% 38%, rgba(139,199,255,.18), transparent 36%),
+    linear-gradient(180deg, rgba(3, 8, 18, .10), rgba(3, 8, 18, .76)),
+    url("../img/Hubble_ultra_deep_field.jpg") !important;
+  filter: saturate(1.22) contrast(1.12) brightness(.78) !important;
+}
+
+html[data-theme="space"] .site-footer .footer-inner,
+html[data-theme-space] .site-footer .footer-inner,
+body.space-mode .site-footer .footer-inner {
+  color: rgba(239, 247, 255, .95) !important;
+  text-shadow:
+    0 1px 2px rgba(0,0,0,.48),
+    0 0 20px rgba(0,0,0,.30) !important;
+}
+
+/* Mobile footer remains simple and centered */
+@media (max-width: 640px) {
+  .site-footer {
+    min-height: 140px !important;
+  }
+
+  .site-footer .footer-inner {
+    flex-direction: column !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    text-align: center !important;
+    padding: 0 20px !important;
+  }
+}
+
+
+/* ============================================================
+   Graduation Research Mission Log photo entries
+   ============================================================ */
+
+.research-note-list {
+  display: grid;
+  gap: 18px;
+}
+
+.mission-log-entry {
+  align-items: start;
+}
+
+.mission-entry-kicker {
+  display: inline-flex;
+  width: max-content;
+  margin: 0 0 12px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(225, 242, 255, .22);
+  background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.08));
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.18),
+    0 6px 14px rgba(0,0,0,.08);
+}
+
+.mission-photo-grid {
+  display: grid;
+  gap: 12px;
+  margin: 18px 0 14px;
+}
+
+.mission-photo-grid.four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.mission-photo-grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.mission-photo-grid figure {
+  margin: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid rgba(225, 242, 255, .18);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
+  box-shadow:
+    0 10px 22px rgba(0,0,0,.16),
+    inset 0 1px 0 rgba(255,255,255,.10);
+}
+
+.mission-photo-grid img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background:
+    linear-gradient(135deg, rgba(139,199,255,.10), rgba(255,255,255,.03));
+}
+
+.mission-photo-grid figcaption {
+  padding: 8px 10px 10px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+html:not([data-theme="space"]) .mission-entry-kicker {
+  color: var(--blue-dark);
+  border-color: rgba(255,255,255,.34);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.70), rgba(255,255,255,.30));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.58),
+    0 6px 14px rgba(18,45,75,.06);
+}
+
+html:not([data-theme="space"]) .mission-photo-grid figure {
+  border-color: rgba(255,255,255,.28);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.58), rgba(255,255,255,.24));
+  box-shadow:
+    0 10px 22px rgba(18,45,75,.08),
+    inset 0 1px 0 rgba(255,255,255,.50);
+}
+
+@media (max-width: 900px) {
+  .mission-photo-grid.four,
+  .mission-photo-grid.three {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .mission-photo-grid.four,
+  .mission-photo-grid.three {
+    grid-template-columns: 1fr;
+  }
+}
