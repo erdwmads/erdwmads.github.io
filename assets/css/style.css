@@ -504,3 +504,49 @@ body::before {
     height: 300px;
   }
 }
+
+
+/* ============================================================
+   Header and footer: show the same asteroid background.
+   This overrides the previous white translucent header/footer.
+   ============================================================ */
+
+.site-header,
+.site-footer {
+  position: relative;
+  overflow: hidden;
+  background: transparent !important;
+  backdrop-filter: none !important;
+}
+
+/* Asteroid image layer inside header and footer */
+.site-header::before,
+.site-footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(
+      rgba(247, 251, 255, 0.70),
+      rgba(247, 251, 255, 0.76)
+    ),
+    url("../img/asteroid-bennu.jpg");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+/* Keep header/footer text above the image layer */
+.header-inner,
+.footer-inner {
+  position: relative;
+  z-index: 1;
+}
+
+/* Slightly clearer navigation pills on the image background */
+.nav a[aria-current="page"],
+.nav a:hover {
+  background: rgba(234, 244, 255, 0.82) !important;
+}
