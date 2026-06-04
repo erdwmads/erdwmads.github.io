@@ -5634,3 +5634,78 @@ body.space-mode .site-footer::before {
 .site-footer {
   overflow: hidden !important;
 }
+
+
+/* ============================================================
+   Footer Hubble background — Light / Space Mode tone matching
+   Footer keeps the Hubble Ultra Deep Field image, but the overlay,
+   brightness, and footer text panel now follow each mode.
+   ============================================================ */
+
+/* Base / Space-leaning footer */
+.site-footer::before {
+  background-image:
+    radial-gradient(circle at 18% 35%, rgba(139,199,255,.14), transparent 32%),
+    linear-gradient(180deg, rgba(3, 7, 14, .22), rgba(3, 7, 14, .70)),
+    url("../img/Hubble_ultra_deep_field.jpg") !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  filter: saturate(1.10) contrast(1.08) brightness(.88) !important;
+}
+
+/* Light Mode: softer, brighter, slightly silvery; still readable */
+html:not([data-theme="space"]) .site-footer::before {
+  background-image:
+    radial-gradient(circle at 18% 35%, rgba(255,255,255,.22), transparent 34%),
+    linear-gradient(180deg, rgba(238, 245, 252, .34), rgba(15, 32, 52, .48)),
+    url("../img/Hubble_ultra_deep_field.jpg") !important;
+  filter: saturate(.92) contrast(.98) brightness(1.10) !important;
+}
+
+/* Space Mode: deeper, bluer, more cosmic */
+html[data-theme="space"] .site-footer::before,
+html[data-theme-space] .site-footer::before,
+body.space-mode .site-footer::before {
+  background-image:
+    radial-gradient(circle at 20% 34%, rgba(139,199,255,.18), transparent 34%),
+    linear-gradient(180deg, rgba(3, 8, 18, .10), rgba(3, 8, 18, .76)),
+    url("../img/Hubble_ultra_deep_field.jpg") !important;
+  filter: saturate(1.22) contrast(1.12) brightness(.78) !important;
+}
+
+/* Footer text glass strip follows mode too */
+.site-footer .footer-inner {
+  border-radius: 22px !important;
+  border: 1px solid rgba(210, 232, 250, .16) !important;
+  background:
+    linear-gradient(180deg, rgba(8, 18, 34, .36), rgba(8, 18, 34, .18)) !important;
+  box-shadow:
+    0 14px 34px rgba(0,0,0,.18),
+    inset 0 1px 0 rgba(255,255,255,.10) !important;
+  backdrop-filter: blur(12px) saturate(1.06) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(1.06) !important;
+  color: rgba(239, 247, 255, .92) !important;
+}
+
+html:not([data-theme="space"]) .site-footer .footer-inner {
+  border-color: rgba(255,255,255,.28) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.42), rgba(255,255,255,.18)) !important;
+  box-shadow:
+    0 14px 30px rgba(18,45,75,.10),
+    inset 0 1px 0 rgba(255,255,255,.42) !important;
+  color: rgba(10, 28, 48, .86) !important;
+}
+
+html[data-theme="space"] .site-footer .footer-inner,
+html[data-theme-space] .site-footer .footer-inner,
+body.space-mode .site-footer .footer-inner {
+  border-color: rgba(139,199,255,.18) !important;
+  background:
+    linear-gradient(180deg, rgba(4, 12, 24, .48), rgba(4, 12, 24, .24)) !important;
+  box-shadow:
+    0 16px 38px rgba(0,0,0,.24),
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 0 24px rgba(139,199,255,.08) !important;
+  color: rgba(239, 247, 255, .94) !important;
+}
