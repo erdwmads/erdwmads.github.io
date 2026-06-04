@@ -6254,3 +6254,406 @@ body.space-mode .action-row a[href="cv.html"] {
     min-height: 30px !important;
   }
 }
+
+
+/* ============================================================
+   Mission Log Image Viewer
+   Fullscreen, swipeable, keyboard-accessible lightbox for
+   graduation research Mission Log photographs.
+   ============================================================ */
+
+.mission-photo-grid figure {
+  position: relative !important;
+  cursor: zoom-in !important;
+}
+
+.mission-photo-grid figure::before {
+  content: "Open" !important;
+  position: absolute !important;
+  top: 10px !important;
+  right: 10px !important;
+  z-index: 2 !important;
+  padding: 5px 8px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(225, 242, 255, .24) !important;
+  background: rgba(7, 18, 32, .44) !important;
+  color: rgba(239, 247, 255, .88) !important;
+  font-size: 9px !important;
+  font-weight: 760 !important;
+  letter-spacing: .11em !important;
+  text-transform: uppercase !important;
+  opacity: 0 !important;
+  transform: translateY(-4px) !important;
+  transition: opacity .2s ease, transform .2s ease !important;
+  pointer-events: none !important;
+  backdrop-filter: blur(10px) saturate(1.08) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(1.08) !important;
+}
+
+.mission-photo-grid figure::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  border-radius: inherit !important;
+  background:
+    linear-gradient(180deg, transparent 0%, rgba(139,199,255,.08) 50%, transparent 100%) !important;
+  background-size: 100% 180% !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  mix-blend-mode: screen !important;
+  transition: opacity .22s ease !important;
+}
+
+.mission-photo-grid figure:hover,
+.mission-photo-grid figure:focus {
+  transform: translateY(-2px) !important;
+  box-shadow:
+    0 16px 32px rgba(0,0,0,.20),
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 0 24px rgba(139,199,255,.10) !important;
+}
+
+.mission-photo-grid figure:hover::before,
+.mission-photo-grid figure:focus::before {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+.mission-photo-grid figure:hover::after,
+.mission-photo-grid figure:focus::after {
+  opacity: .72 !important;
+  animation: missionScanline 1.8s linear infinite !important;
+}
+
+@keyframes missionScanline {
+  from { background-position: 0 -80%; }
+  to { background-position: 0 120%; }
+}
+
+.mission-lightbox {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: clamp(14px, 3vw, 34px) !important;
+  background:
+    radial-gradient(circle at 20% 16%, rgba(139,199,255,.16), transparent 34%),
+    linear-gradient(180deg, rgba(3, 7, 14, .76), rgba(3, 7, 14, .92)) !important;
+  backdrop-filter: blur(20px) saturate(1.08) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.08) !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transition: opacity .22s ease, visibility .22s ease !important;
+}
+
+.mission-lightbox.is-open {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+.mission-lightbox__panel {
+  position: relative !important;
+  width: min(1180px, 100%) !important;
+  max-height: min(88vh, 860px) !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  gap: 12px !important;
+  border-radius: 28px !important;
+  border: 1px solid rgba(225, 242, 255, .18) !important;
+  background:
+    linear-gradient(180deg, rgba(13, 29, 48, .56), rgba(7, 16, 30, .34)) !important;
+  box-shadow:
+    0 28px 80px rgba(0,0,0,.44),
+    inset 0 1px 0 rgba(255,255,255,.10) !important;
+  overflow: hidden !important;
+}
+
+.mission-lightbox__topbar,
+.mission-lightbox__captionbar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  padding: 14px 18px !important;
+}
+
+.mission-lightbox__topbar {
+  border-bottom: 1px solid rgba(225, 242, 255, .10) !important;
+}
+
+.mission-lightbox__captionbar {
+  border-top: 1px solid rgba(225, 242, 255, .10) !important;
+  align-items: flex-start !important;
+}
+
+.mission-lightbox__kicker {
+  margin: 0 0 5px !important;
+  color: rgba(139,199,255,.92) !important;
+  font-size: 10px !important;
+  font-weight: 850 !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+}
+
+.mission-lightbox__title {
+  margin: 0 !important;
+  color: rgba(248, 252, 255, .96) !important;
+  font-size: clamp(15px, 2vw, 18px) !important;
+  font-weight: 780 !important;
+  letter-spacing: .015em !important;
+}
+
+.mission-lightbox__caption {
+  margin: 0 !important;
+  color: rgba(235, 245, 255, .90) !important;
+  font-size: clamp(13px, 1.8vw, 15px) !important;
+  line-height: 1.55 !important;
+}
+
+.mission-lightbox__counter {
+  flex: 0 0 auto !important;
+  padding: 7px 10px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(225, 242, 255, .16) !important;
+  background: rgba(255,255,255,.07) !important;
+  color: rgba(235, 245, 255, .84) !important;
+  font-size: 11px !important;
+  font-weight: 760 !important;
+  letter-spacing: .08em !important;
+}
+
+.mission-lightbox__stage {
+  position: relative !important;
+  min-height: min(62vh, 620px) !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 12px clamp(14px, 4vw, 56px) !important;
+  overflow: hidden !important;
+}
+
+.mission-lightbox__img {
+  max-width: 100% !important;
+  max-height: min(62vh, 620px) !important;
+  object-fit: contain !important;
+  border-radius: 18px !important;
+  box-shadow:
+    0 18px 60px rgba(0,0,0,.38),
+    0 0 0 1px rgba(255,255,255,.08) !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+}
+
+.mission-lightbox__btn {
+  appearance: none !important;
+  border: 1px solid rgba(225, 242, 255, .18) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.06)) !important;
+  color: rgba(245,250,255,.94) !important;
+  border-radius: 999px !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  cursor: pointer !important;
+  backdrop-filter: blur(12px) saturate(1.08) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(1.08) !important;
+  transition: transform .18s ease, background .18s ease, border-color .18s ease !important;
+}
+
+.mission-lightbox__btn:hover {
+  transform: translateY(-1px) !important;
+  border-color: rgba(139,199,255,.34) !important;
+  background:
+    linear-gradient(180deg, rgba(139,199,255,.22), rgba(255,255,255,.08)) !important;
+}
+
+.mission-lightbox__close {
+  width: 38px !important;
+  height: 38px !important;
+  font-size: 22px !important;
+  line-height: 1 !important;
+}
+
+.mission-lightbox__nav {
+  position: absolute !important;
+  top: 50% !important;
+  width: 42px !important;
+  height: 42px !important;
+  transform: translateY(-50%) !important;
+  font-size: 24px !important;
+}
+
+.mission-lightbox__prev {
+  left: 14px !important;
+}
+
+.mission-lightbox__next {
+  right: 14px !important;
+}
+
+.mission-lightbox__thumbs {
+  display: flex !important;
+  gap: 8px !important;
+  overflow-x: auto !important;
+  padding: 0 18px 16px !important;
+  scrollbar-width: thin !important;
+}
+
+.mission-lightbox__thumb {
+  flex: 0 0 auto !important;
+  width: 62px !important;
+  height: 46px !important;
+  padding: 0 !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(225,242,255,.16) !important;
+  background: rgba(255,255,255,.06) !important;
+  overflow: hidden !important;
+  opacity: .58 !important;
+  cursor: pointer !important;
+}
+
+.mission-lightbox__thumb.is-active {
+  opacity: 1 !important;
+  border-color: rgba(139,199,255,.62) !important;
+  box-shadow: 0 0 16px rgba(139,199,255,.18) !important;
+}
+
+.mission-lightbox__thumb img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+body.mission-lightbox-open {
+  overflow: hidden !important;
+}
+
+/* Light Mode: viewer keeps contrast, but becomes cleaner and less black */
+html:not([data-theme="space"]) .mission-lightbox {
+  background:
+    radial-gradient(circle at 20% 16%, rgba(255,255,255,.26), transparent 34%),
+    linear-gradient(180deg, rgba(226, 236, 246, .76), rgba(200, 216, 230, .88)) !important;
+}
+
+html:not([data-theme="space"]) .mission-lightbox__panel {
+  border-color: rgba(255,255,255,.38) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.62), rgba(242,247,252,.40)) !important;
+  box-shadow:
+    0 26px 76px rgba(18,45,75,.24),
+    inset 0 1px 0 rgba(255,255,255,.52) !important;
+}
+
+html:not([data-theme="space"]) .mission-lightbox__kicker {
+  color: rgba(18, 82, 140, .92) !important;
+}
+
+html:not([data-theme="space"]) .mission-lightbox__title,
+html:not([data-theme="space"]) .mission-lightbox__caption {
+  color: rgba(11, 30, 50, .90) !important;
+}
+
+html:not([data-theme="space"]) .mission-lightbox__counter,
+html:not([data-theme="space"]) .mission-lightbox__btn {
+  color: rgba(11, 30, 50, .88) !important;
+  border-color: rgba(11, 30, 50, .14) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.70), rgba(255,255,255,.32)) !important;
+}
+
+@media (max-width: 760px) {
+  .mission-photo-grid figure::before {
+    opacity: 1 !important;
+    transform: none !important;
+    top: 8px !important;
+    right: 8px !important;
+    padding: 4px 7px !important;
+    font-size: 8.5px !important;
+  }
+
+  .mission-lightbox {
+    padding: 10px !important;
+  }
+
+  .mission-lightbox__panel {
+    width: 100% !important;
+    max-height: 92vh !important;
+    border-radius: 22px !important;
+    grid-template-rows: auto minmax(0, 1fr) auto auto !important;
+  }
+
+  .mission-lightbox__topbar,
+  .mission-lightbox__captionbar {
+    padding: 12px 13px !important;
+    gap: 10px !important;
+  }
+
+  .mission-lightbox__topbar {
+    align-items: flex-start !important;
+  }
+
+  .mission-lightbox__title {
+    font-size: 14px !important;
+    line-height: 1.35 !important;
+  }
+
+  .mission-lightbox__kicker {
+    font-size: 9px !important;
+    letter-spacing: .12em !important;
+  }
+
+  .mission-lightbox__stage {
+    min-height: 0 !important;
+    padding: 8px 10px !important;
+  }
+
+  .mission-lightbox__img {
+    max-height: 56vh !important;
+    border-radius: 14px !important;
+  }
+
+  .mission-lightbox__nav {
+    width: 38px !important;
+    height: 38px !important;
+    top: auto !important;
+    bottom: 92px !important;
+    transform: none !important;
+    background: rgba(7,18,32,.46) !important;
+  }
+
+  .mission-lightbox__prev {
+    left: 18px !important;
+  }
+
+  .mission-lightbox__next {
+    right: 18px !important;
+  }
+
+  .mission-lightbox__captionbar {
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+  }
+
+  .mission-lightbox__caption {
+    font-size: 13px !important;
+  }
+
+  .mission-lightbox__counter {
+    font-size: 10px !important;
+    padding: 6px 8px !important;
+  }
+
+  .mission-lightbox__thumbs {
+    padding: 0 12px 12px !important;
+    gap: 7px !important;
+  }
+
+  .mission-lightbox__thumb {
+    width: 54px !important;
+    height: 40px !important;
+    border-radius: 9px !important;
+  }
+}
