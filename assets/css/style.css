@@ -5666,3 +5666,145 @@ html:not([data-theme="space"]) .action-row a[href="research.html"] {
     text-shadow: 0 1px 10px rgba(255,255,255,.50) !important;
   }
 }
+
+
+/* ============================================================
+   HARD OVERRIDE: truly transparent mobile navigation
+   This removes the mobile navigation container panel and individual
+   filled link backgrounds. The nav now sits directly on the same
+   header/page background. Footer and desktop remain unchanged.
+   ============================================================ */
+
+@media screen and (max-width: 760px) {
+  body .site-header .header-inner .nav,
+  html body .site-header .header-inner nav.nav,
+  html:not([data-theme="space"]) body .site-header .header-inner .nav,
+  html[data-theme="space"] body .site-header .header-inner .nav,
+  html[data-theme-space] body .site-header .header-inner .nav,
+  body.space-mode .site-header .header-inner .nav {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+  }
+
+  body .site-header .header-inner .nav::before,
+  body .site-header .header-inner .nav::after {
+    display: none !important;
+    content: none !important;
+    background: none !important;
+    box-shadow: none !important;
+  }
+
+  body .site-header .nav a,
+  html body .site-header .nav a,
+  html:not([data-theme="space"]) body .site-header .nav a,
+  html[data-theme="space"] body .site-header .nav a,
+  html[data-theme-space] body .site-header .nav a,
+  body.space-mode .site-header .nav a {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-radius: 0 !important;
+    color: rgba(244, 249, 255, .94) !important;
+    text-shadow:
+      0 2px 10px rgba(0,0,0,.54),
+      0 0 18px rgba(175,220,255,.18) !important;
+  }
+
+  body .site-header .nav a:hover,
+  body .site-header .nav a[aria-current="page"],
+  html:not([data-theme="space"]) body .site-header .nav a:hover,
+  html:not([data-theme="space"]) body .site-header .nav a[aria-current="page"],
+  html[data-theme="space"] body .site-header .nav a:hover,
+  html[data-theme="space"] body .site-header .nav a[aria-current="page"],
+  html[data-theme-space] body .site-header .nav a:hover,
+  html[data-theme-space] body .site-header .nav a[aria-current="page"],
+  body.space-mode .site-header .nav a:hover,
+  body.space-mode .site-header .nav a[aria-current="page"] {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+  }
+
+  /* Active cue: only the thin glowing underline remains. */
+  body .site-header .nav a::after {
+    left: 4px !important;
+    right: 4px !important;
+    bottom: 2px !important;
+    height: 2px !important;
+    background: linear-gradient(
+      90deg,
+      rgba(139,199,255,0),
+      rgba(139,199,255,.98),
+      rgba(139,199,255,0)
+    ) !important;
+    box-shadow: 0 0 10px rgba(139,199,255,.42) !important;
+  }
+
+  /* Mode button: no wide filled bar. It becomes a compact outline command. */
+  body .site-header .theme-toggle,
+  html body .site-header .theme-toggle,
+  html:not([data-theme="space"]) body .site-header .theme-toggle,
+  html[data-theme="space"] body .site-header .theme-toggle,
+  html[data-theme-space] body .site-header .theme-toggle,
+  body.space-mode .site-header .theme-toggle {
+    width: auto !important;
+    min-width: 112px !important;
+    max-width: none !important;
+    grid-column: auto !important;
+    justify-self: start !important;
+    padding: 0 14px !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: 1px solid rgba(220,240,255,.34) !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    color: rgba(244,249,255,.94) !important;
+    text-shadow:
+      0 2px 10px rgba(0,0,0,.50),
+      0 0 16px rgba(175,220,255,.16) !important;
+  }
+
+  body .site-header .theme-toggle:hover,
+  html body .site-header .theme-toggle:hover {
+    background: rgba(255,255,255,.06) !important;
+    border-color: rgba(220,240,255,.46) !important;
+  }
+
+  html:not([data-theme="space"]) body .site-header .nav a {
+    color: rgba(5, 21, 38, .92) !important;
+    text-shadow:
+      0 1px 10px rgba(255,255,255,.72),
+      0 0 14px rgba(255,255,255,.38) !important;
+  }
+
+  html:not([data-theme="space"]) body .site-header .nav a:hover,
+  html:not([data-theme="space"]) body .site-header .nav a[aria-current="page"] {
+    color: rgba(3, 14, 28, .98) !important;
+  }
+
+  html:not([data-theme="space"]) body .site-header .theme-toggle {
+    color: rgba(5, 21, 38, .92) !important;
+    border-color: rgba(5, 21, 38, .24) !important;
+    text-shadow:
+      0 1px 10px rgba(255,255,255,.68),
+      0 0 14px rgba(255,255,255,.32) !important;
+  }
+}
