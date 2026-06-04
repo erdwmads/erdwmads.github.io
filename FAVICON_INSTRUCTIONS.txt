@@ -1,0 +1,20 @@
+Favicon added.
+
+Files added:
+- favicon.ico
+- assets/img/favicon.png
+- assets/img/favicon-32x32.png
+- assets/img/apple-touch-icon.png
+
+HTML added to every page:
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+
+Upload all files to your GitHub repository and commit changes.
+
+After upload, open:
+https://erdwmads.github.io/favicon.ico
+
+If the icon appears there but not in the browser tab, wait a few minutes and refresh with Ctrl + F5.
+Browser favicons are heavily cached.
