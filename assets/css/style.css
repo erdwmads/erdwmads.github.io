@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap");
+
 
 :root {
   --bg: #f7fbff;
@@ -1053,4 +1055,89 @@ body::before {
   .log-entry::before {
     left: -31px;
   }
+}
+
+
+/* ============================================================
+   Font update: clean geometric sans-serif style
+   Inspired by minimalist academic personal websites.
+   ============================================================ */
+
+body {
+  font-family: "Montserrat", "Avenir Next", "Helvetica Neue", Arial, sans-serif !important;
+  font-weight: 400;
+  letter-spacing: .015em;
+}
+
+.brand strong,
+h1,
+h2,
+h3 {
+  font-family: "Montserrat", "Avenir Next", "Helvetica Neue", Arial, sans-serif !important;
+  font-weight: 700;
+  letter-spacing: .025em;
+}
+
+h1 {
+  letter-spacing: .018em !important;
+}
+
+h2,
+h3 {
+  letter-spacing: .02em !important;
+}
+
+.nav a,
+.eyebrow,
+.section-label,
+.pill,
+.button,
+.status-badge {
+  font-family: "Montserrat", "Avenir Next", "Helvetica Neue", Arial, sans-serif !important;
+}
+
+.nav a {
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+
+.lead {
+  letter-spacing: .012em;
+}
+
+/* ============================================================
+   CV page image and adviser section
+   Expected file:
+   assets/img/CV.jpg
+   Recommended ratio:
+   16:9 horizontal
+   ============================================================ */
+
+.cv-photo {
+  margin: 34px 0 0;
+}
+
+.cv-photo img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  max-height: 520px;
+  display: block;
+  object-fit: cover;
+  object-position: center center;
+  border-radius: 24px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  background: var(--paper);
+}
+
+.cv-advisers {
+  margin: 12px 0 14px;
+  color: var(--ink);
+  line-height: 1.7;
+}
+
+.cv-advisers strong {
+  color: var(--blue-dark);
+  font-weight: 700;
 }
