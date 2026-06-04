@@ -421,3 +421,33 @@ code {
     font-size: clamp(36px, 11vw, 52px);
   }
 }
+
+/* Global transparent background image */
+body {
+  background-image:
+    linear-gradient(
+      rgba(247, 251, 255, 0.84),
+      rgba(247, 251, 255, 0.92)
+    ),
+    url("../img/asteroid-bennu.jpg") !important;
+
+  background-size: cover, cover !important;
+  background-position: center center, center center !important;
+  background-repeat: no-repeat, no-repeat !important;
+  background-attachment: fixed, fixed !important;
+}
+
+/* Make content cards slightly translucent */
+.card,
+.hero-card,
+.callout {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(6px);
+}
+
+/* Make header and footer match the background */
+.site-header,
+.site-footer {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(12px);
+}
