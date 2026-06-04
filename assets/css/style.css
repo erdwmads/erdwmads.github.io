@@ -2972,3 +2972,27 @@ body.space-mode .nav {
     font-size: 12px !important;
   }
 }
+
+
+/* ============================================================
+   Light mode header subtitle contrast fix
+   The subtitle sits over bright planets in Light Mode, so use a
+   darker mineral-blue tone with a subtle pale shadow.
+   ============================================================ */
+
+html:not([data-theme="space"]) .brand span {
+  color: rgba(18, 43, 68, .88) !important;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, .35),
+    0 0 12px rgba(255, 255, 255, .42) !important;
+}
+
+/* Keep nav-link text readable in Light Mode without changing the glowing underline. */
+html:not([data-theme="space"]) .nav a {
+  color: rgba(8, 24, 42, .86) !important;
+}
+
+html:not([data-theme="space"]) .nav a:hover,
+html:not([data-theme="space"]) .nav a[aria-current="page"] {
+  color: rgba(4, 17, 32, .96) !important;
+}
