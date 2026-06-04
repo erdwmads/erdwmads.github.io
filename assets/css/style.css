@@ -397,3 +397,14 @@ code {
     font-size: clamp(36px, 11vw, 52px);
   }
 }
+
+.gallery-photo {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  display: block;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  background: var(--paper);
+}
