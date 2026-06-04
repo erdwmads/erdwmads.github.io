@@ -2011,406 +2011,93 @@ body.space-mode .timeline-item::before {
 
 
 /* ============================================================
-   Ambient space layer: subtle meteors, micro-meteorites, star dust
-   Feature B = slightly visible, still restrained.
+   FINAL: CV education cards + visible animated ambient layer
    ============================================================ */
 
-body {
-  overflow-x: clip;
-}
-
-.ambient-space-layer {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
-}
-
-/* keep all page content above the ambient layer */
-.site-header,
-.main,
-.site-footer {
-  position: relative;
-  z-index: 1;
-}
-
-.ambient-dust,
-.ambient-meteor,
-.ambient-pebble {
-  position: absolute;
-  pointer-events: none;
-}
-
-.ambient-dust {
-  width: 2px;
-  height: 2px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.30);
-  box-shadow: 0 0 6px rgba(255,255,255,.16);
-  animation: ambientDustDrift linear infinite;
-}
-
-.ambient-pebble {
-  width: 6px;
-  height: 6px;
-  border-radius: 58% 42% 50% 50%;
-  background: rgba(125, 138, 149, .13);
-  border: 1px solid rgba(183, 195, 204, .12);
-  filter: blur(.1px);
-  animation: ambientPebbleFloat linear infinite;
-}
-
-.ambient-meteor {
-  width: 54px;
-  height: 2px;
-  border-radius: 999px;
-  background: linear-gradient(90deg,
-    rgba(255,255,255,0),
-    rgba(216, 238, 255, .06) 18%,
-    rgba(216, 238, 255, .42) 58%,
-    rgba(255,255,255, .88) 100%);
-  transform: rotate(-25deg);
-  opacity: .16;
-  filter: blur(.1px);
-  animation: ambientMeteorFly linear infinite;
-}
-
-.ambient-meteor::after {
-  content: "";
-  position: absolute;
-  right: -2px;
-  top: 50%;
-  width: 4px;
-  height: 4px;
-  margin-top: -2px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.8);
-  box-shadow: 0 0 8px rgba(220,240,255,.55);
-}
-
-@keyframes ambientDustDrift {
-  0% {
-    transform: translate3d(0, 0, 0) scale(.96);
-    opacity: 0;
-  }
-  10% { opacity: .42; }
-  50% { opacity: .18; }
-  100% {
-    transform: translate3d(var(--dust-x, 32px), var(--dust-y, -48px), 0) scale(1.18);
-    opacity: 0;
-  }
-}
-
-@keyframes ambientPebbleFloat {
-  0% {
-    transform: translate3d(0, 0, 0) rotate(0deg);
-    opacity: 0;
-  }
-  14% { opacity: .30; }
-  60% { opacity: .18; }
-  100% {
-    transform: translate3d(var(--pebble-x, -26px), var(--pebble-y, 38px), 0) rotate(220deg);
-    opacity: 0;
-  }
-}
-
-@keyframes ambientMeteorFly {
-  0% {
-    transform: translate3d(0,0,0) rotate(-25deg) scaleX(.82);
-    opacity: 0;
-  }
-  10% { opacity: .18; }
-  70% { opacity: .14; }
-  100% {
-    transform: translate3d(var(--meteor-x, -220px), var(--meteor-y, 180px), 0) rotate(-25deg) scaleX(1.08);
-    opacity: 0;
-  }
-}
-
-/* Light mode: barely visible */
-.ambient-space-layer {
-  opacity: .52;
-}
-
-/* Space mode: a bit clearer */
-html[data-theme="space"] .ambient-space-layer,
-html[data-theme-space] .ambient-space-layer,
-body.space-mode .ambient-space-layer {
-  opacity: 1;
-}
-
-html[data-theme="space"] .ambient-dust,
-html[data-theme-space] .ambient-dust,
-body.space-mode .ambient-dust {
-  background: rgba(218, 236, 255, .52);
-  box-shadow: 0 0 10px rgba(180, 220, 255, .26);
-}
-
-html[data-theme="space"] .ambient-pebble,
-html[data-theme-space] .ambient-pebble,
-body.space-mode .ambient-pebble {
-  background: rgba(164, 176, 188, .18);
-  border-color: rgba(204, 215, 225, .16);
-}
-
-html[data-theme="space"] .ambient-meteor,
-html[data-theme-space] .ambient-meteor,
-body.space-mode .ambient-meteor {
-  opacity: .28;
-  background: linear-gradient(90deg,
-    rgba(255,255,255,0),
-    rgba(166, 210, 255, .10) 18%,
-    rgba(196, 228, 255, .54) 58%,
-    rgba(255,255,255, .95) 100%);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ambient-dust,
-  .ambient-meteor,
-  .ambient-pebble {
-    animation: none !important;
-    opacity: 0 !important;
-  }
-}
-
-
-/* ============================================================
-   Ambient space layer — stronger visibility version
-   ============================================================ */
-
-.ambient-space-layer {
-  opacity: .96 !important;
-}
-
-.ambient-dust {
-  width: 3px;
-  height: 3px;
-  background: rgba(220, 240, 255, 0.62) !important;
-  box-shadow:
-    0 0 7px rgba(180, 220, 255, .38),
-    0 0 14px rgba(180, 220, 255, .16);
-}
-
-.ambient-pebble {
-  background: rgba(120, 137, 151, .32) !important;
-  border-color: rgba(216, 229, 240, .28) !important;
-  box-shadow:
-    inset -1px -1px 2px rgba(20, 34, 50, .22),
-    0 0 10px rgba(180, 220, 255, .10);
-}
-
-.ambient-meteor {
-  height: 3px !important;
-  opacity: .54 !important;
-  filter: drop-shadow(0 0 6px rgba(190, 230, 255, .46));
-  background: linear-gradient(90deg,
-    rgba(255,255,255,0),
-    rgba(166, 210, 255, .20) 16%,
-    rgba(210, 236, 255, .76) 58%,
-    rgba(255,255,255, 1) 100%) !important;
-}
-
-.ambient-meteor::after {
-  width: 5px !important;
-  height: 5px !important;
-  margin-top: -2.5px !important;
-  background: rgba(255,255,255,1) !important;
-  box-shadow:
-    0 0 8px rgba(220,240,255,.88),
-    0 0 16px rgba(160,210,255,.44) !important;
-}
-
-html[data-theme="space"] .ambient-space-layer,
-html[data-theme-space] .ambient-space-layer,
-body.space-mode .ambient-space-layer {
-  opacity: 1 !important;
-}
-
-html[data-theme="space"] .ambient-dust,
-html[data-theme-space] .ambient-dust,
-body.space-mode .ambient-dust {
-  background: rgba(230, 244, 255, .78) !important;
-  box-shadow:
-    0 0 8px rgba(190, 230, 255, .52),
-    0 0 18px rgba(160, 210, 255, .24);
-}
-
-html[data-theme="space"] .ambient-pebble,
-html[data-theme-space] .ambient-pebble,
-body.space-mode .ambient-pebble {
-  background: rgba(172, 187, 202, .34) !important;
-  border-color: rgba(224, 236, 246, .26) !important;
-}
-
-html[data-theme="space"] .ambient-meteor,
-html[data-theme-space] .ambient-meteor,
-body.space-mode .ambient-meteor {
-  opacity: .76 !important;
-}
-
-
-/* ============================================================
-   Ambient space layer — issue fix version
-   Fixes:
-   1) star dust visibility
-   2) micro-meteorite visibility
-   3) meteor movement aligned with trail direction
-   4) meteors can appear across the full screen
-   5) meteors enter from beyond the screen edge
-   ============================================================ */
-
-.ambient-space-layer {
-  opacity: 1 !important;
-}
-
-.ambient-dust {
-  width: 3px !important;
-  height: 3px !important;
-  border-radius: 50%;
-  background: rgba(232, 244, 255, 0.78) !important;
-  box-shadow:
-    0 0 8px rgba(195, 228, 255, .58),
-    0 0 16px rgba(160, 210, 255, .22) !important;
-}
-
-.ambient-pebble {
-  background: rgba(132, 145, 157, .46) !important;
-  border: 1px solid rgba(220, 231, 239, .34) !important;
-  box-shadow:
-    inset -1px -1px 2px rgba(20, 34, 50, .28),
-    0 0 10px rgba(160, 210, 255, .12) !important;
-  opacity: .95 !important;
-}
-
-.ambient-meteor {
-  height: 3px !important;
-  opacity: .78 !important;
-  transform: rotate(28deg) !important;
-  filter: drop-shadow(0 0 7px rgba(190, 230, 255, .58)) !important;
-  background: linear-gradient(
-    90deg,
-    rgba(255,255,255,0) 0%,
-    rgba(166, 210, 255, .16) 18%,
-    rgba(214, 237, 255, .78) 60%,
-    rgba(255,255,255, 1) 100%
-  ) !important;
-}
-
-.ambient-meteor::after {
-  width: 5px !important;
-  height: 5px !important;
-  margin-top: -2.5px !important;
-  background: rgba(255,255,255, 1) !important;
-  box-shadow:
-    0 0 10px rgba(220, 240, 255, .95),
-    0 0 18px rgba(170, 220, 255, .48) !important;
-}
-
-/* In light mode make them clearly visible but still subtle */
-.ambient-dust:nth-child(3n) {
-  opacity: .88;
-}
-.ambient-dust:nth-child(4n) {
-  width: 4px !important;
-  height: 4px !important;
-}
-
-/* In space mode strengthen slightly more */
-html[data-theme="space"] .ambient-dust,
-html[data-theme-space] .ambient-dust,
-body.space-mode .ambient-dust {
-  background: rgba(238, 247, 255, .92) !important;
-  box-shadow:
-    0 0 8px rgba(210, 236, 255, .70),
-    0 0 18px rgba(170, 220, 255, .30) !important;
-}
-
-html[data-theme="space"] .ambient-pebble,
-html[data-theme-space] .ambient-pebble,
-body.space-mode .ambient-pebble {
-  background: rgba(165, 178, 191, .52) !important;
-  border-color: rgba(230, 240, 247, .36) !important;
-}
-
-html[data-theme="space"] .ambient-meteor,
-html[data-theme-space] .ambient-meteor,
-body.space-mode .ambient-meteor {
-  opacity: .92 !important;
-}
-
-
-/* ============================================================
-   FINAL FIX: CV timeline marker alignment + visible animated ambient layer
-   ============================================================ */
-
-/* CV timeline: true vertical time-sequence axis */
-.cv-page .timeline,
-.timeline {
-  --timeline-axis-x: 28px;
-  --timeline-dot-size: 28px;
-  position: relative !important;
+/* CV Education: remove line-and-dot timeline completely */
+.cv-education-section .timeline,
+.cv-education-section .timeline::before,
+.cv-education-section .timeline-item::before,
+.cv-education-section .cv-education-timeline,
+.cv-education-section .cv-education-timeline::before,
+.cv-education-section .cv-edu-item::before {
   border-left: 0 !important;
-  padding-left: 74px !important;
-  margin-left: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
 }
 
-.cv-page .timeline::before,
-.timeline::before {
-  content: "" !important;
-  position: absolute !important;
-  left: var(--timeline-axis-x) !important;
-  top: 0 !important;
-  bottom: 0 !important;
-  width: 2px !important;
-  transform: translateX(-1px) !important;
-  background: rgba(255, 255, 255, .62) !important;
-  z-index: 0 !important;
+.cv-education-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
 }
 
-.cv-page .timeline-item,
-.timeline-item {
-  position: relative !important;
-  padding-left: 0 !important;
-  margin-left: 0 !important;
+.cv-edu-card {
+  position: relative;
+  padding: 22px 24px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, .78);
+  box-shadow: 0 14px 34px rgba(18, 45, 75, .08);
+  backdrop-filter: blur(8px);
 }
 
-.cv-page .timeline-item::before,
-.timeline-item::before {
-  content: "" !important;
-  position: absolute !important;
-  left: var(--timeline-axis-x) !important;
-  top: 7px !important;
-  width: var(--timeline-dot-size) !important;
-  height: var(--timeline-dot-size) !important;
-  border-radius: 999px !important;
-  background: var(--blue) !important;
-  border: 5px solid rgba(238, 245, 250, .96) !important;
-  box-sizing: border-box !important;
-  transform: translateX(-50%) !important;
-  z-index: 2 !important;
-  box-shadow: 0 0 0 1px rgba(24, 74, 118, .18) !important;
+.cv-edu-card-primary {
+  background:
+    linear-gradient(135deg, rgba(31, 95, 153, .10), rgba(255, 255, 255, .82));
 }
 
-html[data-theme="space"] .timeline::before,
-html[data-theme-space] .timeline::before,
-body.space-mode .timeline::before {
-  background: rgba(190, 225, 255, .54) !important;
+.cv-edu-date {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  color: var(--blue-dark);
+  background: var(--blue-soft);
+  border: 1px solid var(--line);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .03em;
 }
 
-html[data-theme="space"] .timeline-item::before,
-html[data-theme-space] .timeline-item::before,
-body.space-mode .timeline-item::before {
-  border-color: rgba(6, 16, 31, .96) !important;
-  box-shadow: 0 0 0 1px rgba(160, 210, 255, .20), 0 0 14px rgba(150, 210, 255, .22) !important;
+.cv-edu-card h3 {
+  margin-bottom: 8px;
 }
 
-/* Ambient layer must be visible above background but below all content */
+.cv-edu-card p:last-child {
+  margin-bottom: 0;
+}
+
+html[data-theme="space"] .cv-edu-card,
+html[data-theme-space] .cv-edu-card,
+body.space-mode .cv-edu-card {
+  background: rgba(8, 18, 34, .80) !important;
+  border-color: rgba(178, 211, 244, .24) !important;
+  box-shadow: 0 18px 54px rgba(0, 0, 0, .28) !important;
+}
+
+html[data-theme="space"] .cv-edu-card-primary,
+html[data-theme-space] .cv-edu-card-primary,
+body.space-mode .cv-edu-card-primary {
+  background:
+    linear-gradient(135deg, rgba(139, 199, 255, .14), rgba(8, 18, 34, .82)) !important;
+}
+
+html[data-theme="space"] .cv-edu-date,
+html[data-theme-space] .cv-edu-date,
+body.space-mode .cv-edu-date {
+  color: #eaf6ff !important;
+  background: rgba(139, 199, 255, .18) !important;
+  border-color: rgba(139, 199, 255, .30) !important;
+}
+
+/* Ambient layer: above background image and below content */
 .ambient-space-layer {
   position: fixed !important;
   inset: 0 !important;
   pointer-events: none !important;
-  z-index: 0 !important;
+  z-index: 1 !important;
   overflow: hidden !important;
   opacity: 1 !important;
 }
@@ -2419,7 +2106,7 @@ body.space-mode .timeline-item::before {
 .main,
 .site-footer {
   position: relative !important;
-  z-index: 2 !important;
+  z-index: 3 !important;
 }
 
 .ambient-dust,
@@ -2430,67 +2117,58 @@ body.space-mode .timeline-item::before {
   will-change: transform, opacity !important;
 }
 
-/* star dust: brighter, more numerous, visibly drifting */
+/* Fewer than the last version, but clearly visible */
 .ambient-dust {
-  width: var(--dust-size, 4px) !important;
-  height: var(--dust-size, 4px) !important;
+  width: var(--dust-size, 3px) !important;
+  height: var(--dust-size, 3px) !important;
   border-radius: 50% !important;
-  background: rgba(240, 248, 255, .94) !important;
+  background: rgba(245, 250, 255, .88) !important;
+  opacity: .70 !important;
   box-shadow:
-    0 0 7px rgba(215, 238, 255, .85),
-    0 0 18px rgba(155, 210, 255, .38) !important;
-  opacity: .82 !important;
-  animation-name: ambientDustDriftFinal !important;
-  animation-timing-function: linear !important;
-  animation-iteration-count: infinite !important;
+    0 0 6px rgba(220, 240, 255, .70),
+    0 0 14px rgba(160, 215, 255, .28) !important;
+  animation: ambientDustMove var(--dust-duration, 18s) linear infinite !important;
 }
 
-/* micro-meteorites: larger, irregular, visible */
 .ambient-pebble {
   width: var(--pebble-w, 10px) !important;
   height: var(--pebble-h, 8px) !important;
   border-radius: 58% 42% 52% 47% !important;
   background:
-    radial-gradient(circle at 35% 30%, rgba(230, 238, 244, .58), rgba(120, 132, 143, .62) 42%, rgba(55, 66, 78, .52) 100%) !important;
-  border: 1px solid rgba(235, 243, 248, .42) !important;
-  opacity: .84 !important;
+    radial-gradient(circle at 35% 30%, rgba(235, 242, 247, .50), rgba(130, 142, 154, .52) 45%, rgba(55, 67, 80, .45) 100%) !important;
+  border: 1px solid rgba(232, 242, 248, .32) !important;
+  opacity: .62 !important;
   box-shadow:
-    inset -2px -2px 3px rgba(0, 0, 0, .22),
-    0 0 12px rgba(170, 220, 255, .22) !important;
-  animation-name: ambientPebbleFloatFinal !important;
-  animation-timing-function: linear !important;
-  animation-iteration-count: infinite !important;
+    inset -2px -2px 3px rgba(0, 0, 0, .18),
+    0 0 10px rgba(170, 220, 255, .16) !important;
+  animation: ambientPebbleMove var(--pebble-duration, 28s) linear infinite !important;
 }
 
-/* meteor: the head is at the front, movement follows the visible trail */
+/* Meteor uses JS-driven transition, not CSS keyframe loop, so motion is obvious */
 .ambient-meteor {
-  width: var(--meteor-len, 120px) !important;
+  width: var(--meteor-len, 140px) !important;
   height: 3px !important;
   border-radius: 999px !important;
-  opacity: .92 !important;
-  transform: rotate(var(--meteor-angle, 30deg)) !important;
+  opacity: 0;
   transform-origin: right center !important;
   background: linear-gradient(
     90deg,
     rgba(255,255,255,0) 0%,
-    rgba(166,210,255,.22) 22%,
-    rgba(212,236,255,.78) 68%,
+    rgba(160,210,255,.18) 18%,
+    rgba(216,238,255,.84) 68%,
     rgba(255,255,255,1) 100%
   ) !important;
-  filter: drop-shadow(0 0 7px rgba(190, 230, 255, .70)) !important;
-  animation-name: ambientMeteorFlyFinal !important;
-  animation-timing-function: linear !important;
-  animation-iteration-count: infinite !important;
+  filter: drop-shadow(0 0 8px rgba(190, 230, 255, .72)) !important;
 }
 
 .ambient-meteor::after {
   content: "" !important;
   position: absolute !important;
-  right: -2px !important;
+  right: -3px !important;
   top: 50% !important;
-  width: 6px !important;
-  height: 6px !important;
-  margin-top: -3px !important;
+  width: 7px !important;
+  height: 7px !important;
+  margin-top: -3.5px !important;
   border-radius: 50% !important;
   background: rgba(255,255,255,1) !important;
   box-shadow:
@@ -2498,41 +2176,32 @@ body.space-mode .timeline-item::before {
     0 0 22px rgba(160,215,255,.55) !important;
 }
 
-@keyframes ambientDustDriftFinal {
+.ambient-meteor.is-flying {
+  opacity: .95 !important;
+}
+
+@keyframes ambientDustMove {
   0% {
-    transform: translate3d(0, 0, 0) scale(.82);
+    transform: translate3d(0, 0, 0) scale(.88);
     opacity: 0;
   }
-  8% { opacity: .92; }
-  72% { opacity: .72; }
+  10% { opacity: .74; }
+  80% { opacity: .54; }
   100% {
-    transform: translate3d(var(--dust-x, 70px), var(--dust-y, -90px), 0) scale(1.15);
+    transform: translate3d(var(--dust-x, 80px), var(--dust-y, -80px), 0) scale(1.12);
     opacity: 0;
   }
 }
 
-@keyframes ambientPebbleFloatFinal {
+@keyframes ambientPebbleMove {
   0% {
     transform: translate3d(0, 0, 0) rotate(0deg);
     opacity: 0;
   }
-  10% { opacity: .88; }
-  78% { opacity: .72; }
+  12% { opacity: .66; }
+  78% { opacity: .48; }
   100% {
-    transform: translate3d(var(--pebble-x, 120px), var(--pebble-y, 80px), 0) rotate(var(--pebble-rotate, 260deg));
-    opacity: 0;
-  }
-}
-
-@keyframes ambientMeteorFlyFinal {
-  0% {
-    transform: translate3d(0, 0, 0) rotate(var(--meteor-angle, 30deg)) scaleX(.92);
-    opacity: 0;
-  }
-  4% { opacity: .95; }
-  78% { opacity: .75; }
-  100% {
-    transform: translate3d(var(--meteor-x, 420px), var(--meteor-y, 260px), 0) rotate(var(--meteor-angle, 30deg)) scaleX(1.08);
+    transform: translate3d(var(--pebble-x, 130px), var(--pebble-y, 90px), 0) rotate(var(--pebble-rotate, 260deg));
     opacity: 0;
   }
 }
@@ -2540,22 +2209,20 @@ body.space-mode .timeline-item::before {
 html[data-theme="space"] .ambient-dust,
 html[data-theme-space] .ambient-dust,
 body.space-mode .ambient-dust {
-  background: rgba(246, 251, 255, .98) !important;
-  box-shadow:
-    0 0 8px rgba(220, 242, 255, .95),
-    0 0 22px rgba(155, 210, 255, .48) !important;
+  opacity: .82 !important;
+  background: rgba(248, 252, 255, .96) !important;
 }
 
 html[data-theme="space"] .ambient-pebble,
 html[data-theme-space] .ambient-pebble,
 body.space-mode .ambient-pebble {
-  opacity: .92 !important;
+  opacity: .74 !important;
 }
 
-html[data-theme="space"] .ambient-meteor,
-html[data-theme-space] .ambient-meteor,
-body.space-mode .ambient-meteor {
-  opacity: 1 !important;
+@media (max-width: 860px) {
+  .cv-edu-card {
+    padding: 18px 18px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2563,110 +2230,7 @@ body.space-mode .ambient-meteor {
   .ambient-pebble,
   .ambient-meteor {
     animation: none !important;
+    transition: none !important;
     opacity: 0 !important;
-  }
-}
-
-
-/* ============================================================
-   CV Education redesign + ambient tuning (fewer but clearer dust/pebbles)
-   ============================================================ */
-
-.cv-education-timeline {
-  position: relative;
-  display: grid;
-  gap: 18px;
-  padding-left: 26px;
-}
-
-.cv-education-timeline::before {
-  content: "";
-  position: absolute;
-  left: 10px;
-  top: 8px;
-  bottom: 8px;
-  width: 2px;
-  background: rgba(255, 255, 255, .62);
-}
-
-.cv-edu-item {
-  position: relative;
-  display: grid;
-  grid-template-columns: 180px minmax(0, 1fr);
-  gap: 22px;
-  align-items: start;
-}
-
-.cv-edu-item::before {
-  content: "";
-  position: absolute;
-  left: 10px;
-  top: 8px;
-  width: 18px;
-  height: 18px;
-  border-radius: 999px;
-  background: var(--blue);
-  border: 4px solid rgba(238, 245, 250, .96);
-  box-shadow: 0 0 0 1px rgba(24, 74, 118, .14);
-  transform: translateX(-50%);
-}
-
-.cv-edu-date {
-  color: var(--blue-dark);
-  font-weight: 700;
-  font-size: 15px;
-  line-height: 1.5;
-  padding-left: 24px;
-}
-
-.cv-edu-content h3 {
-  margin-bottom: 8px;
-}
-
-.cv-edu-content p {
-  margin-bottom: 10px;
-}
-
-html[data-theme="space"] .cv-education-timeline::before,
-html[data-theme-space] .cv-education-timeline::before,
-body.space-mode .cv-education-timeline::before {
-  background: rgba(190, 225, 255, .54);
-}
-
-html[data-theme="space"] .cv-edu-item::before,
-html[data-theme-space] .cv-edu-item::before,
-body.space-mode .cv-edu-item::before {
-  border-color: rgba(6, 16, 31, .96);
-  box-shadow: 0 0 0 1px rgba(160, 210, 255, .20), 0 0 10px rgba(150, 210, 255, .20);
-}
-
-/* Reduce generic old timeline emphasis on cv page if any old styles linger */
-.cv-page .timeline,
-.timeline {
-  border-left: 0;
-}
-
-/* Ambient tuning */
-.ambient-space-layer {
-  opacity: 1 !important;
-}
-
-.ambient-dust {
-  opacity: .76 !important;
-}
-
-.ambient-pebble {
-  opacity: .78 !important;
-}
-
-@media (max-width: 860px) {
-  .cv-edu-item {
-    grid-template-columns: 1fr;
-    gap: 6px;
-  }
-
-  .cv-edu-date {
-    padding-left: 24px;
-    font-size: 14px;
   }
 }

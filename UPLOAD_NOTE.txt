@@ -1,13 +1,13 @@
-Replace these three files:
+Upload and replace all files in this zip.
 
-cv.html
-assets/css/style.css
-assets/js/ambient-space.js
+Important:
+- Replace every HTML file, because each page must load assets/js/ambient-space.js.
+- Replace assets/css/style.css.
+- Replace assets/js/ambient-space.js.
 
-Changes:
-1. Education section redesigned as a clean vertical sequence:
-   - 2014/09 – 2018/06 Shanghai Nanyang Model Junior High School
-   - 2018/09 – 2021/06 Shanghai Huadong Model High School
-   - 2023/04 – present Waseda University
-2. Star dust and micro-meteorites are slightly reduced in number but remain clear.
-3. Meteors are now generated continuously with visible motion and 8-direction trajectories.
+Fixes:
+1. CV education no longer uses the line-and-dot timeline design.
+2. B.Sc. heading is now: "B.Sc. in Earth Sciences, Waseda University."
+3. CV page also loads the ambient animation.
+4. Meteors now use JS transitions and spawn continuously, so they visibly fly across the page.
+5. Dust and micro-meteorites are reduced in number but remain visible.
