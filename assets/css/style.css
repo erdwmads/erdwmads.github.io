@@ -5923,3 +5923,91 @@ html:not([data-theme="space"]) .mission-photo-grid figure {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ============================================================
+   Footer image restore after Mission Log edits
+   Restores the original Solar System footer image and disables
+   the Hubble Ultra Deep Field footer experiment.
+   ============================================================ */
+
+.site-footer {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.site-footer::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  background-image:
+    linear-gradient(rgba(5, 12, 23, .28), rgba(5, 12, 23, .56)),
+    url("../img/Solar_System_true_color.jpg") !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  filter: saturate(1.02) contrast(1.02) brightness(.92) !important;
+}
+
+html:not([data-theme="space"]) .site-footer::before {
+  background-image:
+    linear-gradient(rgba(235, 242, 248, .18), rgba(235, 242, 248, .38)),
+    url("../img/Solar_System_true_color.jpg") !important;
+  filter: saturate(.98) contrast(1.00) brightness(1.04) !important;
+}
+
+html[data-theme="space"] .site-footer::before,
+html[data-theme-space] .site-footer::before,
+body.space-mode .site-footer::before {
+  background-image:
+    linear-gradient(rgba(5, 12, 23, .22), rgba(5, 12, 23, .60)),
+    url("../img/Solar_System_true_color.jpg") !important;
+  filter: saturate(1.08) contrast(1.04) brightness(.88) !important;
+}
+
+/* Keep footer content as text on the background, not a large grey glass panel. */
+.site-footer .footer-inner {
+  position: relative !important;
+  z-index: 1 !important;
+  width: 100% !important;
+  max-width: var(--max) !important;
+  margin: 0 auto !important;
+  padding: 0 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  color: rgba(239, 247, 255, .92) !important;
+  text-shadow:
+    0 1px 2px rgba(0,0,0,.40),
+    0 0 18px rgba(0,0,0,.22) !important;
+}
+
+html:not([data-theme="space"]) .site-footer .footer-inner {
+  color: rgba(23, 38, 56, .88) !important;
+  text-shadow: none !important;
+}
+
+html[data-theme="space"] .site-footer .footer-inner,
+html[data-theme-space] .site-footer .footer-inner,
+body.space-mode .site-footer .footer-inner {
+  color: rgba(239, 247, 255, .95) !important;
+  text-shadow:
+    0 1px 2px rgba(0,0,0,.46),
+    0 0 18px rgba(0,0,0,.28) !important;
+}
+
+@media (max-width: 640px) {
+  .site-footer .footer-inner {
+    flex-direction: column !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    text-align: center !important;
+    padding: 0 20px !important;
+  }
+}
