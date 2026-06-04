@@ -4,14 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Home | Mads LIU YONG</title>
-  <meta name="description" content="Personal academic website of Mads LIU YONG, an undergraduate student interested in cosmic mineralogy, meteorites, and planetary materials.">
+  <meta name="description" content="Personal academic website of Mads LIU YONG.">
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="assets/img/favicon.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 </head>
 <body>
-
 <header class="site-header">
   <div class="header-inner">
     <a class="brand" href="index.html">
@@ -20,15 +19,16 @@
     </a>
     <nav class="nav" aria-label="Main navigation">
       <a href="index.html" aria-current="page">Home</a>
-      <a href="research.html" >Research</a>
-      <a href="research-log.html" >Research Log</a>
-      <a href="cv.html" >CV</a>
-      <a href="photography.html" >Photography</a>
-      <a href="contact.html" >Contact</a>
+      <a href="research.html">Research</a>
+      <a href="research-log.html">Research Log</a>
+      <a href="paper-shelf.html">Paper Shelf</a>
+      <a href="cv.html">CV</a>
+      <a href="photography.html">Photography</a>
+      <a href="contact.html">Contact</a>
+      <button class="theme-toggle" type="button" aria-label="Toggle light and space mode">Space Mode</button>
     </nav>
   </div>
 </header>
-
 <main class="main">
 
 <section class="hero">
@@ -41,9 +41,8 @@
       Waseda University.
     </p>
     <p class="muted">
-      My main research interest is <strong>Cosmic Mineralogy</strong>, with a focus on
-      primitive Solar System materials, meteorites, and mineralogical records preserved
-      in asteroid-returned samples.
+      My main research interest is <strong>Cosmic Mineralogy</strong>, with a focus on primitive Solar System
+      materials, meteorites, and mineralogical records preserved in asteroid-returned samples.
     </p>
 
     <div class="pills">
@@ -72,8 +71,41 @@
   </aside>
 </section>
 
+<section class="section current-focus-section">
+  <div class="focus-card">
+    <div>
+      <p class="eyebrow">Current Focus</p>
+      <h2>Dolomite and clay minerals in Orgueil CI chondrite</h2>
+      <p>
+        My current graduation research investigates whether dolomite in the Orgueil CI chondrite
+        is spatially, chemically, and crystallographically associated with clay minerals. I am interested
+        in whether clay-rich surfaces may have acted as sites for carbonate nucleation and whether this
+        relationship can provide an astromaterials perspective on the “Dolomite problem.”
+      </p>
+    </div>
+    <div class="focus-list">
+      <div>
+        <span>Current question</span>
+        <strong>Is dolomite genetically related to clay-mineral surfaces?</strong>
+      </div>
+      <div>
+        <span>Target material</span>
+        <strong>Orgueil CI chondrite</strong>
+      </div>
+      <div>
+        <span>Methods</span>
+        <strong>SEM/EPMA · single-grain XRD · TEM</strong>
+      </div>
+      <div>
+        <span>Broader context</span>
+        <strong>Carbonate formation, aqueous alteration, and early Solar System materials</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="section">
-  <div class="grid">
+  <div class="grid home-card-grid">
     <article class="card">
       <h3>Research</h3>
       <p>
@@ -85,31 +117,57 @@
     <article class="card">
       <h3>Research Log</h3>
       <p>
-        Project-based chronological notes for my graduation research and future
-        research projects in Cosmic Mineralogy and Astromaterials Science.
+        Project-based chronological notes for my graduation research and future research projects.
       </p>
       <a href="research-log.html">View projects</a>
     </article>
-
+    <article class="card">
+      <h3>Paper Shelf</h3>
+      <p>
+        A curated reading shelf on dolomite, carbonates, CI chondrites, Ryugu, Bennu,
+        and analytical methods.
+      </p>
+      <a href="paper-shelf.html">Browse papers</a>
+    </article>
     <article class="card">
       <h3>Photography</h3>
       <p>
-        Film-inspired photographs and visual notes made with
-        <span class="del">Hasselblad X2D</span> Pentax 6×7.
+        Film-inspired photographs and visual notes made with <span class="del">Hasselblad X2D</span> Pentax 6×7.
       </p>
       <a href="photography.html">View gallery</a>
     </article>
   </div>
 </section>
 
-</main>
+<section class="section two-col">
+  <div class="section-label">Academic Timeline</div>
+  <div class="mini-timeline">
+    <div class="mini-timeline-item">
+      <span>2023/04</span>
+      <p>Entered Waseda University, Department of Earth Sciences.</p>
+    </div>
+    <div class="mini-timeline-item">
+      <span>2025/04</span>
+      <p>Joined the Mineralogy Laboratory at Waseda University as a third-year undergraduate student. Adviser: Taiga Okumura.</p>
+    </div>
+    <div class="mini-timeline-item">
+      <span>2025/09</span>
+      <p>Joined Mikouchi Laboratory, The University Museum, The University of Tokyo. Adviser: Takashi Mikouchi.</p>
+    </div>
+    <div class="mini-timeline-item">
+      <span>2026/04</span>
+      <p>Started graduation research across both laboratories.</p>
+    </div>
+  </div>
+</section>
 
+</main>
 <footer class="site-footer">
   <div class="footer-inner">
     <span>© 2026 Mads LIU YONG</span>
     <span>Built for GitHub Pages</span>
   </div>
 </footer>
-
+  <script src="assets/js/theme.js"></script>
 </body>
 </html>
