@@ -83,3 +83,16 @@ This version expects:
 The gallery is cropped and aligned automatically by CSS.
 
 If images do not show, check the exact file names. GitHub Pages is case-sensitive.
+
+
+## 2026-06 final update
+
+- Photography page now uses:
+  - `assets/img/photo01.jpg`
+  - `assets/img/photo02.jpg`
+  - `assets/img/photo03.jpg`
+- Homepage portrait uses:
+  - `assets/img/profile.jpg`
+- Research Log is now project-based:
+  - `research-log.html` = project overview
+  - `research-graduation.html` = clickable graduation research project page

@@ -1,19 +1,21 @@
-Required image paths for this website version:
+This version uses exactly these image paths:
 
-Homepage portrait:
-- assets/img/profile.jpg
-
-Photography page:
-- assets/img/photo1.jpg
-- assets/img/photo2.jpg
-- assets/img/photo3.jpg
-
-Header/footer background:
+Header/footer:
 - assets/img/Solar_System_true_color.jpg
 
 Main background:
 - assets/img/asteroid-bennu.jpg
 
-Important:
-File names are case-sensitive on GitHub Pages.
-photo1.jpg is different from Photo1.jpg, photo1.JPG, and photo01.jpg.
+Homepage portrait:
+- assets/img/profile.jpg
+
+Photography gallery:
+- assets/img/photo01.jpg
+- assets/img/photo02.jpg
+- assets/img/photo03.jpg
+
+Also present:
+- assets/img/profile-placeholder.svg
+
+GitHub Pages is case-sensitive.
+photo01.jpg is not the same as photo1.jpg, Photo01.jpg, or photo01.JPG.
