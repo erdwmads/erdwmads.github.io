@@ -4,8 +4,13 @@
     return;
   }
 
+  function rand(min, max) {
+    return min + Math.random() * (max - min);
+  }
+
   function initAmbientSpace() {
-    if (document.querySelector(".ambient-space-layer")) return;
+    const oldLayer = document.querySelector(".ambient-space-layer");
+    if (oldLayer) oldLayer.remove();
 
     const layer = document.createElement("div");
     layer.className = "ambient-space-layer";
@@ -15,22 +20,14 @@
       const el = document.createElement("span");
       el.className = "ambient-dust";
 
-      const left = Math.random() * 100;
-      const top = Math.random() * 100;
-      const dx = (Math.random() - 0.5) * 120;
-      const dy = -40 - Math.random() * 90;
-      const dur = 18 + Math.random() * 20;
-      const delay = -Math.random() * dur;
-      const size = 2 + Math.random() * 2.5;
-
-      el.style.left = left + "%";
-      el.style.top = top + "%";
-      el.style.width = size + "px";
-      el.style.height = size + "px";
-      el.style.setProperty("--dust-x", dx + "px");
-      el.style.setProperty("--dust-y", dy + "px");
-      el.style.animationDuration = dur + "s";
-      el.style.animationDelay = delay + "s";
+      const size = rand(2.4, 5.2);
+      el.style.left = rand(0, 100) + "vw";
+      el.style.top = rand(0, 100) + "vh";
+      el.style.setProperty("--dust-size", size + "px");
+      el.style.setProperty("--dust-x", rand(-150, 150) + "px");
+      el.style.setProperty("--dust-y", rand(-160, 130) + "px");
+      el.style.animationDuration = rand(14, 30) + "s";
+      el.style.animationDelay = (-rand(0, 30)) + "s";
       layer.appendChild(el);
     }
 
@@ -38,22 +35,17 @@
       const el = document.createElement("span");
       el.className = "ambient-pebble";
 
-      const left = Math.random() * 100;
-      const top = Math.random() * 100;
-      const dx = (Math.random() - 0.5) * 150;
-      const dy = (Math.random() - 0.5) * 120;
-      const dur = 34 + Math.random() * 28;
-      const delay = -Math.random() * dur;
-      const size = 5 + Math.random() * 8;
-
-      el.style.left = left + "%";
-      el.style.top = top + "%";
-      el.style.width = size + "px";
-      el.style.height = (size * (0.75 + Math.random() * 0.45)) + "px";
-      el.style.setProperty("--pebble-x", dx + "px");
-      el.style.setProperty("--pebble-y", dy + "px");
-      el.style.animationDuration = dur + "s";
-      el.style.animationDelay = delay + "s";
+      const w = rand(7, 16);
+      const h = w * rand(0.65, 1.05);
+      el.style.left = rand(0, 100) + "vw";
+      el.style.top = rand(0, 100) + "vh";
+      el.style.setProperty("--pebble-w", w + "px");
+      el.style.setProperty("--pebble-h", h + "px");
+      el.style.setProperty("--pebble-x", rand(-220, 220) + "px");
+      el.style.setProperty("--pebble-y", rand(-160, 180) + "px");
+      el.style.setProperty("--pebble-rotate", rand(140, 520) + "deg");
+      el.style.animationDuration = rand(24, 48) + "s";
+      el.style.animationDelay = (-rand(0, 48)) + "s";
       layer.appendChild(el);
     }
 
@@ -61,41 +53,62 @@
       const el = document.createElement("span");
       el.className = "ambient-meteor";
 
-      const fromTop = Math.random() < 0.55;
-      const len = 70 + Math.random() * 90;
-      const dur = 6 + Math.random() * 4;
+      const len = rand(78, 170);
+      const angle = rand(0, 360);
+      const rad = angle * Math.PI / 180;
 
-      let startX, startY, dx, dy;
+      // Movement vector follows the meteor head/trail direction.
+      const travel = rand(580, 980);
+      const dx = Math.cos(rad) * travel;
+      const dy = Math.sin(rad) * travel;
 
-      // Meteors move in the same direction as the visible head/trail logic:
-      // from upper-left toward lower-right, entering from outside the screen.
-      if (fromTop) {
-        startX = -18 + Math.random() * 118;   // spread across the whole width
-        startY = -12 - Math.random() * 14;    // above the screen
-      } else {
-        startX = -20 - Math.random() * 16;    // left of the screen
-        startY = -8 + Math.random() * 78;     // spread across the whole height
+      // Start from outside one of the four screen sides, so it enters naturally.
+      const side = Math.floor(rand(0, 4));
+      let x, y;
+
+      if (side === 0) {          // left edge
+        x = -28;
+        y = rand(-10, 110);
+      } else if (side === 1) {   // right edge
+        x = 128;
+        y = rand(-10, 110);
+      } else if (side === 2) {   // top edge
+        x = rand(-10, 110);
+        y = -22;
+      } else {                   // bottom edge
+        x = rand(-10, 110);
+        y = 122;
       }
 
-      dx = 260 + Math.random() * 420;
-      dy = 170 + Math.random() * 280;
+      // Make sure the vector points into the screen from the chosen side.
+      let finalAngle = angle;
+      if (side === 0 && dx < 0) finalAngle += 180;
+      if (side === 1 && dx > 0) finalAngle += 180;
+      if (side === 2 && dy < 0) finalAngle += 180;
+      if (side === 3 && dy > 0) finalAngle += 180;
 
-      el.style.left = startX + "vw";
-      el.style.top = startY + "vh";
-      el.style.width = len + "px";
-      el.style.setProperty("--meteor-x", dx + "px");
-      el.style.setProperty("--meteor-y", dy + "px");
-      el.style.animationDuration = dur + "s";
+      const finalRad = finalAngle * Math.PI / 180;
+      const finalDx = Math.cos(finalRad) * travel;
+      const finalDy = Math.sin(finalRad) * travel;
 
-      // Use positive delays so meteors don't pop into existence near an edge on first paint.
-      el.style.animationDelay = (Math.random() * 9).toFixed(2) + "s";
+      el.style.left = x + "vw";
+      el.style.top = y + "vh";
+      el.style.setProperty("--meteor-len", len + "px");
+      el.style.setProperty("--meteor-angle", finalAngle + "deg");
+      el.style.setProperty("--meteor-x", finalDx + "px");
+      el.style.setProperty("--meteor-y", finalDy + "px");
+      el.style.animationDuration = rand(4.8, 8.4) + "s";
+
+      // Negative delay keeps some meteors already moving after page load.
+      // They still begin from off-screen in each animation cycle.
+      el.style.animationDelay = (-rand(0, 8.4)) + "s";
 
       layer.appendChild(el);
     }
 
-    for (let i = 0; i < 90; i++) makeDust();
-    for (let i = 0; i < 18; i++) makePebble();
-    for (let i = 0; i < 8; i++) makeMeteor();
+    for (let i = 0; i < 150; i++) makeDust();
+    for (let i = 0; i < 32; i++) makePebble();
+    for (let i = 0; i < 14; i++) makeMeteor();
   }
 
   if (document.readyState === "loading") {

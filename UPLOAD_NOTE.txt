@@ -3,9 +3,9 @@ Replace these two files:
 assets/css/style.css
 assets/js/ambient-space.js
 
-This version fixes:
-1. Star dust visibility
-2. Micro-meteorite visibility
-3. Meteor direction follows the visual trail direction
-4. Meteors are distributed across the full screen
-5. Meteors now enter from beyond the screen edge
+Fixes included:
+- CV Education timeline is rebuilt as a true vertical sequence; the dot center and line center now share one axis.
+- Meteors now move along their own trail direction.
+- Meteor directions are randomized in 360 degrees.
+- Meteors enter from outside all four screen edges.
+- Star dust and micro-meteorites are brighter, larger, more numerous, and animated.
