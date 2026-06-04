@@ -1,12 +1,11 @@
-Changed files in this patch:
+Replace these two files:
 
-- All .html files (header subtitle updated and project title wording updated)
-- assets/css/style.css
-- assets/js/theme.js
+assets/css/style.css
+assets/js/ambient-space.js
 
-Fixes:
-1. Space Mode button now has a more robust JavaScript toggle and stronger CSS rules.
-2. Header subtitle changed to: Cosmic Mineralogy · Planetary Sciences · Meteoritics.
-3. Graduation research title updated to:
-   Mineralogical Study of Dolomite in the Orgueil CI1 Chondrite: Constraining the Formation Conditions of Primitive Chondritic Constituents
-4. CV timeline marker and vertical line alignment fixed.
+This version makes the ambient effect much more visible:
+- more star dust
+- more micro-meteorites
+- more meteors
+- brighter trails
+- stronger Space Mode visibility
