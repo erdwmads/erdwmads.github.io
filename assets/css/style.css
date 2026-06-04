@@ -2008,3 +2008,168 @@ html[data-theme-space] .timeline-item::before,
 body.space-mode .timeline-item::before {
   border-color: #06101f;
 }
+
+
+/* ============================================================
+   Ambient space layer: subtle meteors, micro-meteorites, star dust
+   Feature B = slightly visible, still restrained.
+   ============================================================ */
+
+body {
+  overflow-x: clip;
+}
+
+.ambient-space-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* keep all page content above the ambient layer */
+.site-header,
+.main,
+.site-footer {
+  position: relative;
+  z-index: 1;
+}
+
+.ambient-dust,
+.ambient-meteor,
+.ambient-pebble {
+  position: absolute;
+  pointer-events: none;
+}
+
+.ambient-dust {
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.30);
+  box-shadow: 0 0 6px rgba(255,255,255,.16);
+  animation: ambientDustDrift linear infinite;
+}
+
+.ambient-pebble {
+  width: 6px;
+  height: 6px;
+  border-radius: 58% 42% 50% 50%;
+  background: rgba(125, 138, 149, .13);
+  border: 1px solid rgba(183, 195, 204, .12);
+  filter: blur(.1px);
+  animation: ambientPebbleFloat linear infinite;
+}
+
+.ambient-meteor {
+  width: 54px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0),
+    rgba(216, 238, 255, .06) 18%,
+    rgba(216, 238, 255, .42) 58%,
+    rgba(255,255,255, .88) 100%);
+  transform: rotate(-25deg);
+  opacity: .16;
+  filter: blur(.1px);
+  animation: ambientMeteorFly linear infinite;
+}
+
+.ambient-meteor::after {
+  content: "";
+  position: absolute;
+  right: -2px;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  margin-top: -2px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.8);
+  box-shadow: 0 0 8px rgba(220,240,255,.55);
+}
+
+@keyframes ambientDustDrift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(.96);
+    opacity: 0;
+  }
+  10% { opacity: .42; }
+  50% { opacity: .18; }
+  100% {
+    transform: translate3d(var(--dust-x, 32px), var(--dust-y, -48px), 0) scale(1.18);
+    opacity: 0;
+  }
+}
+
+@keyframes ambientPebbleFloat {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  14% { opacity: .30; }
+  60% { opacity: .18; }
+  100% {
+    transform: translate3d(var(--pebble-x, -26px), var(--pebble-y, 38px), 0) rotate(220deg);
+    opacity: 0;
+  }
+}
+
+@keyframes ambientMeteorFly {
+  0% {
+    transform: translate3d(0,0,0) rotate(-25deg) scaleX(.82);
+    opacity: 0;
+  }
+  10% { opacity: .18; }
+  70% { opacity: .14; }
+  100% {
+    transform: translate3d(var(--meteor-x, -220px), var(--meteor-y, 180px), 0) rotate(-25deg) scaleX(1.08);
+    opacity: 0;
+  }
+}
+
+/* Light mode: barely visible */
+.ambient-space-layer {
+  opacity: .52;
+}
+
+/* Space mode: a bit clearer */
+html[data-theme="space"] .ambient-space-layer,
+html[data-theme-space] .ambient-space-layer,
+body.space-mode .ambient-space-layer {
+  opacity: 1;
+}
+
+html[data-theme="space"] .ambient-dust,
+html[data-theme-space] .ambient-dust,
+body.space-mode .ambient-dust {
+  background: rgba(218, 236, 255, .52);
+  box-shadow: 0 0 10px rgba(180, 220, 255, .26);
+}
+
+html[data-theme="space"] .ambient-pebble,
+html[data-theme-space] .ambient-pebble,
+body.space-mode .ambient-pebble {
+  background: rgba(164, 176, 188, .18);
+  border-color: rgba(204, 215, 225, .16);
+}
+
+html[data-theme="space"] .ambient-meteor,
+html[data-theme-space] .ambient-meteor,
+body.space-mode .ambient-meteor {
+  opacity: .28;
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0),
+    rgba(166, 210, 255, .10) 18%,
+    rgba(196, 228, 255, .54) 58%,
+    rgba(255,255,255, .95) 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-dust,
+  .ambient-meteor,
+  .ambient-pebble {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+}
