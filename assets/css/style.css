@@ -2566,3 +2566,107 @@ body.space-mode .ambient-meteor {
     opacity: 0 !important;
   }
 }
+
+
+/* ============================================================
+   CV Education redesign + ambient tuning (fewer but clearer dust/pebbles)
+   ============================================================ */
+
+.cv-education-timeline {
+  position: relative;
+  display: grid;
+  gap: 18px;
+  padding-left: 26px;
+}
+
+.cv-education-timeline::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: rgba(255, 255, 255, .62);
+}
+
+.cv-edu-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.cv-edu-item::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--blue);
+  border: 4px solid rgba(238, 245, 250, .96);
+  box-shadow: 0 0 0 1px rgba(24, 74, 118, .14);
+  transform: translateX(-50%);
+}
+
+.cv-edu-date {
+  color: var(--blue-dark);
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.5;
+  padding-left: 24px;
+}
+
+.cv-edu-content h3 {
+  margin-bottom: 8px;
+}
+
+.cv-edu-content p {
+  margin-bottom: 10px;
+}
+
+html[data-theme="space"] .cv-education-timeline::before,
+html[data-theme-space] .cv-education-timeline::before,
+body.space-mode .cv-education-timeline::before {
+  background: rgba(190, 225, 255, .54);
+}
+
+html[data-theme="space"] .cv-edu-item::before,
+html[data-theme-space] .cv-edu-item::before,
+body.space-mode .cv-edu-item::before {
+  border-color: rgba(6, 16, 31, .96);
+  box-shadow: 0 0 0 1px rgba(160, 210, 255, .20), 0 0 10px rgba(150, 210, 255, .20);
+}
+
+/* Reduce generic old timeline emphasis on cv page if any old styles linger */
+.cv-page .timeline,
+.timeline {
+  border-left: 0;
+}
+
+/* Ambient tuning */
+.ambient-space-layer {
+  opacity: 1 !important;
+}
+
+.ambient-dust {
+  opacity: .76 !important;
+}
+
+.ambient-pebble {
+  opacity: .78 !important;
+}
+
+@media (max-width: 860px) {
+  .cv-edu-item {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .cv-edu-date {
+    padding-left: 24px;
+    font-size: 14px;
+  }
+}

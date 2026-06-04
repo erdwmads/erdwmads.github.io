@@ -1,11 +1,13 @@
-Replace these two files:
+Replace these three files:
 
+cv.html
 assets/css/style.css
 assets/js/ambient-space.js
 
-Fixes included:
-- CV Education timeline is rebuilt as a true vertical sequence; the dot center and line center now share one axis.
-- Meteors now move along their own trail direction.
-- Meteor directions are randomized in 360 degrees.
-- Meteors enter from outside all four screen edges.
-- Star dust and micro-meteorites are brighter, larger, more numerous, and animated.
+Changes:
+1. Education section redesigned as a clean vertical sequence:
+   - 2014/09 – 2018/06 Shanghai Nanyang Model Junior High School
+   - 2018/09 – 2021/06 Shanghai Huadong Model High School
+   - 2023/04 – present Waseda University
+2. Star dust and micro-meteorites are slightly reduced in number but remain clear.
+3. Meteors are now generated continuously with visible motion and 8-direction trajectories.
