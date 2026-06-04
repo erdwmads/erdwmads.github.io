@@ -1,0 +1,12 @@
+Changed files in this patch:
+
+- All .html files (header subtitle updated and project title wording updated)
+- assets/css/style.css
+- assets/js/theme.js
+
+Fixes:
+1. Space Mode button now has a more robust JavaScript toggle and stronger CSS rules.
+2. Header subtitle changed to: Cosmic Mineralogy · Planetary Sciences · Meteoritics.
+3. Graduation research title updated to:
+   Mineralogical Study of Dolomite in the Orgueil CI1 Chondrite: Constraining the Formation Conditions of Primitive Chondritic Constituents
+4. CV timeline marker and vertical line alignment fixed.

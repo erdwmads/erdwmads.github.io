@@ -1497,3 +1497,514 @@ h3 {
   background: rgba(255, 255, 255, .58);
   backdrop-filter: blur(4px);
 }
+
+
+/* ============================================================
+   Final feature set: Paper Shelf, Academic Timeline, Current Focus, Space Mode
+   ============================================================ */
+
+.theme-toggle {
+  border: 1px solid rgba(31, 95, 153, .28);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .66);
+  color: var(--blue-dark);
+  padding: 7px 12px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+
+.theme-toggle:hover {
+  background: rgba(234, 244, 255, .88);
+}
+
+.focus-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(280px, .92fr);
+  gap: 28px;
+  align-items: stretch;
+  padding: 30px;
+  border-radius: 28px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, .86);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(8px);
+}
+
+.focus-card h2 {
+  margin-bottom: 12px;
+}
+
+.focus-list {
+  display: grid;
+  gap: 12px;
+}
+
+.focus-list div,
+.status-card {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .64);
+  padding: 16px 18px;
+}
+
+.focus-list span,
+.status-card span,
+.project-progress span {
+  display: block;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.focus-list strong,
+.status-card strong,
+.project-progress strong {
+  display: block;
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.home-card-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.research-status-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.status-card {
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(6px);
+}
+
+.status-card p {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.project-link-card {
+  display: block;
+  text-decoration: none;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 26px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(6px);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.project-link-card:hover {
+  transform: translateY(-3px);
+  border-color: #a9c8e7;
+  box-shadow: 0 22px 54px rgba(29, 84, 130, .16);
+  color: var(--ink);
+}
+
+.project-topline,
+.project-progress,
+.project-tags,
+.log-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.project-progress {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 18px 0;
+}
+
+.project-progress div {
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(234, 244, 255, .66);
+  border: 1px solid var(--line);
+}
+
+.status-badge,
+.project-tags span,
+.log-tags span {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: var(--blue-soft);
+  color: var(--blue-dark);
+  border: 1px solid var(--line);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.muted-badge {
+  background: rgba(245, 248, 252, .9);
+  color: var(--muted);
+}
+
+.open-project {
+  margin-top: 20px;
+  color: var(--blue);
+  font-weight: 800;
+}
+
+.disabled-project {
+  opacity: .72;
+  cursor: default;
+}
+
+.disabled-project:hover {
+  transform: none;
+  box-shadow: var(--shadow);
+  border-color: var(--line);
+}
+
+.mini-timeline {
+  display: grid;
+  gap: 14px;
+}
+
+.mini-timeline-item {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, .84);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(6px);
+}
+
+.mini-timeline-item span {
+  color: var(--blue-dark);
+  font-weight: 800;
+}
+
+.mini-timeline-item p {
+  margin: 0;
+}
+
+.paper-shelf {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.paper-card {
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, .86);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(8px);
+}
+
+.paper-card h2 {
+  margin-bottom: 10px;
+}
+
+.paper-status {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: var(--blue-soft);
+  color: var(--blue-dark);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.paper-download {
+  display: inline-block;
+  margin-top: 16px;
+  font-weight: 700;
+}
+
+/* Space Mode */
+html[data-theme="space"] {
+  --bg: #06101f;
+  --paper: #0d1a2b;
+  --ink: #eef6ff;
+  --muted: #a9b9ca;
+  --line: rgba(178, 211, 244, .22);
+  --blue: #8bc7ff;
+  --blue-dark: #d8ecff;
+  --blue-soft: rgba(139, 199, 255, .14);
+  --blue-pale: rgba(139, 199, 255, .12);
+  --shadow: 0 18px 54px rgba(0, 0, 0, .32);
+}
+
+html[data-theme="space"] body {
+  color: var(--ink);
+  background: #06101f !important;
+}
+
+html[data-theme="space"] body::before {
+  opacity: .42;
+  filter: saturate(1.1) contrast(1.05);
+}
+
+html[data-theme="space"] .card,
+html[data-theme="space"] .hero-card,
+html[data-theme="space"] .callout,
+html[data-theme="space"] .focus-card,
+html[data-theme="space"] .focus-list div,
+html[data-theme="space"] .status-card,
+html[data-theme="space"] .mini-timeline-item,
+html[data-theme="space"] .paper-card,
+html[data-theme="space"] .log-content,
+html[data-theme="space"] .project-link-card {
+  background: rgba(8, 18, 34, .78) !important;
+  color: var(--ink);
+  backdrop-filter: blur(10px);
+}
+
+html[data-theme="space"] .lead,
+html[data-theme="space"] .muted,
+html[data-theme="space"] p {
+  color: var(--muted);
+}
+
+html[data-theme="space"] h1,
+html[data-theme="space"] h2,
+html[data-theme="space"] h3,
+html[data-theme="space"] .brand strong,
+html[data-theme="space"] .nav a {
+  color: var(--ink);
+}
+
+html[data-theme="space"] .site-header::before,
+html[data-theme="space"] .site-footer::before {
+  background-image:
+    linear-gradient(rgba(6, 16, 31, .32), rgba(6, 16, 31, .58)),
+    url("../img/Solar_System_true_color.jpg") !important;
+}
+
+html[data-theme="space"] .theme-toggle,
+html[data-theme="space"] .nav a[aria-current="page"],
+html[data-theme="space"] .nav a:hover {
+  background: rgba(139, 199, 255, .18) !important;
+  color: var(--ink) !important;
+  border-color: rgba(139, 199, 255, .32);
+}
+
+@media (max-width: 1040px) {
+  .home-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  .focus-card,
+  .research-status-grid,
+  .paper-shelf,
+  .project-grid,
+  .project-progress,
+  .home-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mini-timeline-item {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+
+/* ============================================================
+   Final fixes: header subtitle, robust Space Mode, CV timeline alignment
+   ============================================================ */
+
+.brand span {
+  max-width: 420px;
+  line-height: 1.35;
+}
+
+.theme-toggle {
+  user-select: none;
+}
+
+/* Stronger Space Mode rules. These work with both data-theme and fallback body class. */
+html[data-theme="space"],
+html[data-theme-space] {
+  --bg: #06101f;
+  --paper: #0d1a2b;
+  --ink: #eef6ff;
+  --muted: #a9b9ca;
+  --line: rgba(178, 211, 244, .22);
+  --blue: #8bc7ff;
+  --blue-dark: #d8ecff;
+  --blue-soft: rgba(139, 199, 255, .14);
+  --blue-pale: rgba(139, 199, 255, .12);
+  --shadow: 0 18px 54px rgba(0, 0, 0, .36);
+}
+
+html[data-theme="space"] body,
+html[data-theme-space] body,
+body.space-mode {
+  color: var(--ink) !important;
+  background: #06101f !important;
+}
+
+html[data-theme="space"] body::before,
+html[data-theme-space] body::before,
+body.space-mode::before {
+  opacity: .46 !important;
+  filter: saturate(1.15) contrast(1.08);
+}
+
+html[data-theme="space"] .card,
+html[data-theme-space] .card,
+body.space-mode .card,
+html[data-theme="space"] .hero-card,
+html[data-theme-space] .hero-card,
+body.space-mode .hero-card,
+html[data-theme="space"] .callout,
+html[data-theme-space] .callout,
+body.space-mode .callout,
+html[data-theme="space"] .focus-card,
+html[data-theme-space] .focus-card,
+body.space-mode .focus-card,
+html[data-theme="space"] .focus-list div,
+html[data-theme-space] .focus-list div,
+body.space-mode .focus-list div,
+html[data-theme="space"] .status-card,
+html[data-theme-space] .status-card,
+body.space-mode .status-card,
+html[data-theme="space"] .mini-timeline-item,
+html[data-theme-space] .mini-timeline-item,
+body.space-mode .mini-timeline-item,
+html[data-theme="space"] .paper-card,
+html[data-theme-space] .paper-card,
+body.space-mode .paper-card,
+html[data-theme="space"] .log-content,
+html[data-theme-space] .log-content,
+body.space-mode .log-content,
+html[data-theme="space"] .project-link-card,
+html[data-theme-space] .project-link-card,
+body.space-mode .project-link-card {
+  background: rgba(8, 18, 34, .80) !important;
+  color: var(--ink) !important;
+  border-color: rgba(178, 211, 244, .22) !important;
+  backdrop-filter: blur(10px);
+}
+
+html[data-theme="space"] .lead,
+html[data-theme-space] .lead,
+body.space-mode .lead,
+html[data-theme="space"] .muted,
+html[data-theme-space] .muted,
+body.space-mode .muted,
+html[data-theme="space"] p,
+html[data-theme-space] p,
+body.space-mode p {
+  color: var(--muted) !important;
+}
+
+html[data-theme="space"] h1,
+html[data-theme-space] h1,
+body.space-mode h1,
+html[data-theme="space"] h2,
+html[data-theme-space] h2,
+body.space-mode h2,
+html[data-theme="space"] h3,
+html[data-theme-space] h3,
+body.space-mode h3,
+html[data-theme="space"] .brand strong,
+html[data-theme-space] .brand strong,
+body.space-mode .brand strong,
+html[data-theme="space"] .brand span,
+html[data-theme-space] .brand span,
+body.space-mode .brand span,
+html[data-theme="space"] .nav a,
+html[data-theme-space] .nav a,
+body.space-mode .nav a {
+  color: var(--ink) !important;
+}
+
+html[data-theme="space"] .site-header::before,
+html[data-theme-space] .site-header::before,
+body.space-mode .site-header::before,
+html[data-theme="space"] .site-footer::before,
+html[data-theme-space] .site-footer::before,
+body.space-mode .site-footer::before {
+  background-image:
+    linear-gradient(rgba(6, 16, 31, .24), rgba(6, 16, 31, .58)),
+    url("../img/Solar_System_true_color.jpg") !important;
+}
+
+html[data-theme="space"] .theme-toggle,
+html[data-theme-space] .theme-toggle,
+body.space-mode .theme-toggle,
+html[data-theme="space"] .nav a[aria-current="page"],
+html[data-theme-space] .nav a[aria-current="page"],
+body.space-mode .nav a[aria-current="page"],
+html[data-theme="space"] .nav a:hover,
+html[data-theme-space] .nav a:hover,
+body.space-mode .nav a:hover {
+  background: rgba(139, 199, 255, .20) !important;
+  color: var(--ink) !important;
+  border-color: rgba(139, 199, 255, .34) !important;
+}
+
+/* CV timeline alignment: line and marker share the same center axis. */
+.timeline {
+  position: relative;
+  border-left: 0 !important;
+  padding-left: 42px !important;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--line);
+}
+
+.timeline-item {
+  position: relative;
+}
+
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  left: 0 !important;
+  top: 2px !important;
+  width: 18px !important;
+  height: 18px !important;
+  border-radius: 50%;
+  background: var(--blue);
+  border: 4px solid var(--bg);
+  box-sizing: content-box;
+  z-index: 1;
+}
+
+html[data-theme="space"] .timeline-item::before,
+html[data-theme-space] .timeline-item::before,
+body.space-mode .timeline-item::before {
+  border-color: #06101f;
+}
