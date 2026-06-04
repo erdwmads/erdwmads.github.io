@@ -5599,3 +5599,38 @@ html:not([data-theme="space"]) .action-row a[href="research.html"] {
     background-position: center center !important;
   }
 }
+
+
+/* ============================================================
+   Experimental footer background: Hubble Ultra Deep Field
+   Header remains unchanged. Footer only.
+   ============================================================ */
+
+.site-footer::before {
+  background-image:
+    linear-gradient(rgba(3, 7, 14, .30), rgba(3, 7, 14, .58)),
+    url("../img/Hubble_ultra_deep_field.jpg") !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  filter: saturate(1.06) contrast(1.04) brightness(.92) !important;
+}
+
+html:not([data-theme="space"]) .site-footer::before {
+  background-image:
+    linear-gradient(rgba(242, 247, 252, .10), rgba(3, 7, 14, .34)),
+    url("../img/Hubble_ultra_deep_field.jpg") !important;
+  filter: saturate(1.02) contrast(1.02) brightness(.98) !important;
+}
+
+html[data-theme="space"] .site-footer::before,
+html[data-theme-space] .site-footer::before,
+body.space-mode .site-footer::before {
+  background-image:
+    linear-gradient(rgba(3, 7, 14, .18), rgba(3, 7, 14, .62)),
+    url("../img/Hubble_ultra_deep_field.jpg") !important;
+  filter: saturate(1.10) contrast(1.08) brightness(.90) !important;
+}
+
+.site-footer {
+  overflow: hidden !important;
+}
