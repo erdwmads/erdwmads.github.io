@@ -1,35 +1,24 @@
-# Mads LIU YONG — Academic Minimal Website
+# Mads LIU YONG — Fixed Layout Website
 
-This is a one-page academic personal website for GitHub Pages.
+This version fixes the sidebar layout issue caused by the long affiliation text.
 
 ## Upload method
 
-1. Create a repository named:
+Upload all files in this folder to your GitHub repository:
 
-   `erdwmads.github.io`
+`erdwmads.github.io`
 
-2. Upload all files in this folder, not the zip itself.
-3. Open:
+Do not upload the zip itself.
 
-   `https://erdwmads.github.io`
+## Important files
 
-## Main files
+- `index.html`
+- `assets/css/style.css`
+- `assets/img/profile-placeholder.svg`
 
-- `index.html` — the whole website
-- `assets/css/style.css` — design and layout
-- `assets/img/profile-placeholder.svg` — placeholder portrait
+If you already uploaded the previous version, you can replace only:
 
-## What to edit first
+- `index.html`
+- `assets/css/style.css`
 
-1. Replace the email in the Contact section.
-2. Replace the profile image:
-   - Add your photo to `assets/img/profile.jpg`
-   - Change this line in `index.html`:
-
-     `assets/img/profile-placeholder.svg`
-
-     to:
-
-     `assets/img/profile.jpg`
-
-3. Edit research details when your graduation research topic becomes fixed.
+Then click `Commit changes`.
