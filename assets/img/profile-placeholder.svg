@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1100" viewBox="0 0 900 1100" role="img" aria-label="Profile placeholder">
-  <rect width="900" height="1100" fill="#e7eadf"/>
-  <circle cx="450" cy="365" r="145" fill="#4d5f53" opacity="0.85"/>
-  <path d="M180 940c38-210 160-320 270-320s232 110 270 320" fill="#4d5f53" opacity="0.85"/>
-  <text x="450" y="1015" text-anchor="middle" font-family="Georgia, serif" font-size="42" fill="#1f2523">Mads Lieu Yong</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <rect width="600" height="600" fill="#e4eadf"/>
+  <circle cx="300" cy="220" r="92" fill="#38513f" opacity="0.88"/>
+  <path d="M126 520c28-122 96-184 174-184s146 62 174 184" fill="#38513f" opacity="0.88"/>
+  <text x="300" y="560" text-anchor="middle" font-family="Georgia, serif" font-size="28" fill="#1c1f1d">Mads LIU YONG</text>
 </svg>

@@ -1,42 +1,35 @@
-# Mads Lieu Yong Personal Website
+# Mads LIU YONG — Academic Minimal Website
 
-This is a static personal academic website designed for GitHub Pages.
+This is a one-page academic personal website for GitHub Pages.
 
-## How to publish on GitHub Pages
+## Upload method
 
-1. Create a GitHub account.
-2. Create a new repository named:
+1. Create a repository named:
 
-   `YOUR-GITHUB-USERNAME.github.io`
+   `erdwmads.github.io`
 
-3. Upload all files in this folder to that repository.
-4. Open:
+2. Upload all files in this folder, not the zip itself.
+3. Open:
 
-   `https://YOUR-GITHUB-USERNAME.github.io`
+   `https://erdwmads.github.io`
 
-The site should appear automatically after GitHub Pages finishes building.
+## Main files
+
+- `index.html` — the whole website
+- `assets/css/style.css` — design and layout
+- `assets/img/profile-placeholder.svg` — placeholder portrait
 
 ## What to edit first
 
-- Replace the profile image:
-  - Put your photo in `assets/img/profile.jpg`
-  - In `index.html`, change:
-    `assets/img/profile-placeholder.svg`
-    to:
-    `assets/img/profile.jpg`
+1. Replace the email in the Contact section.
+2. Replace the profile image:
+   - Add your photo to `assets/img/profile.jpg`
+   - Change this line in `index.html`:
 
-- Edit contact information in `contact.html`.
-- Edit research details in `research.html`.
-- Add your real CV PDF later, if needed.
+     `assets/img/profile-placeholder.svg`
 
-## Files
+     to:
 
-- `index.html` — homepage
-- `about.html` — personal and academic background
-- `research.html` — research interests
-- `cv.html` — web CV
-- `notes.html` — study notes
-- `photography.html` — photo gallery
-- `contact.html` — contact page
-- `assets/css/style.css` — website style
-- `assets/img/profile-placeholder.svg` — placeholder portrait
+     `assets/img/profile.jpg`
+
+3. Edit research details when your graduation research topic becomes fixed.
