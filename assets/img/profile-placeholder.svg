@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900" role="img" aria-label="Profile placeholder">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#eaf4ff"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="900" fill="url(#g)"/>
+  <circle cx="450" cy="320" r="128" fill="#1f5f99" opacity="0.88"/>
+  <path d="M210 760c36-180 128-274 240-274s204 94 240 274" fill="#1f5f99" opacity="0.88"/>
+  <circle cx="450" cy="450" r="382" fill="none" stroke="#d9e7f5" stroke-width="18"/>
+  <text x="450" y="830" text-anchor="middle" font-family="Georgia, serif" font-size="42" fill="#153e66">Mads LIU YONG</text>
+</svg>
