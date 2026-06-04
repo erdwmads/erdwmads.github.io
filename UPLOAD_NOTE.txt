@@ -1,11 +1,10 @@
-Replace these three files:
+Replace this file only:
 
-paper-shelf.html
 assets/css/style.css
-assets/js/ambient-space.js
 
-Changes:
-1. Paper Shelf: all Download / Download PDF links and buttons removed.
-2. Star dust: slightly increased count and size.
-3. Micro-meteorites: slightly increased count and size.
-4. Meteor flight logic is kept from the currently working version.
+Change:
+- Block depth contrast is increased.
+- Large outer cards are darker/deeper in Space Mode.
+- Inner information blocks are lighter and more distinct.
+- Small chips/date tags are the brightest layer.
+- Navigation thin glowing underline is untouched.

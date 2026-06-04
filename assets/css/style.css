@@ -4474,3 +4474,313 @@ html body .nav a,
 html body .theme-toggle {
   text-decoration: none !important;
 }
+
+
+/* ============================================================
+   Mobile header / navigation dedicated layout
+   Desktop is untouched. This fixes the mobile nav feeling too high,
+   too large, and proportionally awkward.
+   ============================================================ */
+
+@media (max-width: 760px) {
+  .site-header {
+    min-height: 342px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .site-header::before {
+    min-height: 342px !important;
+  }
+
+  .header-inner {
+    width: 100% !important;
+    min-height: 342px !important;
+    max-width: none !important;
+    padding: 30px 24px 28px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: stretch !important;
+    gap: 22px !important;
+  }
+
+  .brand {
+    align-self: flex-start !important;
+    max-width: 100% !important;
+  }
+
+  .brand strong {
+    font-size: 18px !important;
+    line-height: 1.12 !important;
+    letter-spacing: .20em !important;
+    white-space: normal !important;
+  }
+
+  .brand span {
+    max-width: 330px !important;
+    margin-top: 8px !important;
+    font-size: 12px !important;
+    line-height: 1.45 !important;
+    letter-spacing: .085em !important;
+  }
+
+  .nav {
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-self: stretch !important;
+    align-self: stretch !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    padding: 12px !important;
+    border-radius: 26px !important;
+    background: rgba(5, 14, 26, .46) !important;
+    border: 1px solid rgba(210, 232, 250, .16) !important;
+    box-shadow:
+      0 16px 38px rgba(0, 0, 0, .24),
+      inset 0 1px 0 rgba(255, 255, 255, .08) !important;
+    backdrop-filter: blur(16px) saturate(1.10) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(1.10) !important;
+  }
+
+  .nav a,
+  .theme-toggle {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 10px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    border-radius: 999px !important;
+    font-size: 12px !important;
+    line-height: 1 !important;
+    letter-spacing: .045em !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+  }
+
+  .nav a::after {
+    left: 10px !important;
+    right: 10px !important;
+    bottom: 5px !important;
+  }
+
+  .theme-toggle {
+    grid-column: span 2 !important;
+    justify-content: center !important;
+    text-align: center !important;
+    margin-left: 0 !important;
+    font-weight: 800 !important;
+  }
+
+  html:not([data-theme="space"]) .nav {
+    background: rgba(245, 250, 255, .54) !important;
+    border-color: rgba(72, 112, 150, .15) !important;
+    box-shadow:
+      0 16px 34px rgba(18, 45, 75, .12),
+      inset 0 1px 0 rgba(255,255,255,.34) !important;
+  }
+
+  html[data-theme="space"] .nav,
+  html[data-theme-space] .nav,
+  body.space-mode .nav {
+    background: rgba(4, 12, 24, .56) !important;
+    border-color: rgba(139, 199, 255, .20) !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .header-inner {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  .nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .theme-toggle {
+    grid-column: span 2 !important;
+  }
+}
+
+
+/* ============================================================
+   Stronger block depth contrast
+   Goal:
+   - Big outer cards become visibly deeper / darker.
+   - Inner information blocks become visibly lighter.
+   - Tags and chips stay small and crisp.
+   - Navigation thin glowing underline is untouched.
+   ============================================================ */
+
+/* Large outer cards: stronger base depth */
+html body .hero-card,
+html body .focus-card,
+html body .callout,
+html body .affiliation-card,
+html body .card,
+html body .paper-card,
+html body .project-link-card,
+html body .cv-edu-card,
+html body .research-note-card,
+html body .log-entry,
+html body .status-card,
+html body .slideshow-frame,
+html body .photo-stage {
+  border-color: rgba(255,255,255,.24) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.50), rgba(255,255,255,.22)) !important;
+  box-shadow:
+    0 20px 40px rgba(18, 45, 75, .12),
+    inset 0 1px 0 rgba(255,255,255,.52),
+    inset 0 -1px 0 rgba(255,255,255,.10) !important;
+}
+
+/* Space Mode: large outer cards become clearly darker than inner cards */
+html[data-theme="space"] body .hero-card,
+html[data-theme="space"] body .focus-card,
+html[data-theme="space"] body .callout,
+html[data-theme="space"] body .affiliation-card,
+html[data-theme="space"] body .card,
+html[data-theme="space"] body .paper-card,
+html[data-theme="space"] body .project-link-card,
+html[data-theme="space"] body .cv-edu-card,
+html[data-theme="space"] body .research-note-card,
+html[data-theme="space"] body .log-entry,
+html[data-theme="space"] body .status-card,
+html[data-theme="space"] body .slideshow-frame,
+html[data-theme="space"] body .photo-stage,
+html[data-theme-space] body .hero-card,
+html[data-theme-space] body .focus-card,
+html[data-theme-space] body .callout,
+html[data-theme-space] body .affiliation-card,
+html[data-theme-space] body .card,
+html[data-theme-space] body .paper-card,
+html[data-theme-space] body .project-link-card,
+html[data-theme-space] body .cv-edu-card,
+html[data-theme-space] body .research-note-card,
+html[data-theme-space] body .log-entry,
+html[data-theme-space] body .status-card,
+html[data-theme-space] body .slideshow-frame,
+html[data-theme-space] body .photo-stage,
+body.space-mode .hero-card,
+body.space-mode .focus-card,
+body.space-mode .callout,
+body.space-mode .affiliation-card,
+body.space-mode .card,
+body.space-mode .paper-card,
+body.space-mode .project-link-card,
+body.space-mode .cv-edu-card,
+body.space-mode .research-note-card,
+body.space-mode .log-entry,
+body.space-mode .status-card,
+body.space-mode .slideshow-frame,
+body.space-mode .photo-stage {
+  border-color: rgba(190, 225, 255, .20) !important;
+  background:
+    linear-gradient(180deg, rgba(5, 12, 23, .86), rgba(7, 16, 30, .62)) !important;
+  box-shadow:
+    0 24px 52px rgba(0,0,0,.34),
+    inset 0 1px 0 rgba(255,255,255,.12),
+    inset 0 -1px 0 rgba(255,255,255,.03) !important;
+}
+
+/* Primary sections: slightly more luminous edge, but still deep */
+html[data-theme="space"] body .hero-card,
+html[data-theme="space"] body .focus-card,
+html[data-theme="space"] body .affiliation-card,
+html[data-theme-space] body .hero-card,
+html[data-theme-space] body .focus-card,
+html[data-theme-space] body .affiliation-card,
+body.space-mode .hero-card,
+body.space-mode .focus-card,
+body.space-mode .affiliation-card {
+  background:
+    linear-gradient(180deg, rgba(8, 19, 35, .90), rgba(7, 16, 30, .66)) !important;
+}
+
+/* Inner information blocks: visibly lighter than outer cards */
+html body .focus-list div,
+html body .mini-timeline-item,
+html body .research-status-grid .status-card,
+html body .status-card .status-inner {
+  border-color: rgba(255,255,255,.30) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.64), rgba(255,255,255,.28)) !important;
+  box-shadow:
+    0 12px 24px rgba(18,45,75,.08),
+    inset 0 1px 0 rgba(255,255,255,.58),
+    inset 0 -1px 0 rgba(255,255,255,.10) !important;
+}
+
+/* Space Mode inner blocks: lighter glass panels on darker cards */
+html[data-theme="space"] body .focus-list div,
+html[data-theme="space"] body .mini-timeline-item,
+html[data-theme="space"] body .research-status-grid .status-card,
+html[data-theme="space"] body .status-card .status-inner,
+html[data-theme-space] body .focus-list div,
+html[data-theme-space] body .mini-timeline-item,
+html[data-theme-space] body .research-status-grid .status-card,
+html[data-theme-space] body .status-card .status-inner,
+body.space-mode .focus-list div,
+body.space-mode .mini-timeline-item,
+body.space-mode .research-status-grid .status-card,
+body.space-mode .status-card .status-inner {
+  border-color: rgba(220, 240, 255, .22) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.075)) !important;
+  box-shadow:
+    0 14px 28px rgba(0,0,0,.18),
+    inset 0 1px 0 rgba(255,255,255,.18),
+    inset 0 -1px 0 rgba(255,255,255,.035) !important;
+}
+
+/* Chips / date pills: brightest small layer, clear but not huge */
+html body .pill,
+html body .cv-edu-date,
+html body .research-note-date,
+html body .log-date,
+html body .log-tags span {
+  border-color: rgba(255,255,255,.34) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.70), rgba(255,255,255,.32)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.60),
+    0 6px 14px rgba(18,45,75,.06) !important;
+}
+
+html[data-theme="space"] body .pill,
+html[data-theme="space"] body .cv-edu-date,
+html[data-theme="space"] body .research-note-date,
+html[data-theme="space"] body .log-date,
+html[data-theme="space"] body .log-tags span,
+html[data-theme-space] body .pill,
+html[data-theme-space] body .cv-edu-date,
+html[data-theme-space] body .research-note-date,
+html[data-theme-space] body .log-date,
+html[data-theme-space] body .log-tags span,
+body.space-mode .pill,
+body.space-mode .cv-edu-date,
+body.space-mode .research-note-date,
+body.space-mode .log-date,
+body.space-mode .log-tags span {
+  border-color: rgba(225, 242, 255, .24) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.24), rgba(255,255,255,.10)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.20),
+    0 7px 15px rgba(0,0,0,.12) !important;
+}
+
+/* Section dividers: a little clearer to support the depth hierarchy */
+.section {
+  border-top-color: rgba(210, 230, 246, .16) !important;
+}
+
+html:not([data-theme="space"]) .section {
+  border-top-color: rgba(30, 75, 115, .13) !important;
+}
