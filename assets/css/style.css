@@ -2234,3 +2234,35 @@ body.space-mode .ambient-pebble {
     opacity: 0 !important;
   }
 }
+
+
+/* ============================================================
+   Ambient fine tuning: slightly more/larger star dust and micro-meteorites
+   ============================================================ */
+
+.ambient-dust {
+  opacity: .82 !important;
+  box-shadow:
+    0 0 7px rgba(220, 240, 255, .78),
+    0 0 16px rgba(160, 215, 255, .34) !important;
+}
+
+.ambient-pebble {
+  opacity: .74 !important;
+  border-color: rgba(232, 242, 248, .40) !important;
+  box-shadow:
+    inset -2px -2px 3px rgba(0, 0, 0, .18),
+    0 0 13px rgba(170, 220, 255, .22) !important;
+}
+
+html[data-theme="space"] .ambient-dust,
+html[data-theme-space] .ambient-dust,
+body.space-mode .ambient-dust {
+  opacity: .90 !important;
+}
+
+html[data-theme="space"] .ambient-pebble,
+html[data-theme-space] .ambient-pebble,
+body.space-mode .ambient-pebble {
+  opacity: .82 !important;
+}

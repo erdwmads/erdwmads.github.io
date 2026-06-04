@@ -24,7 +24,7 @@
       const el = document.createElement("span");
       el.className = "ambient-dust";
 
-      const size = rand(2.0, 4.2);
+      const size = rand(2.4, 5.0);
       el.style.left = rand(0, 100) + "vw";
       el.style.top = rand(0, 100) + "vh";
       el.style.setProperty("--dust-size", size + "px");
@@ -40,7 +40,7 @@
       const el = document.createElement("span");
       el.className = "ambient-pebble";
 
-      const w = rand(6, 13);
+      const w = rand(8, 16);
       const h = w * rand(0.65, 1.05);
       el.style.left = rand(0, 100) + "vw";
       el.style.top = rand(0, 100) + "vh";
@@ -114,8 +114,8 @@
     }
 
     // Reduced counts, but visible.
-    for (let i = 0; i < 70; i++) makeDust();
-    for (let i = 0; i < 12; i++) makePebble();
+    for (let i = 0; i < 95; i++) makeDust();
+    for (let i = 0; i < 18; i++) makePebble();
 
     // Make meteors immediately visible after load, then continuously spawn.
     spawnMeteor();
