@@ -3,9 +3,9 @@ Replace these two files:
 assets/css/style.css
 assets/js/ambient-space.js
 
-This version makes the ambient effect much more visible:
-- more star dust
-- more micro-meteorites
-- more meteors
-- brighter trails
-- stronger Space Mode visibility
+This version fixes:
+1. Star dust visibility
+2. Micro-meteorite visibility
+3. Meteor direction follows the visual trail direction
+4. Meteors are distributed across the full screen
+5. Meteors now enter from beyond the screen edge
