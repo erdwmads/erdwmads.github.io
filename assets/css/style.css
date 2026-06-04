@@ -5566,245 +5566,36 @@ html:not([data-theme="space"]) .action-row a[href="research.html"] {
 
 
 /* ============================================================
-   Mobile navigation: transparent over the page background
-   The mobile nav no longer has its own glass panel/background.
-   It visually shares the same asteroid/page background.
-   Desktop and footer are unchanged.
+   Mobile header background revert
+   Keep the mobile navigation layout and Home button redesign,
+   but restore the Solar System header image on mobile.
+   Footer remains unchanged.
    ============================================================ */
 
 @media (max-width: 760px) {
-  .nav {
-    background: transparent !important;
-    background-image: none !important;
-    border: 0 !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    padding: 0 !important;
-    border-radius: 0 !important;
-    gap: 9px 12px !important;
+  .site-header::before {
+    background-image:
+      linear-gradient(rgba(5, 12, 23, .22), rgba(5, 12, 23, .48)),
+      url("../img/Solar_System_true_color.jpg") !important;
+    background-size: cover !important;
+    background-position: center center !important;
   }
 
-  html:not([data-theme="space"]) .nav,
-  html[data-theme="space"] .nav,
-  html[data-theme-space] .nav,
-  body.space-mode .nav {
-    background: transparent !important;
-    background-image: none !important;
-    border: 0 !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+  html:not([data-theme="space"]) .site-header::before {
+    background-image:
+      linear-gradient(rgba(235, 242, 248, .18), rgba(235, 242, 248, .38)),
+      url("../img/Solar_System_true_color.jpg") !important;
+    background-size: cover !important;
+    background-position: center center !important;
   }
 
-  .nav a {
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
-    color: rgba(238, 246, 255, .92) !important;
-    text-shadow:
-      0 2px 10px rgba(0,0,0,.46),
-      0 0 18px rgba(180,220,255,.16) !important;
-  }
-
-  .nav a:hover,
-  .nav a[aria-current="page"] {
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
-    color: #ffffff !important;
-  }
-
-  /* Preserve the thin glowing underline as the active-state cue. */
-  .nav a::after {
-    bottom: 3px !important;
-    left: 8px !important;
-    right: 8px !important;
-    height: 2px !important;
-  }
-
-  .nav a[aria-current="page"]::after,
-  .nav a:hover::after {
-    opacity: 1 !important;
-    transform: scaleX(1) !important;
-  }
-
-  /* Mode button remains usable, but no big surrounding nav panel. */
-  .theme-toggle {
-    background:
-      linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.045)) !important;
-    border: 1px solid rgba(220, 240, 255, .22) !important;
-    box-shadow:
-      0 10px 22px rgba(0,0,0,.18),
-      inset 0 1px 0 rgba(255,255,255,.14) !important;
-    backdrop-filter: blur(10px) saturate(1.05) !important;
-    -webkit-backdrop-filter: blur(10px) saturate(1.05) !important;
-    color: rgba(246, 251, 255, .96) !important;
-    text-shadow: 0 2px 10px rgba(0,0,0,.36) !important;
-  }
-
-  html:not([data-theme="space"]) .nav a {
-    color: rgba(10, 26, 44, .88) !important;
-    text-shadow:
-      0 1px 10px rgba(255,255,255,.54),
-      0 0 12px rgba(255,255,255,.28) !important;
-  }
-
-  html:not([data-theme="space"]) .nav a:hover,
-  html:not([data-theme="space"]) .nav a[aria-current="page"] {
-    color: rgba(4, 18, 34, .96) !important;
-  }
-
-  html:not([data-theme="space"]) .theme-toggle {
-    color: rgba(5, 21, 38, .92) !important;
-    background:
-      linear-gradient(180deg, rgba(255,255,255,.44), rgba(255,255,255,.16)) !important;
-    border-color: rgba(20, 70, 112, .16) !important;
-    box-shadow:
-      0 10px 22px rgba(18,45,75,.10),
-      inset 0 1px 0 rgba(255,255,255,.34) !important;
-    text-shadow: 0 1px 10px rgba(255,255,255,.50) !important;
-  }
-}
-
-
-/* ============================================================
-   HARD OVERRIDE: truly transparent mobile navigation
-   This removes the mobile navigation container panel and individual
-   filled link backgrounds. The nav now sits directly on the same
-   header/page background. Footer and desktop remain unchanged.
-   ============================================================ */
-
-@media screen and (max-width: 760px) {
-  body .site-header .header-inner .nav,
-  html body .site-header .header-inner nav.nav,
-  html:not([data-theme="space"]) body .site-header .header-inner .nav,
-  html[data-theme="space"] body .site-header .header-inner .nav,
-  html[data-theme-space] body .site-header .header-inner .nav,
-  body.space-mode .site-header .header-inner .nav {
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
-    border: 0 !important;
-    outline: 0 !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    border-radius: 0 !important;
-    padding: 0 !important;
-  }
-
-  body .site-header .header-inner .nav::before,
-  body .site-header .header-inner .nav::after {
-    display: none !important;
-    content: none !important;
-    background: none !important;
-    box-shadow: none !important;
-  }
-
-  body .site-header .nav a,
-  html body .site-header .nav a,
-  html:not([data-theme="space"]) body .site-header .nav a,
-  html[data-theme="space"] body .site-header .nav a,
-  html[data-theme-space] body .site-header .nav a,
-  body.space-mode .site-header .nav a {
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
-    border: 0 !important;
-    outline: 0 !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    border-radius: 0 !important;
-    color: rgba(244, 249, 255, .94) !important;
-    text-shadow:
-      0 2px 10px rgba(0,0,0,.54),
-      0 0 18px rgba(175,220,255,.18) !important;
-  }
-
-  body .site-header .nav a:hover,
-  body .site-header .nav a[aria-current="page"],
-  html:not([data-theme="space"]) body .site-header .nav a:hover,
-  html:not([data-theme="space"]) body .site-header .nav a[aria-current="page"],
-  html[data-theme="space"] body .site-header .nav a:hover,
-  html[data-theme="space"] body .site-header .nav a[aria-current="page"],
-  html[data-theme-space] body .site-header .nav a:hover,
-  html[data-theme-space] body .site-header .nav a[aria-current="page"],
-  body.space-mode .site-header .nav a:hover,
-  body.space-mode .site-header .nav a[aria-current="page"] {
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
-    border: 0 !important;
-    box-shadow: none !important;
-    color: #ffffff !important;
-  }
-
-  /* Active cue: only the thin glowing underline remains. */
-  body .site-header .nav a::after {
-    left: 4px !important;
-    right: 4px !important;
-    bottom: 2px !important;
-    height: 2px !important;
-    background: linear-gradient(
-      90deg,
-      rgba(139,199,255,0),
-      rgba(139,199,255,.98),
-      rgba(139,199,255,0)
-    ) !important;
-    box-shadow: 0 0 10px rgba(139,199,255,.42) !important;
-  }
-
-  /* Mode button: no wide filled bar. It becomes a compact outline command. */
-  body .site-header .theme-toggle,
-  html body .site-header .theme-toggle,
-  html:not([data-theme="space"]) body .site-header .theme-toggle,
-  html[data-theme="space"] body .site-header .theme-toggle,
-  html[data-theme-space] body .site-header .theme-toggle,
-  body.space-mode .site-header .theme-toggle {
-    width: auto !important;
-    min-width: 112px !important;
-    max-width: none !important;
-    grid-column: auto !important;
-    justify-self: start !important;
-    padding: 0 14px !important;
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
-    border: 1px solid rgba(220,240,255,.34) !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    color: rgba(244,249,255,.94) !important;
-    text-shadow:
-      0 2px 10px rgba(0,0,0,.50),
-      0 0 16px rgba(175,220,255,.16) !important;
-  }
-
-  body .site-header .theme-toggle:hover,
-  html body .site-header .theme-toggle:hover {
-    background: rgba(255,255,255,.06) !important;
-    border-color: rgba(220,240,255,.46) !important;
-  }
-
-  html:not([data-theme="space"]) body .site-header .nav a {
-    color: rgba(5, 21, 38, .92) !important;
-    text-shadow:
-      0 1px 10px rgba(255,255,255,.72),
-      0 0 14px rgba(255,255,255,.38) !important;
-  }
-
-  html:not([data-theme="space"]) body .site-header .nav a:hover,
-  html:not([data-theme="space"]) body .site-header .nav a[aria-current="page"] {
-    color: rgba(3, 14, 28, .98) !important;
-  }
-
-  html:not([data-theme="space"]) body .site-header .theme-toggle {
-    color: rgba(5, 21, 38, .92) !important;
-    border-color: rgba(5, 21, 38, .24) !important;
-    text-shadow:
-      0 1px 10px rgba(255,255,255,.68),
-      0 0 14px rgba(255,255,255,.32) !important;
+  html[data-theme="space"] .site-header::before,
+  html[data-theme-space] .site-header::before,
+  body.space-mode .site-header::before {
+    background-image:
+      linear-gradient(rgba(5, 12, 23, .20), rgba(5, 12, 23, .52)),
+      url("../img/Solar_System_true_color.jpg") !important;
+    background-size: cover !important;
+    background-position: center center !important;
   }
 }
