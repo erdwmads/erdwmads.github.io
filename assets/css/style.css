@@ -2996,3 +2996,159 @@ html:not([data-theme="space"]) .nav a:hover,
 html:not([data-theme="space"]) .nav a[aria-current="page"] {
   color: rgba(4, 17, 32, .96) !important;
 }
+
+
+/* ============================================================
+   Research Log timeline redesign
+   Removes the dot-and-line vertical timeline because it can misalign
+   across devices. Replaces it with stable dated research-note cards.
+   ============================================================ */
+
+.research-notes-section {
+  align-items: start !important;
+}
+
+.research-note-list {
+  display: grid;
+  gap: 16px;
+}
+
+.research-note-card {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 22px;
+  padding: 22px 24px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background:
+    linear-gradient(135deg, rgba(31, 95, 153, .08), rgba(255, 255, 255, .80));
+  box-shadow: 0 14px 34px rgba(18, 45, 75, .08);
+  backdrop-filter: blur(8px);
+}
+
+.research-note-date {
+  align-self: start;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: var(--blue-soft);
+  border: 1px solid var(--line);
+  color: var(--blue-dark);
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: .045em;
+  white-space: nowrap;
+}
+
+.research-note-body h3 {
+  margin-bottom: 10px;
+}
+
+.research-note-body p {
+  margin-bottom: 12px;
+}
+
+.research-note-body p:last-child {
+  margin-bottom: 0;
+}
+
+/* Neutralise old vertical timeline visuals inside research pages if any remain. */
+.research-page .timeline,
+.research-log-page .timeline,
+.research-detail-page .timeline,
+main .timeline.research-timeline {
+  border-left: 0 !important;
+  padding-left: 0 !important;
+}
+
+.research-page .timeline::before,
+.research-log-page .timeline::before,
+.research-detail-page .timeline::before,
+main .timeline.research-timeline::before,
+.research-page .timeline-item::before,
+.research-log-page .timeline-item::before,
+.research-detail-page .timeline-item::before,
+main .timeline.research-timeline .timeline-item::before {
+  display: none !important;
+  content: none !important;
+}
+
+/* If a legacy log-entry block is still present, make it a card instead of a line/dot timeline. */
+.log-entry {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 22px;
+  padding: 22px 24px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background:
+    linear-gradient(135deg, rgba(31, 95, 153, .08), rgba(255, 255, 255, .80));
+  box-shadow: 0 14px 34px rgba(18, 45, 75, .08);
+  backdrop-filter: blur(8px);
+}
+
+.log-date {
+  position: static !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  align-self: start !important;
+  justify-self: start !important;
+  padding: 7px 12px !important;
+  border-radius: 999px !important;
+  background: var(--blue-soft) !important;
+  border: 1px solid var(--line) !important;
+  color: var(--blue-dark) !important;
+  font-size: 13px !important;
+  font-weight: 850 !important;
+  letter-spacing: .045em !important;
+  white-space: nowrap !important;
+}
+
+.log-date::before,
+.log-date::after,
+.log-entry::before,
+.log-entry::after {
+  display: none !important;
+  content: none !important;
+}
+
+html[data-theme="space"] .research-note-card,
+html[data-theme-space] .research-note-card,
+body.space-mode .research-note-card,
+html[data-theme="space"] .log-entry,
+html[data-theme-space] .log-entry,
+body.space-mode .log-entry {
+  background:
+    linear-gradient(135deg, rgba(139, 199, 255, .12), rgba(8, 18, 34, .82)) !important;
+  border-color: rgba(178, 211, 244, .24) !important;
+  box-shadow: 0 18px 54px rgba(0, 0, 0, .28) !important;
+}
+
+html[data-theme="space"] .research-note-date,
+html[data-theme-space] .research-note-date,
+body.space-mode .research-note-date,
+html[data-theme="space"] .log-date,
+html[data-theme-space] .log-date,
+body.space-mode .log-date {
+  color: #eaf6ff !important;
+  background: rgba(139, 199, 255, .18) !important;
+  border-color: rgba(139, 199, 255, .30) !important;
+}
+
+@media (max-width: 760px) {
+  .research-note-card,
+  .log-entry {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    padding: 18px 18px !important;
+  }
+
+  .research-note-date,
+  .log-date {
+    justify-self: start !important;
+  }
+}
