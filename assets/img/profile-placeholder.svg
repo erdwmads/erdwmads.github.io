@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1100" viewBox="0 0 900 1100" role="img" aria-label="Profile placeholder">
+  <rect width="900" height="1100" fill="#e7eadf"/>
+  <circle cx="450" cy="365" r="145" fill="#4d5f53" opacity="0.85"/>
+  <path d="M180 940c38-210 160-320 270-320s232 110 270 320" fill="#4d5f53" opacity="0.85"/>
+  <text x="450" y="1015" text-anchor="middle" font-family="Georgia, serif" font-size="42" fill="#1f2523">Mads Lieu Yong</text>
+</svg>
