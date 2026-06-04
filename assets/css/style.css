@@ -1174,3 +1174,270 @@ h3 {
     max-width: 100%;
   }
 }
+
+
+/* ============================================================
+   Photography slideshow / cinematic auto display
+   Files shown by default:
+   assets/img/photo01.jpg
+   assets/img/photo02.jpg
+   assets/img/photo03.jpg
+   ============================================================ */
+
+.photo-experience {
+  border-top: 1px solid var(--line);
+}
+
+.slideshow-shell {
+  display: grid;
+  gap: 22px;
+}
+
+.slideshow-stage {
+  position: relative;
+  width: min(100%, 1040px);
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 28px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.photo-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center center;
+  opacity: 0;
+  transform: scale(1.035);
+  transition: opacity 900ms ease, transform 1800ms ease;
+}
+
+.photo-slide.is-active {
+  opacity: 1;
+  transform: scale(1);
+  z-index: 1;
+}
+
+.slide-control {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(255, 255, 255, .62);
+  border-radius: 999px;
+  background: rgba(16, 32, 51, .32);
+  color: #fff;
+  font-size: 34px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transform: translateY(-50%);
+  backdrop-filter: blur(8px);
+  transition: background .2s ease, transform .2s ease;
+}
+
+.slide-control:hover {
+  background: rgba(16, 32, 51, .54);
+  transform: translateY(-50%) scale(1.04);
+}
+
+.slide-control.prev {
+  left: 18px;
+}
+
+.slide-control.next {
+  right: 18px;
+}
+
+.slide-status {
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .78);
+  color: var(--blue-dark);
+  border: 1px solid rgba(255, 255, 255, .74);
+  font-size: 13px;
+  font-weight: 700;
+  backdrop-filter: blur(8px);
+}
+
+.filmstrip {
+  width: min(100%, 760px);
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.film-thumb {
+  width: 92px;
+  aspect-ratio: 16 / 10;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 2px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  opacity: .62;
+  transition: opacity .2s ease, border-color .2s ease, transform .2s ease;
+}
+
+.film-thumb img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.film-thumb:hover,
+.film-thumb.is-active {
+  opacity: 1;
+  border-color: var(--blue);
+  transform: translateY(-2px);
+}
+
+.photo-marquee {
+  width: 100%;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  margin-top: 6px;
+}
+
+.photo-marquee-track {
+  display: flex;
+  gap: 14px;
+  width: max-content;
+  animation: photoMarquee 34s linear infinite;
+}
+
+.photo-marquee-track img {
+  width: 220px;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  box-shadow: 0 12px 26px rgba(29, 84, 130, .10);
+  opacity: .82;
+}
+
+.slideshow-shell:hover .photo-marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes photoMarquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-50% - 21px));
+  }
+}
+
+@media (max-width: 860px) {
+  .slideshow-stage {
+    aspect-ratio: 4 / 5;
+    border-radius: 22px;
+  }
+
+  .slide-control {
+    width: 40px;
+    height: 40px;
+    font-size: 28px;
+  }
+
+  .photo-marquee-track img {
+    width: 170px;
+  }
+}
+
+
+/* ============================================================
+   Universal slideshow ratio fix
+   Works with horizontal, vertical, square, and mixed-ratio photos.
+   The main slide is NOT distorted and NOT cropped.
+   A blurred background from the current photo fills the empty space.
+   ============================================================ */
+
+.slideshow-stage {
+  --current-photo: none;
+  height: clamp(420px, 68vh, 720px) !important;
+  aspect-ratio: auto !important;
+  background: rgba(8, 18, 32, 0.86) !important;
+  isolation: isolate;
+}
+
+/* Dynamic blurred background set by photography.js */
+.slideshow-stage::before {
+  content: "";
+  position: absolute;
+  inset: -34px;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(8, 18, 32, .24), rgba(8, 18, 32, .38)),
+    var(--current-photo);
+  background-size: cover;
+  background-position: center center;
+  filter: blur(24px);
+  transform: scale(1.05);
+  opacity: .58;
+}
+
+/* Soft dark veil for readability and depth */
+.slideshow-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,.10), transparent 54%),
+    linear-gradient(180deg, rgba(8,18,32,.12), rgba(8,18,32,.28));
+}
+
+/* Main image keeps its original ratio */
+.photo-slide {
+  z-index: 1;
+  object-fit: contain !important;
+  object-position: center center;
+  padding: 18px;
+}
+
+/* Keep active image above the dynamic background */
+.photo-slide.is-active {
+  z-index: 2;
+}
+
+/* Controls above everything */
+.slide-control,
+.slide-status {
+  z-index: 4;
+}
+
+@media (max-width: 860px) {
+  .slideshow-stage {
+    height: min(72vh, 620px) !important;
+    min-height: 420px;
+  }
+
+  .photo-slide {
+    padding: 12px;
+  }
+}
