@@ -281,13 +281,30 @@ h3 {
 
 .photo-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 18px;
   margin-top: 22px;
+  align-items: start;
+}
+
+/* Gallery image safety rule:
+   Even if you insert plain <img> tags, they will not explode in size. */
+.photo-grid img,
+.gallery-photo {
+  width: 100%;
+  height: 360px;
+  max-width: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  background: var(--paper);
 }
 
 .photo-placeholder {
-  aspect-ratio: 4 / 5;
+  height: 360px;
   display: grid;
   place-items: center;
   text-align: center;
@@ -298,6 +315,14 @@ h3 {
     var(--paper);
   border: 1px dashed #a9c8e7;
   border-radius: 18px;
+}
+
+@media (max-width: 860px) {
+  .photo-grid img,
+  .gallery-photo,
+  .photo-placeholder {
+    height: 300px;
+  }
 }
 
 .del {
@@ -388,23 +413,11 @@ code {
     max-width: 360px;
   }
 
-  .grid,
-  .photo-grid {
+  .grid {
     grid-template-columns: 1fr;
   }
 
   h1 {
     font-size: clamp(36px, 11vw, 52px);
   }
-}
-
-.gallery-photo {
-  width: 100%;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
-  display: block;
-  border-radius: 18px;
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow);
-  background: var(--paper);
 }
