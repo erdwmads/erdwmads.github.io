@@ -1,0 +1,19 @@
+Required image paths for this website version:
+
+Homepage portrait:
+- assets/img/profile.jpg
+
+Photography page:
+- assets/img/photo1.jpg
+- assets/img/photo2.jpg
+- assets/img/photo3.jpg
+
+Header/footer background:
+- assets/img/Solar_System_true_color.jpg
+
+Main background:
+- assets/img/asteroid-bennu.jpg
+
+Important:
+File names are case-sensitive on GitHub Pages.
+photo1.jpg is different from Photo1.jpg, photo1.JPG, and photo01.jpg.

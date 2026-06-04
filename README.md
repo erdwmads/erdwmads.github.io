@@ -52,3 +52,34 @@ To add a new research log entry, open `research-log.html`, copy one `<article cl
 - Header wording updated from Earth Sciences to Planetary Sciences.
 - Homepage interest pills updated to:
   Cosmic Mineralogy / CI Chondrite / Ryugu-Bennu / Astromaterials Science / SEM-EPMA-TEM.
+
+
+## Homepage photo fix
+
+The homepage now expects your portrait at:
+
+`assets/img/profile.jpg`
+
+Upload your own image with exactly this filename.
+
+If you want to use another filename, edit `index.html` and change:
+
+`assets/img/profile.jpg`
+
+to your actual image path.
+
+The CSS now forces the homepage portrait into a square card and prevents the original image size from breaking the layout.
+
+
+## Final image paths
+
+This version expects:
+
+- Homepage portrait: `assets/img/profile.jpg`
+- Photography page: `assets/img/photo1.jpg`
+- Photography page: `assets/img/photo2.jpg`
+- Photography page: `assets/img/photo3.jpg`
+
+The gallery is cropped and aligned automatically by CSS.
+
+If images do not show, check the exact file names. GitHub Pages is case-sensitive.
