@@ -23,3 +23,32 @@ This version fixes the footer overlap issue, changes the design to a clean blue-
 
 - Replace the public email in `contact.html`.
 - Replace `assets/img/profile-placeholder.svg` with your own image if needed.
+
+
+## Photo page ratio fix
+
+This version adds safe CSS for the photography page:
+
+- `.photo-grid img` is automatically limited to the gallery width.
+- Images use `object-fit: cover`.
+- Gallery cards stay at a fixed visual height.
+- Plain `<img>` tags will not become huge even if no class is added.
+
+
+## Research Log
+
+This version adds:
+
+- `research-log.html`
+- Navigation link: Research Log
+- CSS classes for chronological timeline entries
+- `research-log-entry-template.html`
+
+To add a new research log entry, open `research-log.html`, copy one `<article class="log-entry">...</article>` block, paste it above older entries, and update the date, title, content, and tags.
+
+
+## 2026-06 update
+
+- Header wording updated from Earth Sciences to Planetary Sciences.
+- Homepage interest pills updated to:
+  Cosmic Mineralogy / CI Chondrite / Ryugu-Bennu / Astromaterials Science / SEM-EPMA-TEM.
