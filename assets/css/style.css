@@ -2266,3 +2266,247 @@ html[data-theme-space] .ambient-pebble,
 body.space-mode .ambient-pebble {
   opacity: .82 !important;
 }
+
+
+/* ============================================================
+   Overall compact scale
+   Approximate visual size: 80–85% of the previous layout.
+   This avoids browser zoom/transform and keeps responsive layout stable.
+   ============================================================ */
+
+:root {
+  --max: 960px;
+}
+
+body {
+  font-size: 14.5px;
+}
+
+.main {
+  padding: 42px 20px 56px !important;
+}
+
+.header-inner,
+.footer-inner {
+  max-width: var(--max);
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+}
+
+.site-header {
+  min-height: 132px !important;
+}
+
+.site-header::before {
+  min-height: 132px !important;
+}
+
+.brand strong {
+  font-size: 19px !important;
+}
+
+.brand span {
+  font-size: 12px !important;
+}
+
+.nav {
+  gap: 8px !important;
+}
+
+.nav a,
+.theme-toggle {
+  font-size: 12px !important;
+  padding: 7px 10px !important;
+}
+
+.hero {
+  grid-template-columns: minmax(0, 1.18fr) 285px !important;
+  gap: 34px !important;
+  padding: 14px 0 22px !important;
+}
+
+h1 {
+  font-size: clamp(34px, 5.1vw, 58px) !important;
+  letter-spacing: -1.1px !important;
+}
+
+h2 {
+  font-size: 28px !important;
+}
+
+h3 {
+  font-size: 19px !important;
+}
+
+.lead {
+  max-width: 720px !important;
+  font-size: clamp(17px, 1.75vw, 21px) !important;
+  line-height: 1.52 !important;
+}
+
+.section {
+  margin-top: 46px !important;
+}
+
+.two-col {
+  grid-template-columns: 190px minmax(0, 1fr) !important;
+  gap: 32px !important;
+}
+
+.section-label {
+  font-size: 11px !important;
+  padding-top: 7px !important;
+}
+
+.hero-card,
+.card,
+.callout {
+  border-radius: 20px !important;
+}
+
+.hero-card,
+.card {
+  padding: 20px !important;
+}
+
+.callout,
+.focus-card {
+  padding: 24px !important;
+}
+
+.avatar {
+  border-radius: 18px !important;
+}
+
+.affiliation-card {
+  padding: 16px !important;
+}
+
+.pills {
+  gap: 8px !important;
+  margin-top: 18px !important;
+}
+
+.pill {
+  font-size: 12.5px !important;
+  padding: 6px 11px !important;
+}
+
+.current-focus-section {
+  margin-top: 42px !important;
+}
+
+.focus-card {
+  gap: 22px !important;
+}
+
+.focus-list {
+  gap: 11px !important;
+}
+
+.focus-list div {
+  padding: 14px !important;
+  border-radius: 16px !important;
+}
+
+.mini-timeline {
+  gap: 10px !important;
+}
+
+.mini-timeline-item {
+  padding: 14px 16px !important;
+  border-radius: 16px !important;
+}
+
+.research-status-grid,
+.project-grid,
+.paper-grid,
+.photo-grid {
+  gap: 14px !important;
+}
+
+.status-card,
+.project-link-card,
+.paper-card {
+  padding: 18px !important;
+  border-radius: 18px !important;
+}
+
+.cv-photo {
+  width: 76% !important;
+  max-width: 740px !important;
+  margin-top: 22px !important;
+  margin-bottom: 6px !important;
+}
+
+.cv-education-cards {
+  gap: 13px !important;
+}
+
+.cv-edu-card {
+  padding: 18px 20px !important;
+  border-radius: 18px !important;
+}
+
+.cv-edu-date {
+  font-size: 12px !important;
+  padding: 5px 10px !important;
+}
+
+.photo-grid img,
+.gallery-photo,
+.photo-placeholder {
+  height: 310px !important;
+  border-radius: 16px !important;
+}
+
+/* Photography slideshow compacting without breaking mixed-ratio images */
+.photo-stage {
+  max-height: 72vh !important;
+}
+
+.slideshow-frame {
+  max-height: 72vh !important;
+}
+
+.slide-image {
+  max-height: 72vh !important;
+}
+
+.site-footer {
+  min-height: 104px !important;
+  margin-top: 52px !important;
+}
+
+@media (max-width: 860px) {
+  :root {
+    --max: 100%;
+  }
+
+  body {
+    font-size: 14px;
+  }
+
+  .main {
+    padding: 34px 18px 48px !important;
+  }
+
+  .hero {
+    grid-template-columns: 1fr !important;
+  }
+
+  .two-col {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .cv-photo {
+    width: 100% !important;
+  }
+
+  .photo-grid img,
+  .gallery-photo,
+  .photo-placeholder {
+    height: 270px !important;
+  }
+}
