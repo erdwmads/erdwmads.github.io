@@ -6657,3 +6657,44 @@ html:not([data-theme="space"]) .mission-lightbox__btn {
     border-radius: 9px !important;
   }
 }
+
+
+/* ============================================================
+   Research Log auto-sync marker
+   The Graduation Research card now reads the latest Mission Log
+   entry and updates its Latest Update / Current Stage on load.
+   ============================================================ */
+
+.project-sync-note {
+  margin: -4px 0 18px !important;
+  color: var(--muted) !important;
+  font-size: 11px !important;
+  letter-spacing: .035em !important;
+}
+
+.project-progress[data-mission-project="graduation"] strong {
+  transition: opacity .18s ease, transform .18s ease !important;
+}
+
+.project-progress[data-mission-project="graduation"].is-syncing strong {
+  opacity: .58 !important;
+  transform: translateY(1px) !important;
+}
+
+.project-progress[data-mission-project="graduation"].is-synced + .project-sync-note::before {
+  content: "SYNCED · " !important;
+  color: var(--blue) !important;
+  font-weight: 850 !important;
+  letter-spacing: .09em !important;
+}
+
+html:not([data-theme="space"]) .project-progress[data-mission-project="graduation"].is-synced + .project-sync-note::before {
+  color: var(--blue-dark) !important;
+}
+
+@media (max-width: 760px) {
+  .project-sync-note {
+    margin: -2px 0 14px !important;
+    font-size: 10.5px !important;
+  }
+}
