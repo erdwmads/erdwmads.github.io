@@ -4148,3 +4148,329 @@ a.button {
 .theme-toggle {
   text-decoration: none !important;
 }
+
+
+/* ============================================================
+   Liquid Glass contrast + link correction
+   Final direction:
+   - Glass texture stays.
+   - Ordinary text links are text links, not glass buttons.
+   - Large blocks and inner blocks use visible dark/light hierarchy.
+   - Info blocks keep rational rectangular layout, not huge pills.
+   ============================================================ */
+
+/* ---------- 1. Strong reset: ordinary content links ---------- */
+/* This intentionally overrides the earlier broad glass-button rule. */
+html body main a:not(.button):not(.btn):not(.project-link-card):not(.paper-card):not(.photo-thumb):not(.brand),
+html body .affiliation-card a,
+html body .card a:not(.button):not(.btn),
+html body .hero-card a:not(.button):not(.btn),
+html body .callout a:not(.button):not(.btn),
+html body .focus-card a:not(.button):not(.btn),
+html body .paper-card a:not(.button):not(.btn),
+html body .cv-edu-card a:not(.button):not(.btn),
+html body .research-note-card a:not(.button):not(.btn),
+html body .log-entry a:not(.button):not(.btn) {
+  display: inline !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transform: none !important;
+  line-height: inherit !important;
+  font: inherit !important;
+  color: #9fd0ff !important;
+  text-decoration: underline !important;
+  text-decoration-thickness: 1px !important;
+  text-underline-offset: 3px !important;
+}
+
+html:not([data-theme="space"]) body main a:not(.button):not(.btn):not(.project-link-card):not(.paper-card):not(.photo-thumb):not(.brand),
+html:not([data-theme="space"]) body .affiliation-card a,
+html:not([data-theme="space"]) body .card a:not(.button):not(.btn),
+html:not([data-theme="space"]) body .hero-card a:not(.button):not(.btn),
+html:not([data-theme="space"]) body .callout a:not(.button):not(.btn),
+html:not([data-theme="space"]) body .focus-card a:not(.button):not(.btn),
+html:not([data-theme="space"]) body .paper-card a:not(.button):not(.btn),
+html:not([data-theme="space"]) body .cv-edu-card a:not(.button):not(.btn),
+html:not([data-theme="space"]) body .research-note-card a:not(.button):not(.btn),
+html:not([data-theme="space"]) body .log-entry a:not(.button):not(.btn) {
+  color: #174f83 !important;
+}
+
+/* Preserve card-as-link blocks. */
+html body main a.project-link-card,
+html body main a.paper-card {
+  text-decoration: none !important;
+}
+
+/* ---------- 2. Clear depth system ---------- */
+:root {
+  --lg-light-deep: linear-gradient(180deg, rgba(255,255,255,.62), rgba(255,255,255,.30));
+  --lg-light-mid: linear-gradient(180deg, rgba(255,255,255,.44), rgba(255,255,255,.20));
+  --lg-light-shallow: linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,.12));
+
+  --lg-space-deep: linear-gradient(180deg, rgba(8,17,31,.74), rgba(8,17,31,.46));
+  --lg-space-mid: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.045));
+  --lg-space-shallow: linear-gradient(180deg, rgba(255,255,255,.20), rgba(255,255,255,.07));
+
+  --lg-border-light-strong: rgba(255,255,255,.34);
+  --lg-border-light-soft: rgba(255,255,255,.20);
+  --lg-border-space-strong: rgba(207,232,255,.20);
+  --lg-border-space-soft: rgba(255,255,255,.11);
+}
+
+/* Large container cards: deeper glass, not flat grey. */
+html body .hero-card,
+html body .focus-card,
+html body .callout,
+html body .affiliation-card,
+html body .card,
+html body .paper-card,
+html body .project-link-card,
+html body .cv-edu-card,
+html body .research-note-card,
+html body .log-entry,
+html body .status-card,
+html body .slideshow-frame,
+html body .photo-stage {
+  border-radius: 20px !important;
+  border: 1px solid var(--lg-border-light-strong) !important;
+  background: var(--lg-light-mid) !important;
+  box-shadow:
+    0 18px 34px rgba(18, 45, 75, .10),
+    inset 0 1px 0 rgba(255,255,255,.48),
+    inset 0 -1px 0 rgba(255,255,255,.10) !important;
+  backdrop-filter: blur(18px) saturate(1.06) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.06) !important;
+}
+
+html[data-theme="space"] body .hero-card,
+html[data-theme="space"] body .focus-card,
+html[data-theme="space"] body .callout,
+html[data-theme="space"] body .affiliation-card,
+html[data-theme="space"] body .card,
+html[data-theme="space"] body .paper-card,
+html[data-theme="space"] body .project-link-card,
+html[data-theme="space"] body .cv-edu-card,
+html[data-theme="space"] body .research-note-card,
+html[data-theme="space"] body .log-entry,
+html[data-theme="space"] body .status-card,
+html[data-theme="space"] body .slideshow-frame,
+html[data-theme="space"] body .photo-stage,
+html[data-theme-space] body .hero-card,
+html[data-theme-space] body .focus-card,
+html[data-theme-space] body .callout,
+html[data-theme-space] body .affiliation-card,
+html[data-theme-space] body .card,
+html[data-theme-space] body .paper-card,
+html[data-theme-space] body .project-link-card,
+html[data-theme-space] body .cv-edu-card,
+html[data-theme-space] body .research-note-card,
+html[data-theme-space] body .log-entry,
+html[data-theme-space] body .status-card,
+html[data-theme-space] body .slideshow-frame,
+html[data-theme-space] body .photo-stage,
+body.space-mode .hero-card,
+body.space-mode .focus-card,
+body.space-mode .callout,
+body.space-mode .affiliation-card,
+body.space-mode .card,
+body.space-mode .paper-card,
+body.space-mode .project-link-card,
+body.space-mode .cv-edu-card,
+body.space-mode .research-note-card,
+body.space-mode .log-entry,
+body.space-mode .status-card,
+body.space-mode .slideshow-frame,
+body.space-mode .photo-stage {
+  border-color: var(--lg-border-space-strong) !important;
+  background: var(--lg-space-deep) !important;
+  box-shadow:
+    0 20px 44px rgba(0, 0, 0, .28),
+    inset 0 1px 0 rgba(255,255,255,.13),
+    inset 0 -1px 0 rgba(255,255,255,.035) !important;
+}
+
+/* Primary feature cards should be a little deeper than ordinary cards. */
+html body .hero-card,
+html body .focus-card,
+html body .callout,
+html body .affiliation-card {
+  background: var(--lg-light-deep) !important;
+}
+
+html[data-theme="space"] body .hero-card,
+html[data-theme="space"] body .focus-card,
+html[data-theme="space"] body .callout,
+html[data-theme="space"] body .affiliation-card,
+html[data-theme-space] body .hero-card,
+html[data-theme-space] body .focus-card,
+html[data-theme-space] body .callout,
+html[data-theme-space] body .affiliation-card,
+body.space-mode .hero-card,
+body.space-mode .focus-card,
+body.space-mode .callout,
+body.space-mode .affiliation-card {
+  background:
+    linear-gradient(180deg, rgba(5, 12, 23, .82), rgba(8, 17, 31, .54)) !important;
+}
+
+/* ---------- 3. Inner information blocks: shallow glass, rectangular ---------- */
+html body .focus-list {
+  display: grid !important;
+  gap: 12px !important;
+}
+
+html body .focus-list div,
+html body .mini-timeline-item,
+html body .status-card .status-inner,
+html body .research-status-grid .status-card {
+  border-radius: 15px !important;
+  padding: 15px 17px !important;
+  border: 1px solid var(--lg-border-light-soft) !important;
+  background: var(--lg-light-shallow) !important;
+  box-shadow:
+    0 10px 20px rgba(18, 45, 75, .055),
+    inset 0 1px 0 rgba(255,255,255,.30) !important;
+  backdrop-filter: blur(14px) saturate(1.04) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(1.04) !important;
+}
+
+html[data-theme="space"] body .focus-list div,
+html[data-theme="space"] body .mini-timeline-item,
+html[data-theme="space"] body .status-card .status-inner,
+html[data-theme="space"] body .research-status-grid .status-card,
+html[data-theme-space] body .focus-list div,
+html[data-theme-space] body .mini-timeline-item,
+html[data-theme-space] body .status-card .status-inner,
+html[data-theme-space] body .research-status-grid .status-card,
+body.space-mode .focus-list div,
+body.space-mode .mini-timeline-item,
+body.space-mode .status-card .status-inner,
+body.space-mode .research-status-grid .status-card {
+  border-color: var(--lg-border-space-soft) !important;
+  background: var(--lg-space-shallow) !important;
+  box-shadow:
+    0 12px 22px rgba(0,0,0,.16),
+    inset 0 1px 0 rgba(255,255,255,.12) !important;
+}
+
+html body .focus-list div span,
+html body .mini-timeline-item span {
+  display: block !important;
+  margin-bottom: 7px !important;
+  color: var(--blue) !important;
+  font-size: 11px !important;
+  font-weight: 850 !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+}
+
+html body .focus-list div strong,
+html body .mini-timeline-item strong {
+  display: block !important;
+  font-size: 15px !important;
+  line-height: 1.46 !important;
+  font-weight: 760 !important;
+}
+
+/* ---------- 4. Chips stay chips, but only chips ---------- */
+html body .pill,
+html body .cv-edu-date,
+html body .research-note-date,
+html body .log-date,
+html body .log-tags span {
+  display: inline-flex !important;
+  align-items: center !important;
+  width: auto !important;
+  min-width: 0 !important;
+  border-radius: 999px !important;
+  padding: 6px 11px !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  background: var(--lg-light-shallow) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.24),
+    0 5px 12px rgba(18,45,75,.04) !important;
+}
+
+html[data-theme="space"] body .pill,
+html[data-theme="space"] body .cv-edu-date,
+html[data-theme="space"] body .research-note-date,
+html[data-theme="space"] body .log-date,
+html[data-theme="space"] body .log-tags span,
+html[data-theme-space] body .pill,
+html[data-theme-space] body .cv-edu-date,
+html[data-theme-space] body .research-note-date,
+html[data-theme-space] body .log-date,
+html[data-theme-space] body .log-tags span,
+body.space-mode .pill,
+body.space-mode .cv-edu-date,
+body.space-mode .research-note-date,
+body.space-mode .log-date,
+body.space-mode .log-tags span {
+  border-color: rgba(255,255,255,.13) !important;
+  background: var(--lg-space-shallow) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.13),
+    0 5px 12px rgba(0,0,0,.08) !important;
+}
+
+/* Metadata should never become buttons or chips unless explicitly classed. */
+html body .paper-meta span,
+html body .project-meta span,
+html body .muted span {
+  display: inline !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* ---------- 5. True buttons only ---------- */
+html body .button,
+html body .btn,
+html body a.button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 8px 14px !important;
+  border-radius: 999px !important;
+  text-decoration: none !important;
+  border: 1px solid rgba(255,255,255,.20) !important;
+  background: var(--lg-light-shallow) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.24),
+    0 8px 18px rgba(18,45,75,.07) !important;
+}
+
+html[data-theme="space"] body .button,
+html[data-theme="space"] body .btn,
+html[data-theme="space"] body a.button,
+html[data-theme-space] body .button,
+html[data-theme-space] body .btn,
+html[data-theme-space] body a.button,
+body.space-mode .button,
+body.space-mode .btn,
+body.space-mode a.button {
+  background: var(--lg-space-shallow) !important;
+  border-color: rgba(255,255,255,.13) !important;
+}
+
+/* ---------- 6. Navigation untouched except link reset protection ---------- */
+html body .nav a,
+html body .theme-toggle {
+  text-decoration: none !important;
+}
