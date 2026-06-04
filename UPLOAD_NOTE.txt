@@ -1,10 +1,16 @@
-Replace this file only:
+Replace/upload all files in this zip.
 
-assets/css/style.css
+Features added:
+1. Sample Cabinet page
+3. Paper Shelf reading status tags
+4. Mission Log framing for Research Log
+5. Analytical Pathway section
+7. Research Constellation on Home
+8. Reading Constellation on Paper Shelf
+9. Research Coordinates floating widget
+10. Specimen Label cards
 
-Change:
-- Block depth contrast is increased.
-- Large outer cards are darker/deeper in Space Mode.
-- Inner information blocks are lighter and more distinct.
-- Small chips/date tags are the brightest layer.
-- Navigation thin glowing underline is untouched.
+Notes:
+- Paper Shelf still has no Download / Download PDF buttons.
+- Navigation thin glowing underline is preserved.
+- Existing visible meteor / star dust / micro-meteorite animation is preserved.

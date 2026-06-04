@@ -17,10 +17,11 @@
       <strong>Mads LIU YONG</strong>
       <span>Cosmic Mineralogy · Planetary Sciences · Meteoritics</span>
     </a>
-    <nav class="nav" aria-label="Main navigation">
+        <nav class="nav" aria-label="Main navigation">
       <a href="index.html">Home</a>
       <a href="research.html">Research</a>
-      <a href="research-log.html" aria-current="page">Research Log</a>
+      <a href="research-log.html">Research Log</a>
+      <a href="sample-cabinet.html">Sample Cabinet</a>
       <a href="paper-shelf.html">Paper Shelf</a>
       <a href="cv.html">CV</a>
       <a href="photography.html">Photography</a>
@@ -95,23 +96,24 @@
   </div>
 </section>
 
+<section class="section two-col">
+  <div class="section-label">Mission Log</div>
+  <div class="research-timeline">
 
-<section class="section two-col research-notes-section">
-  <div class="section-label">Timeline</div>
-  <div class="research-note-list">
-    <article class="research-note-card">
-      <div class="research-note-date">2026/04/01</div>
-      <div class="research-note-body">
+    <article class="log-entry">
+      <div class="log-date">2026/04/01</div>
+      <div class="log-content">
         <h3>Graduation research plan established</h3>
         <p>
-          I began my graduation research project, “Mineralogical Study of Dolomite in the Orgueil CI1 Chondrite:
-          Constraining the Formation Conditions of Primitive Chondritic Constituents.” The project asks how dolomite
-          in the Orgueil CI1 chondrite records the formation conditions of primitive chondritic constituents and how its
-          occurrence relates to clay-rich regions.
+          I began my graduation research project on the relationship between dolomite and clay minerals in the
+          Orgueil CI chondrite. The central question is whether dolomite in primitive carbonaceous chondrites is
+          spatially, chemically, and crystallographically associated with clay minerals, and whether this relationship
+          can provide insight into the “Dolomite problem.”
         </p>
         <p>
           The initial plan is to investigate dolomite occurrence, morphology, chemical composition, and crystallographic
-          features using SEM/EPMA, single-grain XRD, and TEM observations across micro- to nanometre scales.
+          features, especially near clay-rich regions. The project will connect SEM/EPMA, single-grain XRD, and TEM
+          observations across micro- to nanometre scales.
         </p>
         <div class="log-tags">
           <span>Graduation Research</span>
@@ -123,9 +125,41 @@
         </div>
       </div>
     </article>
+
   </div>
 </section>
 
+
+<section class="section analytical-pathway-section">
+  <p class="eyebrow">Analytical Pathway</p>
+  <h2>From target grain to formation model</h2>
+  <div class="pathway-grid">
+    <div class="pathway-step"><span>01</span><strong>Sample selection</strong><p>Identify suitable Orgueil CI1 material and carbonate-bearing regions.</p></div>
+    <div class="pathway-step"><span>02</span><strong>SEM / BSE observation</strong><p>Document morphology, texture, and spatial relation to clay-rich areas.</p></div>
+    <div class="pathway-step"><span>03</span><strong>EPMA mapping</strong><p>Constrain elemental distribution and carbonate chemistry.</p></div>
+    <div class="pathway-step"><span>04</span><strong>Single-grain XRD</strong><p>Investigate crystallographic features and carbonate ordering.</p></div>
+    <div class="pathway-step"><span>05</span><strong>TEM / EDS / diffraction</strong><p>Resolve nanoscale interface, defects, and microstructural constraints.</p></div>
+    <div class="pathway-step"><span>06</span><strong>Formation condition model</strong><p>Integrate observations to discuss primitive chondritic constituent formation.</p></div>
+  </div>
+</section>
+
+<section class="section specimen-strip">
+  <article class="specimen-label-card">
+    <span>Research Specimen</span>
+    <h3>Orgueil CI1</h3>
+    <p>Primitive carbonaceous chondrite material recording extensive aqueous alteration.</p>
+  </article>
+  <article class="specimen-label-card">
+    <span>Target Phase</span>
+    <h3>Dolomite</h3>
+    <p>Carbonate phase used to constrain formation conditions and alteration history.</p>
+  </article>
+  <article class="specimen-label-card">
+    <span>Textural Target</span>
+    <h3>Dolomite–Clay Interface</h3>
+    <p>Micro- to nanoscale region connecting carbonate growth and clay-rich context.</p>
+  </article>
+</section>
 
 </main>
 <footer class="site-footer">
@@ -136,5 +170,6 @@
 </footer>
   <script defer src="assets/js/theme.js"></script>
   <script defer src="assets/js/ambient-space.js"></script>
+  <script defer src="assets/js/research-coordinates.js"></script>
 </body>
 </html>

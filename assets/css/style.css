@@ -4784,3 +4784,365 @@ body.space-mode .log-tags span {
 html:not([data-theme="space"]) .section {
   border-top-color: rgba(30, 75, 115, .13) !important;
 }
+
+
+/* ============================================================
+   Feature expansion: Sample Cabinet, Mission Log, Analytical Pathway,
+   Research/Reading Constellations, Research Coordinates, Specimen Labels.
+   ============================================================ */
+
+/* Sample Cabinet */
+.specimen-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.specimen-card,
+.specimen-label-card,
+.orbit-panel,
+.mission-log-panel,
+.analytical-pathway-section,
+.reading-constellation-section,
+.constellation-section {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.20);
+  background: linear-gradient(180deg, rgba(255,255,255,.38), rgba(255,255,255,.16));
+  border-radius: 22px;
+  box-shadow:
+    0 18px 34px rgba(18,45,75,.09),
+    inset 0 1px 0 rgba(255,255,255,.40);
+  backdrop-filter: blur(18px) saturate(1.06);
+  -webkit-backdrop-filter: blur(18px) saturate(1.06);
+}
+
+.specimen-card {
+  padding: 22px;
+  min-height: 230px;
+}
+
+.specimen-feature {
+  grid-column: span 2;
+}
+
+.specimen-label {
+  margin: 0 0 12px;
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.specimen-card dl {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.specimen-card dl div {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.specimen-card dt {
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .10em;
+}
+
+.specimen-card dd {
+  margin: 0;
+}
+
+.cabinet-chip {
+  display: inline-flex;
+  margin-top: 14px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.22);
+  background: linear-gradient(180deg, rgba(255,255,255,.38), rgba(255,255,255,.16));
+  font-size: 12px;
+  font-weight: 750;
+}
+
+/* Current Orbit */
+.current-orbit-section {
+  margin-top: 34px;
+}
+
+.orbit-panel {
+  padding: 24px;
+}
+
+.orbit-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.orbit-grid div {
+  padding: 15px 16px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(255,255,255,.58), rgba(255,255,255,.24));
+  border: 1px solid rgba(255,255,255,.26);
+}
+
+.orbit-grid span {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.orbit-grid strong {
+  display: block;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+/* Constellation */
+.constellation-section {
+  padding: 24px;
+}
+
+.constellation-map {
+  position: relative;
+  min-height: 280px;
+  margin-top: 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.16);
+  background:
+    radial-gradient(circle at 20% 30%, rgba(139,199,255,.16), transparent 22%),
+    radial-gradient(circle at 72% 62%, rgba(255,255,255,.12), transparent 24%),
+    linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
+  overflow: hidden;
+}
+
+.constellation-map::before {
+  content: "";
+  position: absolute;
+  inset: 20% 14%;
+  background:
+    linear-gradient(22deg, transparent 0 18%, rgba(170,215,255,.22) 18.2% 18.8%, transparent 19% 100%),
+    linear-gradient(145deg, transparent 0 42%, rgba(170,215,255,.18) 42.2% 42.8%, transparent 43% 100%),
+    linear-gradient(88deg, transparent 0 58%, rgba(170,215,255,.16) 58.2% 58.8%, transparent 59% 100%);
+  opacity: .72;
+}
+
+.star-node {
+  position: absolute;
+  z-index: 1;
+  padding: 7px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.20);
+  background: linear-gradient(180deg, rgba(255,255,255,.32), rgba(255,255,255,.12));
+  box-shadow: 0 0 18px rgba(139,199,255,.16);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.node-1 { left: 9%; top: 18%; }
+.node-2 { left: 42%; top: 12%; }
+.node-3 { left: 65%; top: 34%; }
+.node-4 { left: 18%; top: 62%; }
+.node-5 { left: 50%; top: 72%; }
+.node-6 { left: 74%; top: 66%; }
+
+/* Specimen label cards */
+.specimen-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 16px;
+}
+
+.specimen-label-card {
+  padding: 20px;
+}
+
+.specimen-label-card span {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+/* Analytical Pathway */
+.analytical-pathway-section {
+  padding: 24px;
+}
+
+.pathway-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.pathway-step {
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: linear-gradient(180deg, rgba(255,255,255,.48), rgba(255,255,255,.20));
+}
+
+.pathway-step span {
+  display: inline-flex;
+  margin-bottom: 12px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  color: var(--blue-dark);
+  background: rgba(139,199,255,.18);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.pathway-step strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+/* Mission Log */
+.mission-log-panel {
+  padding: 24px;
+}
+
+/* Paper Shelf status and reading constellation */
+.paper-status-row {
+  margin: -4px 0 10px;
+}
+
+.paper-status {
+  display: inline-flex;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: linear-gradient(180deg, rgba(255,255,255,.42), rgba(255,255,255,.16));
+  color: var(--blue-dark);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.reading-constellation-section {
+  padding: 24px;
+}
+
+.reading-constellation {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.reading-constellation div {
+  padding: 15px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: linear-gradient(180deg, rgba(255,255,255,.46), rgba(255,255,255,.18));
+  font-weight: 750;
+}
+
+.reading-constellation .reading-core {
+  grid-column: span 3;
+  text-align: center;
+  color: var(--blue-dark);
+  font-size: 18px;
+}
+
+/* Research coordinates widget */
+.research-coordinates {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 6;
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.16);
+  background: linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,.05));
+  box-shadow: 0 16px 32px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.14);
+  backdrop-filter: blur(16px) saturate(1.06);
+  -webkit-backdrop-filter: blur(16px) saturate(1.06);
+  color: rgba(238,246,255,.86);
+  font-size: 11px;
+  letter-spacing: .04em;
+}
+
+html:not([data-theme="space"]) .research-coordinates {
+  color: rgba(8,24,42,.76);
+  background: linear-gradient(180deg, rgba(255,255,255,.52), rgba(255,255,255,.20));
+}
+
+/* Space Mode variants */
+html[data-theme="space"] .specimen-card,
+html[data-theme="space"] .specimen-label-card,
+html[data-theme="space"] .orbit-panel,
+html[data-theme="space"] .mission-log-panel,
+html[data-theme="space"] .analytical-pathway-section,
+html[data-theme="space"] .reading-constellation-section,
+html[data-theme="space"] .constellation-section,
+html[data-theme-space] .specimen-card,
+html[data-theme-space] .specimen-label-card,
+html[data-theme-space] .orbit-panel,
+html[data-theme-space] .mission-log-panel,
+html[data-theme-space] .analytical-pathway-section,
+html[data-theme-space] .reading-constellation-section,
+html[data-theme-space] .constellation-section,
+body.space-mode .specimen-card,
+body.space-mode .specimen-label-card,
+body.space-mode .orbit-panel,
+body.space-mode .mission-log-panel,
+body.space-mode .analytical-pathway-section,
+body.space-mode .reading-constellation-section,
+body.space-mode .constellation-section {
+  border-color: rgba(190,225,255,.20);
+  background: linear-gradient(180deg, rgba(5,12,23,.86), rgba(7,16,30,.62));
+  box-shadow: 0 24px 52px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.12);
+}
+
+html[data-theme="space"] .orbit-grid div,
+html[data-theme="space"] .pathway-step,
+html[data-theme="space"] .reading-constellation div,
+html[data-theme-space] .orbit-grid div,
+html[data-theme-space] .pathway-step,
+html[data-theme-space] .reading-constellation div,
+body.space-mode .orbit-grid div,
+body.space-mode .pathway-step,
+body.space-mode .reading-constellation div {
+  border-color: rgba(220,240,255,.22);
+  background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.075));
+}
+
+@media (max-width: 900px) {
+  .specimen-grid,
+  .specimen-strip,
+  .pathway-grid,
+  .reading-constellation,
+  .orbit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .specimen-feature,
+  .reading-constellation .reading-core {
+    grid-column: auto;
+  }
+
+  .research-coordinates {
+    display: none;
+  }
+}
