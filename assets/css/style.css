@@ -3899,3 +3899,252 @@ body.space-mode .focus-card a[href] {
     background: rgba(255,255,255,.10) !important;
   }
 }
+
+
+/* ============================================================
+   Liquid Glass layout correction
+   Keep the glass material, but restore rational layout and typography.
+   - Text links are no longer turned into glass buttons.
+   - Focus/current-question blocks are no longer giant rounded pills.
+   - Cards keep liquid-glass material with calmer radius and spacing.
+   ============================================================ */
+
+/* 1) Reset ordinary inline text links.
+   The previous global liquid-glass button rule was too broad and made
+   normal links, such as "Mineralogy Laboratory", look like UI pills. */
+.card a[href]:not(.button):not(.btn),
+.affiliation-card a[href],
+.hero-card a[href]:not(.button):not(.btn),
+.paper-card a[href]:not(.button):not(.btn),
+.cv-edu-card a[href]:not(.button):not(.btn),
+.research-note-card a[href]:not(.button):not(.btn),
+.log-entry a[href]:not(.button):not(.btn),
+.callout a[href]:not(.button):not(.btn),
+.focus-card a[href]:not(.button):not(.btn) {
+  display: inline !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transform: none !important;
+  color: var(--blue-dark) !important;
+  text-decoration: underline !important;
+  text-decoration-thickness: 1px !important;
+  text-underline-offset: 3px !important;
+}
+
+html[data-theme="space"] .card a[href]:not(.button):not(.btn),
+html[data-theme-space] .card a[href]:not(.button):not(.btn),
+body.space-mode .card a[href]:not(.button):not(.btn),
+html[data-theme="space"] .affiliation-card a[href],
+html[data-theme-space] .affiliation-card a[href],
+body.space-mode .affiliation-card a[href],
+html[data-theme="space"] .hero-card a[href]:not(.button):not(.btn),
+html[data-theme-space] .hero-card a[href]:not(.button):not(.btn),
+body.space-mode .hero-card a[href]:not(.button):not(.btn),
+html[data-theme="space"] .paper-card a[href]:not(.button):not(.btn),
+html[data-theme-space] .paper-card a[href]:not(.button):not(.btn),
+body.space-mode .paper-card a[href]:not(.button):not(.btn),
+html[data-theme="space"] .cv-edu-card a[href]:not(.button):not(.btn),
+html[data-theme-space] .cv-edu-card a[href]:not(.button):not(.btn),
+body.space-mode .cv-edu-card a[href]:not(.button):not(.btn),
+html[data-theme="space"] .research-note-card a[href]:not(.button):not(.btn),
+html[data-theme-space] .research-note-card a[href]:not(.button):not(.btn),
+body.space-mode .research-note-card a[href]:not(.button):not(.btn),
+html[data-theme="space"] .log-entry a[href]:not(.button):not(.btn),
+html[data-theme-space] .log-entry a[href]:not(.button):not(.btn),
+body.space-mode .log-entry a[href]:not(.button):not(.btn) {
+  color: #b9dcff !important;
+}
+
+/* 2) Restore the Current Focus / info block layout.
+   These are information cards, not huge pill chips. */
+.focus-list {
+  display: grid !important;
+  gap: 12px !important;
+}
+
+.focus-list div,
+.mini-timeline-item {
+  border-radius: 18px !important;
+  padding: 16px 18px !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.08)) !important;
+  box-shadow:
+    0 10px 22px rgba(18, 45, 75, .06),
+    inset 0 1px 0 rgba(255,255,255,.20) !important;
+  backdrop-filter: blur(14px) saturate(1.06) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(1.06) !important;
+}
+
+.focus-list div span,
+.mini-timeline-item span {
+  display: block !important;
+  margin-bottom: 7px !important;
+  color: var(--blue) !important;
+  font-size: 11px !important;
+  font-weight: 850 !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+}
+
+.focus-list div strong,
+.mini-timeline-item strong {
+  display: block !important;
+  color: inherit !important;
+  font-size: 15px !important;
+  line-height: 1.45 !important;
+  letter-spacing: .01em !important;
+}
+
+html[data-theme="space"] .focus-list div,
+html[data-theme-space] .focus-list div,
+body.space-mode .focus-list div,
+html[data-theme="space"] .mini-timeline-item,
+html[data-theme-space] .mini-timeline-item,
+body.space-mode .mini-timeline-item {
+  border-color: rgba(255,255,255,.12) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.035)) !important;
+  box-shadow:
+    0 12px 26px rgba(0,0,0,.14),
+    inset 0 1px 0 rgba(255,255,255,.12) !important;
+}
+
+/* 3) Restrained card material across the site.
+   Keep the liquid-glass feel, but avoid the over-rounded Apple pill look
+   on large rectangular content blocks. */
+.hero-card,
+.card,
+.callout,
+.focus-card,
+.affiliation-card,
+.status-card,
+.project-link-card,
+.paper-card,
+.cv-edu-card,
+.research-note-card,
+.log-entry,
+.slideshow-frame,
+.photo-stage,
+.contact-card,
+.profile-card,
+.info-card {
+  border-radius: 22px !important;
+  border-color: rgba(255,255,255,.20) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.34), rgba(255,255,255,.15)) !important;
+  box-shadow:
+    0 16px 32px rgba(18, 45, 75, .075),
+    inset 0 1px 0 rgba(255,255,255,.34),
+    inset 0 -1px 0 rgba(255,255,255,.06) !important;
+  backdrop-filter: blur(18px) saturate(1.06) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.06) !important;
+}
+
+html[data-theme="space"] .hero-card,
+html[data-theme="space"] .card,
+html[data-theme="space"] .callout,
+html[data-theme="space"] .focus-card,
+html[data-theme="space"] .affiliation-card,
+html[data-theme="space"] .status-card,
+html[data-theme="space"] .project-link-card,
+html[data-theme="space"] .paper-card,
+html[data-theme="space"] .cv-edu-card,
+html[data-theme="space"] .research-note-card,
+html[data-theme="space"] .log-entry,
+html[data-theme="space"] .slideshow-frame,
+html[data-theme="space"] .photo-stage,
+html[data-theme-space] .hero-card,
+html[data-theme-space] .card,
+html[data-theme-space] .callout,
+html[data-theme-space] .focus-card,
+html[data-theme-space] .affiliation-card,
+html[data-theme-space] .status-card,
+html[data-theme-space] .project-link-card,
+html[data-theme-space] .paper-card,
+html[data-theme-space] .cv-edu-card,
+html[data-theme-space] .research-note-card,
+html[data-theme-space] .log-entry,
+html[data-theme-space] .slideshow-frame,
+html[data-theme-space] .photo-stage,
+body.space-mode .hero-card,
+body.space-mode .card,
+body.space-mode .callout,
+body.space-mode .focus-card,
+body.space-mode .affiliation-card,
+body.space-mode .status-card,
+body.space-mode .project-link-card,
+body.space-mode .paper-card,
+body.space-mode .cv-edu-card,
+body.space-mode .research-note-card,
+body.space-mode .log-entry,
+body.space-mode .slideshow-frame,
+body.space-mode .photo-stage {
+  border-color: rgba(255,255,255,.12) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.105), rgba(255,255,255,.035)) !important;
+  box-shadow:
+    0 18px 42px rgba(0, 0, 0, .22),
+    inset 0 1px 0 rgba(255,255,255,.13),
+    inset 0 -1px 0 rgba(255,255,255,.03) !important;
+}
+
+/* 4) Pills/tags remain pills, but smaller and cleaner. */
+.pill,
+.cv-edu-date,
+.research-note-date,
+.log-date,
+.log-tags span {
+  border-radius: 999px !important;
+  padding: 6px 11px !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,.10)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.22),
+    0 5px 12px rgba(18, 45, 75, .04) !important;
+}
+
+/* 5) Do not force every small metadata span into a pill.
+   This avoids accidental layout distortions in Paper Shelf and project cards. */
+.paper-meta span,
+.project-meta span {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+
+/* 6) Keep genuine button styling only for real buttons. */
+.button,
+.btn,
+a.button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 8px 14px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.24), rgba(255,255,255,.10)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.24),
+    0 8px 18px rgba(18, 45, 75, .07) !important;
+  backdrop-filter: blur(10px) saturate(1.04) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(1.04) !important;
+  text-decoration: none !important;
+}
+
+/* Keep the navigation design and thin glowing underline untouched. */
+.nav a,
+.theme-toggle {
+  text-decoration: none !important;
+}
