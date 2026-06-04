@@ -1441,3 +1441,59 @@ h3 {
     padding: 12px;
   }
 }
+
+
+/* ============================================================
+   Photography slideshow: frameless background-integrated style
+   Removes the blue-black frame. Mixed-ratio photos still work.
+   ============================================================ */
+
+.slideshow-stage {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+}
+
+.slideshow-stage::before,
+.slideshow-stage::after {
+  display: none !important;
+}
+
+.photo-slide {
+  padding: 0 !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  border-radius: 22px;
+  filter: drop-shadow(0 18px 34px rgba(16, 32, 51, .18));
+}
+
+.slide-control {
+  background: rgba(255, 255, 255, .60) !important;
+  color: var(--blue-dark) !important;
+  border: 1px solid rgba(255, 255, 255, .82) !important;
+  box-shadow: 0 8px 24px rgba(16, 32, 51, .12);
+}
+
+.slide-control:hover {
+  background: rgba(255, 255, 255, .82) !important;
+  color: var(--blue-dark) !important;
+}
+
+.slide-status {
+  background: rgba(255, 255, 255, .72) !important;
+  color: var(--blue-dark) !important;
+  border: 1px solid rgba(255, 255, 255, .84) !important;
+  box-shadow: 0 8px 24px rgba(16, 32, 51, .10);
+}
+
+.film-thumb {
+  background: rgba(255, 255, 255, .52);
+  backdrop-filter: blur(6px);
+}
+
+.photo-marquee-track img {
+  background: rgba(255, 255, 255, .58);
+  backdrop-filter: blur(4px);
+}
