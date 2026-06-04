@@ -1141,3 +1141,36 @@ h3 {
   color: var(--blue-dark);
   font-weight: 700;
 }
+
+
+/* ============================================================
+   CV photo size fix
+   Keeps CV.jpg centered and moderately sized.
+   ============================================================ */
+
+.cv-photo {
+  max-width: 860px;
+  width: 82%;
+  margin: 34px auto 0;
+}
+
+.cv-photo img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  max-height: none;
+  display: block;
+  object-fit: cover;
+  object-position: center center;
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  background: var(--paper);
+}
+
+@media (max-width: 860px) {
+  .cv-photo {
+    width: 100%;
+    max-width: 100%;
+  }
+}
