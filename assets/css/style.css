@@ -3304,3 +3304,598 @@ body.space-mode .log-date {
     background: rgba(80, 112, 150, .42) !important;
   }
 }
+
+
+/* ============================================================
+   Research Log / Graduation Research
+   Apple-like liquid glass refinement
+   Cleaner, clearer, more restrained than the previous version.
+   ============================================================ */
+
+.research-note-card,
+.log-entry {
+  border-radius: 26px !important;
+  border: 1px solid rgba(255, 255, 255, .18) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,.07)) !important;
+  box-shadow:
+    0 16px 34px rgba(10, 20, 32, .10),
+    inset 0 1px 0 rgba(255,255,255,.24),
+    inset 0 -1px 0 rgba(255,255,255,.05) !important;
+  backdrop-filter: blur(22px) saturate(1.08) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.08) !important;
+}
+
+.research-note-card::before,
+.log-entry::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background:
+    linear-gradient(180deg,
+      rgba(255,255,255,.16) 0%,
+      rgba(255,255,255,.06) 18%,
+      rgba(255,255,255,.02) 42%,
+      rgba(255,255,255,0) 68%) !important;
+  pointer-events: none !important;
+}
+
+.research-note-card::after,
+.log-entry::after {
+  left: 20px !important;
+  right: 20px !important;
+  top: 0 !important;
+  height: 1px !important;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0),
+    rgba(255,255,255,.42),
+    rgba(255,255,255,0)
+  ) !important;
+  opacity: .9 !important;
+}
+
+.research-note-date,
+.log-date {
+  border-radius: 999px !important;
+  border: 1px solid rgba(255,255,255,.20) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.08)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.22),
+    0 6px 16px rgba(10, 20, 32, .06) !important;
+  backdrop-filter: blur(12px) saturate(1.04) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(1.04) !important;
+  color: rgba(244, 249, 255, .96) !important;
+  letter-spacing: .03em !important;
+}
+
+.research-note-body .log-tags span,
+.log-entry .log-tags span {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.05)) !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.10) !important;
+}
+
+/* Space Mode: still liquid glass, but cleaner and less neon-blue */
+html[data-theme="space"] .research-note-card,
+html[data-theme-space] .research-note-card,
+body.space-mode .research-note-card,
+html[data-theme="space"] .log-entry,
+html[data-theme-space] .log-entry,
+body.space-mode .log-entry {
+  border-color: rgba(255,255,255,.12) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.035)) !important;
+  box-shadow:
+    0 18px 42px rgba(0, 0, 0, .22),
+    inset 0 1px 0 rgba(255,255,255,.14),
+    inset 0 -1px 0 rgba(255,255,255,.03) !important;
+  backdrop-filter: blur(24px) saturate(1.08) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.08) !important;
+}
+
+html[data-theme="space"] .research-note-card::before,
+html[data-theme-space] .research-note-card::before,
+body.space-mode .research-note-card::before,
+html[data-theme="space"] .log-entry::before,
+html[data-theme-space] .log-entry::before,
+body.space-mode .log-entry::before {
+  background:
+    linear-gradient(180deg,
+      rgba(255,255,255,.12) 0%,
+      rgba(255,255,255,.04) 16%,
+      rgba(255,255,255,.015) 40%,
+      rgba(255,255,255,0) 68%) !important;
+}
+
+html[data-theme="space"] .research-note-date,
+html[data-theme-space] .research-note-date,
+body.space-mode .research-note-date,
+html[data-theme="space"] .log-date,
+html[data-theme-space] .log-date,
+body.space-mode .log-date {
+  border-color: rgba(255,255,255,.14) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,.05)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.14),
+    0 6px 16px rgba(0, 0, 0, .10) !important;
+  color: rgba(244, 249, 255, .94) !important;
+}
+
+/* Light Mode: cleaner white-glass treatment */
+html:not([data-theme="space"]) .research-note-card,
+html:not([data-theme="space"]) .log-entry {
+  border-color: rgba(255,255,255,.22) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.40), rgba(255,255,255,.18)) !important;
+  box-shadow:
+    0 16px 30px rgba(18, 45, 75, .08),
+    inset 0 1px 0 rgba(255,255,255,.42),
+    inset 0 -1px 0 rgba(255,255,255,.08) !important;
+}
+
+html:not([data-theme="space"]) .research-note-date,
+html:not([data-theme="space"]) .log-date {
+  color: rgba(22, 48, 74, .92) !important;
+  border-color: rgba(255,255,255,.28) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.52), rgba(255,255,255,.20)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.48),
+    0 5px 14px rgba(18, 45, 75, .06) !important;
+}
+
+@supports not ((backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px))) {
+  .research-note-card,
+  .log-entry {
+    background: rgba(24, 34, 48, .72) !important;
+  }
+
+  .research-note-date,
+  .log-date {
+    background: rgba(255,255,255,.10) !important;
+  }
+}
+
+
+/* ============================================================
+   Global Liquid Glass direction
+   Applied across the whole site:
+   - Home cards
+   - Research / Research Log cards
+   - CV cards
+   - Paper Shelf cards
+   - Photography panels
+   - Contact / misc content blocks
+   Goal: coordinated, comfortable, restrained liquid-glass styling.
+   ============================================================ */
+
+:root {
+  --glass-bg-light: linear-gradient(180deg,
+      rgba(255,255,255,.42),
+      rgba(255,255,255,.20));
+  --glass-bg-light-soft: linear-gradient(180deg,
+      rgba(255,255,255,.30),
+      rgba(255,255,255,.13));
+  --glass-border-light: rgba(255,255,255,.24);
+  --glass-shadow-light:
+      0 16px 34px rgba(18, 45, 75, .08),
+      inset 0 1px 0 rgba(255,255,255,.42),
+      inset 0 -1px 0 rgba(255,255,255,.08);
+  --glass-chip-light: linear-gradient(180deg,
+      rgba(255,255,255,.50),
+      rgba(255,255,255,.18));
+
+  --glass-bg-space: linear-gradient(180deg,
+      rgba(255,255,255,.11),
+      rgba(255,255,255,.04));
+  --glass-bg-space-soft: linear-gradient(180deg,
+      rgba(255,255,255,.09),
+      rgba(255,255,255,.03));
+  --glass-border-space: rgba(255,255,255,.13);
+  --glass-shadow-space:
+      0 18px 42px rgba(0, 0, 0, .24),
+      inset 0 1px 0 rgba(255,255,255,.14),
+      inset 0 -1px 0 rgba(255,255,255,.03);
+  --glass-chip-space: linear-gradient(180deg,
+      rgba(255,255,255,.16),
+      rgba(255,255,255,.05));
+}
+
+/* Core glass surfaces */
+.hero-card,
+.card,
+.callout,
+.focus-card,
+.affiliation-card,
+.status-card,
+.project-link-card,
+.paper-card,
+.cv-edu-card,
+.research-note-card,
+.log-entry,
+.slideshow-frame,
+.photo-stage,
+.contact-card,
+.profile-card,
+.info-card {
+  position: relative !important;
+  overflow: hidden !important;
+  border-radius: 24px !important;
+  border: 1px solid var(--glass-border-light) !important;
+  background: var(--glass-bg-light) !important;
+  box-shadow: var(--glass-shadow-light) !important;
+  backdrop-filter: blur(18px) saturate(1.08) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.08) !important;
+}
+
+.hero-card::before,
+.card::before,
+.callout::before,
+.focus-card::before,
+.affiliation-card::before,
+.status-card::before,
+.project-link-card::before,
+.paper-card::before,
+.cv-edu-card::before,
+.research-note-card::before,
+.log-entry::before,
+.slideshow-frame::before,
+.photo-stage::before,
+.contact-card::before,
+.profile-card::before,
+.info-card::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: linear-gradient(180deg,
+      rgba(255,255,255,.16) 0%,
+      rgba(255,255,255,.06) 16%,
+      rgba(255,255,255,.02) 42%,
+      rgba(255,255,255,0) 70%) !important;
+  pointer-events: none !important;
+}
+
+.hero-card::after,
+.card::after,
+.callout::after,
+.focus-card::after,
+.affiliation-card::after,
+.status-card::after,
+.project-link-card::after,
+.paper-card::after,
+.cv-edu-card::after,
+.research-note-card::after,
+.log-entry::after,
+.slideshow-frame::after,
+.photo-stage::after,
+.contact-card::after,
+.profile-card::after,
+.info-card::after {
+  content: "" !important;
+  position: absolute !important;
+  left: 20px !important;
+  right: 20px !important;
+  top: 0 !important;
+  height: 1px !important;
+  background: linear-gradient(90deg,
+      rgba(255,255,255,0),
+      rgba(255,255,255,.40),
+      rgba(255,255,255,0)) !important;
+  pointer-events: none !important;
+}
+
+/* Internal content stays above glass highlight layers */
+.hero-card > *,
+.card > *,
+.callout > *,
+.focus-card > *,
+.affiliation-card > *,
+.status-card > *,
+.project-link-card > *,
+.paper-card > *,
+.cv-edu-card > *,
+.research-note-card > *,
+.log-entry > *,
+.slideshow-frame > *,
+.photo-stage > *,
+.contact-card > *,
+.profile-card > *,
+.info-card > * {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Space mode glass */
+html[data-theme="space"] .hero-card,
+html[data-theme="space"] .card,
+html[data-theme="space"] .callout,
+html[data-theme="space"] .focus-card,
+html[data-theme="space"] .affiliation-card,
+html[data-theme="space"] .status-card,
+html[data-theme="space"] .project-link-card,
+html[data-theme="space"] .paper-card,
+html[data-theme="space"] .cv-edu-card,
+html[data-theme="space"] .research-note-card,
+html[data-theme="space"] .log-entry,
+html[data-theme="space"] .slideshow-frame,
+html[data-theme="space"] .photo-stage,
+html[data-theme="space"] .contact-card,
+html[data-theme="space"] .profile-card,
+html[data-theme="space"] .info-card,
+html[data-theme-space] .hero-card,
+html[data-theme-space] .card,
+html[data-theme-space] .callout,
+html[data-theme-space] .focus-card,
+html[data-theme-space] .affiliation-card,
+html[data-theme-space] .status-card,
+html[data-theme-space] .project-link-card,
+html[data-theme-space] .paper-card,
+html[data-theme-space] .cv-edu-card,
+html[data-theme-space] .research-note-card,
+html[data-theme-space] .log-entry,
+html[data-theme-space] .slideshow-frame,
+html[data-theme-space] .photo-stage,
+html[data-theme-space] .contact-card,
+html[data-theme-space] .profile-card,
+html[data-theme-space] .info-card,
+body.space-mode .hero-card,
+body.space-mode .card,
+body.space-mode .callout,
+body.space-mode .focus-card,
+body.space-mode .affiliation-card,
+body.space-mode .status-card,
+body.space-mode .project-link-card,
+body.space-mode .paper-card,
+body.space-mode .cv-edu-card,
+body.space-mode .research-note-card,
+body.space-mode .log-entry,
+body.space-mode .slideshow-frame,
+body.space-mode .photo-stage,
+body.space-mode .contact-card,
+body.space-mode .profile-card,
+body.space-mode .info-card {
+  border-color: var(--glass-border-space) !important;
+  background: var(--glass-bg-space) !important;
+  box-shadow: var(--glass-shadow-space) !important;
+  backdrop-filter: blur(22px) saturate(1.08) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.08) !important;
+}
+
+html[data-theme="space"] .hero-card::before,
+html[data-theme="space"] .card::before,
+html[data-theme="space"] .callout::before,
+html[data-theme="space"] .focus-card::before,
+html[data-theme="space"] .affiliation-card::before,
+html[data-theme="space"] .status-card::before,
+html[data-theme="space"] .project-link-card::before,
+html[data-theme="space"] .paper-card::before,
+html[data-theme="space"] .cv-edu-card::before,
+html[data-theme="space"] .research-note-card::before,
+html[data-theme="space"] .log-entry::before,
+html[data-theme="space"] .slideshow-frame::before,
+html[data-theme="space"] .photo-stage::before,
+html[data-theme="space"] .contact-card::before,
+html[data-theme="space"] .profile-card::before,
+html[data-theme="space"] .info-card::before,
+html[data-theme-space] .hero-card::before,
+html[data-theme-space] .card::before,
+html[data-theme-space] .callout::before,
+html[data-theme-space] .focus-card::before,
+html[data-theme-space] .affiliation-card::before,
+html[data-theme-space] .status-card::before,
+html[data-theme-space] .project-link-card::before,
+html[data-theme-space] .paper-card::before,
+html[data-theme-space] .cv-edu-card::before,
+html[data-theme-space] .research-note-card::before,
+html[data-theme-space] .log-entry::before,
+html[data-theme-space] .slideshow-frame::before,
+html[data-theme-space] .photo-stage::before,
+html[data-theme-space] .contact-card::before,
+html[data-theme-space] .profile-card::before,
+html[data-theme-space] .info-card::before,
+body.space-mode .hero-card::before,
+body.space-mode .card::before,
+body.space-mode .callout::before,
+body.space-mode .focus-card::before,
+body.space-mode .affiliation-card::before,
+body.space-mode .status-card::before,
+body.space-mode .project-link-card::before,
+body.space-mode .paper-card::before,
+body.space-mode .cv-edu-card::before,
+body.space-mode .research-note-card::before,
+body.space-mode .log-entry::before,
+body.space-mode .slideshow-frame::before,
+body.space-mode .photo-stage::before,
+body.space-mode .contact-card::before,
+body.space-mode .profile-card::before,
+body.space-mode .info-card::before {
+  background: linear-gradient(180deg,
+      rgba(255,255,255,.12) 0%,
+      rgba(255,255,255,.04) 18%,
+      rgba(255,255,255,.015) 42%,
+      rgba(255,255,255,0) 70%) !important;
+}
+
+/* Chips / pills / tags */
+.pill,
+.cv-edu-date,
+.research-note-date,
+.log-date,
+.log-tags span,
+.focus-list div,
+.mini-timeline-item,
+.status-chip,
+.paper-meta span,
+.project-meta span {
+  border-radius: 999px !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  background: var(--glass-chip-light) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.30),
+    0 6px 16px rgba(18, 45, 75, .06) !important;
+  backdrop-filter: blur(12px) saturate(1.04) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(1.04) !important;
+}
+
+html[data-theme="space"] .pill,
+html[data-theme="space"] .cv-edu-date,
+html[data-theme="space"] .research-note-date,
+html[data-theme="space"] .log-date,
+html[data-theme="space"] .log-tags span,
+html[data-theme="space"] .focus-list div,
+html[data-theme="space"] .mini-timeline-item,
+html[data-theme="space"] .status-chip,
+html[data-theme="space"] .paper-meta span,
+html[data-theme="space"] .project-meta span,
+html[data-theme-space] .pill,
+html[data-theme-space] .cv-edu-date,
+html[data-theme-space] .research-note-date,
+html[data-theme-space] .log-date,
+html[data-theme-space] .log-tags span,
+html[data-theme-space] .focus-list div,
+html[data-theme-space] .mini-timeline-item,
+html[data-theme-space] .status-chip,
+html[data-theme-space] .paper-meta span,
+html[data-theme-space] .project-meta span,
+body.space-mode .pill,
+body.space-mode .cv-edu-date,
+body.space-mode .research-note-date,
+body.space-mode .log-date,
+body.space-mode .log-tags span,
+body.space-mode .focus-list div,
+body.space-mode .mini-timeline-item,
+body.space-mode .status-chip,
+body.space-mode .paper-meta span,
+body.space-mode .project-meta span {
+  border-color: rgba(255,255,255,.12) !important;
+  background: var(--glass-chip-space) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.14),
+    0 6px 16px rgba(0,0,0,.10) !important;
+}
+
+/* Buttons / links as gentle glass controls */
+.button,
+.btn,
+a.button,
+.card a[href]:not(.nav a):not(.project-link-card):not(.paper-card):not(.photo-thumb),
+.callout a[href],
+.focus-card a[href] {
+  border-radius: 999px !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  background: linear-gradient(180deg,
+      rgba(255,255,255,.22),
+      rgba(255,255,255,.08)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.24),
+    0 8px 18px rgba(18, 45, 75, .07) !important;
+  backdrop-filter: blur(10px) saturate(1.04) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(1.04) !important;
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease,
+    background-color .18s ease !important;
+}
+
+.button:hover,
+.btn:hover,
+a.button:hover,
+.card a[href]:not(.nav a):not(.project-link-card):not(.paper-card):not(.photo-thumb):hover,
+.callout a[href]:hover,
+.focus-card a[href]:hover {
+  transform: translateY(-1px) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.28),
+    0 10px 22px rgba(18, 45, 75, .10) !important;
+}
+
+html[data-theme="space"] .button,
+html[data-theme="space"] .btn,
+html[data-theme="space"] a.button,
+html[data-theme="space"] .card a[href]:not(.nav a):not(.project-link-card):not(.paper-card):not(.photo-thumb),
+html[data-theme="space"] .callout a[href],
+html[data-theme="space"] .focus-card a[href],
+html[data-theme-space] .button,
+html[data-theme-space] .btn,
+html[data-theme-space] a.button,
+html[data-theme-space] .card a[href]:not(.nav a):not(.project-link-card):not(.paper-card):not(.photo-thumb),
+html[data-theme-space] .callout a[href],
+html[data-theme-space] .focus-card a[href],
+body.space-mode .button,
+body.space-mode .btn,
+body.space-mode a.button,
+body.space-mode .card a[href]:not(.nav a):not(.project-link-card):not(.paper-card):not(.photo-thumb),
+body.space-mode .callout a[href],
+body.space-mode .focus-card a[href] {
+  border-color: rgba(255,255,255,.12) !important;
+  background: linear-gradient(180deg,
+      rgba(255,255,255,.14),
+      rgba(255,255,255,.05)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 8px 18px rgba(0,0,0,.12) !important;
+}
+
+/* Subtle hover lift for card blocks */
+.hero-card:hover,
+.card:hover,
+.callout:hover,
+.focus-card:hover,
+.affiliation-card:hover,
+.status-card:hover,
+.project-link-card:hover,
+.paper-card:hover,
+.cv-edu-card:hover,
+.research-note-card:hover,
+.log-entry:hover {
+  transform: translateY(-1px) !important;
+  transition: transform .18s ease, box-shadow .18s ease !important;
+}
+
+/* Image holders should blend with glass surroundings */
+.avatar,
+.cv-photo,
+.photo-grid img,
+.slide-image,
+.photo-thumb img {
+  border-radius: 20px !important;
+}
+
+.slideshow-frame,
+.photo-stage {
+  padding: 14px !important;
+}
+
+/* Fallback for browsers without backdrop-filter */
+@supports not ((backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px))) {
+  .hero-card,
+  .card,
+  .callout,
+  .focus-card,
+  .affiliation-card,
+  .status-card,
+  .project-link-card,
+  .paper-card,
+  .cv-edu-card,
+  .research-note-card,
+  .log-entry,
+  .slideshow-frame,
+  .photo-stage,
+  .contact-card,
+  .profile-card,
+  .info-card {
+    background: rgba(24, 34, 48, .72) !important;
+  }
+
+  .pill,
+  .cv-edu-date,
+  .research-note-date,
+  .log-date,
+  .log-tags span {
+    background: rgba(255,255,255,.10) !important;
+  }
+}
