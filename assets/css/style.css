@@ -5563,3 +5563,106 @@ html:not([data-theme="space"]) .action-row a[href="research.html"] {
     border-radius: 13px !important;
   }
 }
+
+
+/* ============================================================
+   Mobile navigation: transparent over the page background
+   The mobile nav no longer has its own glass panel/background.
+   It visually shares the same asteroid/page background.
+   Desktop and footer are unchanged.
+   ============================================================ */
+
+@media (max-width: 760px) {
+  .nav {
+    background: transparent !important;
+    background-image: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    gap: 9px 12px !important;
+  }
+
+  html:not([data-theme="space"]) .nav,
+  html[data-theme="space"] .nav,
+  html[data-theme-space] .nav,
+  body.space-mode .nav {
+    background: transparent !important;
+    background-image: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .nav a {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: rgba(238, 246, 255, .92) !important;
+    text-shadow:
+      0 2px 10px rgba(0,0,0,.46),
+      0 0 18px rgba(180,220,255,.16) !important;
+  }
+
+  .nav a:hover,
+  .nav a[aria-current="page"] {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+  }
+
+  /* Preserve the thin glowing underline as the active-state cue. */
+  .nav a::after {
+    bottom: 3px !important;
+    left: 8px !important;
+    right: 8px !important;
+    height: 2px !important;
+  }
+
+  .nav a[aria-current="page"]::after,
+  .nav a:hover::after {
+    opacity: 1 !important;
+    transform: scaleX(1) !important;
+  }
+
+  /* Mode button remains usable, but no big surrounding nav panel. */
+  .theme-toggle {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.045)) !important;
+    border: 1px solid rgba(220, 240, 255, .22) !important;
+    box-shadow:
+      0 10px 22px rgba(0,0,0,.18),
+      inset 0 1px 0 rgba(255,255,255,.14) !important;
+    backdrop-filter: blur(10px) saturate(1.05) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(1.05) !important;
+    color: rgba(246, 251, 255, .96) !important;
+    text-shadow: 0 2px 10px rgba(0,0,0,.36) !important;
+  }
+
+  html:not([data-theme="space"]) .nav a {
+    color: rgba(10, 26, 44, .88) !important;
+    text-shadow:
+      0 1px 10px rgba(255,255,255,.54),
+      0 0 12px rgba(255,255,255,.28) !important;
+  }
+
+  html:not([data-theme="space"]) .nav a:hover,
+  html:not([data-theme="space"]) .nav a[aria-current="page"] {
+    color: rgba(4, 18, 34, .96) !important;
+  }
+
+  html:not([data-theme="space"]) .theme-toggle {
+    color: rgba(5, 21, 38, .92) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.44), rgba(255,255,255,.16)) !important;
+    border-color: rgba(20, 70, 112, .16) !important;
+    box-shadow:
+      0 10px 22px rgba(18,45,75,.10),
+      inset 0 1px 0 rgba(255,255,255,.34) !important;
+    text-shadow: 0 1px 10px rgba(255,255,255,.50) !important;
+  }
+}
