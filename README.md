@@ -1,24 +1,25 @@
-# Mads LIU YONG — Fixed Layout Website
+# Mads LIU YONG — Blue Multi-page Website
 
-This version fixes the sidebar layout issue caused by the long affiliation text.
+This version fixes the footer overlap issue, changes the design to a clean blue-white theme, and separates each section into its own page.
+
+## Pages
+
+- `index.html`
+- `research.html`
+- `cv.html`
+- `notes.html`
+- `photography.html`
+- `contact.html`
 
 ## Upload method
 
-Upload all files in this folder to your GitHub repository:
+1. Open your GitHub repository: `erdwmads.github.io`
+2. Delete or replace the old website files.
+3. Upload all files in this folder, not the zip itself.
+4. Commit changes.
+5. Open `https://erdwmads.github.io`
 
-`erdwmads.github.io`
+## Edit first
 
-Do not upload the zip itself.
-
-## Important files
-
-- `index.html`
-- `assets/css/style.css`
-- `assets/img/profile-placeholder.svg`
-
-If you already uploaded the previous version, you can replace only:
-
-- `index.html`
-- `assets/css/style.css`
-
-Then click `Commit changes`.
+- Replace the public email in `contact.html`.
+- Replace `assets/img/profile-placeholder.svg` with your own image if needed.
