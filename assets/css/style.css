@@ -423,32 +423,84 @@ code {
 }
 
 
-/* Global transparent background image */
-body {
-  background-image:
-    linear-gradient(
-      rgba(247, 251, 255, 0.84),
-      rgba(247, 251, 255, 0.92)
-    ),
-    url("../img/asteroid-bennu.jpg") !important;
+/* ============================================================
+   Global asteroid background
+   Put asteroid-bennu.jpg in: assets/img/asteroid-bennu.jpg
+   This method uses a fixed pseudo-element, so it is harder
+   for earlier body background rules to override.
+   ============================================================ */
 
-  background-size: cover, cover !important;
-  background-position: center center, center center !important;
-  background-repeat: no-repeat, no-repeat !important;
-  background-attachment: fixed, fixed !important;
+body {
+  position: relative;
+  background: #f7fbff !important;
 }
 
-/* Make content cards slightly translucent */
+/* Background image layer */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("../img/asteroid-bennu.jpg");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  opacity: 0.20;
+}
+
+/* Keep all real page content above the background image */
+.site-header,
+.main,
+.site-footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* Slightly translucent panels so the background has atmosphere but text stays readable */
 .card,
 .hero-card,
 .callout {
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.88) !important;
   backdrop-filter: blur(6px);
 }
 
-/* Make header and footer match the background */
 .site-header,
 .site-footer {
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.84) !important;
   backdrop-filter: blur(12px);
+}
+
+/* Cropped, clean photography grid */
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 22px;
+  align-items: start;
+}
+
+.photo-grid img,
+.gallery-photo {
+  width: 100%;
+  height: 360px;
+  max-width: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  background: var(--paper);
+}
+
+@media (max-width: 860px) {
+  .photo-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .photo-grid img,
+  .gallery-photo {
+    height: 300px;
+  }
 }
