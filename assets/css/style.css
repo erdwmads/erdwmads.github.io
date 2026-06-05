@@ -7046,144 +7046,141 @@ body.space-mode .open-project:hover {
 
 
 /* ============================================================
-   ABSOLUTE FINAL: remove glass rectangles from Home / Contact text links
-   The previous version still used a background-image underline, and older
-   card-link rules could still leave a translucent link slab. This version
-   uses native text-decoration only: no background, no glass, no pseudo box.
+   FINAL: ordinary text links without glass boxes
+   Keep the text hyperlinks. Remove only the transparent glass
+   rectangle / mini button behind them. Applies to Light + Space.
    ============================================================ */
 
-/* Home page card links */
-.home-card-grid .card > a,
-.home-card-grid article.card > a,
-.home-card-grid .card a[href="research.html"],
-.home-card-grid .card a[href="research-log.html"],
-.home-card-grid .card a[href="paper-shelf.html"],
-.home-card-grid .card a[href="photography.html"],
-
-/* Contact affiliation link */
-body:has(a[href*="min-lab.w.waseda.jp"]) .card p > a[href*="min-lab.w.waseda.jp"],
-.card p > a[href*="min-lab.w.waseda.jp"],
-main .card p a[target="_blank"]:not(.button):not(.btn) {
-  all: unset !important;
+/* Home cards + Contact affiliation ordinary links */
+html body main .card > a[href]:not(.button):not(.btn):not(.brand),
+html body main article.card > a[href]:not(.button):not(.btn):not(.brand),
+html body main .card p a[href]:not(.button):not(.btn):not(.brand),
+html body main .feature-card > a[href]:not(.button):not(.btn):not(.brand),
+html body main .feature-card p a[href]:not(.button):not(.btn):not(.brand),
+html body main .contact-card a[href]:not(.button):not(.btn):not(.brand),
+html body main .affiliation-card a[href]:not(.button):not(.btn):not(.brand),
+html body main section .card a[href]:not(.button):not(.btn):not(.brand):not(.project-link-card):not(.paper-card):not(.photo-thumb),
+html body main a[href="research.html"]:not(.button):not(.btn),
+html body main a[href="research-log.html"]:not(.button):not(.btn),
+html body main a[href="paper-shelf.html"]:not(.button):not(.btn),
+html body main a[href="photography.html"]:not(.button):not(.btn),
+html body main a[href*="min-lab.w.waseda.jp"]:not(.button):not(.btn) {
   display: inline !important;
-  cursor: pointer !important;
+  inline-size: auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  block-size: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
 
-  color: rgba(164, 209, 250, .96) !important;
-  font: inherit !important;
-  font-weight: 620 !important;
-  letter-spacing: inherit !important;
-  line-height: inherit !important;
+  margin: 0 !important;
+  padding: 0 !important;
 
-  text-decoration-line: underline !important;
-  text-decoration-thickness: 1px !important;
-  text-decoration-color: currentColor !important;
-  text-underline-offset: .20em !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline-offset: 3px !important;
 
-  background: none !important;
+  background: transparent !important;
   background-color: transparent !important;
   background-image: none !important;
   background-size: auto !important;
   background-position: initial !important;
   background-repeat: initial !important;
 
-  border: 0 !important;
-  border-radius: 0 !important;
   box-shadow: none !important;
   filter: none !important;
-  outline: none !important;
-
-  padding: 0 !important;
-  margin: 0 !important;
-  min-width: 0 !important;
-  min-height: 0 !important;
-  width: auto !important;
-  height: auto !important;
-
-  transform: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+
+  transform: none !important;
+  opacity: 1 !important;
+
+  color: rgba(164, 210, 250, .96) !important;
+  font: inherit !important;
+  font-weight: 620 !important;
+  letter-spacing: inherit !important;
+  line-height: inherit !important;
+
+  text-decoration-line: underline !important;
+  text-decoration-style: solid !important;
+  text-decoration-thickness: 1px !important;
+  text-decoration-color: currentColor !important;
+  text-underline-offset: 4px !important;
+  text-decoration-skip-ink: auto !important;
+
   -webkit-tap-highlight-color: transparent !important;
   box-decoration-break: slice !important;
   -webkit-box-decoration-break: slice !important;
 }
 
-/* Kill any before/after layers that made them look like tiny glass buttons. */
-.home-card-grid .card > a::before,
-.home-card-grid .card > a::after,
-.home-card-grid article.card > a::before,
-.home-card-grid article.card > a::after,
-.card p > a[href*="min-lab.w.waseda.jp"]::before,
-.card p > a[href*="min-lab.w.waseda.jp"]::after,
-main .card p a[target="_blank"]:not(.button):not(.btn)::before,
-main .card p a[target="_blank"]:not(.button):not(.btn)::after {
+/* Remove old pseudo-element glass skins or artificial background layers. */
+html body main .card > a[href]:not(.button):not(.btn)::before,
+html body main .card > a[href]:not(.button):not(.btn)::after,
+html body main article.card > a[href]:not(.button):not(.btn)::before,
+html body main article.card > a[href]:not(.button):not(.btn)::after,
+html body main .card p a[href]:not(.button):not(.btn)::before,
+html body main .card p a[href]:not(.button):not(.btn)::after,
+html body main .feature-card > a[href]:not(.button):not(.btn)::before,
+html body main .feature-card > a[href]:not(.button):not(.btn)::after,
+html body main .contact-card a[href]:not(.button):not(.btn)::before,
+html body main .contact-card a[href]:not(.button):not(.btn)::after,
+html body main .affiliation-card a[href]:not(.button):not(.btn)::before,
+html body main .affiliation-card a[href]:not(.button):not(.btn)::after,
+html body main a[href*="min-lab.w.waseda.jp"]:not(.button):not(.btn)::before,
+html body main a[href*="min-lab.w.waseda.jp"]:not(.button):not(.btn)::after {
   content: none !important;
   display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
   background: none !important;
+  background-image: none !important;
   box-shadow: none !important;
   opacity: 0 !important;
 }
 
-/* Hover: only a cleaner underline, never a rectangle. */
-.home-card-grid .card > a:hover,
-.home-card-grid article.card > a:hover,
-.home-card-grid .card a[href="research.html"]:hover,
-.home-card-grid .card a[href="research-log.html"]:hover,
-.home-card-grid .card a[href="paper-shelf.html"]:hover,
-.home-card-grid .card a[href="photography.html"]:hover,
-.card p > a[href*="min-lab.w.waseda.jp"]:hover,
-main .card p a[target="_blank"]:not(.button):not(.btn):hover {
-  color: rgba(205, 232, 255, 1) !important;
-  text-decoration-thickness: 2px !important;
-  background: none !important;
+/* Hover: only colour + underline weight changes. No box. */
+html body main .card > a[href]:not(.button):not(.btn):hover,
+html body main article.card > a[href]:not(.button):not(.btn):hover,
+html body main .card p a[href]:not(.button):not(.btn):hover,
+html body main .feature-card > a[href]:not(.button):not(.btn):hover,
+html body main .contact-card a[href]:not(.button):not(.btn):hover,
+html body main .affiliation-card a[href]:not(.button):not(.btn):hover,
+html body main a[href*="min-lab.w.waseda.jp"]:not(.button):not(.btn):hover {
+  background: transparent !important;
   background-image: none !important;
   box-shadow: none !important;
+  color: rgba(204, 232, 255, .98) !important;
+  text-decoration-thickness: 1.5px !important;
   transform: none !important;
 }
 
-/* Light Mode version */
-html:not([data-theme="space"]) .home-card-grid .card > a,
-html:not([data-theme="space"]) .home-card-grid article.card > a,
-html:not([data-theme="space"]) .home-card-grid .card a[href="research.html"],
-html:not([data-theme="space"]) .home-card-grid .card a[href="research-log.html"],
-html:not([data-theme="space"]) .home-card-grid .card a[href="paper-shelf.html"],
-html:not([data-theme="space"]) .home-card-grid .card a[href="photography.html"],
-html:not([data-theme="space"]) .card p > a[href*="min-lab.w.waseda.jp"],
-html:not([data-theme="space"]) main .card p a[target="_blank"]:not(.button):not(.btn) {
-  color: var(--blue-dark) !important;
-  background: none !important;
-  background-image: none !important;
-  box-shadow: none !important;
+/* Light Mode tone */
+html:not([data-theme="space"]) body main .card > a[href]:not(.button):not(.btn),
+html:not([data-theme="space"]) body main article.card > a[href]:not(.button):not(.btn),
+html:not([data-theme="space"]) body main .card p a[href]:not(.button):not(.btn),
+html:not([data-theme="space"]) body main .feature-card > a[href]:not(.button):not(.btn),
+html:not([data-theme="space"]) body main .contact-card a[href]:not(.button):not(.btn),
+html:not([data-theme="space"]) body main .affiliation-card a[href]:not(.button):not(.btn),
+html:not([data-theme="space"]) body main a[href*="min-lab.w.waseda.jp"]:not(.button):not(.btn) {
+  color: #1c5f98 !important;
 }
 
-/* Space Mode version: explicit late override */
-html[data-theme="space"] .home-card-grid .card > a,
-html[data-theme-space] .home-card-grid .card > a,
-body.space-mode .home-card-grid .card > a,
-html[data-theme="space"] .home-card-grid article.card > a,
-html[data-theme-space] .home-card-grid article.card > a,
-body.space-mode .home-card-grid article.card > a,
-html[data-theme="space"] .card p > a[href*="min-lab.w.waseda.jp"],
-html[data-theme-space] .card p > a[href*="min-lab.w.waseda.jp"],
-body.space-mode .card p > a[href*="min-lab.w.waseda.jp"] {
-  color: rgba(164, 209, 250, .96) !important;
-  background: none !important;
-  background-color: transparent !important;
-  background-image: none !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  text-decoration-line: underline !important;
-  text-decoration-thickness: 1px !important;
-  text-underline-offset: .20em !important;
-}
-
-/* Focus-visible remains accessible without a glass block. */
-.home-card-grid .card > a:focus-visible,
-.home-card-grid article.card > a:focus-visible,
-.card p > a[href*="min-lab.w.waseda.jp"]:focus-visible,
-main .card p a[target="_blank"]:not(.button):not(.btn):focus-visible {
-  outline: 2px solid rgba(139,199,255,.55) !important;
-  outline-offset: 4px !important;
-  border-radius: 3px !important;
+/* Preserve real UI controls. */
+html body .nav a,
+html body .site-nav a,
+html body nav.primary-nav a,
+html body a.button,
+html body a.btn,
+html body .hero a[href="research.html"].button,
+html body .hero a[href="cv.html"].button,
+html body .mission-lightbox__btn,
+html body .mission-lightbox__thumb,
+html body a.project-link-card,
+html body a.paper-card,
+html body a.photo-thumb {
+  text-decoration: none;
 }
