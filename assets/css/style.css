@@ -7839,3 +7839,480 @@ html:not([data-theme="space"]) body main .mission-jump-card.compact-jump-card .m
     text-align: right !important;
   }
 }
+
+
+/* ============================================================
+   Interface 2046 — Astromaterials Command Surface
+   A design-forward layer: orbital HUD, edge rails, command-deck
+   navigation, wider spatial layout, and disciplined academic cards.
+   ============================================================ */
+
+:root {
+  --ui2046-cyan: #8fd0ff;
+  --ui2046-cyan-soft: rgba(143, 208, 255, .16);
+  --ui2046-ice: rgba(238, 248, 255, .96);
+  --ui2046-muted: rgba(214, 228, 240, .68);
+  --ui2046-panel: rgba(8, 18, 32, .66);
+  --ui2046-panel-soft: rgba(12, 25, 42, .46);
+  --ui2046-line: rgba(195, 226, 255, .16);
+  --ui2046-warn: #ffd99a;
+}
+
+/* Wider, more cinematic canvas on large screens */
+@media (min-width: 1120px) {
+  :root {
+    --max: 1460px;
+  }
+
+  .main,
+  .header-inner,
+  .footer-inner {
+    max-width: min(1460px, calc(100vw - 88px)) !important;
+  }
+
+  .main {
+    padding-left: 44px !important;
+    padding-right: 44px !important;
+  }
+}
+
+/* Deep-space HUD overlay behind content, never blocking interaction */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 12% 22%, rgba(143,208,255,.12), transparent 28rem),
+    radial-gradient(circle at 88% 18%, rgba(255,217,154,.075), transparent 24rem),
+    radial-gradient(circle at 76% 78%, rgba(143,208,255,.08), transparent 26rem),
+    linear-gradient(90deg, rgba(143,208,255,.055) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(143,208,255,.045) 1px, transparent 1px);
+  background-size: auto, auto, auto, 96px 96px, 96px 96px;
+  opacity: .46;
+  mix-blend-mode: screen;
+}
+
+html:not([data-theme="space"]) body::after {
+  opacity: .22;
+  mix-blend-mode: multiply;
+}
+
+/* Route progress beam */
+.ui2046-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 9998;
+  pointer-events: none;
+  background: rgba(143,208,255,.08);
+}
+
+.ui2046-progress span {
+  display: block;
+  width: 0%;
+  height: 100%;
+  background:
+    linear-gradient(90deg, rgba(143,208,255,.18), rgba(143,208,255,.95), rgba(255,217,154,.82));
+  box-shadow:
+    0 0 12px rgba(143,208,255,.42),
+    0 0 28px rgba(143,208,255,.20);
+  transition: width .08s linear;
+}
+
+/* Edge interface: visible only on desktop to keep mobile practical */
+.ui2046-rail {
+  position: fixed;
+  top: 50%;
+  z-index: 3;
+  display: grid;
+  gap: 10px;
+  pointer-events: none;
+  transform: translateY(-50%);
+  color: var(--ui2046-muted);
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.ui2046-left {
+  left: 18px;
+}
+
+.ui2046-right {
+  right: 18px;
+  text-align: right;
+}
+
+.ui2046-rail-line {
+  width: 1px;
+  height: 128px;
+  margin: 0 auto;
+  background:
+    linear-gradient(180deg, transparent, rgba(143,208,255,.42), transparent);
+}
+
+.ui2046-left .ui2046-rail-line {
+  margin-left: 5px;
+}
+
+.ui2046-right .ui2046-rail-line {
+  margin-right: 5px;
+}
+
+.ui2046-rail strong {
+  color: rgba(238,248,255,.92);
+  font-size: 11px;
+  letter-spacing: .16em;
+}
+
+.ui2046-rail span {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.ui2046-right span,
+.ui2046-right strong {
+  writing-mode: vertical-rl;
+}
+
+.ui2046-corner {
+  position: fixed;
+  z-index: 3;
+  width: 54px;
+  height: 54px;
+  pointer-events: none;
+  opacity: .54;
+  border-color: rgba(143,208,255,.36);
+}
+
+.ui2046-corner-tl {
+  top: 84px;
+  left: 18px;
+  border-top: 1px solid;
+  border-left: 1px solid;
+}
+
+.ui2046-corner-br {
+  right: 18px;
+  bottom: 84px;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+}
+
+.ui2046-orbit {
+  position: fixed;
+  right: min(8vw, 124px);
+  top: min(22vh, 210px);
+  width: 360px;
+  height: 360px;
+  z-index: 0;
+  pointer-events: none;
+  border: 1px solid rgba(143,208,255,.08);
+  border-radius: 50%;
+  opacity: .42;
+  transform: rotate(-18deg);
+  box-shadow:
+    inset 0 0 54px rgba(143,208,255,.035),
+    0 0 54px rgba(143,208,255,.045);
+}
+
+.ui2046-orbit::before,
+.ui2046-orbit::after {
+  content: "";
+  position: absolute;
+  inset: 20%;
+  border: 1px solid rgba(143,208,255,.075);
+  border-radius: 50%;
+}
+
+.ui2046-orbit::after {
+  inset: 42%;
+  background: rgba(143,208,255,.14);
+  box-shadow: 0 0 18px rgba(143,208,255,.22);
+}
+
+/* Header becomes a command deck, not just a bar */
+.site-header {
+  border-bottom: 1px solid rgba(195,226,255,.12) !important;
+}
+
+.header-inner {
+  position: relative;
+}
+
+.nav {
+  border: 1px solid rgba(195,226,255,.18) !important;
+  box-shadow:
+    0 18px 42px rgba(0,0,0,.14),
+    inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+
+.nav a,
+.nav button,
+.site-nav a,
+.site-nav button {
+  position: relative;
+}
+
+.nav a[aria-current="page"]::after,
+.site-nav a[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 5px;
+  height: 1px;
+  background:
+    linear-gradient(90deg, transparent, var(--ui2046-cyan), transparent);
+  box-shadow: 0 0 8px rgba(143,208,255,.56);
+}
+
+/* Cards: more spacecraft-instrument panel, less generic web card */
+.card,
+.glass-card,
+.panel,
+.project-link-card,
+.research-note-card,
+.status-card,
+.paper-card,
+.cv-edu-card,
+.contact-card,
+.feature-card,
+.mission-index-panel,
+.mission-log-panel,
+.photo-card {
+  position: relative;
+}
+
+.card::before,
+.project-link-card::before,
+.research-note-card::before,
+.status-card::before,
+.paper-card::before,
+.cv-edu-card::before,
+.contact-card::before,
+.feature-card::before,
+.mission-index-panel::before {
+  content: "";
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  width: 18px;
+  height: 18px;
+  border-top: 1px solid rgba(143,208,255,.22);
+  border-right: 1px solid rgba(143,208,255,.22);
+  pointer-events: none;
+  opacity: .72;
+}
+
+.card::after,
+.project-link-card::after,
+.research-note-card::after,
+.status-card::after,
+.paper-card::after,
+.cv-edu-card::after,
+.contact-card::after,
+.feature-card::after,
+.mission-index-panel::after {
+  content: "";
+  position: absolute;
+  left: 13px;
+  bottom: 13px;
+  width: 18px;
+  height: 18px;
+  border-left: 1px solid rgba(143,208,255,.16);
+  border-bottom: 1px solid rgba(143,208,255,.16);
+  pointer-events: none;
+  opacity: .64;
+}
+
+/* Section labels become orbital coordinates */
+.section-label,
+.eyebrow {
+  color: var(--ui2046-cyan) !important;
+  text-shadow: 0 0 16px rgba(143,208,255,.18);
+}
+
+.section-label::before {
+  content: "◆ ";
+  opacity: .64;
+}
+
+/* More asymmetry: section labels live as left-side coordinates on wider screens */
+@media (min-width: 1180px) {
+  .section.two-col,
+  .research-notes-section,
+  .cv-education-section,
+  .paper-shelf-section {
+    grid-template-columns: 180px minmax(0, 1fr) !important;
+    gap: 32px !important;
+  }
+
+  .section-label {
+    position: sticky;
+    top: 106px;
+    align-self: start;
+    padding-top: 10px;
+    border-top: 1px solid rgba(143,208,255,.18);
+  }
+}
+
+/* Mission Log: explicit future archive behavior */
+.research-note-list.mission-log-list {
+  gap: 22px !important;
+}
+
+.mission-log-entry {
+  overflow: clip;
+}
+
+.mission-log-entry .research-note-date {
+  border: 1px solid rgba(143,208,255,.22) !important;
+  background:
+    linear-gradient(180deg, rgba(143,208,255,.16), rgba(255,255,255,.045)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 0 20px rgba(143,208,255,.06) !important;
+}
+
+/* Mission Index: more like a future archive selector */
+.mission-index-panel {
+  overflow: hidden;
+}
+
+.mission-index-panel::before {
+  width: 34px;
+  height: 34px;
+}
+
+.mission-index-head {
+  border-bottom: 1px solid rgba(143,208,255,.12);
+  padding-bottom: 14px;
+}
+
+.compact-jump-card {
+  isolation: isolate;
+}
+
+.compact-jump-card .mission-jump-log {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 0 16px rgba(143,208,255,.08);
+}
+
+/* Photography gets a quiet viewport feel */
+.photo-grid img,
+.photography-grid img {
+  filter: saturate(.92) contrast(1.03);
+}
+
+/* Preserve real readability in light mode */
+html:not([data-theme="space"]) .ui2046-rail,
+html:not([data-theme="space"]) .ui2046-corner,
+html:not([data-theme="space"]) .ui2046-orbit {
+  opacity: .20;
+}
+
+html:not([data-theme="space"]) .ui2046-rail strong {
+  color: rgba(8, 28, 50, .74);
+}
+
+html:not([data-theme="space"]) .card::before,
+html:not([data-theme="space"]) .card::after,
+html:not([data-theme="space"]) .project-link-card::before,
+html:not([data-theme="space"]) .project-link-card::after,
+html:not([data-theme="space"]) .research-note-card::before,
+html:not([data-theme="space"]) .research-note-card::after,
+html:not([data-theme="space"]) .status-card::before,
+html:not([data-theme="space"]) .status-card::after,
+html:not([data-theme="space"]) .paper-card::before,
+html:not([data-theme="space"]) .paper-card::after,
+html:not([data-theme="space"]) .cv-edu-card::before,
+html:not([data-theme="space"]) .cv-edu-card::after,
+html:not([data-theme="space"]) .contact-card::before,
+html:not([data-theme="space"]) .contact-card::after,
+html:not([data-theme="space"]) .feature-card::before,
+html:not([data-theme="space"]) .feature-card::after {
+  border-color: rgba(31,95,153,.14);
+}
+
+/* Mobile: keep the imagination, remove the cockpit clutter */
+@media (max-width: 900px) {
+  body::after {
+    background-size: auto, auto, auto, 72px 72px, 72px 72px;
+    opacity: .26;
+  }
+
+  .ui2046-rail,
+  .ui2046-corner,
+  .ui2046-orbit {
+    display: none;
+  }
+
+  .card::before,
+  .card::after,
+  .project-link-card::before,
+  .project-link-card::after,
+  .research-note-card::before,
+  .research-note-card::after,
+  .status-card::before,
+  .status-card::after,
+  .paper-card::before,
+  .paper-card::after,
+  .cv-edu-card::before,
+  .cv-edu-card::after,
+  .contact-card::before,
+  .contact-card::after,
+  .feature-card::before,
+  .feature-card::after,
+  .mission-index-panel::before,
+  .mission-index-panel::after {
+    width: 13px;
+    height: 13px;
+    top: 10px;
+    right: 10px;
+    left: auto;
+    bottom: auto;
+  }
+
+  .card::after,
+  .project-link-card::after,
+  .research-note-card::after,
+  .status-card::after,
+  .paper-card::after,
+  .cv-edu-card::after,
+  .contact-card::after,
+  .feature-card::after,
+  .mission-index-panel::after {
+    top: auto;
+    right: auto;
+    left: 10px;
+    bottom: 10px;
+  }
+
+  .section-label::before {
+    content: "";
+  }
+
+  .nav a[aria-current="page"]::after,
+  .site-nav a[aria-current="page"]::after {
+    left: 9px;
+    right: 9px;
+    bottom: 4px;
+  }
+}
+
+/* Reduced motion: keep atmosphere static */
+@media (prefers-reduced-motion: reduce) {
+  .ui2046-progress span,
+  .mission-jump-card,
+  .card,
+  .project-link-card,
+  .research-note-card {
+    transition: none !important;
+  }
+}

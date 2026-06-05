@@ -1,6 +1,6 @@
-Upload/replace these files and folders:
+Experimental Interface 2046 patch.
 
-Root HTML:
+Replace/upload these files:
 - index.html
 - research.html
 - research-log.html
@@ -9,21 +9,13 @@ Root HTML:
 - cv.html
 - photography.html
 - contact.html
-
-New folders:
-- ja/
-- zh/
-
-Assets:
 - assets/css/style.css
-- assets/js/  (included for safety; upload/replace the JS files inside)
+- assets/js/interface-2046.js
 
-Language order:
-English / 日本語 / 繁體中文
-
-Notes:
-- English remains the main site at the root.
-- Japanese pages are under /ja/.
-- Traditional Chinese pages are under /zh/.
-- Existing images, PDF files, favicon files, and paper assets are reused from the root assets folder.
-- Paper Shelf still has no Download / Download PDF buttons.
+Concept:
+- Adds an astromaterials command-surface layer.
+- Adds desktop edge rails, corner reticles, orbital HUD, and scroll progress.
+- Widens the desktop layout and makes content feel less centered-only.
+- Refines cards into spacecraft-instrument panels.
+- Keeps mobile practical: decorative rails are hidden, proportions remain compact.
+- Preserves current text-link cleanup, Mission Log lightbox, status auto-sync, and Mission Index behavior.
