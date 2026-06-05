@@ -1,21 +1,13 @@
-Experimental Interface 2046 patch.
-
 Replace/upload these files:
-- index.html
-- research.html
-- research-log.html
-- research-graduation.html
-- paper-shelf.html
-- cv.html
-- photography.html
-- contact.html
-- assets/css/style.css
-- assets/js/interface-2046.js
 
-Concept:
-- Adds an astromaterials command-surface layer.
-- Adds desktop edge rails, corner reticles, orbital HUD, and scroll progress.
-- Widens the desktop layout and makes content feel less centered-only.
-- Refines cards into spacecraft-instrument panels.
-- Keeps mobile practical: decorative rails are hidden, proportions remain compact.
-- Preserves current text-link cleanup, Mission Log lightbox, status auto-sync, and Mission Index behavior.
+assets/css/style.css
+assets/js/interface-2046.js
+
+Changes:
+- Removes the left ASTROMATERIALS / CI1 · ORGUEIL · DOLOMITE rail.
+- Removes the card corner marks.
+- Removes the top-left / bottom-right camera-viewfinder corner lines.
+- Replaces the previous orbital ring with a subtle Solar System / Kuiper Belt diagram.
+- Standardises Mission Log image grids:
+  desktop max 3 per row, tablet 2, phone 1.
+- Keeps the Interface 2046 direction but makes it quieter and more refined.

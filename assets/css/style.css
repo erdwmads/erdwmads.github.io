@@ -8316,3 +8316,278 @@ html:not([data-theme="space"]) .feature-card::after {
     transition: none !important;
   }
 }
+
+
+/* ============================================================
+   Interface 2046 Refined — quieter, more architectural
+   Removes the left ASTROMATERIALS rail, card corner marks,
+   camera-frame corner reticles, and replaces the old orbital ring
+   with a subtle Solar System / Kuiper Belt diagram.
+   Also standardises Mission Log image grids.
+   ============================================================ */
+
+/* Remove the parts that felt too decorative or literal. */
+.ui2046-left,
+.ui2046-corner,
+.ui2046-corner-tl,
+.ui2046-corner-br,
+.ui2046-orbit {
+  display: none !important;
+}
+
+/* Remove the thin corner marks from all cards/panels. */
+.card::before,
+.card::after,
+.glass-card::before,
+.glass-card::after,
+.panel::before,
+.panel::after,
+.project-link-card::before,
+.project-link-card::after,
+.research-note-card::before,
+.research-note-card::after,
+.status-card::before,
+.status-card::after,
+.paper-card::before,
+.paper-card::after,
+.cv-edu-card::before,
+.cv-edu-card::after,
+.contact-card::before,
+.contact-card::after,
+.feature-card::before,
+.feature-card::after,
+.mission-index-panel::before,
+.mission-index-panel::after,
+.mission-log-panel::before,
+.mission-log-panel::after,
+.photo-card::before,
+.photo-card::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Desktop right rail becomes quiet metadata, not a loud HUD. */
+.ui2046-right {
+  right: 20px !important;
+  opacity: .46 !important;
+}
+
+.ui2046-right strong,
+.ui2046-right span {
+  color: rgba(214, 228, 240, .62) !important;
+}
+
+.ui2046-right .ui2046-rail-line {
+  background:
+    linear-gradient(180deg, transparent, rgba(143,208,255,.24), transparent) !important;
+}
+
+/* Subtle Solar System diagram: static, scientific, and quiet. */
+.ui2046-solar-system {
+  position: fixed;
+  right: clamp(28px, 5vw, 92px);
+  top: clamp(130px, 20vh, 230px);
+  width: min(42vw, 620px);
+  aspect-ratio: 1.62 / 1;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .34;
+  transform: rotate(-9deg);
+  filter: drop-shadow(0 0 18px rgba(143,208,255,.08));
+}
+
+.ui2046-system-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 217, 154, .55);
+  box-shadow:
+    0 0 14px rgba(255,217,154,.26),
+    0 0 30px rgba(143,208,255,.08);
+  transform: translate(-50%, -50%);
+}
+
+.ui2046-system-orbit {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--w);
+  height: var(--h);
+  border-radius: 50%;
+  border: 1px solid rgba(143,208,255,var(--alpha, .12));
+  transform: translate(-50%, -50%);
+}
+
+.ui2046-system-orbit::before {
+  content: "";
+  position: absolute;
+  left: calc(50% + var(--px, 40%));
+  top: calc(50% + var(--py, 0%));
+  width: var(--planet, 3px);
+  height: var(--planet, 3px);
+  border-radius: 50%;
+  background: rgba(226, 240, 252, var(--palpha, .52));
+  box-shadow: 0 0 10px rgba(143,208,255,.18);
+  transform: translate(-50%, -50%);
+}
+
+.ui2046-system-orbit.inner {
+  --alpha: .10;
+  --planet: 2px;
+}
+
+.ui2046-system-orbit.earth {
+  --alpha: .16;
+  --planet: 3.5px;
+  --palpha: .68;
+}
+
+.ui2046-system-orbit.giant {
+  --alpha: .12;
+  --planet: 4px;
+  --palpha: .50;
+}
+
+.ui2046-system-orbit.dwarf {
+  border-style: dashed;
+  --alpha: .16;
+  --planet: 2.5px;
+  --palpha: .58;
+}
+
+.ui2046-kuiper-belt {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 96%;
+  height: 78%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px dashed rgba(143,208,255,.13);
+  box-shadow:
+    inset 0 0 28px rgba(143,208,255,.025),
+    0 0 28px rgba(143,208,255,.025);
+}
+
+.ui2046-kuiper-belt::after {
+  content: "KUIPER BELT";
+  position: absolute;
+  right: 8%;
+  top: 18%;
+  color: rgba(214,228,240,.34);
+  font-size: 9px;
+  letter-spacing: .16em;
+  transform: rotate(9deg);
+}
+
+/* Smaller pages should not feel crowded. */
+@media (max-width: 1120px) {
+  .ui2046-solar-system {
+    opacity: .22;
+    right: 18px;
+    width: 48vw;
+  }
+}
+
+@media (max-width: 900px) {
+  .ui2046-solar-system,
+  .ui2046-right {
+    display: none !important;
+  }
+}
+
+/* Mission Log image grids: one consistent visual rule.
+   Desktop: max 3 per row. Tablet: 2. Phone: 1.
+   This prevents LOGs with different photo counts from feeling random. */
+.mission-log-entry .mission-photo-grid {
+  width: 100%;
+  max-width: 1080px;
+  gap: 14px !important;
+}
+
+.mission-log-entry .mission-photo-grid.three,
+.mission-log-entry .mission-photo-grid.four,
+.mission-log-entry .mission-photo-grid:not(.one) {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.mission-log-entry .mission-photo-grid.one {
+  grid-template-columns: minmax(0, min(100%, 640px)) !important;
+  justify-content: start !important;
+}
+
+.mission-log-entry .mission-photo-grid figure {
+  border-radius: 18px !important;
+  overflow: hidden !important;
+}
+
+.mission-log-entry .mission-photo-grid img {
+  aspect-ratio: 4 / 3 !important;
+  object-fit: cover !important;
+}
+
+.mission-log-entry .mission-photo-grid figcaption {
+  min-height: 48px !important;
+  display: flex !important;
+  align-items: flex-start !important;
+}
+
+@media (min-width: 1180px) {
+  .mission-log-entry .mission-photo-grid {
+    gap: 16px !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .mission-log-entry .mission-photo-grid.three,
+  .mission-log-entry .mission-photo-grid.four,
+  .mission-log-entry .mission-photo-grid:not(.one) {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .mission-log-entry .mission-photo-grid.three,
+  .mission-log-entry .mission-photo-grid.four,
+  .mission-log-entry .mission-photo-grid:not(.one),
+  .mission-log-entry .mission-photo-grid.one {
+    grid-template-columns: 1fr !important;
+  }
+
+  .mission-log-entry .mission-photo-grid {
+    gap: 12px !important;
+  }
+
+  .mission-log-entry .mission-photo-grid figcaption {
+    min-height: 0 !important;
+  }
+}
+
+/* More restrained card surfaces after removing corner marks. */
+.card,
+.glass-card,
+.panel,
+.project-link-card,
+.research-note-card,
+.status-card,
+.paper-card,
+.cv-edu-card,
+.contact-card,
+.feature-card,
+.mission-index-panel,
+.mission-log-panel,
+.photo-card {
+  border-color: rgba(195,226,255,.135) !important;
+}
+
+.card:hover,
+.project-link-card:hover,
+.research-note-card:hover,
+.paper-card:hover,
+.cv-edu-card:hover,
+.feature-card:hover {
+  border-color: rgba(143,208,255,.22) !important;
+}
