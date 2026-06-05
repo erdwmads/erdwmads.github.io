@@ -61,63 +61,78 @@
 
       const width = window.innerWidth || document.documentElement.clientWidth || 1200;
       const height = window.innerHeight || document.documentElement.clientHeight || 800;
+      const pad = 280;
 
-      // Eight-direction trajectories, but always enter from outside the viewport.
-      const directions = [
-        { name: "left-to-right", angle: 0, start: () => [-180, rand(0, height)], vec: [1, 0] },
-        { name: "right-to-left", angle: 180, start: () => [width + 180, rand(0, height)], vec: [-1, 0] },
-        { name: "top-to-bottom", angle: 90, start: () => [rand(0, width), -180], vec: [0, 1] },
-        { name: "bottom-to-top", angle: 270, start: () => [rand(0, width), height + 180], vec: [0, -1] },
-        { name: "nw-se", angle: 45, start: () => [rand(-220, width * 0.45), -180], vec: [1, 1] },
-        { name: "ne-sw", angle: 135, start: () => [rand(width * 0.55, width + 220), -180], vec: [-1, 1] },
-        { name: "sw-ne", angle: 315, start: () => [rand(-220, width * 0.45), height + 180], vec: [1, -1] },
-        { name: "se-nw", angle: 225, start: () => [rand(width * 0.55, width + 220), height + 180], vec: [-1, -1] }
+      // Start and end points are both outside opposite viewport boundaries.
+      // This makes the meteor cross the whole interface instead of stopping near an edge.
+      const trajectories = [
+        function () {
+          const y = rand(-height * 0.10, height * 1.10);
+          return { start: [-pad, y], end: [width + pad, y + rand(-height * 0.25, height * 0.25)] };
+        },
+        function () {
+          const y = rand(-height * 0.10, height * 1.10);
+          return { start: [width + pad, y], end: [-pad, y + rand(-height * 0.25, height * 0.25)] };
+        },
+        function () {
+          const x = rand(-width * 0.10, width * 1.10);
+          return { start: [x, -pad], end: [x + rand(-width * 0.25, width * 0.25), height + pad] };
+        },
+        function () {
+          const x = rand(-width * 0.10, width * 1.10);
+          return { start: [x, height + pad], end: [x + rand(-width * 0.25, width * 0.25), -pad] };
+        },
+        function () {
+          return { start: [-pad, rand(-pad, height * 0.35)], end: [width + pad, rand(height * 0.65, height + pad)] };
+        },
+        function () {
+          return { start: [width + pad, rand(-pad, height * 0.35)], end: [-pad, rand(height * 0.65, height + pad)] };
+        },
+        function () {
+          return { start: [-pad, rand(height * 0.65, height + pad)], end: [width + pad, rand(-pad, height * 0.35)] };
+        },
+        function () {
+          return { start: [width + pad, rand(height * 0.65, height + pad)], end: [-pad, rand(-pad, height * 0.35)] };
+        }
       ];
 
-      const d = choose(directions);
-      const start = d.start();
-      const len = rand(90, 190);
-      const travel = Math.max(width, height) * rand(0.75, 1.15);
-      const jitter = rand(-10, 10);
-      const angle = d.angle + jitter;
-      const rad = angle * Math.PI / 180;
-
-      // Use angle vector, so the visual trail and movement match.
-      const dx = Math.cos(rad) * travel;
-      const dy = Math.sin(rad) * travel;
-      const duration = rand(1250, 2300);
+      const t = choose(trajectories)();
+      const dx = t.end[0] - t.start[0];
+      const dy = t.end[1] - t.start[1];
+      const distance = Math.hypot(dx, dy);
+      const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+      const len = rand(110, 220);
+      const duration = Math.max(1550, Math.min(3600, distance / rand(0.82, 1.08)));
 
       el.style.setProperty("--meteor-len", len + "px");
-      el.style.left = start[0] + "px";
-      el.style.top = start[1] + "px";
+      el.style.left = t.start[0] + "px";
+      el.style.top = t.start[1] + "px";
       el.style.transform = "translate3d(0,0,0) rotate(" + angle + "deg)";
 
       layer.appendChild(el);
 
-      // Force a layout read so the transition always starts.
       void el.offsetWidth;
 
-      el.style.transition = "transform " + duration + "ms linear, opacity 220ms ease";
+      el.style.transition = "transform " + duration + "ms linear, opacity 260ms ease";
       el.classList.add("is-flying");
 
       requestAnimationFrame(function () {
         el.style.transform = "translate3d(" + dx + "px," + dy + "px,0) rotate(" + angle + "deg)";
       });
 
+      // Fade only after the endpoint is reached outside the viewport.
       window.setTimeout(function () {
         el.style.opacity = "0";
-      }, Math.max(500, duration - 260));
+      }, duration);
 
       window.setTimeout(function () {
         el.remove();
-      }, duration + 420);
+      }, duration + 340);
     }
 
-    // Reduced counts, but visible.
     for (let i = 0; i < 70; i++) makeDust();
     for (let i = 0; i < 12; i++) makePebble();
 
-    // Make meteors immediately visible after load, then continuously spawn.
     spawnMeteor();
     setTimeout(spawnMeteor, 450);
     setTimeout(spawnMeteor, 1050);

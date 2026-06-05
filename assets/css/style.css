@@ -8886,3 +8886,523 @@ html:not([data-theme="space"]) .ui2046-system-label,
 html:not([data-theme="space"]) .ui2046-kuiper-belt::after {
   color: rgba(26, 61, 92, .24) !important;
 }
+
+
+/* ============================================================
+   Interface 2046 v2 precision correction
+   Light-mode legibility, Space-mode chip balance, strict animated
+   Solar System, and duplicate Kuiper Belt text cleanup.
+   ============================================================ */
+
+/* 1) Light Mode: pale cyan labels were too weak. */
+html:not([data-theme="space"]) {
+  --blue: #1b6fa8;
+  --blue-dark: #0e4774;
+  --blue-soft: rgba(27, 111, 168, .115);
+  --ui2046-cyan: #126da8;
+  --ui2046-cyan-soft: rgba(18, 109, 168, .13);
+}
+
+html:not([data-theme="space"]) .section-label,
+html:not([data-theme="space"]) .eyebrow,
+html:not([data-theme="space"]) .mission-jump-log,
+html:not([data-theme="space"]) .mission-index-mode,
+html:not([data-theme="space"]) .status-card span,
+html:not([data-theme="space"]) .project-progress span,
+html:not([data-theme="space"]) .project-sync-note::before,
+html:not([data-theme="space"]) .research-note-date,
+html:not([data-theme="space"]) .mission-entry-kicker {
+  color: #126da8 !important;
+  text-shadow: none !important;
+}
+
+html:not([data-theme="space"]) .section-label,
+html:not([data-theme="space"]) .eyebrow {
+  font-weight: 900 !important;
+  letter-spacing: .18em !important;
+}
+
+html:not([data-theme="space"]) .lead,
+html:not([data-theme="space"]) .hero p,
+html:not([data-theme="space"]) .page-hero p {
+  color: rgba(20, 39, 58, .88) !important;
+}
+
+/* 2) Space Mode: remove white badge/card imbalance. */
+html[data-theme="space"] .status-card,
+html[data-theme-space] .status-card,
+body.space-mode .status-card,
+html[data-theme="space"] .project-progress > div,
+html[data-theme-space] .project-progress > div,
+body.space-mode .project-progress > div {
+  border-color: rgba(143, 208, 255, .15) !important;
+  background:
+    linear-gradient(180deg, rgba(14, 29, 48, .68), rgba(7, 17, 31, .50)) !important;
+  color: rgba(230, 242, 252, .90) !important;
+  box-shadow:
+    0 14px 32px rgba(0,0,0,.18),
+    inset 0 1px 0 rgba(255,255,255,.065) !important;
+}
+
+html[data-theme="space"] .status-card strong,
+html[data-theme-space] .status-card strong,
+body.space-mode .status-card strong,
+html[data-theme="space"] .project-progress strong,
+html[data-theme-space] .project-progress strong,
+body.space-mode .project-progress strong {
+  color: rgba(239, 247, 255, .94) !important;
+}
+
+html[data-theme="space"] .status-card p,
+html[data-theme-space] .status-card p,
+body.space-mode .status-card p {
+  color: rgba(210, 224, 237, .70) !important;
+}
+
+html[data-theme="space"] .status-badge,
+html[data-theme-space] .status-badge,
+body.space-mode .status-badge,
+html[data-theme="space"] .muted-badge,
+html[data-theme-space] .muted-badge,
+body.space-mode .muted-badge,
+html[data-theme="space"] .pill,
+html[data-theme-space] .pill,
+body.space-mode .pill,
+html[data-theme="space"] .tag,
+html[data-theme-space] .tag,
+body.space-mode .tag,
+html[data-theme="space"] .chip,
+html[data-theme-space] .chip,
+body.space-mode .chip,
+html[data-theme="space"] .badge,
+html[data-theme-space] .badge,
+body.space-mode .badge,
+html[data-theme="space"] .project-tags span,
+html[data-theme-space] .project-tags span,
+body.space-mode .project-tags span,
+html[data-theme="space"] .log-tags span,
+html[data-theme-space] .log-tags span,
+body.space-mode .log-tags span,
+html[data-theme="space"] .research-tags span,
+html[data-theme-space] .research-tags span,
+body.space-mode .research-tags span,
+html[data-theme="space"] .hero-tags span,
+html[data-theme-space] .hero-tags span,
+body.space-mode .hero-tags span {
+  border-color: rgba(143, 208, 255, .18) !important;
+  background:
+    linear-gradient(180deg, rgba(143,208,255,.12), rgba(255,255,255,.035)) !important;
+  color: rgba(225, 242, 255, .88) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    0 8px 18px rgba(0,0,0,.10) !important;
+}
+
+/* Buttons that should be secondary, not white pills, in Space Mode. */
+html[data-theme="space"] .button.secondary,
+html[data-theme-space] .button.secondary,
+body.space-mode .button.secondary {
+  border-color: rgba(143, 208, 255, .18) !important;
+  background:
+    linear-gradient(180deg, rgba(143,208,255,.13), rgba(255,255,255,.045)) !important;
+  color: rgba(225, 242, 255, .90) !important;
+  box-shadow:
+    0 10px 24px rgba(0,0,0,.14),
+    inset 0 1px 0 rgba(255,255,255,.065) !important;
+}
+
+/* Future / template cards should not fade into pale ghost blocks. */
+html[data-theme="space"] .project-card.disabled-project,
+html[data-theme-space] .project-card.disabled-project,
+body.space-mode .project-card.disabled-project {
+  opacity: .86 !important;
+}
+
+/* 3) Kuiper Belt duplicate text cleanup. Keep only the JS label. */
+.ui2046-kuiper-belt::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* 4) Strict animated Solar System. */
+.ui2046-solar-system {
+  width: min(44vw, 660px) !important;
+  aspect-ratio: 1.72 / 1 !important;
+  opacity: .36 !important;
+  transform: rotate(-7deg) !important;
+}
+
+.ui2046-system-core {
+  display: none !important;
+}
+
+.ui2046-system-orbit::before {
+  content: none !important;
+  display: none !important;
+}
+
+.ui2046-system-orbit {
+  width: var(--w) !important;
+  height: var(--h) !important;
+  border-color: rgba(143,208,255,var(--alpha,.12)) !important;
+}
+
+.ui2046-system-orbit.dwarf {
+  border-style: dashed !important;
+}
+
+.ui2046-planet {
+  position: absolute;
+  left: var(--left, 50%);
+  top: var(--top, 50%);
+  width: var(--size, 3px);
+  height: var(--size, 3px);
+  border-radius: 50%;
+  background: var(--color, rgba(225,242,255,.7));
+  transform: translate(-50%, -50%);
+  box-shadow:
+    0 0 calc(var(--size, 3px) * 2.8) color-mix(in srgb, var(--color, rgba(225,242,255,.7)) 58%, transparent),
+    inset 0 0 1px rgba(255,255,255,.46);
+  opacity: var(--planet-opacity, .78);
+  will-change: left, top;
+}
+
+.ui2046-planet.sun-marker {
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 217, 154, .74);
+  box-shadow:
+    0 0 14px rgba(255,217,154,.34),
+    0 0 32px rgba(255,217,154,.14);
+}
+
+.ui2046-system-label {
+  position: absolute;
+  left: var(--label-left, 84%);
+  top: var(--label-top, 22%);
+  transform: translate(-50%, -50%);
+  color: rgba(214, 228, 240, .30);
+  font-size: 8px;
+  letter-spacing: .16em;
+  white-space: nowrap;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+html:not([data-theme="space"]) .ui2046-planet {
+  opacity: .54;
+}
+
+html:not([data-theme="space"]) .ui2046-system-label {
+  color: rgba(26, 61, 92, .26) !important;
+}
+
+/* Keep the diagram present but quieter on medium screens; hidden on mobile remains. */
+@media (max-width: 1120px) {
+  .ui2046-solar-system {
+    opacity: .25 !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .ui2046-solar-system {
+    display: none !important;
+  }
+}
+
+/* 5) Ensure the previous arrow precision survives this patch. */
+.mission-lightbox__nav,
+.mission-lightbox__nav:hover {
+  transition:
+    transform .18s ease,
+    background .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease !important;
+}
+
+.mission-lightbox__nav:hover {
+  transform: translateY(-50%) scale(1.045) !important;
+}
+
+@media (max-width: 760px) {
+  .mission-lightbox__nav:hover {
+    transform: none !important;
+  }
+}
+
+.slide-control:hover {
+  transform: translateY(-50%) scale(1.045) !important;
+}
+
+
+/* ============================================================
+   Interface 2046 v3 — Lunar Archive + page-specific dossiers
+   1. Light Mode becomes a deliberate lunar archive, not a faded Space Mode.
+   2. Research / Paper Shelf / CV receive distinct but compatible card systems.
+   3. Solar System receives strict micro-labels in Space Mode / hover.
+   ============================================================ */
+
+/* ---------- 1. Light Mode: Lunar Archive visual system ---------- */
+
+html:not([data-theme="space"]) {
+  --bg: #edf3f7 !important;
+  --paper: rgba(255, 255, 255, .72) !important;
+  --ink: #0d1d2d !important;
+  --muted: rgba(37, 56, 74, .72) !important;
+  --line: rgba(20, 54, 84, .145) !important;
+  --blue: #176da6 !important;
+  --blue-dark: #0a436f !important;
+  --blue-soft: rgba(23, 109, 166, .105) !important;
+}
+
+html:not([data-theme="space"]) body {
+  background:
+    radial-gradient(circle at 18% 8%, rgba(255,255,255,.62), transparent 30rem),
+    linear-gradient(180deg, #eef4f8, #e5edf3) !important;
+  color: var(--ink) !important;
+}
+
+/* Reduce the washed-out lunar background but keep the asteroid identity. */
+html:not([data-theme="space"]) body::before {
+  opacity: .24 !important;
+  filter: grayscale(.28) contrast(1.08) brightness(1.02) !important;
+}
+
+html:not([data-theme="space"]) body::after {
+  opacity: .18 !important;
+  mix-blend-mode: multiply !important;
+}
+
+/* Light Mode cards: more optical depth and readable typography. */
+html:not([data-theme="space"]) .card,
+html:not([data-theme="space"]) .glass-card,
+html:not([data-theme="space"]) .panel,
+html:not([data-theme="space"]) .project-link-card,
+html:not([data-theme="space"]) .research-note-card,
+html:not([data-theme="space"]) .status-card,
+html:not([data-theme="space"]) .paper-card,
+html:not([data-theme="space"]) .cv-edu-card,
+html:not([data-theme="space"]) .contact-card,
+html:not([data-theme="space"]) .feature-card,
+html:not([data-theme="space"]) .mission-index-panel,
+html:not([data-theme="space"]) .mission-log-panel,
+html:not([data-theme="space"]) .photo-card {
+  border-color: rgba(255,255,255,.58) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.72), rgba(245,250,253,.38)) !important;
+  box-shadow:
+    0 18px 44px rgba(34, 62, 86, .12),
+    0 1px 0 rgba(255,255,255,.70) inset !important;
+  color: rgba(12, 29, 46, .92) !important;
+}
+
+html:not([data-theme="space"]) .card p,
+html:not([data-theme="space"]) .glass-card p,
+html:not([data-theme="space"]) .panel p,
+html:not([data-theme="space"]) .project-link-card p,
+html:not([data-theme="space"]) .research-note-card p,
+html:not([data-theme="space"]) .status-card p,
+html:not([data-theme="space"]) .paper-card p,
+html:not([data-theme="space"]) .cv-edu-card p,
+html:not([data-theme="space"]) .contact-card p,
+html:not([data-theme="space"]) .feature-card p {
+  color: rgba(35, 54, 72, .76) !important;
+}
+
+/* Labels are now intentionally darker and legible. */
+html:not([data-theme="space"]) .section-label,
+html:not([data-theme="space"]) .eyebrow,
+html:not([data-theme="space"]) .mission-jump-log,
+html:not([data-theme="space"]) .mission-index-mode,
+html:not([data-theme="space"]) .status-card span,
+html:not([data-theme="space"]) .project-progress span,
+html:not([data-theme="space"]) .research-note-date,
+html:not([data-theme="space"]) .mission-entry-kicker {
+  color: #0d679f !important;
+  text-shadow: none !important;
+}
+
+html:not([data-theme="space"]) .button.secondary,
+html:not([data-theme="space"]) .mission-index-mode,
+html:not([data-theme="space"]) .pill,
+html:not([data-theme="space"]) .tag,
+html:not([data-theme="space"]) .chip,
+html:not([data-theme="space"]) .badge,
+html:not([data-theme="space"]) .project-tags span,
+html:not([data-theme="space"]) .log-tags span,
+html:not([data-theme="space"]) .research-tags span,
+html:not([data-theme="space"]) .hero-tags span {
+  border-color: rgba(20, 95, 148, .16) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.72), rgba(225,239,249,.42)) !important;
+  color: #164f7d !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.60),
+    0 8px 18px rgba(34,62,86,.06) !important;
+}
+
+/* Light Mode page title / hero readability */
+html:not([data-theme="space"]) h1,
+html:not([data-theme="space"]) h2,
+html:not([data-theme="space"]) h3,
+html:not([data-theme="space"]) .hero-title,
+html:not([data-theme="space"]) .page-title {
+  color: #0b1e31 !important;
+}
+
+/* ---------- 2. Page-specific dossier systems ---------- */
+
+/* These classes are added by interface-2046.js according to the current page. */
+
+/* Research pages: mission-system panels. */
+body.ui-page-research .research-card,
+body.ui-page-research .project-link-card,
+body.ui-page-research .status-card,
+body.ui-page-research-graduation .research-note-card,
+body.ui-page-research-graduation .mission-index-panel,
+body.ui-page-research-log .project-link-card {
+  border-left: 1px solid rgba(143,208,255,.26) !important;
+  background:
+    linear-gradient(90deg, rgba(143,208,255,.055), transparent 18%),
+    linear-gradient(180deg, rgba(255,255,255,.11), rgba(255,255,255,.04)) !important;
+}
+
+body.ui-page-research .research-card::selection,
+body.ui-page-research-graduation .research-note-card::selection,
+body.ui-page-research-log .project-link-card::selection {
+  background: rgba(143,208,255,.24);
+}
+
+/* Paper Shelf: observatory archive cards. */
+body.ui-page-paper-shelf .paper-card {
+  border-radius: 22px !important;
+  background:
+    radial-gradient(circle at 92% 10%, rgba(255,217,154,.075), transparent 26%),
+    linear-gradient(180deg, rgba(255,255,255,.105), rgba(255,255,255,.035)) !important;
+}
+
+body.ui-page-paper-shelf .paper-card h3::before {
+  content: "○ ";
+  color: rgba(255,217,154,.72);
+  font-weight: 500;
+}
+
+body.ui-page-paper-shelf .paper-card:hover {
+  box-shadow:
+    0 18px 44px rgba(0,0,0,.18),
+    0 0 28px rgba(255,217,154,.055),
+    inset 0 1px 0 rgba(255,255,255,.10) !important;
+}
+
+/* CV: institutional dossier, cleaner and less cosmic. */
+body.ui-page-cv .cv-edu-card,
+body.ui-page-cv .cv-card,
+body.ui-page-cv .panel {
+  border-left: 3px solid rgba(143,208,255,.24) !important;
+  background:
+    linear-gradient(90deg, rgba(143,208,255,.060), transparent 24%),
+    linear-gradient(180deg, rgba(255,255,255,.105), rgba(255,255,255,.040)) !important;
+}
+
+body.ui-page-cv .cv-edu-date {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .08em;
+}
+
+/* Home: portal cards, more spatial but quiet. */
+body.ui-page-home .feature-card {
+  background:
+    linear-gradient(135deg, rgba(143,208,255,.070), transparent 32%),
+    linear-gradient(180deg, rgba(255,255,255,.105), rgba(255,255,255,.035)) !important;
+}
+
+/* Contact: keep it calm and institutional. */
+body.ui-page-contact .contact-card,
+body.ui-page-contact .affiliation-card {
+  border-left: 3px solid rgba(143,208,255,.18) !important;
+}
+
+/* Light mode page-specific adaptation */
+html:not([data-theme="space"]) body.ui-page-research .research-card,
+html:not([data-theme="space"]) body.ui-page-research .project-link-card,
+html:not([data-theme="space"]) body.ui-page-research .status-card,
+html:not([data-theme="space"]) body.ui-page-research-graduation .research-note-card,
+html:not([data-theme="space"]) body.ui-page-research-graduation .mission-index-panel,
+html:not([data-theme="space"]) body.ui-page-research-log .project-link-card,
+html:not([data-theme="space"]) body.ui-page-paper-shelf .paper-card,
+html:not([data-theme="space"]) body.ui-page-cv .cv-edu-card,
+html:not([data-theme="space"]) body.ui-page-cv .cv-card,
+html:not([data-theme="space"]) body.ui-page-cv .panel,
+html:not([data-theme="space"]) body.ui-page-contact .contact-card,
+html:not([data-theme="space"]) body.ui-page-contact .affiliation-card {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.76), rgba(245,250,253,.42)) !important;
+}
+
+/* ---------- 3. Solar System micro labels ---------- */
+
+.ui2046-solar-system {
+  cursor: default;
+}
+
+.ui2046-planet-label {
+  position: absolute;
+  left: var(--label-left, 50%);
+  top: var(--label-top, 50%);
+  transform: translate(8px, -50%);
+  color: rgba(225, 242, 255, .34);
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity .28s ease, color .28s ease;
+  pointer-events: none;
+  text-shadow: 0 0 12px rgba(143,208,255,.10);
+}
+
+html[data-theme="space"] .ui2046-solar-system:hover .ui2046-planet-label,
+html[data-theme-space] .ui2046-solar-system:hover .ui2046-planet-label,
+body.space-mode .ui2046-solar-system:hover .ui2046-planet-label {
+  opacity: .72;
+}
+
+html[data-theme="space"] .ui2046-planet-label.is-major,
+html[data-theme-space] .ui2046-planet-label.is-major,
+body.space-mode .ui2046-planet-label.is-major {
+  opacity: .22;
+}
+
+html[data-theme="space"] .ui2046-solar-system:hover .ui2046-planet-label.is-major,
+html[data-theme-space] .ui2046-solar-system:hover .ui2046-planet-label.is-major,
+body.space-mode .ui2046-solar-system:hover .ui2046-planet-label.is-major {
+  opacity: .84;
+}
+
+html:not([data-theme="space"]) .ui2046-planet-label {
+  color: rgba(20, 61, 96, .22);
+}
+
+html:not([data-theme="space"]) .ui2046-solar-system:hover .ui2046-planet-label.is-major {
+  opacity: .48;
+}
+
+/* Only selected labels are visible by default in Space Mode.
+   Minor labels appear on hover. */
+.ui2046-planet-label.is-minor {
+  opacity: 0 !important;
+}
+
+html[data-theme="space"] .ui2046-solar-system:hover .ui2046-planet-label.is-minor,
+html[data-theme-space] .ui2046-solar-system:hover .ui2046-planet-label.is-minor,
+body.space-mode .ui2046-solar-system:hover .ui2046-planet-label.is-minor {
+  opacity: .54 !important;
+}
+
+/* Mobile remains clean. */
+@media (max-width: 900px) {
+  .ui2046-planet-label {
+    display: none !important;
+  }
+}
