@@ -1,16 +1,29 @@
-Replace/upload all files in this zip.
+Upload/replace these files and folders:
 
-Features added:
-1. Sample Cabinet page
-3. Paper Shelf reading status tags
-4. Mission Log framing for Research Log
-5. Analytical Pathway section
-7. Research Constellation on Home
-8. Reading Constellation on Paper Shelf
-9. Research Coordinates floating widget
-10. Specimen Label cards
+Root HTML:
+- index.html
+- research.html
+- research-log.html
+- research-graduation.html
+- paper-shelf.html
+- cv.html
+- photography.html
+- contact.html
+
+New folders:
+- ja/
+- zh/
+
+Assets:
+- assets/css/style.css
+- assets/js/  (included for safety; upload/replace the JS files inside)
+
+Language order:
+English / 日本語 / 繁體中文
 
 Notes:
+- English remains the main site at the root.
+- Japanese pages are under /ja/.
+- Traditional Chinese pages are under /zh/.
+- Existing images, PDF files, favicon files, and paper assets are reused from the root assets folder.
 - Paper Shelf still has no Download / Download PDF buttons.
-- Navigation thin glowing underline is preserved.
-- Existing visible meteor / star dust / micro-meteorite animation is preserved.
