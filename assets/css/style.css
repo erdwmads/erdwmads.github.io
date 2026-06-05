@@ -6909,3 +6909,137 @@ nav.primary-nav a,
 .mission-lightbox__thumb {
   background-image: initial;
 }
+
+
+/* ============================================================
+   FINAL override: Space Mode ordinary text links
+   Previous cleanup affected Light Mode but some Space Mode card-link
+   rules were still stronger. This late override removes the glass
+   mini-box from Home / Contact ordinary links in every theme.
+   ============================================================ */
+
+html[data-theme="space"] .feature-card a:not(.button):not(.btn),
+html[data-theme-space] .feature-card a:not(.button):not(.btn),
+body.space-mode .feature-card a:not(.button):not(.btn),
+html[data-theme="dark"] .feature-card a:not(.button):not(.btn),
+body.dark-mode .feature-card a:not(.button):not(.btn),
+
+html[data-theme="space"] .contact-card a:not(.button):not(.btn),
+html[data-theme-space] .contact-card a:not(.button):not(.btn),
+body.space-mode .contact-card a:not(.button):not(.btn),
+html[data-theme="dark"] .contact-card a:not(.button):not(.btn),
+body.dark-mode .contact-card a:not(.button):not(.btn),
+
+html[data-theme="space"] .affiliation-card a:not(.button):not(.btn),
+html[data-theme-space] .affiliation-card a:not(.button):not(.btn),
+body.space-mode .affiliation-card a:not(.button):not(.btn),
+html[data-theme="dark"] .affiliation-card a:not(.button):not(.btn),
+body.dark-mode .affiliation-card a:not(.button):not(.btn),
+
+html[data-theme="space"] .card a:not(.button):not(.btn),
+html[data-theme-space] .card a:not(.button):not(.btn),
+body.space-mode .card a:not(.button):not(.btn),
+html[data-theme="dark"] .card a:not(.button):not(.btn),
+body.dark-mode .card a:not(.button):not(.btn),
+
+html[data-theme="space"] .open-project,
+html[data-theme-space] .open-project,
+body.space-mode .open-project,
+html[data-theme="dark"] .open-project,
+body.dark-mode .open-project {
+  display: inline !important;
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline-offset: 3px !important;
+
+  background-color: transparent !important;
+  background:
+    linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat !important;
+  background-image: linear-gradient(currentColor, currentColor) !important;
+  background-repeat: no-repeat !important;
+  background-size: 100% 1px !important;
+  background-position: 0 100% !important;
+
+  box-shadow: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+
+  color: rgba(168, 211, 250, .94) !important;
+  text-decoration: none !important;
+  font-weight: 650 !important;
+  line-height: inherit !important;
+  transform: none !important;
+}
+
+/* Kill pseudo-element glass skins if any old link rule created them. */
+html[data-theme="space"] .feature-card a:not(.button):not(.btn)::before,
+html[data-theme="space"] .feature-card a:not(.button):not(.btn)::after,
+html[data-theme-space] .feature-card a:not(.button):not(.btn)::before,
+html[data-theme-space] .feature-card a:not(.button):not(.btn)::after,
+body.space-mode .feature-card a:not(.button):not(.btn)::before,
+body.space-mode .feature-card a:not(.button):not(.btn)::after,
+
+html[data-theme="space"] .contact-card a:not(.button):not(.btn)::before,
+html[data-theme="space"] .contact-card a:not(.button):not(.btn)::after,
+html[data-theme-space] .contact-card a:not(.button):not(.btn)::before,
+html[data-theme-space] .contact-card a:not(.button):not(.btn)::after,
+body.space-mode .contact-card a:not(.button):not(.btn)::before,
+body.space-mode .contact-card a:not(.button):not(.btn)::after,
+
+html[data-theme="space"] .affiliation-card a:not(.button):not(.btn)::before,
+html[data-theme="space"] .affiliation-card a:not(.button):not(.btn)::after,
+html[data-theme-space] .affiliation-card a:not(.button):not(.btn)::before,
+html[data-theme-space] .affiliation-card a:not(.button):not(.btn)::after,
+body.space-mode .affiliation-card a:not(.button):not(.btn)::before,
+body.space-mode .affiliation-card a:not(.button):not(.btn)::after {
+  content: none !important;
+  display: none !important;
+  opacity: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+/* Space Mode hover: underline thickens only; no box. */
+html[data-theme="space"] .feature-card a:not(.button):not(.btn):hover,
+html[data-theme-space] .feature-card a:not(.button):not(.btn):hover,
+body.space-mode .feature-card a:not(.button):not(.btn):hover,
+html[data-theme="space"] .contact-card a:not(.button):not(.btn):hover,
+html[data-theme-space] .contact-card a:not(.button):not(.btn):hover,
+body.space-mode .contact-card a:not(.button):not(.btn):hover,
+html[data-theme="space"] .affiliation-card a:not(.button):not(.btn):hover,
+html[data-theme-space] .affiliation-card a:not(.button):not(.btn):hover,
+body.space-mode .affiliation-card a:not(.button):not(.btn):hover,
+html[data-theme="space"] .open-project:hover,
+html[data-theme-space] .open-project:hover,
+body.space-mode .open-project:hover {
+  background-size: 100% 2px !important;
+  color: rgba(198, 228, 255, .98) !important;
+  transform: none !important;
+}
+
+/* Mobile Space Mode: remove blue/grey tap rectangles around normal text links. */
+@media (max-width: 760px) {
+  html[data-theme="space"] .feature-card a:not(.button):not(.btn),
+  html[data-theme-space] .feature-card a:not(.button):not(.btn),
+  body.space-mode .feature-card a:not(.button):not(.btn),
+  html[data-theme="space"] .contact-card a:not(.button):not(.btn),
+  html[data-theme-space] .contact-card a:not(.button):not(.btn),
+  body.space-mode .contact-card a:not(.button):not(.btn),
+  html[data-theme="space"] .affiliation-card a:not(.button):not(.btn),
+  html[data-theme-space] .affiliation-card a:not(.button):not(.btn),
+  body.space-mode .affiliation-card a:not(.button):not(.btn),
+  html[data-theme="space"] .open-project,
+  html[data-theme-space] .open-project,
+  body.space-mode .open-project {
+    -webkit-tap-highlight-color: transparent !important;
+    box-decoration-break: clone !important;
+    -webkit-box-decoration-break: clone !important;
+  }
+}
