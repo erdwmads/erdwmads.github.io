@@ -6761,3 +6761,151 @@ html:not([data-theme="space"]) .research-status-grid[data-mission-status-grid].i
     background-position: center top !important;
   }
 }
+
+
+/* ============================================================
+   Clean inline text links
+   Remove the strange translucent mini-box behind ordinary text links
+   on Home / Contact content cards, while keeping real buttons, nav,
+   hero CTAs, and image-viewer controls unchanged.
+   ============================================================ */
+
+/* Ordinary inline links inside content/cards: no glass box, no background slab. */
+.card a:not(.button):not(.btn),
+.glass-card a:not(.button):not(.btn),
+.panel a:not(.button):not(.btn),
+.feature-card a:not(.button):not(.btn),
+.contact-card a:not(.button):not(.btn),
+.affiliation-card a:not(.button):not(.btn),
+.project-link-card a:not(.button):not(.btn),
+main p a:not(.button):not(.btn),
+main li a:not(.button):not(.btn),
+.open-project,
+.feature-card .text-link,
+.contact-card .text-link {
+  display: inline !important;
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-image: linear-gradient(currentColor, currentColor) !important;
+  background-repeat: no-repeat !important;
+  background-size: 100% 1px !important;
+  background-position: 0 100% !important;
+
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+
+  color: var(--blue) !important;
+  text-decoration: none !important;
+  text-underline-offset: 0 !important;
+  font-weight: 680 !important;
+  letter-spacing: .01em !important;
+  line-height: inherit !important;
+}
+
+/* Hover/focus: elegant text-link motion, not a pill. */
+.card a:not(.button):not(.btn):hover,
+.glass-card a:not(.button):not(.btn):hover,
+.panel a:not(.button):not(.btn):hover,
+.feature-card a:not(.button):not(.btn):hover,
+.contact-card a:not(.button):not(.btn):hover,
+.affiliation-card a:not(.button):not(.btn):hover,
+.project-link-card a:not(.button):not(.btn):hover,
+main p a:not(.button):not(.btn):hover,
+main li a:not(.button):not(.btn):hover,
+.open-project:hover,
+.feature-card .text-link:hover,
+.contact-card .text-link:hover {
+  background-size: 100% 2px !important;
+  color: color-mix(in srgb, var(--blue) 82%, white 18%) !important;
+  transform: none !important;
+}
+
+/* Focus-visible: accessible outline, but no translucent rectangle. */
+.card a:not(.button):not(.btn):focus,
+.glass-card a:not(.button):not(.btn):focus,
+.panel a:not(.button):not(.btn):focus,
+.feature-card a:not(.button):not(.btn):focus,
+.contact-card a:not(.button):not(.btn):focus,
+.affiliation-card a:not(.button):not(.btn):focus,
+.project-link-card a:not(.button):not(.btn):focus,
+main p a:not(.button):not(.btn):focus,
+main li a:not(.button):not(.btn):focus,
+.open-project:focus,
+.feature-card .text-link:focus,
+.contact-card .text-link:focus {
+  outline: none !important;
+}
+
+.card a:not(.button):not(.btn):focus-visible,
+.glass-card a:not(.button):not(.btn):focus-visible,
+.panel a:not(.button):not(.btn):focus-visible,
+.feature-card a:not(.button):not(.btn):focus-visible,
+.contact-card a:not(.button):not(.btn):focus-visible,
+.affiliation-card a:not(.button):not(.btn):focus-visible,
+.project-link-card a:not(.button):not(.btn):focus-visible,
+main p a:not(.button):not(.btn):focus-visible,
+main li a:not(.button):not(.btn):focus-visible,
+.open-project:focus-visible,
+.feature-card .text-link:focus-visible,
+.contact-card .text-link:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--blue) 58%, transparent) !important;
+  outline-offset: 3px !important;
+  border-radius: 4px !important;
+}
+
+/* Home card terminal links: make them deliberate, clean text actions. */
+.feature-card > a:not(.button):not(.btn),
+.card > a:not(.button):not(.btn),
+a.open-project {
+  font-size: .94em !important;
+}
+
+/* Remove mobile tap highlight box on ordinary text links. */
+.card a,
+.glass-card a,
+.panel a,
+.feature-card a,
+.contact-card a,
+.affiliation-card a,
+main p a,
+main li a {
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Light Mode link tone */
+html:not([data-theme="space"]) .card a:not(.button):not(.btn),
+html:not([data-theme="space"]) .glass-card a:not(.button):not(.btn),
+html:not([data-theme="space"]) .panel a:not(.button):not(.btn),
+html:not([data-theme="space"]) .feature-card a:not(.button):not(.btn),
+html:not([data-theme="space"]) .contact-card a:not(.button):not(.btn),
+html:not([data-theme="space"]) .affiliation-card a:not(.button):not(.btn),
+html:not([data-theme="space"]) .project-link-card a:not(.button):not(.btn),
+html:not([data-theme="space"]) main p a:not(.button):not(.btn),
+html:not([data-theme="space"]) main li a:not(.button):not(.btn),
+html:not([data-theme="space"]) .open-project {
+  color: var(--blue-dark) !important;
+}
+
+/* Do not let this cleanup touch real UI controls. */
+.nav a,
+.site-nav a,
+nav.primary-nav a,
+.button,
+.btn,
+.hero a[href="research.html"],
+.hero a[href="cv.html"],
+.hero-actions a,
+.cta-row a,
+.action-row a,
+.mission-lightbox__btn,
+.mission-lightbox__thumb {
+  background-image: initial;
+}
