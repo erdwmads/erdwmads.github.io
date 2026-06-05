@@ -52,26 +52,26 @@
   </div>
 </section>
 
-<section class="section research-status-grid">
-  <article class="status-card">
+<section class="section research-status-grid" data-mission-status-grid>
+  <article class="status-card" data-status-card="latest">
     <span>Latest update</span>
-    <strong>2026/04/01</strong>
-    <p>Graduation research plan established.</p>
+    <strong data-status-field="latest-date">2026/05/01</strong>
+    <p data-status-field="latest-note">IsoMet cutting, ethanol cooling, and polishing test completed.</p>
   </article>
-  <article class="status-card">
+  <article class="status-card" data-status-card="stage">
     <span>Current stage</span>
-    <strong>Planning</strong>
-    <p>Research questions and analytical workflow are being refined.</p>
+    <strong data-status-field="current-stage">IsoMet cutting and polishing test</strong>
+    <p data-status-field="stage-note">The mounted sample was cut with ethanol cooling and polished using #1000, #3000, and 3&nbsp;µm diamond paste.</p>
   </article>
-  <article class="status-card">
+  <article class="status-card" data-status-card="question">
     <span>Current question</span>
-    <strong>Dolomite in Orgueil CI1</strong>
-    <p>What mineralogical conditions controlled dolomite formation in primitive CI1 chondritic material?</p>
+    <strong data-status-field="current-question">Dolomite in Orgueil CI1</strong>
+    <p data-status-field="question-note">What mineralogical conditions controlled dolomite formation in primitive CI1 chondritic material?</p>
   </article>
-  <article class="status-card">
+  <article class="status-card" data-status-card="next">
     <span>Next step</span>
-    <strong>Target selection</strong>
-    <p>Connect SEM/EPMA observations with XRD and TEM-scale analysis.</p>
+    <strong data-status-field="next-step">Okumura consultation</strong>
+    <p data-status-field="next-note">Bring the sample to Waseda University and ask Associate Professor Taiga Okumura for advice on the next preparation step.</p>
   </article>
 </section>
 
@@ -100,7 +100,7 @@
   <div class="section-label">Mission Log</div>
   <div class="research-note-list">
 
-    <article class="research-note-card mission-log-entry">
+    <article class="research-note-card mission-log-entry" data-log-date="2026/04/01" data-log-stage="Research plan established" data-log-question="Dolomite in Orgueil CI1" data-log-next-step="Target selection" data-log-latest-note="Graduation research plan established." data-log-stage-note="Research questions and analytical workflow were fixed as the project framework." data-log-question-note="What mineralogical conditions controlled dolomite formation in primitive CI1 chondritic material?" data-log-next-note="Prepare Orgueil material for resin embedding and section preparation.">
       <div class="research-note-date">LOG 001</div>
       <div class="research-note-body">
         <p class="mission-entry-kicker">SOL 001 / 2026-04-01</p>
@@ -126,7 +126,7 @@
       </div>
     </article>
 
-    <article class="research-note-card mission-log-entry">
+    <article class="research-note-card mission-log-entry" data-log-date="2026/04/20" data-log-stage="Petropoxy 154 embedding" data-log-question="Dolomite in Orgueil CI1" data-log-next-step="Cutting preparation" data-log-latest-note="Orgueil particles were embedded in Petropoxy 154 and cured at 80 °C." data-log-stage-note="The fragile Orgueil particles were stabilised by vacuum impregnation and thermal curing." data-log-question-note="What mineralogical conditions controlled dolomite formation in primitive CI1 chondritic material?" data-log-next-note="Prepare the cured resin-embedded sample for cutting and mounting.">
       <div class="research-note-date">LOG 002</div>
       <div class="research-note-body">
         <p class="mission-entry-kicker">SOL 020 / 2026-04-20</p>
@@ -160,7 +160,7 @@
       </div>
     </article>
 
-    <article class="research-note-card mission-log-entry">
+    <article class="research-note-card mission-log-entry" data-log-date="2026/04/27" data-log-stage="Glass-slide mounting" data-log-question="Dolomite in Orgueil CI1" data-log-next-step="IsoMet cutting" data-log-latest-note="The cured resin-embedded sample was mounted on a glass slide and adhesive-cured at 80 °C." data-log-stage-note="The sample was attached to a glass slide to support later cutting." data-log-question-note="What mineralogical conditions controlled dolomite formation in primitive CI1 chondritic material?" data-log-next-note="Cut the mounted sample using IsoMet with ethanol cooling.">
       <div class="research-note-date">LOG 003</div>
       <div class="research-note-body">
         <p class="mission-entry-kicker">SOL 027 / 2026-04-27</p>
@@ -191,7 +191,7 @@
       </div>
     </article>
 
-    <article class="research-note-card mission-log-entry">
+    <article class="research-note-card mission-log-entry" data-log-date="2026/05/01" data-log-stage="IsoMet cutting and polishing test" data-log-question="Dolomite in Orgueil CI1" data-log-next-step="Okumura consultation" data-log-latest-note="IsoMet cutting, ethanol cooling, and polishing test completed." data-log-stage-note="The mounted sample was cut with ethanol cooling and polished using #1000, #3000, and 3 µm diamond paste." data-log-question-note="What mineralogical conditions controlled dolomite formation in primitive CI1 chondritic material?" data-log-next-note="Bring the sample to Waseda University and ask Associate Professor Taiga Okumura for advice on the next preparation step.">
       <div class="research-note-date">LOG 004</div>
       <div class="research-note-body">
         <p class="mission-entry-kicker">SOL 031 / 2026-05-01</p>
@@ -255,5 +255,6 @@
   <script defer src="assets/js/ambient-space.js"></script>
   <script defer src="assets/js/research-coordinates.js"></script>
   <script src="assets/js/mission-lightbox.js" defer></script>
+  <script src="assets/js/mission-status-sync.js" defer></script>
 </body>
 </html>

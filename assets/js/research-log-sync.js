@@ -47,8 +47,8 @@
     const heading = latestEntry.querySelector('h3')?.textContent || '';
 
     return {
-      latest: normaliseDate(kicker),
-      stage: normaliseStage(heading)
+      latest: normaliseDate(latestEntry.dataset.logDate || kicker),
+      stage: latestEntry.dataset.logStage || normaliseStage(heading)
     };
   };
 
