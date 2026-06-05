@@ -7504,3 +7504,78 @@ html:not([data-theme="space"]) .mission-back-to-index {
     font-size: 11px !important;
   }
 }
+
+
+/* ============================================================
+   Mission Index simplified layout
+   Removes explanatory paragraph and stage-title-heavy cards.
+   Compact jump cards show only LOG + SOL/date.
+   ============================================================ */
+
+.compact-mission-index .mission-index-panel > p {
+  display: none !important;
+}
+
+.compact-mission-jump-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px !important;
+  margin-top: 16px !important;
+}
+
+.compact-jump-card {
+  min-height: auto !important;
+  gap: 6px !important;
+  padding: 13px 14px !important;
+}
+
+.compact-jump-card .mission-jump-log {
+  font-size: 11px !important;
+}
+
+.compact-jump-card .mission-jump-meta {
+  font-size: 11px !important;
+  white-space: nowrap !important;
+}
+
+/* Hide unused old title line if browser has cached earlier JS momentarily. */
+.compact-jump-card strong {
+  display: none !important;
+}
+
+/* Research Log mini Mission Index has been removed from the page. */
+.mission-log-panel[data-mission-mini-panel] {
+  display: none !important;
+}
+
+@media (max-width: 760px) {
+  .compact-mission-index .mission-index-head {
+    align-items: center !important;
+  }
+
+  .compact-mission-index .mission-index-head h2 {
+    font-size: clamp(20px, 5.6vw, 26px) !important;
+  }
+
+  .compact-mission-jump-grid {
+    display: flex !important;
+    overflow-x: auto !important;
+    gap: 9px !important;
+    padding: 2px 2px 8px !important;
+    scroll-snap-type: x proximity !important;
+  }
+
+  .compact-jump-card {
+    min-width: 132px !important;
+    padding: 11px 12px !important;
+    border-radius: 15px !important;
+    scroll-snap-align: start !important;
+  }
+
+  .compact-jump-card .mission-jump-log {
+    font-size: 10.5px !important;
+  }
+
+  .compact-jump-card .mission-jump-meta {
+    font-size: 10px !important;
+  }
+}

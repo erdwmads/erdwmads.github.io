@@ -21,12 +21,6 @@
     return match ? `SOL ${match[1]}` : '';
   };
 
-  const getStage = (entry) => {
-    if (entry.dataset.logStage) return entry.dataset.logStage;
-    const heading = entry.querySelector('h3')?.textContent?.replace(/\s+/g, ' ').trim() || '';
-    return heading.includes('·') ? heading.split('·').pop().trim() : heading;
-  };
-
   const entries = Array.from(list.querySelectorAll('.mission-log-entry')).map((entry) => {
     const no = logNumber(entry);
     const id = entry.id || `log-${String(no).padStart(3, '0')}`;
@@ -37,8 +31,7 @@
       id,
       no,
       date: normaliseDate(entry.dataset.logDate),
-      sol: getSol(entry),
-      stage: getStage(entry)
+      sol: getSol(entry)
     };
   });
 
@@ -57,9 +50,8 @@
     const logLabel = `LOG ${String(item.no).padStart(3, '0')}`;
     const meta = [item.sol, item.date].filter(Boolean).join(' · ');
     return `
-      <a class="mission-jump-card" href="#${item.id}">
+      <a class="mission-jump-card compact-jump-card" href="#${item.id}">
         <span class="mission-jump-log">${logLabel}</span>
-        <strong>${item.stage}</strong>
         <span class="mission-jump-meta">${meta}</span>
       </a>
     `;
