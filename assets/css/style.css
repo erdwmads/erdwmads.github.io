@@ -7184,3 +7184,28 @@ html body a.paper-card,
 html body a.photo-thumb {
   text-decoration: none;
 }
+
+
+/* ============================================================
+   Mission Log single-image entry
+   Used by LOG 005 and future one-image preparation notes.
+   ============================================================ */
+
+.mission-photo-grid.one {
+  grid-template-columns: minmax(0, min(100%, 560px));
+  justify-content: start;
+}
+
+.mission-photo-grid.one figure {
+  max-width: 560px;
+}
+
+@media (max-width: 760px) {
+  .mission-photo-grid.one {
+    grid-template-columns: 1fr;
+  }
+
+  .mission-photo-grid.one figure {
+    max-width: none;
+  }
+}
