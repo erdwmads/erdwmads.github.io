@@ -3,10 +3,27 @@
   const grid = document.querySelector('[data-mission-status-grid]');
   if (!grid) return;
 
-  const entries = Array.from(document.querySelectorAll('.mission-log-entry'));
+  const normaliseDate = (text) => {
+    const match = String(text || '').match(/(\d{4})[-/](\d{2})[-/](\d{2})/);
+    return match ? `${match[1]}/${match[2]}/${match[3]}` : '';
+  };
+
+  const logNumber = (entry) => {
+    const text = entry.querySelector('.research-note-date')?.textContent || '';
+    const match = text.match(/LOG\s*(\d+)/i);
+    return match ? Number(match[1]) : 0;
+  };
+
+  const entries = Array.from(document.querySelectorAll('.mission-log-entry')).sort((a, b) => {
+    const da = normaliseDate(a.dataset.logDate) || '0000/00/00';
+    const db = normaliseDate(b.dataset.logDate) || '0000/00/00';
+    if (da !== db) return db.localeCompare(da);
+    return logNumber(b) - logNumber(a);
+  });
+
   if (!entries.length) return;
 
-  const latestEntry = entries[entries.length - 1];
+  const latestEntry = entries[0];
 
   const get = (key, fallback = '') => {
     const value = latestEntry.dataset[key];
@@ -26,7 +43,7 @@
   };
 
   const values = {
-    'latest-date': get('logDate', dateFromText() || '2026/05/01'),
+    'latest-date': get('logDate', dateFromText() || '2026/05/11'),
     'latest-note': get('logLatestNote', 'Latest Mission Log entry added.'),
     'current-stage': get('logStage', stageFromHeading() || 'Mission Log updated'),
     'stage-note': get('logStageNote', 'Current sample preparation stage updated from the latest Mission Log entry.'),

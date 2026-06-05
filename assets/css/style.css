@@ -7209,3 +7209,298 @@ html body a.photo-thumb {
     max-width: none;
   }
 }
+
+
+/* ============================================================
+   Mission Log navigator + latest-first log layout
+   ============================================================ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+.mission-log-entry {
+  scroll-margin-top: 112px;
+}
+
+.mission-index-section {
+  padding-top: 44px !important;
+  padding-bottom: 18px !important;
+}
+
+.mission-index-panel {
+  border: 1px solid rgba(225, 242, 255, .16);
+  border-radius: 28px;
+  padding: clamp(18px, 3vw, 28px);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.045));
+  box-shadow:
+    0 18px 44px rgba(0,0,0,.18),
+    inset 0 1px 0 rgba(255,255,255,.10);
+  backdrop-filter: blur(16px) saturate(1.08);
+  -webkit-backdrop-filter: blur(16px) saturate(1.08);
+}
+
+.mission-index-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  margin-bottom: 12px;
+}
+
+.mission-index-head .eyebrow {
+  margin-bottom: 6px;
+}
+
+.mission-index-head h2 {
+  margin: 0;
+}
+
+.mission-index-mode {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(139,199,255,.24);
+  background: rgba(139,199,255,.10);
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.mission-index-panel code {
+  font-size: .88em;
+  color: var(--blue);
+  background: rgba(139,199,255,.10);
+  border: 1px solid rgba(139,199,255,.14);
+  border-radius: 7px;
+  padding: 1px 5px;
+}
+
+.mission-jump-grid,
+.research-log-index-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.mission-jump-card,
+.research-log-index-link {
+  display: grid !important;
+  gap: 7px !important;
+  padding: 14px 14px 13px !important;
+  border-radius: 18px !important;
+  border: 1px solid rgba(225, 242, 255, .15) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.045)) !important;
+  color: rgba(235,245,255,.90) !important;
+  text-decoration: none !important;
+  box-shadow:
+    0 10px 24px rgba(0,0,0,.12),
+    inset 0 1px 0 rgba(255,255,255,.08) !important;
+  backdrop-filter: blur(12px) saturate(1.05) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(1.05) !important;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease !important;
+}
+
+.mission-jump-card:hover,
+.research-log-index-link:hover {
+  transform: translateY(-2px) !important;
+  border-color: rgba(139,199,255,.34) !important;
+  box-shadow:
+    0 14px 30px rgba(0,0,0,.18),
+    0 0 22px rgba(139,199,255,.10),
+    inset 0 1px 0 rgba(255,255,255,.10) !important;
+}
+
+.mission-jump-log,
+.research-log-index-link span {
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.mission-jump-card strong,
+.research-log-index-link strong {
+  color: rgba(246,251,255,.96);
+  font-size: 13px;
+  line-height: 1.28;
+}
+
+.mission-jump-meta,
+.research-log-index-link em {
+  color: var(--muted);
+  font-style: normal;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.section-label-note {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .10em;
+  text-transform: uppercase;
+}
+
+.mission-back-to-index {
+  display: inline-flex !important;
+  width: max-content !important;
+  margin-top: 14px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--blue) !important;
+  text-decoration: underline !important;
+  text-decoration-thickness: 1px !important;
+  text-underline-offset: 4px !important;
+  font-size: 12px !important;
+  font-weight: 760 !important;
+  letter-spacing: .04em !important;
+}
+
+.mission-back-to-index:hover {
+  color: rgba(204,232,255,.98) !important;
+}
+
+/* Research Log page mini index */
+.mission-log-panel[data-mission-mini-panel] {
+  border: 1px solid rgba(225, 242, 255, .14);
+  border-radius: 28px;
+  padding: clamp(20px, 3vw, 30px);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.105), rgba(255,255,255,.04));
+  box-shadow:
+    0 18px 44px rgba(0,0,0,.16),
+    inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.mission-log-panel[data-mission-mini-panel] .research-log-index-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* Light Mode */
+html:not([data-theme="space"]) .mission-index-panel,
+html:not([data-theme="space"]) .mission-log-panel[data-mission-mini-panel] {
+  border-color: rgba(255,255,255,.36);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.62), rgba(255,255,255,.28));
+  box-shadow:
+    0 16px 38px rgba(18,45,75,.10),
+    inset 0 1px 0 rgba(255,255,255,.48);
+}
+
+html:not([data-theme="space"]) .mission-index-mode,
+html:not([data-theme="space"]) .mission-index-panel code {
+  color: var(--blue-dark);
+  border-color: rgba(31,95,153,.16);
+  background: rgba(31,95,153,.08);
+}
+
+html:not([data-theme="space"]) .mission-jump-card,
+html:not([data-theme="space"]) .research-log-index-link {
+  border-color: rgba(255,255,255,.34) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,255,255,.34)) !important;
+  color: rgba(10,28,48,.88) !important;
+  box-shadow:
+    0 10px 24px rgba(18,45,75,.08),
+    inset 0 1px 0 rgba(255,255,255,.46) !important;
+}
+
+html:not([data-theme="space"]) .mission-jump-log,
+html:not([data-theme="space"]) .research-log-index-link span {
+  color: var(--blue-dark);
+}
+
+html:not([data-theme="space"]) .mission-jump-card strong,
+html:not([data-theme="space"]) .research-log-index-link strong {
+  color: rgba(10,28,48,.92);
+}
+
+html:not([data-theme="space"]) .mission-back-to-index {
+  color: var(--blue-dark) !important;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .mission-jump-grid,
+  .research-log-index-grid,
+  .mission-log-panel[data-mission-mini-panel] .research-log-index-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .mission-log-entry {
+    scroll-margin-top: 86px;
+  }
+
+  .mission-index-section {
+    padding-top: 32px !important;
+    padding-bottom: 10px !important;
+  }
+
+  .mission-index-panel,
+  .mission-log-panel[data-mission-mini-panel] {
+    border-radius: 22px;
+    padding: 16px;
+  }
+
+  .mission-index-head {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .mission-index-mode {
+    min-height: 26px;
+    padding: 5px 8px;
+    font-size: 9px;
+  }
+
+  .mission-jump-grid,
+  .research-log-index-grid,
+  .mission-log-panel[data-mission-mini-panel] .research-log-index-grid {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    margin-left: -2px;
+    margin-right: -2px;
+    padding: 2px 2px 8px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+
+  .mission-jump-card,
+  .research-log-index-link {
+    min-width: 210px !important;
+    padding: 12px 12px !important;
+    border-radius: 16px !important;
+    scroll-snap-align: start;
+  }
+
+  .mission-jump-card strong,
+  .research-log-index-link strong {
+    font-size: 12.5px;
+  }
+
+  .mission-jump-meta,
+  .research-log-index-link em {
+    font-size: 10.5px;
+  }
+
+  .mission-back-to-index {
+    font-size: 11px !important;
+  }
+}
