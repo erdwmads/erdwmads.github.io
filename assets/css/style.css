@@ -8591,3 +8591,298 @@ html:not([data-theme="space"]) .feature-card::after {
 .feature-card:hover {
   border-color: rgba(143,208,255,.22) !important;
 }
+
+
+/* ============================================================
+   Interface 2046 precision pass
+   1. Fix Mission Log image-viewer arrows: no vertical jump on hover.
+   2. Fix Photography controls and Space Mode colour adaptation.
+   3. Replace decorative solar-system placement with strict orbital geometry.
+   ============================================================ */
+
+/* ---------- Mission Log large-image viewer controls ---------- */
+
+.mission-lightbox__btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  text-align: center !important;
+}
+
+.mission-lightbox__nav {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  font-size: 0 !important;
+  transform: translateY(-50%) !important;
+  transition:
+    transform .18s ease,
+    background .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease !important;
+}
+
+.mission-lightbox__nav:hover {
+  transform: translateY(-50%) scale(1.045) !important;
+}
+
+.mission-lightbox__prev::before,
+.mission-lightbox__next::before {
+  display: block !important;
+  width: 1em !important;
+  height: 1em !important;
+  font-size: 28px !important;
+  line-height: .92 !important;
+  font-weight: 650 !important;
+  text-align: center !important;
+  transform: translateY(-.5px) !important;
+}
+
+.mission-lightbox__prev::before {
+  content: "‹" !important;
+}
+
+.mission-lightbox__next::before {
+  content: "›" !important;
+}
+
+.mission-lightbox__close {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+
+/* Space Mode colour tuning for Mission Log viewer controls */
+html[data-theme="space"] .mission-lightbox__btn,
+html[data-theme-space] .mission-lightbox__btn,
+body.space-mode .mission-lightbox__btn {
+  color: rgba(225, 242, 255, .94) !important;
+  border-color: rgba(143, 208, 255, .22) !important;
+  background:
+    linear-gradient(180deg, rgba(143,208,255,.14), rgba(255,255,255,.045)) !important;
+  box-shadow:
+    0 10px 24px rgba(0,0,0,.18),
+    inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+
+html[data-theme="space"] .mission-lightbox__btn:hover,
+html[data-theme-space] .mission-lightbox__btn:hover,
+body.space-mode .mission-lightbox__btn:hover {
+  border-color: rgba(143, 208, 255, .34) !important;
+  background:
+    linear-gradient(180deg, rgba(143,208,255,.20), rgba(255,255,255,.06)) !important;
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.24),
+    0 0 22px rgba(143,208,255,.12),
+    inset 0 1px 0 rgba(255,255,255,.10) !important;
+}
+
+html[data-theme="space"] .mission-lightbox__counter,
+html[data-theme-space] .mission-lightbox__counter,
+body.space-mode .mission-lightbox__counter {
+  color: rgba(225,242,255,.88) !important;
+  border-color: rgba(143,208,255,.18) !important;
+  background: rgba(10, 23, 38, .62) !important;
+}
+
+/* Mobile Mission Lightbox nav was bottom-positioned; keep hover from jumping there too. */
+@media (max-width: 760px) {
+  .mission-lightbox__nav,
+  .mission-lightbox__nav:hover {
+    transform: none !important;
+  }
+
+  .mission-lightbox__prev::before,
+  .mission-lightbox__next::before {
+    font-size: 26px !important;
+  }
+}
+
+/* ---------- Photography slideshow controls ---------- */
+
+.slide-control {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  text-align: center !important;
+  font-size: 0 !important;
+  transform: translateY(-50%) !important;
+  transition:
+    transform .18s ease,
+    background .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease !important;
+}
+
+.slide-control:hover {
+  transform: translateY(-50%) scale(1.045) !important;
+}
+
+.slide-control.prev::before,
+.slide-control.next::before {
+  display: block !important;
+  width: 1em !important;
+  height: 1em !important;
+  font-size: 31px !important;
+  line-height: .92 !important;
+  font-weight: 650 !important;
+  text-align: center !important;
+  transform: translateY(-.5px) !important;
+}
+
+.slide-control.prev::before {
+  content: "‹" !important;
+}
+
+.slide-control.next::before {
+  content: "›" !important;
+}
+
+/* Space Mode: darker, quieter, less generic grey. */
+html[data-theme="space"] .slide-control,
+html[data-theme-space] .slide-control,
+body.space-mode .slide-control {
+  color: rgba(225, 242, 255, .94) !important;
+  border-color: rgba(143, 208, 255, .22) !important;
+  background:
+    linear-gradient(180deg, rgba(143,208,255,.15), rgba(7,18,32,.50)) !important;
+  box-shadow:
+    0 12px 28px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.08) !important;
+  backdrop-filter: blur(12px) saturate(1.06) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(1.06) !important;
+}
+
+html[data-theme="space"] .slide-control:hover,
+html[data-theme-space] .slide-control:hover,
+body.space-mode .slide-control:hover {
+  border-color: rgba(143, 208, 255, .36) !important;
+  background:
+    linear-gradient(180deg, rgba(143,208,255,.22), rgba(7,18,32,.58)) !important;
+  box-shadow:
+    0 16px 34px rgba(0,0,0,.34),
+    0 0 24px rgba(143,208,255,.13),
+    inset 0 1px 0 rgba(255,255,255,.10) !important;
+}
+
+html[data-theme="space"] .slide-status,
+html[data-theme-space] .slide-status,
+body.space-mode .slide-status {
+  color: rgba(225, 242, 255, .92) !important;
+  border-color: rgba(143, 208, 255, .20) !important;
+  background:
+    linear-gradient(180deg, rgba(143,208,255,.14), rgba(7,18,32,.58)) !important;
+  box-shadow:
+    0 10px 24px rgba(0,0,0,.26),
+    inset 0 1px 0 rgba(255,255,255,.08) !important;
+  backdrop-filter: blur(12px) saturate(1.06) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(1.06) !important;
+}
+
+/* Light Mode still remains clean, not heavy. */
+html:not([data-theme="space"]) .slide-control {
+  color: rgba(14, 39, 64, .88) !important;
+  border-color: rgba(14, 39, 64, .16) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,.38)) !important;
+}
+
+html:not([data-theme="space"]) .slide-status {
+  color: rgba(14,39,64,.84) !important;
+  border-color: rgba(14,39,64,.12) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.74), rgba(255,255,255,.36)) !important;
+}
+
+/* ---------- Strict Solar System diagram ---------- */
+
+/* Disable earlier pseudo-planet implementation. */
+.ui2046-system-orbit::before {
+  content: none !important;
+  display: none !important;
+}
+
+/* The new system uses exact ellipse geometry:
+   planet positions are calculated in JS using x = a cos(theta), y = b sin(theta). */
+.ui2046-solar-system {
+  width: min(43vw, 640px) !important;
+  aspect-ratio: 1.72 / 1 !important;
+  opacity: .32 !important;
+  transform: rotate(-7deg) !important;
+}
+
+.ui2046-system-orbit {
+  width: var(--w) !important;
+  height: var(--h) !important;
+  border-color: rgba(143,208,255,var(--alpha,.115)) !important;
+  border-style: solid !important;
+}
+
+.ui2046-system-orbit.dwarf {
+  border-style: dashed !important;
+}
+
+.ui2046-planet {
+  position: absolute;
+  left: var(--left);
+  top: var(--top);
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: var(--color);
+  transform: translate(-50%, -50%);
+  box-shadow:
+    0 0 calc(var(--size) * 2.4) color-mix(in srgb, var(--color) 56%, transparent),
+    0 0 1px rgba(255,255,255,.40) inset;
+  opacity: var(--planet-opacity, .78);
+}
+
+.ui2046-planet.sun-marker {
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 217, 154, .72);
+  box-shadow:
+    0 0 14px rgba(255,217,154,.32),
+    0 0 30px rgba(255,217,154,.12);
+}
+
+.ui2046-system-label {
+  position: absolute;
+  left: var(--label-left);
+  top: var(--label-top);
+  transform: translate(-50%, -50%);
+  color: rgba(214, 228, 240, .30);
+  font-size: 8px;
+  letter-spacing: .14em;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.ui2046-kuiper-belt {
+  width: 98% !important;
+  height: 81% !important;
+  border-color: rgba(143,208,255,.12) !important;
+}
+
+.ui2046-kuiper-belt::after {
+  color: rgba(214,228,240,.28) !important;
+  font-size: 8px !important;
+  letter-spacing: .15em !important;
+}
+
+html:not([data-theme="space"]) .ui2046-planet {
+  opacity: .46;
+}
+
+html:not([data-theme="space"]) .ui2046-system-label,
+html:not([data-theme="space"]) .ui2046-kuiper-belt::after {
+  color: rgba(26, 61, 92, .24) !important;
+}
