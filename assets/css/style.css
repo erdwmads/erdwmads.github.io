@@ -7579,3 +7579,103 @@ html:not([data-theme="space"]) .mission-back-to-index {
     font-size: 10px !important;
   }
 }
+
+
+/* ============================================================
+   Mission Index mobile layout fix
+   Prevent LOG cards and SOL/date text from overlapping on phones.
+   Mobile uses a stable two-column layout instead of squeezing
+   five compact cards into one row.
+   ============================================================ */
+
+@media (max-width: 760px) {
+  .compact-mission-index .mission-index-panel {
+    padding: 17px 16px 18px !important;
+    border-radius: 22px !important;
+  }
+
+  .compact-mission-index .mission-index-head {
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+    align-items: start !important;
+    gap: 12px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .compact-mission-index .mission-index-head .eyebrow {
+    margin-bottom: 7px !important;
+  }
+
+  .compact-mission-index .mission-index-head h2 {
+    font-size: clamp(25px, 7.4vw, 34px) !important;
+    line-height: 1.08 !important;
+    letter-spacing: .02em !important;
+    margin: 0 !important;
+  }
+
+  .compact-mission-index .mission-index-mode {
+    align-self: start !important;
+    min-height: 27px !important;
+    padding: 5px 9px !important;
+    font-size: 9px !important;
+    white-space: nowrap !important;
+  }
+
+  .compact-mission-jump-grid,
+  .mission-jump-grid.compact-mission-jump-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    overflow: visible !important;
+    gap: 9px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    scroll-snap-type: none !important;
+  }
+
+  .compact-jump-card,
+  .mission-jump-card.compact-jump-card {
+    min-width: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    display: grid !important;
+    gap: 5px !important;
+    padding: 11px 10px 10px !important;
+    border-radius: 15px !important;
+    scroll-snap-align: unset !important;
+  }
+
+  .compact-jump-card .mission-jump-log {
+    display: block !important;
+    font-size: 10.5px !important;
+    line-height: 1.1 !important;
+    letter-spacing: .105em !important;
+    white-space: nowrap !important;
+  }
+
+  .compact-jump-card .mission-jump-meta {
+    display: block !important;
+    font-size: 9.8px !important;
+    line-height: 1.25 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    opacity: .86 !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .compact-mission-jump-grid,
+  .mission-jump-grid.compact-mission-jump-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .compact-jump-card,
+  .mission-jump-card.compact-jump-card {
+    grid-template-columns: auto 1fr !important;
+    align-items: baseline !important;
+    column-gap: 10px !important;
+  }
+
+  .compact-jump-card .mission-jump-meta {
+    text-align: right !important;
+  }
+}
