@@ -2,7 +2,7 @@
   const root = document.documentElement;
   const storageKey = "mads-theme";
 
-  function getSavedTheme() {
+  function readSavedTheme() {
     try {
       return localStorage.getItem(storageKey);
     } catch (error) {
@@ -14,7 +14,7 @@
     try {
       localStorage.setItem(storageKey, theme);
     } catch (error) {
-      // localStorage may be blocked; the visual toggle should still work.
+      // localStorage can be blocked; visual state still changes.
     }
   }
 
@@ -24,6 +24,7 @@
     root.toggleAttribute("data-theme-space", useSpace);
     root.setAttribute("data-theme", useSpace ? "space" : "light");
     root.classList.toggle("theme-preloaded-space", useSpace);
+    root.style.backgroundColor = useSpace ? "#040910" : "#edf3f7";
 
     if (document.body) {
       document.body.classList.toggle("space-mode", useSpace);
@@ -40,7 +41,7 @@
   }
 
   function initialTheme() {
-    const saved = getSavedTheme();
+    const saved = readSavedTheme();
     if (saved === "space" || saved === "light") return saved;
     return root.getAttribute("data-theme") === "space" ? "space" : "light";
   }

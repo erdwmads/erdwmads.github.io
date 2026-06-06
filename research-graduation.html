@@ -5,6 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Graduation Research | Mads LIU YONG</title>
   <meta name="description" content="Chronological graduation research log of Mads LIU YONG.">
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem("mads-theme");
+        if (savedTheme === "space") {
+          document.documentElement.setAttribute("data-theme", "space");
+          document.documentElement.setAttribute("data-theme-space", "");
+          document.documentElement.classList.add("theme-preloaded-space");
+          document.documentElement.style.backgroundColor = "#040910";
+        } else {
+          document.documentElement.setAttribute("data-theme", "light");
+          document.documentElement.style.backgroundColor = "#edf3f7";
+        }
+      } catch (error) {
+        document.documentElement.setAttribute("data-theme", "light");
+        document.documentElement.style.backgroundColor = "#edf3f7";
+      }
+    })();
+  </script>
+  <style>
+    html { background: #edf3f7; color-scheme: light dark; }
+    html[data-theme="space"],
+    html[data-theme-space] {
+      background: #040910 !important;
+      color-scheme: dark;
+    }
+    html[data-theme="space"] body,
+    html[data-theme-space] body {
+      background-color: #040910 !important;
+      color: #edf7ff;
+    }
+  </style>
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="assets/img/favicon.png">

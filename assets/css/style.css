@@ -9703,3 +9703,584 @@ html:not([data-theme="space"]) body.ui-page-home .action-row a[href="cv.html"]::
     font-size: 8px !important;
   }
 }
+
+
+/* ============================================================
+   V4 Refinement + Stability Pass
+   Built on Interface 2046 v4. This is not the later Mission Record
+   redesign. It keeps the v4 layout, then adds:
+   - full-site design level consolidation
+   - Lunar Archive Light Mode
+   - mobile QA hardening
+   - Firefox first-paint support
+   - Chromium/Edge status-card repaint stability
+   ============================================================ */
+
+/* ----------------------------
+   1. Design-system convergence
+   ---------------------------- */
+:root {
+  --ds-hero-radius: 34px;
+  --ds-card-radius: 24px;
+  --ds-module-radius: 20px;
+  --ds-chip-radius: 999px;
+  --ds-card-padding: clamp(20px, 2.2vw, 30px);
+  --ds-module-padding: clamp(16px, 1.7vw, 22px);
+  --ds-ring: 0 0 0 1px rgba(255,255,255,.045) inset;
+  --ds-edge-light: inset 0 1px 0 rgba(255,255,255,.10);
+  --ds-edge-dark: inset 0 -1px 0 rgba(143,208,255,.040);
+  --ds-shadow-space: 0 18px 48px rgba(0,0,0,.22);
+  --ds-shadow-light: 0 18px 44px rgba(33, 60, 88, .105);
+}
+
+.hero-card,
+.page-hero,
+.hero {
+  border-radius: var(--ds-hero-radius);
+}
+
+.card,
+.glass-card,
+.panel,
+.project-link-card,
+.research-note-card,
+.paper-card,
+.cv-edu-card,
+.contact-card,
+.feature-card,
+.photo-card,
+.mission-index-panel {
+  border-radius: var(--ds-card-radius);
+}
+
+.status-card,
+.project-progress > div,
+.log-content,
+.mission-jump-card,
+.mission-record-field,
+.mini-timeline-item {
+  border-radius: var(--ds-module-radius);
+}
+
+.pill,
+.tag,
+.badge,
+.chip,
+.hero-tags span,
+.project-tags span,
+.research-tags span,
+.log-tags span,
+.paper-status,
+.mission-index-mode,
+.button,
+button {
+  border-radius: var(--ds-chip-radius);
+}
+
+.card,
+.glass-card,
+.panel,
+.project-link-card,
+.research-note-card,
+.paper-card,
+.cv-edu-card,
+.contact-card,
+.feature-card,
+.photo-card,
+.mission-index-panel {
+  padding: var(--ds-card-padding);
+}
+
+.status-card,
+.project-progress > div,
+.log-content,
+.mission-jump-card,
+.mission-record-field,
+.mini-timeline-item {
+  padding: var(--ds-module-padding);
+}
+
+/* V4 already removed the louder HUD corner marks. Keep that decision stable. */
+.card::before,
+.card::after,
+.glass-card::before,
+.glass-card::after,
+.panel::before,
+.panel::after,
+.project-link-card::before,
+.project-link-card::after,
+.research-note-card::before,
+.research-note-card::after,
+.status-card::before,
+.status-card::after,
+.paper-card::before,
+.paper-card::after,
+.cv-edu-card::before,
+.cv-edu-card::after,
+.contact-card::before,
+.contact-card::after,
+.feature-card::before,
+.feature-card::after,
+.mission-index-panel::before,
+.mission-index-panel::after,
+.mission-log-panel::before,
+.mission-log-panel::after,
+.photo-card::before,
+.photo-card::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Links stay text links, not accidental mini glass boxes. */
+.main p a:not(.button),
+.main li a:not(.button),
+.contact-list a:not(.button),
+.footer-inner a:not(.button) {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  text-decoration-line: underline !important;
+  text-underline-offset: 3px !important;
+}
+
+/* ----------------------------
+   2. Firefox first-paint stability
+   ---------------------------- */
+html.theme-preloaded-space,
+html[data-theme="space"],
+html[data-theme-space] {
+  background: #040910 !important;
+}
+
+html.theme-preloaded-space body,
+html[data-theme="space"] body,
+html[data-theme-space] body,
+body.space-mode {
+  background-color: #040910 !important;
+}
+
+/* ----------------------------
+   3. Chromium / Edge repaint stability
+   ---------------------------- */
+
+/* The fixed HUD overlay no longer uses screen blending. Screen blending over
+   filtered cards is the main Chromium tiling risk that produced white stripes. */
+html[data-theme="space"] body::after,
+html[data-theme-space] body::after,
+body.space-mode::after {
+  mix-blend-mode: normal !important;
+  opacity: .24 !important;
+  will-change: auto !important;
+  transform: none !important;
+}
+
+/* Keep status panels visually close to v4, but put them on a stable compositor
+   surface. This targets the exact block family where the Edge stripes appeared. */
+html[data-theme="space"] .status-card,
+html[data-theme-space] .status-card,
+body.space-mode .status-card,
+html[data-theme="space"] .project-progress > div,
+html[data-theme-space] .project-progress > div,
+body.space-mode .project-progress > div {
+  isolation: isolate !important;
+  contain: paint !important;
+  backface-visibility: hidden !important;
+  transform: translateZ(0) !important;
+  background:
+    linear-gradient(180deg, rgba(18, 33, 50, .82), rgba(7, 18, 31, .72)) !important;
+  background-color: rgba(10, 22, 36, .78) !important;
+  background-clip: padding-box !important;
+  border-color: rgba(190,226,255,.18) !important;
+  box-shadow:
+    0 16px 38px rgba(0,0,0,.20),
+    var(--ds-ring),
+    var(--ds-edge-light),
+    var(--ds-edge-dark) !important;
+}
+
+/* Chromium/Edge-specific fallback: status panels keep the glass look through
+   translucency and edge shadows, but avoid live backdrop filtering while
+   scrolling. Other larger cards keep real blur. */
+@supports (-webkit-backdrop-filter: blur(1px)) and (not (-moz-appearance: none)) {
+  html[data-theme="space"] .status-card,
+  html[data-theme-space] .status-card,
+  body.space-mode .status-card,
+  html[data-theme="space"] .project-progress > div,
+  html[data-theme-space] .project-progress > div,
+  body.space-mode .project-progress > div {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background:
+      linear-gradient(180deg, rgba(24, 39, 56, .84), rgba(8, 19, 33, .76)) !important;
+    box-shadow:
+      0 16px 42px rgba(0,0,0,.22),
+      0 0 0 1px rgba(255,255,255,.035) inset,
+      inset 0 1px 0 rgba(255,255,255,.13),
+      inset 0 -1px 0 rgba(143,208,255,.055) !important;
+  }
+}
+
+/* Mission Index cards: avoid overlap and unstable underline geometry. */
+.mission-index-panel,
+.mission-jump-card {
+  isolation: isolate !important;
+  contain: paint !important;
+  backface-visibility: hidden !important;
+}
+
+html body main .mission-index-panel a.mission-jump-card,
+html body main .mission-index-panel a.mission-jump-card:link,
+html body main .mission-index-panel a.mission-jump-card:visited {
+  text-decoration: none !important;
+}
+
+html body main .mission-index-panel a.mission-jump-card .mission-jump-meta {
+  text-decoration: none !important;
+  border-bottom: 0 !important;
+}
+
+/* ----------------------------
+   4. Lunar Archive Light Mode
+   ---------------------------- */
+html:not([data-theme="space"]) {
+  --bg: #edf3f7;
+  --ink: #12202d;
+  --muted: #526575;
+  --line: rgba(83, 114, 144, .15);
+  --blue: #1d6f9f;
+  --blue-dark: #0f4e77;
+  --blue-soft: rgba(29, 111, 159, .10);
+  background: #edf3f7 !important;
+}
+
+html:not([data-theme="space"]) body {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.72), rgba(237,243,247,.92) 42%, #e7eef4 100%) !important;
+  color: var(--ink) !important;
+}
+
+/* Quiet archive grid in Light Mode, not a plain white website. */
+html:not([data-theme="space"]) body::after {
+  mix-blend-mode: normal !important;
+  opacity: .22 !important;
+  background:
+    linear-gradient(90deg, rgba(35, 83, 122, .045) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(35, 83, 122, .040) 1px, transparent 1px) !important;
+  background-size: 88px 88px, 88px 88px !important;
+}
+
+html:not([data-theme="space"]) .site-header,
+html:not([data-theme="space"]) .site-footer {
+  background: rgba(244, 249, 252, .76) !important;
+  border-color: rgba(51, 91, 124, .12) !important;
+}
+
+html:not([data-theme="space"]) .nav,
+html:not([data-theme="space"]) .site-nav {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.82), rgba(236,244,250,.60)) !important;
+  border-color: rgba(65, 104, 136, .16) !important;
+  box-shadow:
+    0 14px 34px rgba(35, 68, 98, .10),
+    inset 0 1px 0 rgba(255,255,255,.72) !important;
+}
+
+html:not([data-theme="space"]) .card,
+html:not([data-theme="space"]) .glass-card,
+html:not([data-theme="space"]) .panel,
+html:not([data-theme="space"]) .project-link-card,
+html:not([data-theme="space"]) .research-note-card,
+html:not([data-theme="space"]) .paper-card,
+html:not([data-theme="space"]) .cv-edu-card,
+html:not([data-theme="space"]) .contact-card,
+html:not([data-theme="space"]) .feature-card,
+html:not([data-theme="space"]) .photo-card,
+html:not([data-theme="space"]) .mission-index-panel {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.78), rgba(241,247,251,.56)) !important;
+  border-color: rgba(255,255,255,.66) !important;
+  box-shadow:
+    var(--ds-shadow-light),
+    0 0 0 1px rgba(255,255,255,.52) inset,
+    inset 0 1px 0 rgba(255,255,255,.70) !important;
+  backdrop-filter: blur(16px) saturate(1.04) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.04) !important;
+}
+
+html:not([data-theme="space"]) .status-card,
+html:not([data-theme="space"]) .project-progress > div,
+html:not([data-theme="space"]) .mission-jump-card,
+html:not([data-theme="space"]) .log-content,
+html:not([data-theme="space"]) .mini-timeline-item {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.72), rgba(237,245,250,.52)) !important;
+  border-color: rgba(72, 111, 142, .13) !important;
+  box-shadow:
+    0 12px 28px rgba(33, 60, 88, .075),
+    inset 0 1px 0 rgba(255,255,255,.62) !important;
+}
+
+html:not([data-theme="space"]) .section-label,
+html:not([data-theme="space"]) .eyebrow {
+  color: #1d6f9f !important;
+  text-shadow: none !important;
+}
+
+html:not([data-theme="space"]) .section-label {
+  border-top-color: rgba(29, 111, 159, .18) !important;
+}
+
+html:not([data-theme="space"]) .pill,
+html:not([data-theme="space"]) .tag,
+html:not([data-theme="space"]) .badge,
+html:not([data-theme="space"]) .chip,
+html:not([data-theme="space"]) .hero-tags span,
+html:not([data-theme="space"]) .project-tags span,
+html:not([data-theme="space"]) .research-tags span,
+html:not([data-theme="space"]) .log-tags span,
+html:not([data-theme="space"]) .paper-status,
+html:not([data-theme="space"]) .mission-index-mode {
+  background: rgba(247, 251, 254, .70) !important;
+  border-color: rgba(63, 101, 133, .15) !important;
+  color: #244a68 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.65) !important;
+}
+
+/* ----------------------------
+   5. Mobile QA pass
+   ---------------------------- */
+@media (max-width: 900px) {
+  html {
+    overflow-x: hidden;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+
+  .main {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: clamp(16px, 4vw, 24px) !important;
+    padding-right: clamp(16px, 4vw, 24px) !important;
+  }
+
+  .header-inner,
+  .footer-inner {
+    max-width: 100% !important;
+    padding-left: clamp(14px, 4vw, 22px) !important;
+    padding-right: clamp(14px, 4vw, 22px) !important;
+  }
+
+  .site-header {
+    overflow: visible !important;
+  }
+
+  .nav,
+  .site-nav {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    white-space: nowrap;
+  }
+
+  .nav::-webkit-scrollbar,
+  .site-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav a,
+  .site-nav a,
+  .nav button,
+  .site-nav button {
+    flex: 0 0 auto !important;
+  }
+
+  .hero,
+  .page-hero,
+  .section,
+  .section.two-col,
+  .research-notes-section,
+  .cv-education-section,
+  .paper-shelf-section {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .section-label {
+    position: static !important;
+    top: auto !important;
+    width: 100% !important;
+    margin-bottom: 14px !important;
+    padding-top: 0 !important;
+  }
+
+  .project-grid,
+  .status-grid,
+  .research-status-grid,
+  .paper-shelf,
+  .photo-grid,
+  .photography-grid,
+  .mission-record-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .mission-index-panel {
+    width: 100% !important;
+    overflow: hidden !important;
+  }
+
+  .mission-index-head {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    align-items: start !important;
+  }
+
+  .mission-index-mode {
+    width: fit-content !important;
+    max-width: 100% !important;
+  }
+
+  .mission-jump-grid,
+  .compact-mission-jump-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  html body main .mission-jump-card,
+  html body main .mission-jump-card.compact-jump-card {
+    min-width: 0 !important;
+    width: 100% !important;
+    grid-template-columns: auto minmax(0, 1fr) !important;
+    align-items: center !important;
+  }
+
+  .mission-jump-meta {
+    min-width: 0 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .slideshow-stage {
+    min-height: auto !important;
+    height: auto !important;
+    aspect-ratio: 4 / 3 !important;
+  }
+
+  .slide-control {
+    width: 42px !important;
+    height: 42px !important;
+  }
+
+  .mission-lightbox,
+  .mission-lightbox.is-open {
+    padding: 12px !important;
+  }
+
+  .mission-lightbox__panel {
+    max-width: calc(100vw - 24px) !important;
+    max-height: calc(100vh - 24px) !important;
+  }
+
+  .mission-lightbox__image {
+    max-height: calc(100vh - 150px) !important;
+    object-fit: contain !important;
+  }
+
+  .button-row,
+  .hero-actions,
+  .cta-row,
+  .action-row {
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+  }
+
+  .button-row .button,
+  .hero-actions .button,
+  .cta-row .button,
+  .action-row .button {
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 560px) {
+  body {
+    font-size: 15.5px !important;
+    line-height: 1.66 !important;
+  }
+
+  h1 {
+    font-size: clamp(2.0rem, 12vw, 3.25rem) !important;
+    line-height: 1.03 !important;
+  }
+
+  h2 {
+    font-size: clamp(1.45rem, 7vw, 2.1rem) !important;
+  }
+
+  .card,
+  .glass-card,
+  .panel,
+  .project-link-card,
+  .research-note-card,
+  .paper-card,
+  .cv-edu-card,
+  .contact-card,
+  .feature-card,
+  .photo-card,
+  .mission-index-panel {
+    padding: 18px !important;
+    border-radius: 20px !important;
+  }
+
+  .status-card,
+  .project-progress > div,
+  .log-content,
+  .mission-jump-card,
+  .mission-record-field,
+  .mini-timeline-item {
+    padding: 15px !important;
+    border-radius: 17px !important;
+  }
+
+  .site-title,
+  .brand,
+  .logo {
+    max-width: 70vw !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .ui2046-right,
+  .ui2046-rail,
+  .ui2046-solar-system {
+    display: none !important;
+  }
+
+  .footer-inner {
+    display: grid !important;
+    gap: 6px !important;
+    text-align: center !important;
+  }
+}
+
+/* ----------------------------
+   6. Photography: keep it secondary but smooth
+   ---------------------------- */
+.photo-grid img,
+.photography-grid img,
+.photo-slide {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.slide-control,
+.mission-lightbox__button,
+.mission-lightbox__close {
+  touch-action: manipulation;
+}

@@ -1,0 +1,24 @@
+Interface 2046 v4 Refinement + Stability QA
+
+Base:
+- restore_to_interface_2046_v4_full_package.zip
+
+Implemented:
+1. Full-site design level consolidation: hero / card / module / chip / text-link hierarchy.
+2. Lunar Archive Light Mode: grey-white archive surface, low-saturation blue, NASA technical-document feeling.
+3. Mobile QA pass: nav overflow, Mission Index stacking, lightbox bounds, photography/slideshow stability, text/button scaling.
+4. Firefox Space Mode first-paint fix: early head guard before CSS + robust theme.js.
+5. Edge/Chromium status-card stripe fix: removed screen blending from HUD overlay and added compositor-stable status panels.
+
+Static checks:
+- PASS: HTML pages present
+- PASS: Early theme guard on every HTML page
+- PASS: Theme guard before CSS link
+- PASS: theme.js included
+- PASS: interface-2046.js included
+- PASS: Kept V4 research-graduation, no later scientific-record redesign
+- PASS: CSS braces roughly balanced
+- PASS: Paper Shelf no Download PDF string
+
+Files to replace are listed in UPLOAD_NOTE.txt.
+This package intentionally does not include the later Mission Record page redesign or the later experimental glass patches.
