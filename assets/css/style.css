@@ -9703,3 +9703,190 @@ html:not([data-theme="space"]) body.ui-page-home .action-row a[href="cv.html"]::
     font-size: 8px !important;
   }
 }
+
+
+/* ============================================================
+   Unique Site System v1 — Design-system consolidation
+   Establishes stable visual tiers and scientific Mission Log records.
+   ============================================================ */
+
+:root {
+  --surface-major: rgba(9, 20, 34, .68);
+  --surface-card: rgba(12, 25, 42, .52);
+  --surface-field: rgba(255,255,255,.055);
+  --surface-chip: rgba(143,208,255,.105);
+  --border-major: rgba(195,226,255,.18);
+  --border-card: rgba(195,226,255,.14);
+  --border-field: rgba(143,208,255,.16);
+  --text-primary: rgba(239,247,255,.94);
+  --text-secondary: rgba(212,226,238,.72);
+  --text-tertiary: rgba(212,226,238,.56);
+  --system-blue: rgba(143,208,255,.92);
+}
+
+/* Tier 1: major page / project panels */
+.project-link-card,
+.mission-index-panel,
+.research-note-card,
+.cv-edu-card,
+.paper-card,
+.contact-card,
+.feature-card {
+  border-color: var(--border-card) !important;
+}
+
+/* Tier 2: status / internal fields */
+.status-card,
+.project-progress > div,
+.mission-record-field {
+  border-color: var(--border-field) !important;
+}
+
+/* Tier 3: chips/tags */
+.tag,
+.chip,
+.pill,
+.badge,
+.log-tags span,
+.research-tags span,
+.hero-tags span,
+.project-tags span {
+  white-space: nowrap;
+}
+
+/* Light Mode variables */
+html:not([data-theme="space"]) {
+  --surface-major: rgba(255,255,255,.74);
+  --surface-card: rgba(255,255,255,.62);
+  --surface-field: rgba(231,241,248,.46);
+  --surface-chip: rgba(10,79,122,.075);
+  --border-major: rgba(255,255,255,.58);
+  --border-card: rgba(10,79,122,.12);
+  --border-field: rgba(10,79,122,.105);
+  --text-primary: rgba(11,30,49,.94);
+  --text-secondary: rgba(35,54,72,.76);
+  --text-tertiary: rgba(35,54,72,.58);
+  --system-blue: #0a5f93;
+}
+
+/* Mission Log fixed scientific record schema */
+.mission-schema-note {
+  grid-column: 2;
+  margin: -4px 0 18px;
+  max-width: 760px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  line-height: 1.7;
+  letter-spacing: .025em;
+}
+
+.mission-record-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px 0 18px;
+}
+
+.mission-record-field {
+  position: relative;
+  padding: 14px 15px 15px;
+  border: 1px solid var(--border-field);
+  border-radius: 17px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.070), rgba(255,255,255,.026));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    0 10px 22px rgba(0,0,0,.08);
+}
+
+.mission-record-field span {
+  display: block;
+  margin: 0 0 8px;
+  color: var(--system-blue);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.mission-record-field p {
+  margin: 0 !important;
+  color: var(--text-secondary) !important;
+  font-size: 13px;
+  line-height: 1.68;
+}
+
+.mission-record-field:nth-child(5) {
+  grid-column: 1 / -1;
+  background:
+    linear-gradient(90deg, rgba(143,208,255,.075), transparent 28%),
+    linear-gradient(180deg, rgba(255,255,255,.068), rgba(255,255,255,.024));
+}
+
+/* Give the figures a clear handoff after the record block */
+.mission-record-grid + .mission-photo-grid {
+  margin-top: 18px !important;
+}
+
+/* Space Mode schema tuning */
+html[data-theme="space"] .mission-record-field,
+html[data-theme-space] .mission-record-field,
+body.space-mode .mission-record-field {
+  background:
+    linear-gradient(180deg, rgba(143,208,255,.070), rgba(255,255,255,.025)) !important;
+}
+
+/* Light Mode schema tuning */
+html:not([data-theme="space"]) .mission-schema-note {
+  color: rgba(33,54,72,.62);
+}
+
+html:not([data-theme="space"]) .mission-record-field {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.62), rgba(232,243,250,.34)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.58),
+    0 10px 22px rgba(34,62,86,.060) !important;
+}
+
+html:not([data-theme="space"]) .mission-record-field p {
+  color: rgba(31,49,66,.74) !important;
+}
+
+/* Research page mission-system consistency */
+body.ui-page-research-graduation .mission-log-entry {
+  border-top: 1px solid rgba(143,208,255,.13) !important;
+}
+
+body.ui-page-research-graduation .research-note-date {
+  min-width: 112px;
+  text-align: center;
+}
+
+/* Responsive record system */
+@media (max-width: 900px) {
+  .mission-schema-note {
+    grid-column: 1 / -1;
+    margin: 0 0 14px;
+  }
+
+  .mission-record-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .mission-record-field:nth-child(5) {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .mission-record-field {
+    padding: 13px 13px 14px;
+    border-radius: 15px;
+  }
+
+  .mission-record-field p {
+    font-size: 12.5px;
+  }
+}
