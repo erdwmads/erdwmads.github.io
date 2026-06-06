@@ -10585,3 +10585,388 @@ body.space-mode .mission-record-field p {
     background-color: rgba(12, 24, 38, .88) !important;
   }
 }
+
+
+/* ============================================================
+   Super Refined Edge Glass
+   Removes visible circular corner highlights and replaces them with
+   precise edge refraction, thin glass seams, and restrained inner depth.
+   Applied consistently to the site's card system.
+   ============================================================ */
+
+/* Shared card family: no circular specular bubbles. */
+html[data-theme="space"] .card,
+html[data-theme-space] .card,
+body.space-mode .card,
+html[data-theme="space"] .glass-card,
+html[data-theme-space] .glass-card,
+body.space-mode .glass-card,
+html[data-theme="space"] .panel,
+html[data-theme-space] .panel,
+body.space-mode .panel,
+html[data-theme="space"] .project-link-card,
+html[data-theme-space] .project-link-card,
+body.space-mode .project-link-card,
+html[data-theme="space"] .research-note-card,
+html[data-theme-space] .research-note-card,
+body.space-mode .research-note-card,
+html[data-theme="space"] .status-card,
+html[data-theme-space] .status-card,
+body.space-mode .status-card,
+html[data-theme="space"] .paper-card,
+html[data-theme-space] .paper-card,
+body.space-mode .paper-card,
+html[data-theme="space"] .cv-edu-card,
+html[data-theme-space] .cv-edu-card,
+body.space-mode .cv-edu-card,
+html[data-theme="space"] .contact-card,
+html[data-theme-space] .contact-card,
+body.space-mode .contact-card,
+html[data-theme="space"] .feature-card,
+html[data-theme-space] .feature-card,
+body.space-mode .feature-card,
+html[data-theme="space"] .mission-index-panel,
+html[data-theme-space] .mission-index-panel,
+body.space-mode .mission-index-panel,
+html[data-theme="space"] .mission-log-panel,
+html[data-theme-space] .mission-log-panel,
+body.space-mode .mission-log-panel,
+html[data-theme="space"] .photo-card,
+html[data-theme-space] .photo-card,
+body.space-mode .photo-card,
+html[data-theme="space"] .project-progress > div,
+html[data-theme-space] .project-progress > div,
+body.space-mode .project-progress > div,
+html[data-theme="space"] .mission-record-field,
+html[data-theme-space] .mission-record-field,
+body.space-mode .mission-record-field {
+  position: relative !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+  contain: paint !important;
+  background:
+    linear-gradient(180deg, rgba(24, 39, 56, .76), rgba(8, 19, 33, .66)) !important;
+  background-color: rgba(11, 23, 38, .74) !important;
+  border-color: rgba(190, 226, 255, .19) !important;
+  box-shadow:
+    0 18px 48px rgba(0,0,0,.25),
+    0 0 0 1px rgba(255,255,255,.035) inset,
+    inset 0 1px 0 rgba(255,255,255,.105),
+    inset 0 -1px 0 rgba(143,208,255,.050) !important;
+  backdrop-filter: blur(22px) saturate(1.18) contrast(1.03) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.18) contrast(1.03) !important;
+}
+
+/* The new high-light language:
+   no circle, no bubble, no full-height vertical stripe.
+   Only top edge refraction + very shallow inner depth. */
+html[data-theme="space"] .card::before,
+html[data-theme-space] .card::before,
+body.space-mode .card::before,
+html[data-theme="space"] .glass-card::before,
+html[data-theme-space] .glass-card::before,
+body.space-mode .glass-card::before,
+html[data-theme="space"] .panel::before,
+html[data-theme-space] .panel::before,
+body.space-mode .panel::before,
+html[data-theme="space"] .project-link-card::before,
+html[data-theme-space] .project-link-card::before,
+body.space-mode .project-link-card::before,
+html[data-theme="space"] .research-note-card::before,
+html[data-theme-space] .research-note-card::before,
+body.space-mode .research-note-card::before,
+html[data-theme="space"] .status-card::before,
+html[data-theme-space] .status-card::before,
+body.space-mode .status-card::before,
+html[data-theme="space"] .paper-card::before,
+html[data-theme-space] .paper-card::before,
+body.space-mode .paper-card::before,
+html[data-theme="space"] .cv-edu-card::before,
+html[data-theme-space] .cv-edu-card::before,
+body.space-mode .cv-edu-card::before,
+html[data-theme="space"] .contact-card::before,
+html[data-theme-space] .contact-card::before,
+body.space-mode .contact-card::before,
+html[data-theme="space"] .feature-card::before,
+html[data-theme-space] .feature-card::before,
+body.space-mode .feature-card::before,
+html[data-theme="space"] .mission-index-panel::before,
+html[data-theme-space] .mission-index-panel::before,
+body.space-mode .mission-index-panel::before,
+html[data-theme="space"] .mission-log-panel::before,
+html[data-theme-space] .mission-log-panel::before,
+body.space-mode .mission-log-panel::before,
+html[data-theme="space"] .photo-card::before,
+html[data-theme-space] .photo-card::before,
+body.space-mode .photo-card::before,
+html[data-theme="space"] .project-progress > div::before,
+html[data-theme-space] .project-progress > div::before,
+body.space-mode .project-progress > div::before,
+html[data-theme="space"] .mission-record-field::before,
+html[data-theme-space] .mission-record-field::before,
+body.space-mode .mission-record-field::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  border-radius: inherit !important;
+  pointer-events: none !important;
+  opacity: .92 !important;
+  transform: none !important;
+  background:
+    linear-gradient(180deg,
+      rgba(255,255,255,.092) 0%,
+      rgba(255,255,255,.034) 16%,
+      rgba(143,208,255,.018) 42%,
+      transparent 72%
+    ) !important;
+}
+
+/* Ultra-fine edge refraction: a short top seam and two tiny side catches.
+   This is the precision replacement for the old circular highlight. */
+html[data-theme="space"] .card::after,
+html[data-theme-space] .card::after,
+body.space-mode .card::after,
+html[data-theme="space"] .glass-card::after,
+html[data-theme-space] .glass-card::after,
+body.space-mode .glass-card::after,
+html[data-theme="space"] .panel::after,
+html[data-theme-space] .panel::after,
+body.space-mode .panel::after,
+html[data-theme="space"] .project-link-card::after,
+html[data-theme-space] .project-link-card::after,
+body.space-mode .project-link-card::after,
+html[data-theme="space"] .research-note-card::after,
+html[data-theme-space] .research-note-card::after,
+body.space-mode .research-note-card::after,
+html[data-theme="space"] .status-card::after,
+html[data-theme-space] .status-card::after,
+body.space-mode .status-card::after,
+html[data-theme="space"] .paper-card::after,
+html[data-theme-space] .paper-card::after,
+body.space-mode .paper-card::after,
+html[data-theme="space"] .cv-edu-card::after,
+html[data-theme-space] .cv-edu-card::after,
+body.space-mode .cv-edu-card::after,
+html[data-theme="space"] .contact-card::after,
+html[data-theme-space] .contact-card::after,
+body.space-mode .contact-card::after,
+html[data-theme="space"] .feature-card::after,
+html[data-theme-space] .feature-card::after,
+body.space-mode .feature-card::after,
+html[data-theme="space"] .mission-index-panel::after,
+html[data-theme-space] .mission-index-panel::after,
+body.space-mode .mission-index-panel::after,
+html[data-theme="space"] .mission-log-panel::after,
+html[data-theme-space] .mission-log-panel::after,
+body.space-mode .mission-log-panel::after,
+html[data-theme="space"] .photo-card::after,
+html[data-theme-space] .photo-card::after,
+body.space-mode .photo-card::after,
+html[data-theme="space"] .project-progress > div::after,
+html[data-theme-space] .project-progress > div::after,
+body.space-mode .project-progress > div::after,
+html[data-theme="space"] .mission-record-field::after,
+html[data-theme-space] .mission-record-field::after,
+body.space-mode .mission-record-field::after {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  left: 12px !important;
+  right: 12px !important;
+  top: 0 !important;
+  height: 1px !important;
+  z-index: 0 !important;
+  border-radius: 999px !important;
+  pointer-events: none !important;
+  opacity: .72 !important;
+  transform: none !important;
+  background:
+    linear-gradient(90deg,
+      transparent 0%,
+      rgba(255,255,255,.25) 14%,
+      rgba(255,255,255,.48) 42%,
+      rgba(143,208,255,.30) 68%,
+      transparent 100%
+    ) !important;
+  box-shadow:
+    -8px 7px 18px rgba(143,208,255,.025),
+    8px 6px 18px rgba(255,255,255,.022) !important;
+}
+
+/* Additional precision for important Mission Log surfaces:
+   very subtle bottom depth, no visible blobs. */
+html[data-theme="space"] .status-card,
+html[data-theme-space] .status-card,
+body.space-mode .status-card,
+html[data-theme="space"] .project-progress > div,
+html[data-theme-space] .project-progress > div,
+body.space-mode .project-progress > div,
+html[data-theme="space"] .mission-record-field,
+html[data-theme-space] .mission-record-field,
+body.space-mode .mission-record-field {
+  box-shadow:
+    0 16px 42px rgba(0,0,0,.24),
+    0 0 0 1px rgba(255,255,255,.035) inset,
+    inset 0 1px 0 rgba(255,255,255,.12),
+    inset 0 -1px 0 rgba(143,208,255,.060),
+    inset 1px 0 0 rgba(255,255,255,.028),
+    inset -1px 0 0 rgba(143,208,255,.030) !important;
+}
+
+/* Tiny components receive the same philosophy at smaller scale. */
+html[data-theme="space"] .pill::before,
+html[data-theme-space] .pill::before,
+body.space-mode .pill::before,
+html[data-theme="space"] .tag::before,
+html[data-theme-space] .tag::before,
+body.space-mode .tag::before,
+html[data-theme="space"] .chip::before,
+html[data-theme-space] .chip::before,
+body.space-mode .chip::before,
+html[data-theme="space"] .badge::before,
+html[data-theme-space] .badge::before,
+body.space-mode .badge::before,
+html[data-theme="space"] .hero-tags span::before,
+html[data-theme-space] .hero-tags span::before,
+body.space-mode .hero-tags span::before,
+html[data-theme="space"] .project-tags span::before,
+html[data-theme-space] .project-tags span::before,
+body.space-mode .project-tags span::before,
+html[data-theme="space"] .research-tags span::before,
+html[data-theme-space] .research-tags span::before,
+body.space-mode .research-tags span::before,
+html[data-theme="space"] .log-tags span::before,
+html[data-theme-space] .log-tags span::before,
+body.space-mode .log-tags span::before,
+html[data-theme="space"] .button.secondary::before,
+html[data-theme-space] .button.secondary::before,
+body.space-mode .button.secondary::before {
+  left: 10px !important;
+  right: 10px !important;
+  top: 1px !important;
+  height: 1px !important;
+  opacity: .54 !important;
+  background:
+    linear-gradient(90deg,
+      transparent,
+      rgba(255,255,255,.42),
+      rgba(143,208,255,.20),
+      transparent
+    ) !important;
+}
+
+/* Light Mode version: white archive glass without circular stains. */
+html:not([data-theme="space"]) .card,
+html:not([data-theme="space"]) .glass-card,
+html:not([data-theme="space"]) .panel,
+html:not([data-theme="space"]) .project-link-card,
+html:not([data-theme="space"]) .research-note-card,
+html:not([data-theme="space"]) .status-card,
+html:not([data-theme="space"]) .paper-card,
+html:not([data-theme="space"]) .cv-edu-card,
+html:not([data-theme="space"]) .contact-card,
+html:not([data-theme="space"]) .feature-card,
+html:not([data-theme="space"]) .mission-index-panel,
+html:not([data-theme="space"]) .mission-log-panel,
+html:not([data-theme="space"]) .photo-card,
+html:not([data-theme="space"]) .project-progress > div,
+html:not([data-theme="space"]) .mission-record-field {
+  position: relative !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.76), rgba(242,248,252,.46)) !important;
+  border-color: rgba(255,255,255,.58) !important;
+  box-shadow:
+    0 18px 44px rgba(34,62,86,.115),
+    0 0 0 1px rgba(255,255,255,.52) inset,
+    inset 0 1px 0 rgba(255,255,255,.72),
+    inset 0 -1px 0 rgba(10,79,122,.045) !important;
+  backdrop-filter: blur(18px) saturate(1.06) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.06) !important;
+}
+
+html:not([data-theme="space"]) .card::before,
+html:not([data-theme="space"]) .glass-card::before,
+html:not([data-theme="space"]) .panel::before,
+html:not([data-theme="space"]) .project-link-card::before,
+html:not([data-theme="space"]) .research-note-card::before,
+html:not([data-theme="space"]) .status-card::before,
+html:not([data-theme="space"]) .paper-card::before,
+html:not([data-theme="space"]) .cv-edu-card::before,
+html:not([data-theme="space"]) .contact-card::before,
+html:not([data-theme="space"]) .feature-card::before,
+html:not([data-theme="space"]) .mission-index-panel::before,
+html:not([data-theme="space"]) .mission-log-panel::before,
+html:not([data-theme="space"]) .photo-card::before,
+html:not([data-theme="space"]) .project-progress > div::before,
+html:not([data-theme="space"]) .mission-record-field::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  border-radius: inherit !important;
+  pointer-events: none !important;
+  background:
+    linear-gradient(180deg,
+      rgba(255,255,255,.50) 0%,
+      rgba(255,255,255,.14) 18%,
+      transparent 66%
+    ) !important;
+  opacity: .88 !important;
+}
+
+html:not([data-theme="space"]) .card::after,
+html:not([data-theme="space"]) .glass-card::after,
+html:not([data-theme="space"]) .panel::after,
+html:not([data-theme="space"]) .project-link-card::after,
+html:not([data-theme="space"]) .research-note-card::after,
+html:not([data-theme="space"]) .status-card::after,
+html:not([data-theme="space"]) .paper-card::after,
+html:not([data-theme="space"]) .cv-edu-card::after,
+html:not([data-theme="space"]) .contact-card::after,
+html:not([data-theme="space"]) .feature-card::after,
+html:not([data-theme="space"]) .mission-index-panel::after,
+html:not([data-theme="space"]) .mission-log-panel::after,
+html:not([data-theme="space"]) .photo-card::after,
+html:not([data-theme="space"]) .project-progress > div::after,
+html:not([data-theme="space"]) .mission-record-field::after {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  left: 12px !important;
+  right: 12px !important;
+  top: 0 !important;
+  height: 1px !important;
+  z-index: 0 !important;
+  border-radius: 999px !important;
+  pointer-events: none !important;
+  background:
+    linear-gradient(90deg,
+      transparent,
+      rgba(255,255,255,.86),
+      rgba(10,79,122,.16),
+      transparent
+    ) !important;
+  opacity: .72 !important;
+}
+
+/* Make sure no old circular radial high-light can leak back in on the
+   Mission Log and Research cards. */
+html[data-theme="space"] body.ui-page-research-graduation .research-note-card::before,
+html[data-theme-space] body.ui-page-research-graduation .research-note-card::before,
+body.space-mode.ui-page-research-graduation .research-note-card::before,
+html[data-theme="space"] body.ui-page-research-log .project-link-card::before,
+html[data-theme-space] body.ui-page-research-log .project-link-card::before,
+body.space-mode.ui-page-research-log .project-link-card::before {
+  background:
+    linear-gradient(180deg,
+      rgba(255,255,255,.090) 0%,
+      rgba(255,255,255,.030) 17%,
+      rgba(143,208,255,.018) 43%,
+      transparent 74%
+    ) !important;
+}
