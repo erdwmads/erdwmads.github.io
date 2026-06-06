@@ -5,6 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CV | Mads LIU YONG</title>
   <meta name="description" content="Personal academic website of Mads LIU YONG.">
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem("mads-theme");
+        if (savedTheme === "space") {
+          document.documentElement.setAttribute("data-theme", "space");
+          document.documentElement.setAttribute("data-theme-space", "");
+          document.documentElement.classList.add("theme-preloaded-space");
+        } else {
+          document.documentElement.setAttribute("data-theme", "light");
+        }
+      } catch (error) {
+        document.documentElement.setAttribute("data-theme", "light");
+      }
+    })();
+  </script>
+  <style>
+    html { background: #edf3f7; color-scheme: light dark; }
+    html[data-theme="space"],
+    html[data-theme-space] { background: #040910; color-scheme: dark; }
+    html[data-theme="space"] body,
+    html[data-theme-space] body { background: #040910; color: #edf7ff; }
+  </style>
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="assets/img/favicon.png">

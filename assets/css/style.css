@@ -9936,3 +9936,119 @@ section#mission-log > .section-label {
     grid-column: 1 / -1 !important;
   }
 }
+
+
+/* ============================================================
+   Browser rendering stability fix
+   Firefox: prevent Space Mode from flashing Light Mode on navigation.
+   Edge/Chromium: stabilise status cards to avoid vertical repaint stripes
+   caused by backdrop-filter over animated/fixed backgrounds.
+   ============================================================ */
+
+html {
+  background-color: #edf3f7;
+}
+
+html[data-theme="space"],
+html[data-theme-space] {
+  background-color: #040910 !important;
+  color-scheme: dark;
+}
+
+html[data-theme="space"] body,
+html[data-theme-space] body,
+body.space-mode {
+  background-color: #040910 !important;
+}
+
+/* Edge / Chromium repaint-stripe fix for status-like glass panels. */
+html[data-theme="space"] .status-card,
+html[data-theme-space] .status-card,
+body.space-mode .status-card,
+html[data-theme="space"] .project-progress > div,
+html[data-theme-space] .project-progress > div,
+body.space-mode .project-progress > div,
+html[data-theme="space"] .mission-record-field,
+html[data-theme-space] .mission-record-field,
+body.space-mode .mission-record-field {
+  isolation: isolate !important;
+  contain: paint !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  transform: translateZ(0) !important;
+
+  /* Disable expensive backdrop-filter only on these small status surfaces.
+     This removes Chromium's vertical repaint stripes while keeping the
+     overall Interface 2046 glass language elsewhere. */
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+
+  background:
+    linear-gradient(180deg, rgba(12, 28, 46, .92), rgba(7, 17, 31, .82)) !important;
+  border-color: rgba(143, 208, 255, .18) !important;
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, .24),
+    inset 0 1px 0 rgba(255, 255, 255, .075),
+    inset 0 -1px 0 rgba(255, 255, 255, .025) !important;
+}
+
+html[data-theme="space"] .status-card::before,
+html[data-theme="space"] .status-card::after,
+html[data-theme-space] .status-card::before,
+html[data-theme-space] .status-card::after,
+body.space-mode .status-card::before,
+body.space-mode .status-card::after,
+html[data-theme="space"] .project-progress > div::before,
+html[data-theme="space"] .project-progress > div::after,
+html[data-theme-space] .project-progress > div::before,
+html[data-theme-space] .project-progress > div::after,
+body.space-mode .project-progress > div::before,
+body.space-mode .project-progress > div::after,
+html[data-theme="space"] .mission-record-field::before,
+html[data-theme="space"] .mission-record-field::after,
+html[data-theme-space] .mission-record-field::before,
+html[data-theme-space] .mission-record-field::after,
+body.space-mode .mission-record-field::before,
+body.space-mode .mission-record-field::after {
+  content: none !important;
+  display: none !important;
+}
+
+html[data-theme="space"] .status-card span,
+html[data-theme-space] .status-card span,
+body.space-mode .status-card span,
+html[data-theme="space"] .project-progress span,
+html[data-theme-space] .project-progress span,
+body.space-mode .project-progress span,
+html[data-theme="space"] .mission-record-field span,
+html[data-theme-space] .mission-record-field span,
+body.space-mode .mission-record-field span {
+  color: rgba(143, 208, 255, .92) !important;
+}
+
+html[data-theme="space"] .status-card strong,
+html[data-theme-space] .status-card strong,
+body.space-mode .status-card strong,
+html[data-theme="space"] .project-progress strong,
+html[data-theme-space] .project-progress strong,
+body.space-mode .project-progress strong {
+  color: rgba(240, 248, 255, .94) !important;
+}
+
+html[data-theme="space"] .status-card p,
+html[data-theme-space] .status-card p,
+body.space-mode .status-card p,
+html[data-theme="space"] .mission-record-field p,
+html[data-theme-space] .mission-record-field p,
+body.space-mode .mission-record-field p {
+  color: rgba(213, 228, 240, .76) !important;
+}
+
+@-moz-document url-prefix() {
+  html[data-theme="space"],
+  html[data-theme-space],
+  html[data-theme="space"] body,
+  html[data-theme-space] body {
+    background-color: #040910 !important;
+  }
+}

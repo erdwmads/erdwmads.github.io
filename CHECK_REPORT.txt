@@ -1,0 +1,26 @@
+Browser rendering check report
+
+Issue 1: Firefox Space Mode flashes Light Mode during navigation
+Cause:
+- The page stylesheet loads before the deferred theme.js applies localStorage theme.
+- Firefox exposes this timing more visibly than Edge.
+
+Fix:
+- Added an early inline theme guard to every HTML page before style.css.
+- It reads localStorage("mads-theme") before first paint.
+- If the saved theme is Space Mode, it sets html[data-theme="space"] immediately.
+- Added a small inline first-paint background rule so the browser canvas does not flash white.
+
+Issue 2: Edge shows vertical white stripes inside status cards while scrolling
+Cause:
+- Chromium can show repaint artefacts when backdrop-filter is applied to small glass cards over animated/fixed backgrounds.
+- The artefact appears most clearly on status blocks such as Latest Update / Current Stage.
+
+Fix:
+- Disabled backdrop-filter only on status-like surfaces:
+  .status-card
+  .project-progress > div
+  .mission-record-field
+- Removed their internal ::before / ::after highlight overlays.
+- Rebuilt them as stable dark glass panels using ordinary gradients, borders, and shadows.
+- The rest of the site keeps the Interface 2046 glass style.

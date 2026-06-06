@@ -1,8 +1,16 @@
-Replace this file only:
+Replace/upload these files:
 
+index.html
+research.html
+research-log.html
+research-graduation.html
+paper-shelf.html
+cv.html
+photography.html
+contact.html
 assets/css/style.css
 
-Fix:
-- Mission Log records become visible again.
-- The schema note and log list are forced into the correct content column.
-- Mobile layout stays full-width.
+Fixes:
+- Firefox Space Mode no longer flashes Light Mode on page changes.
+- Edge/Chromium vertical white repaint stripes in status cards are removed.
+- Mission Log structured records and visibility fix are preserved.
