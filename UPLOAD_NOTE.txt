@@ -3,8 +3,9 @@ Replace/upload these files:
 assets/css/style.css
 assets/js/interface-2046.js
 
-Optimisations:
-- Light Mode has been redesigned into a lunar archive style.
-- Research / Paper Shelf / CV cards now have distinct page-specific visual roles.
-- Solar System gets subtle planet labels in Space Mode / hover.
-- All changes keep the current Mission Log, text-link cleanup, mobile layout, meteor behaviour, and status auto-sync intact.
+Changes:
+- Right-side Interface 2046 route labels are shortened; graduation page shows Undergraduate Research.
+- Section labels scroll normally instead of sticking.
+- Light Mode Home / Contact ordinary text links are darker and readable.
+- Home Research / CV buttons redesigned into future command tabs.
+- Includes a design check report.

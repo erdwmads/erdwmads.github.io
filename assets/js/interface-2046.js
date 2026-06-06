@@ -22,7 +22,27 @@
 
   const pageTitle = (document.title || 'Mads LIU YONG').split('|')[0].trim() || 'Mission File';
   const h1 = document.querySelector('main h1, .hero h1, .page-title');
-  const route = (h1?.textContent || pageTitle).replace(/\s+/g, ' ').trim();
+  const rawRoute = (h1?.textContent || pageTitle).replace(/\s+/g, ' ').trim();
+
+  const shortRouteMap = {
+    'index': 'Home',
+    'research': 'Research',
+    'research-log': 'Research Log',
+    'research-graduation': 'Undergraduate Research',
+    'paper-shelf': 'Paper Shelf',
+    'cv': 'CV',
+    'photography': 'Photography',
+    'contact': 'Contact'
+  };
+
+  const shortenRoute = (value) => {
+    const clean = String(value || '').replace(/\s+/g, ' ').trim();
+    if (!clean) return 'Mission File';
+    if (clean.length <= 34) return clean;
+    return clean.slice(0, 31).trim() + '…';
+  };
+
+  const route = shortRouteMap[page] || shortenRoute(rawRoute);
 
   const orbitData = [
     { name: 'Mercury', label: 'Mercury', years: 0.241, w: 18, h: 11, angle: 26,  size: 2.0, color: 'rgba(180,190,196,.72)', cls: 'inner', alpha: .10, labelMode: 'minor' },

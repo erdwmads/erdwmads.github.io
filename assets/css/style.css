@@ -9406,3 +9406,300 @@ body.space-mode .ui2046-solar-system:hover .ui2046-planet-label.is-minor {
     display: none !important;
   }
 }
+
+
+/* ============================================================
+   Interface 2046 v4 — route labels, scrolling labels, links, CTAs
+   ============================================================ */
+
+/* Section labels should scroll naturally, not pin to the viewport. */
+@media (min-width: 1180px) {
+  .section-label {
+    position: static !important;
+    top: auto !important;
+    align-self: start !important;
+  }
+
+  .section.two-col,
+  .research-notes-section,
+  .cv-education-section,
+  .paper-shelf-section {
+    align-items: start !important;
+  }
+}
+
+.section-label,
+.eyebrow {
+  position: static !important;
+}
+
+/* Light Mode ordinary text links: darker, readable, still clean. */
+html:not([data-theme="space"]) body main .card > a[href]:not(.button):not(.btn):not(.brand),
+html:not([data-theme="space"]) body main article.card > a[href]:not(.button):not(.btn):not(.brand),
+html:not([data-theme="space"]) body main .card p a[href]:not(.button):not(.btn):not(.brand),
+html:not([data-theme="space"]) body main .feature-card > a[href]:not(.button):not(.btn):not(.brand),
+html:not([data-theme="space"]) body main .feature-card p a[href]:not(.button):not(.btn):not(.brand),
+html:not([data-theme="space"]) body main .contact-card a[href]:not(.button):not(.btn):not(.brand),
+html:not([data-theme="space"]) body main .affiliation-card a[href]:not(.button):not(.btn):not(.brand),
+html:not([data-theme="space"]) body main section .card a[href]:not(.button):not(.btn):not(.brand):not(.project-link-card):not(.paper-card):not(.photo-thumb),
+html:not([data-theme="space"]) body main a[href="research.html"]:not(.button):not(.btn),
+html:not([data-theme="space"]) body main a[href="research-log.html"]:not(.button):not(.btn),
+html:not([data-theme="space"]) body main a[href="paper-shelf.html"]:not(.button):not(.btn),
+html:not([data-theme="space"]) body main a[href="photography.html"]:not(.button):not(.btn),
+html:not([data-theme="space"]) body main a[href*="min-lab.w.waseda.jp"]:not(.button):not(.btn) {
+  color: #0a4f7a !important;
+  text-decoration-color: rgba(10,79,122,.74) !important;
+  text-decoration-thickness: 1.25px !important;
+  text-underline-offset: 4px !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+html:not([data-theme="space"]) body main .card > a[href]:not(.button):not(.btn):hover,
+html:not([data-theme="space"]) body main article.card > a[href]:not(.button):not(.btn):hover,
+html:not([data-theme="space"]) body main .feature-card > a[href]:not(.button):not(.btn):hover,
+html:not([data-theme="space"]) body main .contact-card a[href]:not(.button):not(.btn):hover,
+html:not([data-theme="space"]) body main .affiliation-card a[href]:not(.button):not(.btn):hover,
+html:not([data-theme="space"]) body main a[href*="min-lab.w.waseda.jp"]:not(.button):not(.btn):hover {
+  color: #053c60 !important;
+  text-decoration-color: #053c60 !important;
+  text-decoration-thickness: 1.75px !important;
+}
+
+/* Home Research / CV — trajectory command tabs. */
+body.ui-page-home .hero-actions,
+body.ui-page-home .cta-row,
+body.ui-page-home .action-row,
+.hero-actions,
+.cta-row,
+.action-row {
+  align-items: center !important;
+}
+
+body.ui-page-home .hero a[href="research.html"],
+body.ui-page-home .hero a[href="cv.html"],
+body.ui-page-home .hero-actions a[href="research.html"],
+body.ui-page-home .hero-actions a[href="cv.html"],
+body.ui-page-home .cta-row a[href="research.html"],
+body.ui-page-home .cta-row a[href="cv.html"],
+body.ui-page-home .action-row a[href="research.html"],
+body.ui-page-home .action-row a[href="cv.html"] {
+  position: relative !important;
+  isolation: isolate !important;
+  overflow: hidden !important;
+  min-width: 142px !important;
+  height: 48px !important;
+  padding: 0 18px 0 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+
+  border-radius: 17px !important;
+  text-decoration: none !important;
+  font-size: 13.5px !important;
+  font-weight: 850 !important;
+  letter-spacing: .035em !important;
+  line-height: 1 !important;
+
+  transform: translateZ(0) !important;
+  transition:
+    transform .20s ease,
+    border-color .20s ease,
+    box-shadow .20s ease,
+    background .20s ease !important;
+}
+
+/* Remove old pill-glare and build a controlled interface surface. */
+body.ui-page-home .hero a[href="research.html"]::before,
+body.ui-page-home .hero a[href="cv.html"]::before,
+body.ui-page-home .hero-actions a[href="research.html"]::before,
+body.ui-page-home .hero-actions a[href="cv.html"]::before,
+body.ui-page-home .cta-row a[href="research.html"]::before,
+body.ui-page-home .cta-row a[href="cv.html"]::before,
+body.ui-page-home .action-row a[href="research.html"]::before,
+body.ui-page-home .action-row a[href="cv.html"]::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 1px !important;
+  z-index: -1 !important;
+  border-radius: inherit !important;
+  background:
+    linear-gradient(115deg, rgba(255,255,255,.16), transparent 38%),
+    radial-gradient(circle at 18% 20%, rgba(143,208,255,.18), transparent 42%) !important;
+  opacity: .9 !important;
+  pointer-events: none !important;
+}
+
+body.ui-page-home .hero a[href="research.html"]::after,
+body.ui-page-home .hero-actions a[href="research.html"]::after,
+body.ui-page-home .cta-row a[href="research.html"]::after,
+body.ui-page-home .action-row a[href="research.html"]::after {
+  content: "↗" !important;
+  width: 24px !important;
+  height: 24px !important;
+  flex: 0 0 24px !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(143,208,255,.28) !important;
+  background: rgba(143,208,255,.11) !important;
+  color: currentColor !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+  transform: none !important;
+}
+
+body.ui-page-home .hero a[href="cv.html"]::after,
+body.ui-page-home .hero-actions a[href="cv.html"]::after,
+body.ui-page-home .cta-row a[href="cv.html"]::after,
+body.ui-page-home .action-row a[href="cv.html"]::after {
+  content: "ID" !important;
+  width: 30px !important;
+  height: 22px !important;
+  flex: 0 0 30px !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(225,242,255,.18) !important;
+  background: rgba(255,255,255,.055) !important;
+  color: currentColor !important;
+  font-size: 9px !important;
+  font-weight: 900 !important;
+  letter-spacing: .10em !important;
+  transform: none !important;
+}
+
+/* Primary command */
+body.ui-page-home .hero a[href="research.html"],
+body.ui-page-home .hero-actions a[href="research.html"],
+body.ui-page-home .cta-row a[href="research.html"],
+body.ui-page-home .action-row a[href="research.html"] {
+  color: rgba(242, 249, 255, .96) !important;
+  border: 1px solid rgba(143,208,255,.38) !important;
+  background:
+    linear-gradient(135deg, rgba(9, 26, 43, .92), rgba(14, 57, 91, .70)) !important;
+  box-shadow:
+    0 18px 34px rgba(0,0,0,.22),
+    0 0 0 1px rgba(255,255,255,.05) inset,
+    0 0 28px rgba(143,208,255,.11) !important;
+}
+
+/* Secondary dossier command */
+body.ui-page-home .hero a[href="cv.html"],
+body.ui-page-home .hero-actions a[href="cv.html"],
+body.ui-page-home .cta-row a[href="cv.html"],
+body.ui-page-home .action-row a[href="cv.html"] {
+  color: rgba(226, 240, 252, .90) !important;
+  border: 1px solid rgba(225,242,255,.18) !important;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.105), rgba(255,255,255,.038)) !important;
+  box-shadow:
+    0 14px 28px rgba(0,0,0,.14),
+    0 0 0 1px rgba(255,255,255,.045) inset !important;
+}
+
+body.ui-page-home .hero a[href="research.html"]:hover,
+body.ui-page-home .hero a[href="cv.html"]:hover,
+body.ui-page-home .hero-actions a[href="research.html"]:hover,
+body.ui-page-home .hero-actions a[href="cv.html"]:hover,
+body.ui-page-home .cta-row a[href="research.html"]:hover,
+body.ui-page-home .cta-row a[href="cv.html"]:hover,
+body.ui-page-home .action-row a[href="research.html"]:hover,
+body.ui-page-home .action-row a[href="cv.html"]:hover {
+  transform: translateY(-2px) !important;
+}
+
+body.ui-page-home .hero a[href="research.html"]:hover,
+body.ui-page-home .hero-actions a[href="research.html"]:hover,
+body.ui-page-home .cta-row a[href="research.html"]:hover,
+body.ui-page-home .action-row a[href="research.html"]:hover {
+  border-color: rgba(143,208,255,.52) !important;
+  box-shadow:
+    0 22px 42px rgba(0,0,0,.25),
+    0 0 0 1px rgba(255,255,255,.06) inset,
+    0 0 34px rgba(143,208,255,.17) !important;
+}
+
+body.ui-page-home .hero a[href="cv.html"]:hover,
+body.ui-page-home .hero-actions a[href="cv.html"]:hover,
+body.ui-page-home .cta-row a[href="cv.html"]:hover,
+body.ui-page-home .action-row a[href="cv.html"]:hover {
+  border-color: rgba(225,242,255,.30) !important;
+  background:
+    linear-gradient(135deg, rgba(143,208,255,.12), rgba(255,255,255,.045)) !important;
+}
+
+/* Light Mode CTAs: stronger and not washed-out. */
+html:not([data-theme="space"]) body.ui-page-home .hero a[href="research.html"],
+html:not([data-theme="space"]) body.ui-page-home .hero-actions a[href="research.html"],
+html:not([data-theme="space"]) body.ui-page-home .cta-row a[href="research.html"],
+html:not([data-theme="space"]) body.ui-page-home .action-row a[href="research.html"] {
+  color: #f5fbff !important;
+  border-color: rgba(10,79,122,.34) !important;
+  background:
+    linear-gradient(135deg, #0b466f, #176fa9) !important;
+  box-shadow:
+    0 16px 34px rgba(24,73,111,.18),
+    0 0 0 1px rgba(255,255,255,.20) inset !important;
+}
+
+html:not([data-theme="space"]) body.ui-page-home .hero a[href="cv.html"],
+html:not([data-theme="space"]) body.ui-page-home .hero-actions a[href="cv.html"],
+html:not([data-theme="space"]) body.ui-page-home .cta-row a[href="cv.html"],
+html:not([data-theme="space"]) body.ui-page-home .action-row a[href="cv.html"] {
+  color: #0c263d !important;
+  border-color: rgba(10,79,122,.18) !important;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.78), rgba(221,236,246,.46)) !important;
+  box-shadow:
+    0 14px 30px rgba(24,73,111,.12),
+    0 0 0 1px rgba(255,255,255,.46) inset !important;
+}
+
+html:not([data-theme="space"]) body.ui-page-home .hero a[href="cv.html"]::after,
+html:not([data-theme="space"]) body.ui-page-home .hero-actions a[href="cv.html"]::after,
+html:not([data-theme="space"]) body.ui-page-home .cta-row a[href="cv.html"]::after,
+html:not([data-theme="space"]) body.ui-page-home .action-row a[href="cv.html"]::after {
+  border-color: rgba(10,79,122,.18) !important;
+  background: rgba(10,79,122,.07) !important;
+}
+
+/* Mobile CTA remains compact. */
+@media (max-width: 560px) {
+  body.ui-page-home .hero a[href="research.html"],
+  body.ui-page-home .hero a[href="cv.html"],
+  body.ui-page-home .hero-actions a[href="research.html"],
+  body.ui-page-home .hero-actions a[href="cv.html"],
+  body.ui-page-home .cta-row a[href="research.html"],
+  body.ui-page-home .cta-row a[href="cv.html"],
+  body.ui-page-home .action-row a[href="research.html"],
+  body.ui-page-home .action-row a[href="cv.html"] {
+    min-width: 118px !important;
+    height: 42px !important;
+    padding: 0 14px 0 15px !important;
+    border-radius: 15px !important;
+    font-size: 12px !important;
+    gap: 10px !important;
+  }
+
+  body.ui-page-home .hero a[href="research.html"]::after,
+  body.ui-page-home .hero-actions a[href="research.html"]::after,
+  body.ui-page-home .cta-row a[href="research.html"]::after,
+  body.ui-page-home .action-row a[href="research.html"]::after {
+    width: 22px !important;
+    height: 22px !important;
+    flex-basis: 22px !important;
+  }
+
+  body.ui-page-home .hero a[href="cv.html"]::after,
+  body.ui-page-home .hero-actions a[href="cv.html"]::after,
+  body.ui-page-home .cta-row a[href="cv.html"]::after,
+  body.ui-page-home .action-row a[href="cv.html"]::after {
+    width: 27px !important;
+    height: 20px !important;
+    flex-basis: 27px !important;
+    font-size: 8px !important;
+  }
+}
