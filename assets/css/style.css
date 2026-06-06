@@ -10052,3 +10052,225 @@ body.space-mode .mission-record-field p {
     background-color: #040910 !important;
   }
 }
+
+
+/* ============================================================
+   Interface 2046 Stability Pass — Chromium/Edge stripe removal
+   Root cause handled:
+   1. Lateral/diagonal highlight gradients created visible vertical bands.
+   2. mix-blend-mode + fixed overlays increased compositor artefacts.
+   3. backdrop-filter on many small chips/cards caused unstable repaint.
+   This pass makes Space Mode rendering tile-stable.
+   ============================================================ */
+
+/* Fixed overlays must not blend across compositor tiles. */
+html[data-theme="space"] body::after,
+html[data-theme-space] body::after,
+body.space-mode::after {
+  mix-blend-mode: normal !important;
+  opacity: .22 !important;
+  transform: none !important;
+  will-change: auto !important;
+}
+
+html[data-theme="space"] body::before,
+html[data-theme-space] body::before,
+body.space-mode::before {
+  transform: none !important;
+  will-change: auto !important;
+  filter: grayscale(.18) contrast(1.06) brightness(.92) !important;
+}
+
+/* Small glass elements are the main source of Edge/Chromium repaint bands.
+   Use stable layered gradients instead of blur/composited glass. */
+html[data-theme="space"] .status-card,
+html[data-theme-space] .status-card,
+body.space-mode .status-card,
+html[data-theme="space"] .project-progress > div,
+html[data-theme-space] .project-progress > div,
+body.space-mode .project-progress > div,
+html[data-theme="space"] .mission-record-field,
+html[data-theme-space] .mission-record-field,
+body.space-mode .mission-record-field,
+html[data-theme="space"] .pill,
+html[data-theme-space] .pill,
+body.space-mode .pill,
+html[data-theme="space"] .tag,
+html[data-theme-space] .tag,
+body.space-mode .tag,
+html[data-theme="space"] .chip,
+html[data-theme-space] .chip,
+body.space-mode .chip,
+html[data-theme="space"] .badge,
+html[data-theme-space] .badge,
+body.space-mode .badge,
+html[data-theme="space"] .hero-tags span,
+html[data-theme-space] .hero-tags span,
+body.space-mode .hero-tags span,
+html[data-theme="space"] .project-tags span,
+html[data-theme-space] .project-tags span,
+body.space-mode .project-tags span,
+html[data-theme="space"] .research-tags span,
+html[data-theme-space] .research-tags span,
+body.space-mode .research-tags span,
+html[data-theme="space"] .log-tags span,
+html[data-theme-space] .log-tags span,
+body.space-mode .log-tags span,
+html[data-theme="space"] .button.secondary,
+html[data-theme-space] .button.secondary,
+body.space-mode .button.secondary {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transform: none !important;
+  will-change: auto !important;
+  isolation: isolate !important;
+  contain: paint !important;
+  background:
+    linear-gradient(180deg, rgba(26, 39, 55, .92), rgba(12, 24, 38, .88)) !important;
+  background-color: #101c2b !important;
+  background-clip: padding-box !important;
+  border-color: rgba(143, 208, 255, .18) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.075),
+    0 8px 18px rgba(0,0,0,.14) !important;
+}
+
+/* Larger research cards also had a left-side mission glow.
+   Replace it with a uniform surface to prevent full-height vertical bands. */
+html[data-theme="space"] body.ui-page-research .research-card,
+html[data-theme="space"] body.ui-page-research .project-link-card,
+html[data-theme="space"] body.ui-page-research .status-card,
+html[data-theme="space"] body.ui-page-research-graduation .research-note-card,
+html[data-theme="space"] body.ui-page-research-graduation .mission-index-panel,
+html[data-theme="space"] body.ui-page-research-log .project-link-card,
+html[data-theme-space] body.ui-page-research .research-card,
+html[data-theme-space] body.ui-page-research .project-link-card,
+html[data-theme-space] body.ui-page-research .status-card,
+html[data-theme-space] body.ui-page-research-graduation .research-note-card,
+html[data-theme-space] body.ui-page-research-graduation .mission-index-panel,
+html[data-theme-space] body.ui-page-research-log .project-link-card,
+body.space-mode.ui-page-research .research-card,
+body.space-mode.ui-page-research .project-link-card,
+body.space-mode.ui-page-research .status-card,
+body.space-mode.ui-page-research-graduation .research-note-card,
+body.space-mode.ui-page-research-graduation .mission-index-panel,
+body.space-mode.ui-page-research-log .project-link-card {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background:
+    linear-gradient(180deg, rgba(13, 27, 44, .88), rgba(7, 17, 31, .78)) !important;
+  background-color: #0c1a2c !important;
+  background-clip: padding-box !important;
+}
+
+/* Kill pseudo-element glints on all affected stable surfaces. */
+html[data-theme="space"] .status-card::before,
+html[data-theme="space"] .status-card::after,
+html[data-theme="space"] .project-progress > div::before,
+html[data-theme="space"] .project-progress > div::after,
+html[data-theme="space"] .mission-record-field::before,
+html[data-theme="space"] .mission-record-field::after,
+html[data-theme="space"] .pill::before,
+html[data-theme="space"] .pill::after,
+html[data-theme="space"] .tag::before,
+html[data-theme="space"] .tag::after,
+html[data-theme="space"] .chip::before,
+html[data-theme="space"] .chip::after,
+html[data-theme="space"] .badge::before,
+html[data-theme="space"] .badge::after,
+html[data-theme="space"] .button.secondary::before,
+html[data-theme="space"] .button.secondary::after,
+html[data-theme-space] .status-card::before,
+html[data-theme-space] .status-card::after,
+html[data-theme-space] .project-progress > div::before,
+html[data-theme-space] .project-progress > div::after,
+html[data-theme-space] .mission-record-field::before,
+html[data-theme-space] .mission-record-field::after,
+html[data-theme-space] .pill::before,
+html[data-theme-space] .pill::after,
+html[data-theme-space] .tag::before,
+html[data-theme-space] .tag::after,
+html[data-theme-space] .chip::before,
+html[data-theme-space] .chip::after,
+html[data-theme-space] .badge::before,
+html[data-theme-space] .badge::after,
+html[data-theme-space] .button.secondary::before,
+html[data-theme-space] .button.secondary::after,
+body.space-mode .status-card::before,
+body.space-mode .status-card::after,
+body.space-mode .project-progress > div::before,
+body.space-mode .project-progress > div::after,
+body.space-mode .mission-record-field::before,
+body.space-mode .mission-record-field::after,
+body.space-mode .pill::before,
+body.space-mode .pill::after,
+body.space-mode .tag::before,
+body.space-mode .tag::after,
+body.space-mode .chip::before,
+body.space-mode .chip::after,
+body.space-mode .badge::before,
+body.space-mode .badge::after,
+body.space-mode .button.secondary::before,
+body.space-mode .button.secondary::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Re-apply typography after the surface reset. */
+html[data-theme="space"] .status-card span,
+html[data-theme-space] .status-card span,
+body.space-mode .status-card span,
+html[data-theme="space"] .project-progress span,
+html[data-theme-space] .project-progress span,
+body.space-mode .project-progress span,
+html[data-theme="space"] .mission-record-field span,
+html[data-theme-space] .mission-record-field span,
+body.space-mode .mission-record-field span {
+  color: rgba(143, 208, 255, .94) !important;
+}
+
+html[data-theme="space"] .status-card strong,
+html[data-theme-space] .status-card strong,
+body.space-mode .status-card strong,
+html[data-theme="space"] .project-progress strong,
+html[data-theme-space] .project-progress strong,
+body.space-mode .project-progress strong {
+  color: rgba(240, 248, 255, .96) !important;
+}
+
+html[data-theme="space"] .status-card p,
+html[data-theme-space] .status-card p,
+body.space-mode .status-card p,
+html[data-theme="space"] .mission-record-field p,
+html[data-theme-space] .mission-record-field p,
+body.space-mode .mission-record-field p {
+  color: rgba(213, 228, 240, .78) !important;
+}
+
+/* Stable hover state: no diagonal glare, no moving highlight. */
+html[data-theme="space"] .pill:hover,
+html[data-theme-space] .pill:hover,
+body.space-mode .pill:hover,
+html[data-theme="space"] .tag:hover,
+html[data-theme-space] .tag:hover,
+body.space-mode .tag:hover,
+html[data-theme="space"] .button.secondary:hover,
+html[data-theme-space] .button.secondary:hover,
+body.space-mode .button.secondary:hover {
+  background:
+    linear-gradient(180deg, rgba(31, 47, 65, .94), rgba(14, 28, 44, .90)) !important;
+  border-color: rgba(143, 208, 255, .28) !important;
+}
+
+/* If Chromium still tries to tile a filtered fixed background, force the
+   animated layer to stay below content and independent from cards. */
+.ambient-space-layer,
+.ui2046-layer {
+  isolation: isolate !important;
+}
+
+html[data-theme="space"] .main,
+html[data-theme-space] .main,
+body.space-mode .main {
+  isolation: isolate !important;
+}

@@ -20,8 +20,10 @@
 
   function applyTheme(theme) {
     const useSpace = theme === "space";
+
     root.toggleAttribute("data-theme-space", useSpace);
     root.setAttribute("data-theme", useSpace ? "space" : "light");
+    root.classList.toggle("theme-preloaded-space", useSpace);
 
     if (document.body) {
       document.body.classList.toggle("space-mode", useSpace);
@@ -37,25 +39,32 @@
     return root.getAttribute("data-theme") === "space" ? "space" : "light";
   }
 
+  function initialTheme() {
+    const saved = getSavedTheme();
+    if (saved === "space" || saved === "light") return saved;
+    return root.getAttribute("data-theme") === "space" ? "space" : "light";
+  }
+
   function toggleTheme() {
     const next = currentTheme() === "space" ? "light" : "space";
     applyTheme(next);
     saveTheme(next);
   }
 
-  // Apply saved theme immediately.
-  applyTheme(getSavedTheme() === "space" ? "space" : "light");
+  applyTheme(initialTheme());
 
-  // Robust event delegation for all pages.
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () {
+      applyTheme(currentTheme());
+    }, { once: true });
+  } else {
+    applyTheme(currentTheme());
+  }
+
   document.addEventListener("click", function (event) {
     const button = event.target.closest(".theme-toggle");
     if (!button) return;
     event.preventDefault();
     toggleTheme();
-  });
-
-  // Re-apply labels after DOM is fully available.
-  document.addEventListener("DOMContentLoaded", function () {
-    applyTheme(currentTheme());
   });
 })();

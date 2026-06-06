@@ -9,8 +9,9 @@ cv.html
 photography.html
 contact.html
 assets/css/style.css
+assets/js/theme.js
 
 Fixes:
-- Firefox Space Mode no longer flashes Light Mode on page changes.
-- Edge/Chromium vertical white repaint stripes in status cards are removed.
-- Mission Log structured records and visibility fix are preserved.
+- Removes the Edge/Chromium vertical stripe/band issue from Mission Log status cards and nearby tags.
+- Keeps Firefox Space Mode first-paint guard.
+- Stabilises Space Mode rendering by removing risky lateral highlights, pseudo-glints, mix-blend overlays, and backdrop blur from repeated small surfaces.
