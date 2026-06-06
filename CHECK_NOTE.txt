@@ -1,0 +1,5 @@
+Diagnosis:
+The live page still contains the Mission Log text and images, but the last patch added a schema note as an extra direct child inside the two-column Mission Log section. CSS grid then allowed the actual Mission Log list to fall into the narrow label column, making the visual layout look empty/broken.
+
+Fix:
+This patch forces both the schema note and the Mission Log list into the main content column on desktop, and into the full-width column on mobile.

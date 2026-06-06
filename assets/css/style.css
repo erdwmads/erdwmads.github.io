@@ -9890,3 +9890,49 @@ body.ui-page-research-graduation .research-note-date {
     font-size: 12.5px;
   }
 }
+
+
+/* ============================================================
+   Mission Records visibility hotfix
+   The Mission Log section uses a two-column section layout:
+   label column + content column. After adding the schema note,
+   the log list became the third grid item and could fall into the
+   narrow label column. Force both schema note and log list into
+   the content column.
+   ============================================================ */
+
+.research-notes-section > .mission-schema-note,
+.research-notes-section > .research-note-list,
+.research-notes-section > .mission-log-list,
+section#mission-log > .mission-schema-note,
+section#mission-log > .research-note-list,
+section#mission-log > .mission-log-list {
+  grid-column: 2 !important;
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+section#mission-log > .section-label {
+  grid-column: 1 !important;
+}
+
+.mission-log-list .mission-log-entry,
+.research-note-list .mission-log-entry {
+  width: 100% !important;
+  min-width: 0 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+@media (max-width: 900px) {
+  .research-notes-section > .section-label,
+  .research-notes-section > .mission-schema-note,
+  .research-notes-section > .research-note-list,
+  .research-notes-section > .mission-log-list,
+  section#mission-log > .section-label,
+  section#mission-log > .mission-schema-note,
+  section#mission-log > .research-note-list,
+  section#mission-log > .mission-log-list {
+    grid-column: 1 / -1 !important;
+  }
+}

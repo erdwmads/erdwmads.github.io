@@ -1,10 +1,8 @@
-Replace/upload these files:
+Replace this file only:
 
-research-graduation.html
 assets/css/style.css
-assets/js/interface-2046.js
 
-Changes:
-- Mission Log entries now use a fixed scientific record format.
-- Adds a design-system consolidation layer for visual hierarchy.
-- Keeps current Interface 2046 route labels, home CTAs, solar-system animation, text-link fixes, and auto-sync behavior.
+Fix:
+- Mission Log records become visible again.
+- The schema note and log list are forced into the correct content column.
+- Mobile layout stays full-width.
