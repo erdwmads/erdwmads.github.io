@@ -1,17 +1,8 @@
-Replace/upload these files:
+Replace/upload this file only:
 
-index.html
-research.html
-research-log.html
-research-graduation.html
-paper-shelf.html
-cv.html
-photography.html
-contact.html
 assets/css/style.css
-assets/js/theme.js
 
-Fixes:
-- Removes the Edge/Chromium vertical stripe/band issue from Mission Log status cards and nearby tags.
-- Keeps Firefox Space Mode first-paint guard.
-- Stabilises Space Mode rendering by removing risky lateral highlights, pseudo-glints, mix-blend overlays, and backdrop blur from repeated small surfaces.
+Fix:
+- Restores Mission Log liquid/frosted glass feeling.
+- Restores controlled highlights.
+- Keeps the vertical band bug fixed by avoiding full-height lateral highlights and making glass surfaces optically denser.
