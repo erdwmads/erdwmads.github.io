@@ -10,6 +10,13 @@
   }
 
   function fullSrc(img) {
+    if (isTouch && img?.dataset?.mobileFullSrc) {
+      return img.dataset.mobileFullSrc;
+    }
+    return img?.dataset?.fullSrc || img?.currentSrc || img?.src || '';
+  }
+
+  function originalFullSrc(img) {
     return img?.dataset?.fullSrc || img?.currentSrc || img?.src || '';
   }
 
@@ -22,6 +29,7 @@
     const caption = captionEl?.textContent?.trim() || img?.alt || `Image ${index + 1}`;
     const thumb = gridSrc(img);
     const full = fullSrc(img);
+    const original = originalFullSrc(img);
 
     if (img) {
       img.loading = 'lazy';
@@ -152,7 +160,7 @@
 
     const full = new Image();
     full.decoding = 'async';
-    try { full.fetchPriority = 'high'; } catch (error) {}
+    try { full.fetchPriority = isTouch ? 'auto' : 'high'; } catch (error) {}
     full.src = item.src;
 
     const reveal = () => {
