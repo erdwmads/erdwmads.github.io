@@ -12531,3 +12531,214 @@ html:not([data-theme="space"]) .mission-jump-meta {
     gap: 11px !important;
   }
 }
+
+
+/* ============================================================
+   Mission Index Hard Alignment Fix
+   Hard override after visual QA:
+   - Navigator row uses flex-wrap + justify-content:center, so each row is
+     actually centered instead of merely distributed from the left.
+   - SOL/date telemetry marker uses a fixed grid column, so spacing before SOL
+     cannot collapse.
+   - Mission Log SOL/date marker is centered on the text line.
+   - No glass strip is added to SOL/date in Light Mode.
+   ============================================================ */
+
+/* 1) Mission Log Navigator: center every wrapped row as a group. */
+#mission-index .mission-index-panel .mission-jump-grid.compact-mission-jump-grid,
+#mission-index .mission-index-panel .compact-mission-jump-grid,
+.mission-index-section .mission-index-panel .mission-jump-grid.compact-mission-jump-grid,
+.mission-index-section .mission-index-panel .compact-mission-jump-grid {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  align-content: flex-start !important;
+  align-items: flex-start !important;
+  column-gap: clamp(58px, 6.8vw, 132px) !important;
+  row-gap: 22px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: clamp(18px, 2vw, 36px) !important;
+  padding-right: clamp(18px, 2vw, 36px) !important;
+  box-sizing: border-box !important;
+}
+
+#mission-index .mission-index-panel .mission-jump-card.compact-jump-card,
+.mission-index-section .mission-index-panel .mission-jump-card.compact-jump-card,
+#mission-index .mission-index-panel .compact-jump-card,
+.mission-index-section .mission-index-panel .compact-jump-card {
+  flex: 0 0 auto !important;
+  width: max-content !important;
+  min-width: 0 !important;
+  max-width: max-content !important;
+  justify-items: start !important;
+}
+
+/* 2) Mission Index / Quick Jump SOL line:
+      marker gets its own fixed column, then a real gap before text. */
+#mission-index .mission-index-panel .mission-jump-meta,
+#mission-index .mission-index-panel .compact-jump-card .mission-jump-meta,
+.mission-index-section .mission-index-panel .mission-jump-meta,
+.mission-index-section .mission-index-panel .compact-jump-card .mission-jump-meta {
+  display: inline-grid !important;
+  grid-template-columns: 18px max-content !important;
+  column-gap: 12px !important;
+  align-items: center !important;
+  justify-content: start !important;
+  width: max-content !important;
+  min-height: 18px !important;
+  padding: 0 !important;
+  margin: 4px 0 0 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+#mission-index .mission-index-panel .mission-jump-meta::before,
+#mission-index .mission-index-panel .compact-jump-card .mission-jump-meta::before,
+.mission-index-section .mission-index-panel .mission-jump-meta::before,
+.mission-index-section .mission-index-panel .compact-jump-card .mission-jump-meta::before {
+  grid-column: 1 !important;
+  justify-self: center !important;
+  align-self: center !important;
+  content: "" !important;
+  width: 11px !important;
+  height: 11px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-left: 3px solid rgba(18, 109, 168, .92) !important;
+  border-bottom: 3px solid rgba(18, 109, 168, .54) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: rotate(-45deg) !important;
+  transform-origin: 50% 50% !important;
+}
+
+/* 3) Mission Log entry SOL/date line:
+      marker aligns with the vertical centre of the text. */
+#mission-log .mission-log-entry .mission-entry-kicker,
+.mission-log-list .mission-log-entry .mission-entry-kicker,
+.research-note-card.mission-log-entry .mission-entry-kicker {
+  display: inline-grid !important;
+  grid-template-columns: 20px max-content !important;
+  column-gap: 13px !important;
+  align-items: center !important;
+  justify-content: start !important;
+  width: max-content !important;
+  min-height: 24px !important;
+  height: auto !important;
+  padding: 0 !important;
+  margin: 0 0 16px 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+#mission-log .mission-log-entry .mission-entry-kicker::before,
+.mission-log-list .mission-log-entry .mission-entry-kicker::before,
+.research-note-card.mission-log-entry .mission-entry-kicker::before {
+  grid-column: 1 !important;
+  justify-self: center !important;
+  align-self: center !important;
+  content: "" !important;
+  width: 12px !important;
+  height: 12px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-left: 3px solid rgba(18, 109, 168, .92) !important;
+  border-bottom: 3px solid rgba(18, 109, 168, .54) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: rotate(-45deg) !important;
+  transform-origin: 50% 50% !important;
+}
+
+/* Space Mode slightly brighter blue. */
+html[data-theme="space"] #mission-index .mission-index-panel .mission-jump-meta::before,
+html[data-theme-space] #mission-index .mission-index-panel .mission-jump-meta::before,
+body.space-mode #mission-index .mission-index-panel .mission-jump-meta::before,
+html[data-theme="space"] #mission-log .mission-log-entry .mission-entry-kicker::before,
+html[data-theme-space] #mission-log .mission-log-entry .mission-entry-kicker::before,
+body.space-mode #mission-log .mission-log-entry .mission-entry-kicker::before {
+  border-left-color: rgba(126, 216, 255, .94) !important;
+  border-bottom-color: rgba(126, 216, 255, .58) !important;
+  box-shadow: 0 0 12px rgba(126,216,255,.16) !important;
+}
+
+/* Light Mode: keep SOL/date absolutely no-glass. */
+html:not([data-theme="space"]) #mission-index .mission-index-panel .mission-jump-meta,
+html:not([data-theme="space"]) #mission-log .mission-log-entry .mission-entry-kicker,
+html:not([data-theme="space"]) .mission-log-list .mission-log-entry .mission-entry-kicker {
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  text-shadow: none !important;
+}
+
+/* Hover: keep marker geometry fixed. */
+@media (hover: hover) and (pointer: fine) {
+  #mission-index .mission-index-panel .mission-jump-card:hover .mission-jump-meta::before,
+  #mission-index .mission-index-panel .compact-jump-card:hover .mission-jump-meta::before,
+  #mission-log .mission-log-entry:hover .mission-entry-kicker::before,
+  .mission-log-list .mission-log-entry:hover .mission-entry-kicker::before {
+    transform: rotate(-45deg) !important;
+  }
+}
+
+/* Mobile returns to readable compact grid while preserving marker spacing. */
+@media (max-width: 760px) {
+  #mission-index .mission-index-panel .mission-jump-grid.compact-mission-jump-grid,
+  #mission-index .mission-index-panel .compact-mission-jump-grid,
+  .mission-index-section .mission-index-panel .mission-jump-grid.compact-mission-jump-grid,
+  .mission-index-section .mission-index-panel .compact-mission-jump-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    justify-content: stretch !important;
+    justify-items: stretch !important;
+    column-gap: 10px !important;
+    row-gap: 10px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  #mission-index .mission-index-panel .mission-jump-card.compact-jump-card,
+  .mission-index-section .mission-index-panel .mission-jump-card.compact-jump-card,
+  #mission-index .mission-index-panel .compact-jump-card,
+  .mission-index-section .mission-index-panel .compact-jump-card {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  #mission-index .mission-index-panel .mission-jump-meta,
+  .mission-index-section .mission-index-panel .mission-jump-meta {
+    grid-template-columns: 16px minmax(0, 1fr) !important;
+    column-gap: 9px !important;
+    white-space: normal !important;
+  }
+
+  #mission-log .mission-log-entry .mission-entry-kicker,
+  .mission-log-list .mission-log-entry .mission-entry-kicker {
+    grid-template-columns: 17px max-content !important;
+    column-gap: 10px !important;
+  }
+}
