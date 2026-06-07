@@ -11398,3 +11398,77 @@ body.ui-page-research-graduation #mission-index > .mission-index-panel {
     white-space: nowrap !important;
   }
 }
+
+
+/* ============================================================
+   Mobile Home / Paper Shelf Spacing Fix
+   Scope:
+   1. Home mobile: separate the Research/CV button row from the profile photo
+      card below it.
+   2. Paper Shelf mobile: restore clear vertical spacing between paper cards.
+   No desktop layout, Mission Log, lightbox, or navigator logic changes.
+   ============================================================ */
+
+@media (max-width: 760px), (hover: none) and (pointer: coarse) {
+  /* Home: button row should breathe before the photo/profile card. */
+  .hero .button-row {
+    margin-bottom: clamp(24px, 7vw, 36px) !important;
+  }
+
+  .hero > .hero-card,
+  .hero > aside.hero-card {
+    margin-top: clamp(20px, 6vw, 32px) !important;
+  }
+
+  /* Prevent older compact rules from collapsing the hero children together. */
+  .hero {
+    row-gap: clamp(24px, 7vw, 36px) !important;
+  }
+
+  /* Paper Shelf: mobile section was becoming block-like in some compact rules,
+     so grid gap was not reliably separating cards. Force a one-column grid and
+     add a fallback margin between adjacent cards. */
+  .paper-shelf {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: clamp(22px, 6vw, 32px) !important;
+    row-gap: clamp(22px, 6vw, 32px) !important;
+    align-items: stretch !important;
+  }
+
+  .paper-shelf > .paper-card {
+    margin: 0 !important;
+  }
+
+  .paper-shelf > .paper-card + .paper-card {
+    margin-top: 0 !important;
+  }
+
+  /* Extra safety for browsers / cached CSS states where .paper-shelf is still
+     treated as block: adjacent cards get visible separation. */
+  .paper-card + .paper-card {
+    margin-top: clamp(22px, 6vw, 32px) !important;
+  }
+}
+
+/* Very narrow screens need a touch more breathing room because card shadows and
+   rounded corners visually eat the gap. */
+@media (max-width: 430px) {
+  .hero .button-row {
+    margin-bottom: 30px !important;
+  }
+
+  .hero > .hero-card,
+  .hero > aside.hero-card {
+    margin-top: 24px !important;
+  }
+
+  .paper-shelf {
+    gap: 28px !important;
+    row-gap: 28px !important;
+  }
+
+  .paper-card + .paper-card {
+    margin-top: 28px !important;
+  }
+}
