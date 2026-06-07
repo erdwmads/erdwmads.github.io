@@ -11258,3 +11258,95 @@ body.ui-page-research-graduation #mission-index > .mission-index-panel {
     grid-column: 3 !important;
   }
 }
+
+
+/* ============================================================
+   Mission Navigator Row System Fix
+   Future-proof layout:
+   - Navigator order remains LOG001 -> LOG006 via mission-index.js.
+   - Each row can contain up to 5 items.
+   - Every row is centered independently.
+   - 6 logs: second row has LOG006 centered.
+   - 7 logs: second row has LOG006 LOG007 centered.
+   - 8 logs: second row has LOG006 LOG007 LOG008 centered.
+   - 10 logs: second row has five items.
+   - 11 logs: third row starts and is centered.
+   ============================================================ */
+
+@media (min-width: 1180px) {
+  body.ui-page-research-graduation #mission-index .mission-jump-grid.compact-mission-jump-grid,
+  body.ui-page-research-graduation #mission-index .mission-jump-grid {
+    --mission-nav-item-width: clamp(188px, 11.2vw, 232px);
+    --mission-nav-column-gap: clamp(28px, 2.6vw, 54px);
+    --mission-nav-row-gap: 18px;
+
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-content: flex-start !important;
+    align-items: flex-start !important;
+
+    width: 100% !important;
+    max-width: calc((var(--mission-nav-item-width) * 5) + (var(--mission-nav-column-gap) * 4)) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    column-gap: var(--mission-nav-column-gap) !important;
+    row-gap: var(--mission-nav-row-gap) !important;
+  }
+
+  body.ui-page-research-graduation #mission-index .mission-jump-card.compact-jump-card,
+  body.ui-page-research-graduation #mission-index .mission-jump-card {
+    flex: 0 0 var(--mission-nav-item-width) !important;
+    width: var(--mission-nav-item-width) !important;
+    min-width: var(--mission-nav-item-width) !important;
+    max-width: var(--mission-nav-item-width) !important;
+    box-sizing: border-box !important;
+    justify-items: start !important;
+  }
+
+  /* Remove the old six-item-only centering hack.
+     With flex rows, every incomplete final row is centered automatically. */
+  body.ui-page-research-graduation #mission-index .mission-jump-card:nth-child(6):last-child {
+    grid-column: auto !important;
+  }
+}
+
+/* Tablet: up to three items per row, each row centered. */
+@media (min-width: 761px) and (max-width: 1179px) {
+  body.ui-page-research-graduation #mission-index .mission-jump-grid.compact-mission-jump-grid,
+  body.ui-page-research-graduation #mission-index .mission-jump-grid {
+    --mission-nav-item-width: clamp(180px, 24vw, 228px);
+    --mission-nav-column-gap: clamp(22px, 4vw, 44px);
+    --mission-nav-row-gap: 16px;
+
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-content: flex-start !important;
+    align-items: flex-start !important;
+
+    width: 100% !important;
+    max-width: calc((var(--mission-nav-item-width) * 3) + (var(--mission-nav-column-gap) * 2)) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    column-gap: var(--mission-nav-column-gap) !important;
+    row-gap: var(--mission-nav-row-gap) !important;
+  }
+
+  body.ui-page-research-graduation #mission-index .mission-jump-card.compact-jump-card,
+  body.ui-page-research-graduation #mission-index .mission-jump-card {
+    flex: 0 0 var(--mission-nav-item-width) !important;
+    width: var(--mission-nav-item-width) !important;
+    min-width: var(--mission-nav-item-width) !important;
+    max-width: var(--mission-nav-item-width) !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* Mobile keeps compact two-column/one-column behavior from the stable layout. */
+@media (max-width: 760px) {
+  body.ui-page-research-graduation #mission-index .mission-jump-grid.compact-mission-jump-grid,
+  body.ui-page-research-graduation #mission-index .mission-jump-grid {
+    max-width: none !important;
+  }
+}
