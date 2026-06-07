@@ -10435,3 +10435,58 @@ html:not([data-theme="space"]) .mission-index-mode {
     -webkit-transform: translate3d(0, 0, 0) !important;
   }
 }
+
+
+/* ============================================================
+   Mobile Mission Status Card Gap Fix
+   Keeps the current visual effects. Only restores proper vertical spacing
+   between stacked Mission Log / Graduation Research status cards.
+   ============================================================ */
+
+@media (max-width: 900px), (pointer: coarse) {
+  .status-grid,
+  .research-status-grid,
+  .project-progress {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+    row-gap: 14px !important;
+    column-gap: 14px !important;
+    align-items: stretch !important;
+  }
+
+  .status-grid > .status-card,
+  .research-status-grid > .status-card,
+  .project-progress > div {
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Fallback for browsers/pages where the status cards are stacked by normal
+     document flow rather than CSS grid. */
+  .status-card + .status-card,
+  .project-progress > div + div {
+    margin-top: 14px !important;
+  }
+
+  body.ui-page-research-graduation .status-grid,
+  body.ui-page-research-graduation .research-status-grid,
+  body.ui-page-research-graduation .project-progress {
+    gap: 14px !important;
+    row-gap: 14px !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .status-grid,
+  .research-status-grid,
+  .project-progress {
+    gap: 12px !important;
+    row-gap: 12px !important;
+  }
+
+  .status-card + .status-card,
+  .project-progress > div + div {
+    margin-top: 12px !important;
+  }
+}
