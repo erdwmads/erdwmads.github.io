@@ -14742,16 +14742,20 @@ html:not([data-theme="space"]) body.ui-page-cv .panel {
 
 
 /* ============================================================
-   Direction A — restrained institutional archive
-   Gold is more present, but still about 10–13% of the visual system.
+   Direction B — richer meteoritic archive
+   More gold than A: stronger hover edge, warmer tags, more luminous archive metal.
    ============================================================ */
 
-/* Broaden the loved hover gold-edge design, restrained version. */
+/* Global hover edge is more visible and more metallic. */
 html[data-theme="space"] .card:hover,
+html[data-theme="space"] .hero-card:hover,
+html[data-theme="space"] .focus-card:hover,
+html[data-theme="space"] .status-card:hover,
 html[data-theme="space"] .project-link-card:hover,
 html[data-theme="space"] .research-note-card:hover,
 html[data-theme="space"] .mission-log-entry:hover,
 html[data-theme="space"] .mission-log-panel:hover,
+html[data-theme="space"] .mission-index-panel:hover,
 html[data-theme="space"] .paper-card:hover,
 html[data-theme="space"] .cv-edu-card:hover,
 html[data-theme="space"] .cv-card:hover,
@@ -14760,10 +14764,14 @@ html[data-theme="space"] .affiliation-card:hover,
 html[data-theme="space"] .mission-jump-card:hover,
 html[data-theme="space"] .research-log-index-link:hover,
 html[data-theme-space] .card:hover,
+html[data-theme-space] .hero-card:hover,
+html[data-theme-space] .focus-card:hover,
+html[data-theme-space] .status-card:hover,
 html[data-theme-space] .project-link-card:hover,
 html[data-theme-space] .research-note-card:hover,
 html[data-theme-space] .mission-log-entry:hover,
 html[data-theme-space] .mission-log-panel:hover,
+html[data-theme-space] .mission-index-panel:hover,
 html[data-theme-space] .paper-card:hover,
 html[data-theme-space] .cv-edu-card:hover,
 html[data-theme-space] .cv-card:hover,
@@ -14772,10 +14780,14 @@ html[data-theme-space] .affiliation-card:hover,
 html[data-theme-space] .mission-jump-card:hover,
 html[data-theme-space] .research-log-index-link:hover,
 body.space-mode .card:hover,
+body.space-mode .hero-card:hover,
+body.space-mode .focus-card:hover,
+body.space-mode .status-card:hover,
 body.space-mode .project-link-card:hover,
 body.space-mode .research-note-card:hover,
 body.space-mode .mission-log-entry:hover,
 body.space-mode .mission-log-panel:hover,
+body.space-mode .mission-index-panel:hover,
 body.space-mode .paper-card:hover,
 body.space-mode .cv-edu-card:hover,
 body.space-mode .cv-card:hover,
@@ -14783,16 +14795,17 @@ body.space-mode .contact-card:hover,
 body.space-mode .affiliation-card:hover,
 body.space-mode .mission-jump-card:hover,
 body.space-mode .research-log-index-link:hover {
-  border-color: rgba(232,197,116,.28) !important;
+  border-color: rgba(244,217,152,.38) !important;
   box-shadow:
-    0 26px 58px rgba(0,0,0,.30),
-    0 0 30px rgba(232,197,116,.080),
-    0 0 22px rgba(143,208,255,.045),
-    inset 0 1px 0 rgba(255,255,255,.14),
-    inset 0 -1px 0 rgba(232,197,116,.070) !important;
+    0 28px 66px rgba(0,0,0,.34),
+    0 0 40px rgba(244,217,152,.130),
+    0 0 26px rgba(143,208,255,.048),
+    0 0 0 1px rgba(244,217,152,.050) inset,
+    inset 0 1px 0 rgba(255,255,255,.16),
+    inset 0 -1px 0 rgba(244,217,152,.105) !important;
 }
 
-/* A keeps chips clean but visibly gold. */
+/* B makes archive pills more like the entry-gate controls. */
 html[data-theme="space"] .mission-entry-kicker,
 html[data-theme="space"] .mission-card-badge,
 html[data-theme="space"] .research-note-date,
@@ -14803,14 +14816,60 @@ html[data-theme="space"] .cv-edu-date,
 html[data-theme="space"] .project-tags span,
 html[data-theme="space"] .log-tags span,
 html[data-theme="space"] .research-tags span,
-html[data-theme="space"] .hero-tags span {
-  border-color: rgba(232,197,116,.30) !important;
-  color: rgba(234,207,143,.92) !important;
+html[data-theme="space"] .hero-tags span,
+html[data-theme-space] .mission-entry-kicker,
+html[data-theme-space] .mission-card-badge,
+html[data-theme-space] .research-note-date,
+html[data-theme-space] .paper-status,
+html[data-theme-space] .status-badge,
+html[data-theme-space] .mission-index-mode,
+html[data-theme-space] .cv-edu-date,
+html[data-theme-space] .project-tags span,
+html[data-theme-space] .log-tags span,
+html[data-theme-space] .research-tags span,
+html[data-theme-space] .hero-tags span,
+body.space-mode .mission-entry-kicker,
+body.space-mode .mission-card-badge,
+body.space-mode .research-note-date,
+body.space-mode .paper-status,
+body.space-mode .status-badge,
+body.space-mode .mission-index-mode,
+body.space-mode .cv-edu-date,
+body.space-mode .project-tags span,
+body.space-mode .log-tags span,
+body.space-mode .research-tags span,
+body.space-mode .hero-tags span {
+  color: rgba(246,220,153,.96) !important;
+  border-color: rgba(244,217,152,.42) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.145), rgba(255,255,255,.038)),
+    linear-gradient(90deg, rgba(244,217,152,.22), rgba(143,208,255,.060) 55%, rgba(244,217,152,.10)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.16),
+    inset 0 -1px 0 rgba(244,217,152,.092),
+    0 0 0 1px rgba(244,217,152,.050),
+    0 0 20px rgba(244,217,152,.090) !important;
+}
+
+/* B adds a warmer idle edge to key archive pages, not just hover. */
+html[data-theme="space"] body.ui-page-research-log .research-note-card,
+html[data-theme="space"] body.ui-page-research-graduation .mission-log-entry,
+html[data-theme="space"] body.ui-page-paper-shelf .paper-card,
+html[data-theme="space"] body.ui-page-cv .cv-edu-card,
+html[data-theme="space"] body.ui-page-cv .cv-card {
+  border-color: rgba(244,217,152,.24) !important;
+  box-shadow:
+    0 22px 50px rgba(0,0,0,.29),
+    0 0 30px rgba(244,217,152,.070),
+    0 0 22px rgba(143,208,255,.035),
+    inset 0 1px 0 rgba(255,255,255,.13),
+    inset 0 -1px 0 rgba(244,217,152,.065) !important;
 }
 
 html[data-theme="space"] .nav a:hover,
 html[data-theme="space"] .nav a[aria-current="page"] {
+  border-color: rgba(244,217,152,.18) !important;
   box-shadow:
-    0 0 18px rgba(232,197,116,.050),
-    inset 0 1px 0 rgba(255,255,255,.08) !important;
+    0 0 22px rgba(244,217,152,.085),
+    inset 0 1px 0 rgba(255,255,255,.10) !important;
 }

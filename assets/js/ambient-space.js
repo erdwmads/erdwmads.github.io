@@ -15,8 +15,8 @@
   // Stable gold assignment.
   // Classes are assigned once at creation so a meteor cannot start gold and
   // turn white later when previous meteor nodes are removed.
-  const GOLD_DUST_RATIO = 0.18;
-  const GOLD_METEOR_RATIO = 0.28;
+  const GOLD_DUST_RATIO = 0.28;
+  const GOLD_METEOR_RATIO = 0.44;
 
 
   function initAmbientSpace() {
