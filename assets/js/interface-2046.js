@@ -286,14 +286,14 @@
     };
 
     gate.addEventListener('click', exit, { once: true });
-    window.setTimeout(exit, 1980);
+    window.setTimeout(exit, 3000);
     window.setTimeout(() => {
       if (document.body?.contains(gate)) {
         gate.remove();
         body.classList.remove('entry-gate-active');
         markPlayed();
       }
-    }, 3600);
+    }, 5200);
   };
 
   if (document.readyState === 'loading') {

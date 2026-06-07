@@ -12496,3 +12496,291 @@ body.entry-gate-active > .ui2046-progress {
   margin-right: .75em;
   text-shadow: 0 0 12px rgba(255,211,128,.24);
 }
+
+
+/* ============================================================
+   Sitewide Meteoritic Gold Accent System
+   Direction:
+   - Blue remains the primary Interface 2046 language.
+   - Gold becomes the secondary "meteoritic / archive signal" color.
+   - No layout change, no LOG/SOL redesign, no badge-size change.
+   ============================================================ */
+
+:root {
+  --mads-gold: rgba(255, 211, 128, .92);
+  --mads-gold-soft: rgba(255, 211, 128, .20);
+  --mads-gold-faint: rgba(255, 211, 128, .075);
+  --mads-gold-line: rgba(255, 211, 128, .26);
+}
+
+/* 1. Top progress beam: blue core with gold terminal signal. */
+body > .ui2046-progress span,
+.ui2046-progress span {
+  background:
+    linear-gradient(90deg,
+      rgba(143,208,255,.16),
+      rgba(143,208,255,.92) 44%,
+      rgba(255,211,128,.92) 76%,
+      rgba(255,236,190,.78)) !important;
+  box-shadow:
+    0 0 12px rgba(143,208,255,.36),
+    0 0 22px rgba(255,211,128,.16) !important;
+}
+
+/* 2. Navigation: preserve the thin glowing underline, add gold only as a
+      small secondary highlight. */
+.nav a[aria-current="page"],
+.nav a:hover,
+.site-nav a[aria-current="page"],
+.site-nav a:hover {
+  color: rgba(238, 247, 255, .96) !important;
+  text-shadow:
+    0 0 14px rgba(143,208,255,.14),
+    0 0 18px rgba(255,211,128,.055) !important;
+}
+
+.nav a[aria-current="page"]::after,
+.nav a:hover::after,
+.site-nav a[aria-current="page"]::after,
+.site-nav a:hover::after {
+  background:
+    linear-gradient(90deg,
+      rgba(143,208,255,.16),
+      rgba(143,208,255,.86),
+      rgba(255,211,128,.72),
+      rgba(143,208,255,.18)) !important;
+  box-shadow:
+    0 0 12px rgba(143,208,255,.22),
+    0 0 18px rgba(255,211,128,.10) !important;
+}
+
+/* 3. Primary buttons: add a quiet gold edge without changing shape. */
+.button:not(.secondary) {
+  border-color: rgba(255,211,128,.22) !important;
+  background:
+    linear-gradient(135deg,
+      rgba(29, 121, 185, .90),
+      rgba(13, 67, 107, .82) 58%,
+      rgba(255,211,128,.16)) !important;
+  box-shadow:
+    0 16px 34px rgba(9, 46, 78, .22),
+    0 0 24px rgba(143,208,255,.10),
+    0 0 20px rgba(255,211,128,.065),
+    inset 0 1px 0 rgba(255,255,255,.14) !important;
+}
+
+.button:not(.secondary):hover {
+  border-color: rgba(255,211,128,.34) !important;
+  box-shadow:
+    0 20px 44px rgba(9, 46, 78, .28),
+    0 0 28px rgba(143,208,255,.13),
+    0 0 26px rgba(255,211,128,.10),
+    inset 0 1px 0 rgba(255,255,255,.17) !important;
+}
+
+.button.secondary {
+  border-color: rgba(255,211,128,.16) !important;
+  background:
+    linear-gradient(135deg,
+      rgba(255,255,255,.10),
+      rgba(143,208,255,.055) 56%,
+      rgba(255,211,128,.070)) !important;
+}
+
+/* 4. Text signals: gold is used only on institutional/archive labels, not body
+      paragraphs. */
+.eyebrow,
+.section-label,
+.project-sync-note::before {
+  color: rgba(148, 204, 244, .96) !important;
+  text-shadow:
+    0 0 14px rgba(143,208,255,.14),
+    0 0 18px rgba(255,211,128,.055) !important;
+}
+
+.eyebrow::first-letter,
+.section-label::first-letter {
+  color: rgba(255,211,128,.84) !important;
+}
+
+/* 5. Cards: retain existing glass, add a faint meteoritic rim and inner glint. */
+.card,
+.hero-card,
+.callout,
+.focus-card,
+.status-card,
+.project-link-card,
+.paper-card,
+.research-note-card,
+.cv-edu-card,
+.contact-card,
+.mission-index-panel,
+.mission-log-entry {
+  border-color: rgba(190,226,255,.17) !important;
+  box-shadow:
+    var(--shadow),
+    0 0 0 1px rgba(255,211,128,.035) inset,
+    inset 0 1px 0 rgba(255,255,255,.10),
+    inset 0 -1px 0 rgba(255,211,128,.045) !important;
+}
+
+.card:hover,
+.hero-card:hover,
+.focus-card:hover,
+.status-card:hover,
+.project-link-card:hover,
+.paper-card:hover,
+.research-note-card:hover,
+.cv-edu-card:hover,
+.contact-card:hover,
+.mission-log-entry:hover {
+  border-color: rgba(255,211,128,.18) !important;
+  box-shadow:
+    var(--shadow),
+    0 0 30px rgba(255,211,128,.050),
+    0 0 0 1px rgba(255,211,128,.050) inset,
+    inset 0 1px 0 rgba(255,255,255,.12),
+    inset 0 -1px 0 rgba(255,211,128,.060) !important;
+}
+
+/* 6. Pills/tags/badges: no sizing change, only color language. */
+.pill,
+.status-badge,
+.project-tags span,
+.log-tags span,
+.paper-status,
+.hero-tags span,
+.research-tags span {
+  border-color: rgba(255,211,128,.16) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.030)),
+    linear-gradient(90deg, rgba(143,208,255,.075), rgba(255,211,128,.050)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    inset 0 -1px 0 rgba(255,211,128,.045) !important;
+}
+
+.paper-status,
+.status-badge {
+  color: rgba(190, 222, 248, .92) !important;
+}
+
+/* 7. Mission / paper / research local accents. */
+.mission-index-mode,
+.research-note-date,
+.mission-jump-log {
+  border-color: rgba(255,211,128,.18) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.14),
+    inset 0 -1px 0 rgba(255,211,128,.060),
+    0 0 16px rgba(255,211,128,.040) !important;
+}
+
+.mission-entry-kicker,
+.mission-jump-meta {
+  text-shadow:
+    0 0 12px rgba(143,208,255,.10),
+    0 0 14px rgba(255,211,128,.050) !important;
+}
+
+/* 8. Light Mode translation: gold remains archival/warm, not flashy. */
+html:not([data-theme="space"]) {
+  --mads-gold: rgba(174, 111, 28, .88);
+  --mads-gold-soft: rgba(174, 111, 28, .16);
+  --mads-gold-faint: rgba(174, 111, 28, .055);
+  --mads-gold-line: rgba(174, 111, 28, .22);
+}
+
+html:not([data-theme="space"]) .nav a[aria-current="page"]::after,
+html:not([data-theme="space"]) .nav a:hover::after,
+html:not([data-theme="space"]) .site-nav a[aria-current="page"]::after,
+html:not([data-theme="space"]) .site-nav a:hover::after {
+  background:
+    linear-gradient(90deg,
+      rgba(35,93,135,.18),
+      rgba(35,93,135,.72),
+      rgba(174,111,28,.46),
+      rgba(35,93,135,.14)) !important;
+  box-shadow: none !important;
+}
+
+html:not([data-theme="space"]) .button:not(.secondary) {
+  border-color: rgba(174,111,28,.18) !important;
+  background:
+    linear-gradient(135deg,
+      rgba(35, 105, 160, .90),
+      rgba(21, 80, 126, .86) 62%,
+      rgba(174,111,28,.12)) !important;
+}
+
+html:not([data-theme="space"]) .button.secondary {
+  border-color: rgba(174,111,28,.14) !important;
+  background:
+    linear-gradient(135deg,
+      rgba(255,255,255,.70),
+      rgba(229,241,249,.54) 58%,
+      rgba(174,111,28,.055)) !important;
+}
+
+html:not([data-theme="space"]) .card,
+html:not([data-theme="space"]) .hero-card,
+html:not([data-theme="space"]) .callout,
+html:not([data-theme="space"]) .focus-card,
+html:not([data-theme="space"]) .status-card,
+html:not([data-theme="space"]) .project-link-card,
+html:not([data-theme="space"]) .paper-card,
+html:not([data-theme="space"]) .research-note-card,
+html:not([data-theme="space"]) .cv-edu-card,
+html:not([data-theme="space"]) .contact-card,
+html:not([data-theme="space"]) .mission-index-panel,
+html:not([data-theme="space"]) .mission-log-entry {
+  border-color: rgba(35,93,135,.14) !important;
+  box-shadow:
+    var(--shadow),
+    0 0 0 1px rgba(174,111,28,.030) inset,
+    inset 0 1px 0 rgba(255,255,255,.64),
+    inset 0 -1px 0 rgba(174,111,28,.035) !important;
+}
+
+html:not([data-theme="space"]) .pill,
+html:not([data-theme="space"]) .status-badge,
+html:not([data-theme="space"]) .project-tags span,
+html:not([data-theme="space"]) .log-tags span,
+html:not([data-theme="space"]) .paper-status,
+html:not([data-theme="space"]) .hero-tags span,
+html:not([data-theme="space"]) .research-tags span {
+  border-color: rgba(174,111,28,.13) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.78), rgba(229,241,249,.50)),
+    linear-gradient(90deg, rgba(35,93,135,.070), rgba(174,111,28,.045)) !important;
+}
+
+html:not([data-theme="space"]) .eyebrow::first-letter,
+html:not([data-theme="space"]) .section-label::first-letter {
+  color: rgba(174,111,28,.82) !important;
+}
+
+/* 9. Mobile: keep it calm and avoid extra glow/overdraw. */
+@media (max-width: 760px) {
+  .card,
+  .hero-card,
+  .focus-card,
+  .status-card,
+  .project-link-card,
+  .paper-card,
+  .research-note-card,
+  .cv-edu-card,
+  .contact-card,
+  .mission-index-panel,
+  .mission-log-entry {
+    box-shadow:
+      var(--shadow),
+      0 0 0 1px rgba(255,211,128,.030) inset,
+      inset 0 1px 0 rgba(255,255,255,.08) !important;
+  }
+}
+
+/* 10. Entry gate duration support: scanner line stretches for the 3s boot. */
+.entry-gate__line::before {
+  animation-duration: 2.25s !important;
+}
