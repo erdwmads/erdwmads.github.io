@@ -117,7 +117,13 @@
       // Use the same vector for both the visual trail and the motion.
       const dx = vx * travel;
       const dy = vy * travel;
-      const duration = rand(1450, 2550);
+
+      // Speed cap:
+      // keep a varied meteor speed distribution, but prevent occasional
+      // absurdly fast meteors on large/diagonal trajectories.
+      const distance = Math.hypot(dx, dy);
+      const targetSpeed = rand(500, 760); // px/s; fast, but not ridiculous
+      const duration = Math.min(4600, Math.max(1650, (distance / targetSpeed) * 1000));
 
       el.style.setProperty("--meteor-len", len + "px");
       el.style.left = start[0] + "px";
