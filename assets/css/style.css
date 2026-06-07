@@ -13520,3 +13520,226 @@ html.is-edge-browser body.space-mode .project-progress > div::after {
   content: none !important;
   display: none !important;
 }
+
+
+/* ============================================================
+   Entry Gate InPrivate Visual Lock
+   Scope:
+   - Entry screen only.
+   - Fixes Edge InPrivate / private-window inconsistency where the entry gate
+     can render as overly dark text with excessive gold.
+   - Does not touch page layout, Mission Log, Navigator, Paper Shelf, cards,
+     status-card Edge fallback, or lightbox.
+   Direction:
+   - Entry gate is always the same institutional dark archive screen.
+   - Gold is a restrained signal accent, not the main text colour.
+   ============================================================ */
+
+.entry-gate,
+.entry-gate * {
+  color-scheme: dark !important;
+  forced-color-adjust: none !important;
+}
+
+/* Keep the panel close to the normal Firefox/regular-window look. */
+.entry-gate__panel {
+  border-color: rgba(190,226,255,.18) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.116), rgba(255,255,255,.038)),
+    linear-gradient(115deg, rgba(143,208,255,.055), transparent 42%, rgba(255,211,128,.036) 100%),
+    rgba(6, 14, 25, .68) !important;
+  box-shadow:
+    0 42px 120px rgba(0,0,0,.50),
+    0 0 0 1px rgba(255,255,255,.032) inset,
+    inset 0 1px 0 rgba(255,255,255,.15),
+    inset 0 -1px 0 rgba(143,208,255,.080) !important;
+}
+
+/* Main identity: never gradient-clipped, never gold-heavy, never browser-inverted. */
+.entry-gate__name,
+.entry-gate__name span {
+  color: rgba(238,247,255,.975) !important;
+  -webkit-text-fill-color: rgba(238,247,255,.975) !important;
+  background: none !important;
+  background-image: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  mix-blend-mode: normal !important;
+  text-shadow:
+    0 0 26px rgba(143,208,255,.095),
+    0 1px 0 rgba(255,255,255,.10) !important;
+}
+
+/* Archive labels: blue-white institutional tone. */
+.entry-gate__kicker,
+.entry-gate__code,
+.entry-gate__archive,
+.entry-gate__status {
+  color: rgba(195,214,231,.86) !important;
+  -webkit-text-fill-color: rgba(195,214,231,.86) !important;
+  background: none !important;
+  background-image: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  text-shadow:
+    0 0 16px rgba(143,208,255,.09) !important;
+}
+
+/* Metadata pills and sequence buttons: keep neutral; only borders get a quiet gold trace. */
+.entry-gate__meta span,
+.entry-gate__sequence span {
+  color: rgba(195,214,231,.78) !important;
+  -webkit-text-fill-color: rgba(195,214,231,.78) !important;
+  border-color: rgba(190,226,255,.16) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.092), rgba(255,255,255,.026)),
+    rgba(143,208,255,.052) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.11),
+    0 0 0 1px rgba(255,211,128,.020) inset !important;
+}
+
+/* The middle sequence item should not become the main gold object in InPrivate. */
+.entry-gate__sequence span:nth-child(2) {
+  color: rgba(202,217,230,.82) !important;
+  -webkit-text-fill-color: rgba(202,217,230,.82) !important;
+  border-color: rgba(255,211,128,.16) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.096), rgba(255,255,255,.028)),
+    rgba(143,208,255,.052) !important;
+}
+
+/* Gold remains only as a small archive signal. */
+.entry-gate__mode::before {
+  color: rgba(255,211,128,.78) !important;
+  text-shadow: 0 0 12px rgba(255,211,128,.22) !important;
+}
+
+.entry-gate__constellation span {
+  background: rgba(226,238,248,.92) !important;
+  box-shadow:
+    0 0 10px rgba(143,208,255,.34),
+    0 0 22px rgba(255,211,128,.08) !important;
+}
+
+
+/* ============================================================
+   Entry Gate More Gold / Light Name Refinement
+   Scope:
+   - Entry screen only.
+   - Keeps MADS LIU YONG as stable light text.
+   - Increases gold presence through archive labels, code, pills, borders,
+     and scanner accents.
+   - Does not touch page layout, Mission Log, Navigator, Paper Shelf, cards,
+     or status-card Edge fallback.
+   ============================================================ */
+
+.entry-gate {
+  --entry-gold: rgba(255, 211, 128, .94);
+  --entry-gold-soft: rgba(255, 211, 128, .24);
+  --entry-gold-line: rgba(255, 211, 128, .30);
+}
+
+/* Name stays light, not gold. */
+.entry-gate__name,
+.entry-gate__name span {
+  color: rgba(238,247,255,.985) !important;
+  -webkit-text-fill-color: rgba(238,247,255,.985) !important;
+  background: none !important;
+  background-image: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  text-shadow:
+    0 0 30px rgba(143,208,255,.105),
+    0 0 18px rgba(255,211,128,.052),
+    0 1px 0 rgba(255,255,255,.12) !important;
+}
+
+/* More gold on archive identity, but not on the name. */
+.entry-gate__kicker,
+.entry-gate__code,
+.entry-gate__archive,
+.entry-gate__status {
+  color: rgba(255, 211, 128, .86) !important;
+  -webkit-text-fill-color: rgba(255, 211, 128, .86) !important;
+  text-shadow:
+    0 0 18px rgba(255,211,128,.18),
+    0 0 14px rgba(143,208,255,.055) !important;
+}
+
+/* Panel: stronger gold rim and warmer lower glint. */
+.entry-gate__panel {
+  border-color: rgba(255,211,128,.28) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.116), rgba(255,255,255,.038)),
+    linear-gradient(115deg, rgba(143,208,255,.052), transparent 38%, rgba(255,211,128,.072) 100%),
+    rgba(6, 14, 25, .68) !important;
+  box-shadow:
+    0 42px 120px rgba(0,0,0,.50),
+    0 0 42px rgba(255,211,128,.070),
+    0 0 0 1px rgba(255,211,128,.042) inset,
+    inset 0 1px 0 rgba(255,255,255,.15),
+    inset 0 -1px 0 rgba(255,211,128,.120) !important;
+}
+
+/* Pills: more gold, still restrained. */
+.entry-gate__meta span,
+.entry-gate__sequence span {
+  color: rgba(224,232,240,.84) !important;
+  -webkit-text-fill-color: rgba(224,232,240,.84) !important;
+  border-color: rgba(255,211,128,.24) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.094), rgba(255,255,255,.028)),
+    linear-gradient(90deg, rgba(143,208,255,.052), rgba(255,211,128,.070)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    inset 0 -1px 0 rgba(255,211,128,.070),
+    0 0 18px rgba(255,211,128,.045) !important;
+}
+
+/* Emphasise the middle scientific theme in gold. */
+.entry-gate__sequence span:nth-child(2) {
+  color: rgba(255,221,150,.92) !important;
+  -webkit-text-fill-color: rgba(255,221,150,.92) !important;
+  border-color: rgba(255,211,128,.34) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.102), rgba(255,255,255,.030)),
+    linear-gradient(90deg, rgba(143,208,255,.045), rgba(255,211,128,.118)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.13),
+    inset 0 -1px 0 rgba(255,211,128,.095),
+    0 0 22px rgba(255,211,128,.075) !important;
+}
+
+/* Footer mode line: more gold signal. */
+.entry-gate__mode,
+.entry-gate__online {
+  color: rgba(255,211,128,.78) !important;
+  -webkit-text-fill-color: rgba(255,211,128,.78) !important;
+  text-shadow:
+    0 0 18px rgba(255,211,128,.16) !important;
+}
+
+.entry-gate__mode::before {
+  color: rgba(255,224,156,.94) !important;
+  text-shadow:
+    0 0 14px rgba(255,211,128,.28) !important;
+}
+
+/* Tiny constellation lights get a warmer mineral-gold edge. */
+.entry-gate__constellation span {
+  background: rgba(238,246,255,.92) !important;
+  box-shadow:
+    0 0 10px rgba(143,208,255,.30),
+    0 0 20px rgba(255,211,128,.18) !important;
+}
+
+/* Scanner line: slightly warmer, still not cyberpunk. */
+.entry-gate__scanner {
+  background:
+    linear-gradient(90deg,
+      transparent,
+      rgba(143,208,255,.48),
+      rgba(255,211,128,.56),
+      transparent) !important;
+}
