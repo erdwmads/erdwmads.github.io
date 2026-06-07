@@ -10287,109 +10287,159 @@ html:not([data-theme="space"]) .mission-index-mode {
 
 
 /* ============================================================
-   Mobile Spacing Hotfix
-   Problem:
-   A previous mobile QA rule made .hero and .section display:block.
-   That was safe for simple text sections, but it accidentally collapsed
-   grid/flex spacing in:
-   - Home hero: CTA row and profile card felt attached.
-   - Graduation status cards: cards stacked with almost no visible gap.
-   Fix:
-   Restore explicit grid/flex spacing only for those affected mobile modules.
+   Mobile progress bar + Mission Log image flicker fix
+   Built on Interface 2046 v4 Refinement + Stability Pass.
    ============================================================ */
 
-@media (max-width: 900px) {
-  /* Home: keep the hero as a one-column layout instead of a raw block.
-     This preserves a clean gap between the intro/CTA cluster and profile card. */
-  body.ui-page-home .hero {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) !important;
-    align-items: start !important;
-    gap: clamp(24px, 6vw, 34px) !important;
+/* Scroll progress now uses transform instead of width.
+   This avoids mobile viewport rounding where the bar stops slightly short. */
+.ui2046-progress {
+  left: 0 !important;
+  right: auto !important;
+  width: 100vw !important;
+  overflow: hidden !important;
+  transform: translateZ(0) !important;
+  contain: strict !important;
+}
+
+.ui2046-progress span {
+  width: 100% !important;
+  transform-origin: left center !important;
+  transform: scaleX(var(--scroll-progress, 0)) !important;
+  will-change: transform !important;
+  transition: transform .06s linear !important;
+}
+
+/* Mobile Mission Log flicker fix:
+   On iOS/Android/Chromium mobile, large images + animated/fixed overlays +
+   backdrop-filter can create severe repaint flicker while scrolling.
+   Keep the visual style, but remove the risky live compositor effects only on
+   compact/touch screens. */
+@media (max-width: 900px), (pointer: coarse) {
+  /* Stop animated ambient layers from repainting behind heavy mission photos. */
+  .ambient-space-layer,
+  .ui2046-solar-system {
+    display: none !important;
   }
 
-  body.ui-page-home .hero > div:first-child {
-    min-width: 0 !important;
+  /* Avoid fixed overlay + filtered card repaint loops on mobile. */
+  html[data-theme="space"] body::after,
+  html[data-theme-space] body::after,
+  body.space-mode::after {
+    opacity: .16 !important;
+    mix-blend-mode: normal !important;
+    transform: none !important;
+    will-change: auto !important;
   }
 
-  body.ui-page-home .hero .button-row,
-  body.ui-page-home .hero .hero-actions,
-  body.ui-page-home .hero .cta-row,
-  body.ui-page-home .hero .action-row {
-    margin-top: clamp(22px, 5vw, 30px) !important;
-    margin-bottom: 0 !important;
+  html[data-theme="space"] body::before,
+  html[data-theme-space] body::before,
+  body.space-mode::before {
+    background-attachment: scroll !important;
+    transform: none !important;
+    will-change: auto !important;
   }
 
-  body.ui-page-home .hero-card {
+  /* Mission Log entries and photo cards become compositor-stable on mobile. */
+  html[data-theme="space"] .research-note-card,
+  html[data-theme-space] .research-note-card,
+  body.space-mode .research-note-card,
+  html[data-theme="space"] .mission-index-panel,
+  html[data-theme-space] .mission-index-panel,
+  body.space-mode .mission-index-panel,
+  html[data-theme="space"] .mission-photo-grid figure,
+  html[data-theme-space] .mission-photo-grid figure,
+  body.space-mode .mission-photo-grid figure,
+  html[data-theme="space"] .status-card,
+  html[data-theme-space] .status-card,
+  body.space-mode .status-card,
+  html[data-theme="space"] .project-progress > div,
+  html[data-theme-space] .project-progress > div,
+  body.space-mode .project-progress > div {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transform: none !important;
+    will-change: auto !important;
+    contain: layout paint !important;
+    backface-visibility: hidden !important;
+    background:
+      linear-gradient(180deg, rgba(18, 33, 50, .84), rgba(7, 18, 31, .76)) !important;
+    box-shadow:
+      0 14px 34px rgba(0,0,0,.20),
+      0 0 0 1px rgba(255,255,255,.035) inset,
+      inset 0 1px 0 rgba(255,255,255,.11),
+      inset 0 -1px 0 rgba(143,208,255,.050) !important;
+  }
+
+  /* The scanline hover/focus layer is desktop-only.
+     On mobile it can stick during touch-scroll and cause very visible flashing. */
+  .mission-photo-grid figure::before,
+  .mission-photo-grid figure::after {
+    content: none !important;
+    display: none !important;
+    animation: none !important;
+    opacity: 0 !important;
+    background: none !important;
+    mix-blend-mode: normal !important;
+  }
+
+  .mission-photo-grid figure:hover,
+  .mission-photo-grid figure:focus,
+  .mission-photo-grid figure:active {
+    transform: none !important;
+    box-shadow:
+      0 12px 26px rgba(0,0,0,.18),
+      inset 0 1px 0 rgba(255,255,255,.10) !important;
+  }
+
+  .mission-photo-grid img {
+    display: block !important;
     width: 100% !important;
-    max-width: min(100%, 620px) !important;
-    margin: 0 auto !important;
+    height: auto !important;
+    aspect-ratio: 4 / 3 !important;
+    object-fit: cover !important;
+    transform: none !important;
+    will-change: auto !important;
+    backface-visibility: hidden !important;
+    image-rendering: auto !important;
   }
 
-  /* Graduation status grid: force the status section back into grid mode.
-     The generic mobile .section { display:block } rule was causing status
-     cards to touch each other. */
-  .research-status-grid[data-mission-status-grid],
-  section.research-status-grid[data-mission-status-grid] {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) !important;
-    gap: clamp(16px, 4.4vw, 22px) !important;
-    row-gap: clamp(16px, 4.4vw, 22px) !important;
-    column-gap: clamp(16px, 4.4vw, 22px) !important;
-    align-items: stretch !important;
-    margin-top: clamp(26px, 7vw, 44px) !important;
-    margin-bottom: clamp(30px, 8vw, 50px) !important;
+  .mission-photo-grid {
+    contain: layout paint !important;
+    transform: none !important;
+    will-change: auto !important;
   }
 
-  .research-status-grid[data-mission-status-grid] .status-card {
-    width: 100% !important;
-    min-width: 0 !important;
-    margin: 0 !important;
+  .mission-log-list {
+    contain: layout !important;
   }
 
-  .research-status-grid[data-mission-status-grid] .status-card + .status-card {
-    margin-top: 0 !important;
+  /* Lightbox still opens, but mobile no longer blurs the whole page behind it. */
+  .mission-lightbox {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background:
+      linear-gradient(180deg, rgba(3, 7, 14, .86), rgba(3, 7, 14, .96)) !important;
+  }
+
+  .mission-lightbox__panel {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    contain: layout paint !important;
   }
 }
 
 @media (max-width: 560px) {
-  body.ui-page-home .hero {
-    gap: 24px !important;
+  .ui2046-progress {
+    height: 2px !important;
   }
 
-  body.ui-page-home .hero-card {
-    border-radius: 22px !important;
+  .mission-photo-grid figure {
+    border-radius: 14px !important;
   }
 
-  body.ui-page-home .hero-card .avatar {
-    margin-bottom: 18px !important;
-  }
-
-  body.ui-page-home .hero-card .affiliation-card {
-    margin-top: 18px !important;
-  }
-
-  .research-status-grid[data-mission-status-grid],
-  section.research-status-grid[data-mission-status-grid] {
-    gap: 18px !important;
-    row-gap: 18px !important;
-  }
-
-  .research-status-grid[data-mission-status-grid] .status-card {
-    border-radius: 19px !important;
-    padding: 20px 19px !important;
-  }
-}
-
-/* Very narrow phones: keep breathing room but avoid huge blank gaps. */
-@media (max-width: 390px) {
-  body.ui-page-home .hero {
-    gap: 22px !important;
-  }
-
-  .research-status-grid[data-mission-status-grid],
-  section.research-status-grid[data-mission-status-grid] {
-    gap: 16px !important;
-    row-gap: 16px !important;
+  .mission-photo-grid figcaption {
+    font-size: 10.5px !important;
+    line-height: 1.35 !important;
   }
 }

@@ -95,10 +95,28 @@
 
   const updateProgress = () => {
     const doc = document.documentElement;
-    const scrollTop = doc.scrollTop || body.scrollTop;
-    const max = Math.max(1, doc.scrollHeight - doc.clientHeight);
-    const pct = Math.min(100, Math.max(0, (scrollTop / max) * 100));
-    bar.style.width = `${pct}%`;
+    const pageBody = document.body;
+
+    const scrollTop = window.scrollY || doc.scrollTop || pageBody.scrollTop || 0;
+    const viewportHeight = Math.max(
+      1,
+      window.innerHeight || 0,
+      doc.clientHeight || 0
+    );
+    const scrollHeight = Math.max(
+      doc.scrollHeight || 0,
+      pageBody.scrollHeight || 0,
+      doc.offsetHeight || 0,
+      pageBody.offsetHeight || 0
+    );
+
+    const max = Math.max(1, scrollHeight - viewportHeight);
+    const nearBottom = Math.ceil(scrollTop + viewportHeight) >= scrollHeight - 2;
+    const pct = nearBottom ? 100 : Math.min(100, Math.max(0, (scrollTop / max) * 100));
+
+    bar.style.width = '100%';
+    bar.style.transform = `scaleX(${pct / 100})`;
+    bar.style.setProperty('--scroll-progress', String(pct / 100));
   };
 
   let scrollTicking = false;
@@ -152,4 +170,12 @@
 
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', updateProgress);
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', updateProgress, { passive: true });
+    window.visualViewport.addEventListener('scroll', updateProgress, { passive: true });
+  }
+
+  window.addEventListener('load', updateProgress, { once: true });
+  setTimeout(updateProgress, 250);
 })();
