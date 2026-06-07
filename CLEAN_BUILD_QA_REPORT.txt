@@ -1,0 +1,34 @@
+Interface 2046 v4 Clean Consolidated Build
+
+Base:
+- restore_to_interface_2046_v4_full_package.zip
+
+Policy:
+- This build does not stack later experimental patches.
+- It starts from v4 full restore and appends one organized stability layer.
+- It keeps v4 visual direction and does not include the later Mission Record redesign.
+
+Included fixes:
+1. Design hierarchy lock: hero / card / module / chip / ordinary text links.
+2. Lunar Archive Light Mode.
+3. Firefox Space Mode first-paint guard.
+4. Edge/Chromium small status-card vertical stripe fix.
+5. Mobile progress bar reaches far right at bottom.
+6. Mobile status cards keep proper gap.
+7. Mobile Mission Log image flicker control without removing blur/background/ambient effects.
+8. Mobile nav / Mission Index / lightbox / slideshow layout hardening.
+
+Static checks:
+- PASS: HTML pages present
+- PASS: Early theme guard on every HTML page
+- PASS: Theme guard before CSS link
+- PASS: theme.js present
+- PASS: Progress uses scaleX
+- PASS: Progress snaps to 100 at bottom
+- PASS: visualViewport listeners present
+- PASS: CSS braces balanced
+- PASS: Only one consolidated generated layer
+- PASS: No later scientific-record redesign
+- PASS: Paper Shelf has no Download PDF
+- PASS: Mobile status gap locked
+- PASS: Mobile flicker fix preserves ambient layer

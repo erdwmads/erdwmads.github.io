@@ -12,8 +12,5 @@ assets/css/style.css
 assets/js/theme.js
 assets/js/interface-2046.js
 
-Purpose:
-- Based on Interface 2046 v4.
-- Adds design-system convergence, Lunar Archive Light Mode, mobile QA hardening.
-- Fixes Firefox Space Mode white flash during page switching.
-- Fixes Edge/Chromium vertical stripe flicker in status cards while scrolling.
+This is a clean consolidated build from Interface 2046 v4.
+Do not combine it with the older experimental fix zips.

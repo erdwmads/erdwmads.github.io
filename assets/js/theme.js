@@ -14,7 +14,7 @@
     try {
       localStorage.setItem(storageKey, theme);
     } catch (error) {
-      // localStorage can be blocked; visual state still changes.
+      // Visual theme still changes if storage is unavailable.
     }
   }
 
