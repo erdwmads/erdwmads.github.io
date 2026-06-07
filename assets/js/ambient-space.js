@@ -32,16 +32,16 @@
       el.className = "ambient-dust";
       if (Math.random() < GOLD_DUST_RATIO) el.classList.add("is-gold-dust");
 
-      const size = rand(2.2, 4.7);
-      const duration = rand(36, 68);
+      const size = rand(2.2, 4.8);
+      const duration = rand(28, 50);
 
       el.style.left = rand(0, 100) + "vw";
       el.style.top = rand(0, 100) + "vh";
       el.style.setProperty("--dust-size", size + "px");
-      el.style.setProperty("--dust-x", rand(-92, 92) + "px");
-      el.style.setProperty("--dust-y", rand(-88, 88) + "px");
+      el.style.setProperty("--dust-x", rand(-118, 118) + "px");
+      el.style.setProperty("--dust-y", rand(-108, 108) + "px");
       el.style.setProperty("--dust-duration", duration + "s");
-      el.style.setProperty("--dust-opacity", rand(0.42, 0.86).toFixed(2));
+      el.style.setProperty("--dust-opacity", rand(0.46, 0.88).toFixed(2));
 
       // Keep dust alive instead of dropping into the invisible end of its loop.
       el.style.animationDelay = (-rand(0, duration * 0.64)) + "s";
@@ -55,17 +55,17 @@
 
       const w = rand(8, 16);
       const h = w * rand(0.65, 1.05);
-      const duration = rand(54, 96);
+      const duration = rand(42, 74);
 
       el.style.left = rand(0, 100) + "vw";
       el.style.top = rand(0, 100) + "vh";
       el.style.setProperty("--pebble-w", w + "px");
       el.style.setProperty("--pebble-h", h + "px");
-      el.style.setProperty("--pebble-x", rand(-110, 110) + "px");
-      el.style.setProperty("--pebble-y", rand(-90, 110) + "px");
-      el.style.setProperty("--pebble-rotate", rand(90, 300) + "deg");
+      el.style.setProperty("--pebble-x", rand(-138, 138) + "px");
+      el.style.setProperty("--pebble-y", rand(-116, 132) + "px");
+      el.style.setProperty("--pebble-rotate", rand(130, 390) + "deg");
       el.style.setProperty("--pebble-duration", duration + "s");
-      el.style.setProperty("--pebble-opacity", rand(0.48, 0.78).toFixed(2));
+      el.style.setProperty("--pebble-opacity", rand(0.52, 0.82).toFixed(2));
 
       // Do not start close to the end of the animation cycle.
       // The previous full negative-delay range could place pebbles at 95–100%,
@@ -162,8 +162,8 @@
     }
 
     // Reduced counts, but visible.
-    for (let i = 0; i < 112; i++) makeDust();
-    for (let i = 0; i < 22; i++) makePebble();
+    for (let i = 0; i < 146; i++) makeDust();
+    for (let i = 0; i < 30; i++) makePebble();
 
     // Make meteors immediately visible after load, then continuously spawn.
     spawnMeteor();
