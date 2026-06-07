@@ -1,4 +1,3 @@
-
 (() => {
   const list = document.querySelector('[data-mission-log-list]');
   const indexList = document.querySelector('[data-mission-index-list]');
@@ -7,6 +6,11 @@
   const normaliseDate = (value) => {
     const match = String(value || '').match(/(\d{4})[-/](\d{2})[-/](\d{2})/);
     return match ? `${match[1]}/${match[2]}/${match[3]}` : '';
+  };
+
+  const dateScore = (value) => {
+    const normalised = normaliseDate(value);
+    return normalised ? Number(normalised.replaceAll('/', '')) : 0;
   };
 
   const logNumber = (entry) => {
@@ -26,27 +30,35 @@
     const id = entry.id || `log-${String(no).padStart(3, '0')}`;
     entry.id = id;
 
+    const rawDate = entry.dataset.logDate || entry.querySelector('.mission-entry-kicker')?.textContent || '';
+
     return {
       entry,
       id,
       no,
-      date: normaliseDate(entry.dataset.logDate),
+      date: normaliseDate(rawDate),
+      score: dateScore(rawDate),
       sol: getSol(entry)
     };
   });
 
-  entries.sort((a, b) => {
-    const da = a.date || '0000/00/00';
-    const db = b.date || '0000/00/00';
-    if (da !== db) return db.localeCompare(da);
+  // Keep the actual Mission Log content list newest-first.
+  const logEntries = [...entries].sort((a, b) => {
+    if (a.score !== b.score) return b.score - a.score;
     return b.no - a.no;
   });
 
   const fragment = document.createDocumentFragment();
-  entries.forEach(({ entry }) => fragment.appendChild(entry));
+  logEntries.forEach(({ entry }) => fragment.appendChild(entry));
   list.appendChild(fragment);
 
-  indexList.innerHTML = entries.map((item) => {
+  // But keep the Navigator chronological: LOG001 -> LOG006.
+  const navigatorEntries = [...entries].sort((a, b) => {
+    if (a.no !== b.no) return a.no - b.no;
+    return a.score - b.score;
+  });
+
+  indexList.innerHTML = navigatorEntries.map((item) => {
     const logLabel = `LOG ${String(item.no).padStart(3, '0')}`;
     const meta = [item.sol, item.date].filter(Boolean).join(' · ');
     return `
@@ -56,6 +68,9 @@
       </a>
     `;
   }).join('');
+
+  const mode = document.querySelector('.mission-index-mode');
+  if (mode) mode.textContent = 'Earliest first';
 
   document.documentElement.classList.add('mission-index-ready');
 })();
