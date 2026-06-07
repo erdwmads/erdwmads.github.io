@@ -10632,3 +10632,129 @@ html {
     will-change: auto !important;
   }
 }
+
+
+/* ============================================================
+   Mobile Mission Thumbnail Mode + Fixed Lightbox Navigation
+   - Mobile inline Mission Log images use CDN-generated lightweight thumbnails.
+   - Lightbox loads the full original only for the selected image.
+   - Prev/next buttons are anchored to the stage, not to image height, so they
+     no longer move when switching between landscape/portrait images.
+   ============================================================ */
+
+.mission-photo-grid img.mission-thumb-img {
+  background: rgba(8, 19, 33, .62) !important;
+}
+
+@media (hover: none), (pointer: coarse), (max-width: 760px) {
+  .mission-photo-grid figure {
+    aspect-ratio: 4 / 3 !important;
+    overflow: hidden !important;
+    contain: layout paint style !important;
+    isolation: isolate !important;
+  }
+
+  .mission-photo-grid img.mission-thumb-img,
+  .mission-photo-grid img {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    aspect-ratio: 4 / 3 !important;
+    object-fit: cover !important;
+    transform: none !important;
+    -webkit-transform: none !important;
+    will-change: auto !important;
+  }
+
+  .mission-photo-grid figure::after,
+  .mission-photo-grid figure:hover::after,
+  .mission-photo-grid figure:focus::after,
+  .mission-photo-grid figure:active::after {
+    animation: none !important;
+    mix-blend-mode: normal !important;
+    opacity: 0 !important;
+    transition: none !important;
+    background: none !important;
+  }
+
+  body.mission-lightbox-mobile-open {
+    overflow: visible !important;
+  }
+
+  .mission-lightbox {
+    transition: visibility .01s linear !important;
+    will-change: auto !important;
+  }
+
+  .mission-lightbox.is-open {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+}
+
+/* Fixed lightbox navigation geometry. */
+.mission-lightbox__stage {
+  position: relative !important;
+  display: grid !important;
+  place-items: center !important;
+  min-height: clamp(360px, 58dvh, 680px) !important;
+  overflow: hidden !important;
+}
+
+.mission-lightbox__img,
+.mission-lightbox__image {
+  max-width: min(100%, 1180px) !important;
+  max-height: min(58dvh, 680px) !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  margin: auto !important;
+}
+
+.mission-lightbox__nav {
+  position: absolute !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  z-index: 8 !important;
+  margin: 0 !important;
+}
+
+.mission-lightbox__prev {
+  left: clamp(10px, 2.4vw, 28px) !important;
+}
+
+.mission-lightbox__next {
+  right: clamp(10px, 2.4vw, 28px) !important;
+}
+
+@media (hover: none), (pointer: coarse), (max-width: 760px) {
+  .mission-lightbox__stage {
+    min-height: clamp(300px, 52dvh, 520px) !important;
+    height: clamp(300px, 52dvh, 520px) !important;
+    padding-left: 58px !important;
+    padding-right: 58px !important;
+  }
+
+  .mission-lightbox__img,
+  .mission-lightbox__image {
+    max-width: 100% !important;
+    max-height: calc(52dvh - 20px) !important;
+  }
+
+  .mission-lightbox__prev {
+    left: 10px !important;
+  }
+
+  .mission-lightbox__next {
+    right: 10px !important;
+  }
+}
+
+.mission-lightbox__img.is-decoding {
+  opacity: .92 !important;
+  filter: saturate(.92) contrast(.96) !important;
+}
+
+.mission-lightbox__img.is-ready {
+  opacity: 1 !important;
+  filter: none !important;
+}

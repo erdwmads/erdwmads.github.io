@@ -1,0 +1,16 @@
+Mobile Mission Thumbnail Mode + Fixed Navigation QA
+
+What changed:
+- Mobile inline Mission Log image cards now use lightweight remote WebP thumbnails.
+- Original images remain in data-full-src and are used only in the large viewer.
+- The large viewer first shows the thumbnail, then swaps to the full image after decode.
+- Prev/next buttons are anchored to a fixed stage center, so they do not move with image aspect ratio.
+
+Static checks:
+- PASS: Patched 14 mission images to thumbnail mode
+- PASS: HTML uses thumbnail CDN src
+- PASS: HTML keeps original full source
+- PASS: Lightbox uses full source
+- PASS: Lightbox shows thumbnail before full decode
+- PASS: Nav buttons fixed absolute center
+- PASS: CSS braces balanced
