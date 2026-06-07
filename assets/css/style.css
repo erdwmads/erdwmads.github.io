@@ -11472,3 +11472,146 @@ body.ui-page-research-graduation #mission-index > .mission-index-panel {
     margin-top: 28px !important;
   }
 }
+
+
+/* ============================================================
+   Mobile Scroll White Bar + Progress Top Lock Fix
+   Cause:
+   - A previous mobile stability rule put transform: translate3d(0,0,0) on
+     .ui2046-layer. A transformed ancestor can trap position: fixed children,
+     so the scroll progress bar may appear near the footer instead of the top.
+   - Some fixed/background layers used 100vw on mobile, which can create a
+     right-side overflow strip in mobile browsers.
+   Fix:
+   - Keep the Interface 2046 layer fixed to the viewport with no transform.
+   - Lock the progress bar to the viewport top.
+   - Clip horizontal overflow on the mobile viewport.
+   - Replace mobile 100vw-style overflow risks with 100% / 100dvw bounds.
+   ============================================================ */
+
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+  html,
+  body {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+    overscroll-behavior-x: none !important;
+    background-color: #040910 !important;
+  }
+
+  @supports (overflow: clip) {
+    html,
+    body {
+      overflow-x: clip !important;
+    }
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box !important;
+  }
+
+  /* The UI layer must not be a transformed normal-flow container.
+     Otherwise fixed children such as the progress beam can be anchored at the
+     bottom of the document. */
+  .ui2046-layer {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100dvh !important;
+    min-height: 100vh !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+    transform: none !important;
+    -webkit-transform: none !important;
+    contain: strict !important;
+  }
+
+  /* Progress bar: always viewport top, never footer-bottom. */
+  .ui2046-progress {
+    position: fixed !important;
+    top: 0 !important;
+    bottom: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 2px !important;
+    z-index: 2147483000 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    transform: none !important;
+    -webkit-transform: none !important;
+    contain: paint !important;
+  }
+
+  .ui2046-progress span {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    transform-origin: left center !important;
+    will-change: transform !important;
+  }
+
+  /* Mobile right-edge white strip prevention. */
+  body::before,
+  body::after,
+  .ambient-space-layer {
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  body::before {
+    top: 0 !important;
+    bottom: auto !important;
+    height: 100lvh !important;
+    min-height: 100vh !important;
+  }
+
+  .main,
+  .site-header,
+  .site-footer,
+  .header-inner,
+  .footer-inner,
+  section,
+  .section,
+  .hero,
+  .card,
+  .hero-card,
+  .paper-shelf,
+  .paper-card,
+  .mission-index-panel,
+  .research-note-card {
+    max-width: 100% !important;
+  }
+
+  img,
+  video,
+  canvas,
+  svg {
+    max-width: 100% !important;
+  }
+}
+
+/* Very small Android browser/webview guard. */
+@media (max-width: 430px) {
+  .ui2046-progress {
+    width: 100dvw !important;
+    max-width: 100dvw !important;
+  }
+
+  @supports not (width: 100dvw) {
+    .ui2046-progress {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+  }
+}
