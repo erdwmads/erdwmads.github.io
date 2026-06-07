@@ -11661,3 +11661,245 @@ body.ui-page-research-graduation #mission-index > .mission-index-panel {
     z-index: 3 !important;
   }
 }
+
+
+/* ============================================================
+   Astromaterials Archive Entry Gate
+   A restrained institutional boot screen inspired by university entrance
+   pages, adapted to the Interface 2046 / cosmic mineralogy identity.
+   Plays once per browser session and then removes itself.
+   ============================================================ */
+
+.entry-gate {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483647 !important;
+  display: grid !important;
+  place-items: center !important;
+  width: 100% !important;
+  height: 100dvh !important;
+  min-height: 100vh !important;
+  overflow: hidden !important;
+  pointer-events: auto !important;
+  color: #edf7ff !important;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(143,208,255,.16), transparent 30rem),
+    radial-gradient(circle at 78% 18%, rgba(255,217,154,.08), transparent 24rem),
+    linear-gradient(180deg, rgba(4,9,16,.98), rgba(5,12,22,.96) 56%, rgba(3,7,14,.99)) !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition:
+    opacity .62s cubic-bezier(.2,.8,.2,1),
+    visibility .62s step-end,
+    filter .62s cubic-bezier(.2,.8,.2,1) !important;
+  isolation: isolate !important;
+}
+
+.entry-gate.is-visible {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transition:
+    opacity .42s cubic-bezier(.2,.8,.2,1),
+    visibility 0s step-start,
+    filter .62s cubic-bezier(.2,.8,.2,1) !important;
+}
+
+.entry-gate.is-exiting {
+  opacity: 0 !important;
+  filter: blur(8px) saturate(.92) !important;
+  pointer-events: none !important;
+}
+
+.entry-gate::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: -8% !important;
+  z-index: -2 !important;
+  background-image: url("../img/asteroid-bennu.jpg") !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  opacity: .20 !important;
+  filter: grayscale(1) contrast(1.18) brightness(.78) !important;
+  transform: scale(1.04) !important;
+}
+
+.entry-gate::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  background:
+    linear-gradient(90deg, rgba(143,208,255,.045) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(143,208,255,.035) 1px, transparent 1px),
+    radial-gradient(circle at 48% 50%, transparent 0, rgba(4,9,16,.36) 62%, rgba(4,9,16,.88) 100%) !important;
+  background-size: 92px 92px, 92px 92px, auto !important;
+  opacity: .70 !important;
+  mix-blend-mode: screen !important;
+}
+
+.entry-gate__panel {
+  width: min(760px, calc(100vw - 48px)) !important;
+  padding: clamp(30px, 5vw, 54px) !important;
+  border: 1px solid rgba(190,226,255,.18) !important;
+  border-radius: 30px !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.105), rgba(255,255,255,.038)),
+    linear-gradient(90deg, rgba(143,208,255,.075), transparent 46%, rgba(255,217,154,.045)) !important;
+  box-shadow:
+    0 34px 90px rgba(0,0,0,.42),
+    0 0 0 1px rgba(255,255,255,.030) inset,
+    inset 0 1px 0 rgba(255,255,255,.14) !important;
+  backdrop-filter: blur(18px) saturate(1.08) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.08) !important;
+  transform: translateY(16px) scale(.985) !important;
+  opacity: 0 !important;
+  transition:
+    opacity .62s cubic-bezier(.2,.8,.2,1),
+    transform .72s cubic-bezier(.2,.8,.2,1) !important;
+}
+
+.entry-gate.is-visible .entry-gate__panel {
+  transform: translateY(0) scale(1) !important;
+  opacity: 1 !important;
+}
+
+.entry-gate__kicker,
+.entry-gate__mode,
+.entry-gate__status {
+  font-family:
+    "Aptos Mono",
+    "SFMono-Regular",
+    "Cascadia Mono",
+    "Cascadia Code",
+    "Roboto Mono",
+    ui-monospace,
+    monospace !important;
+  text-transform: uppercase !important;
+  letter-spacing: .16em !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+.entry-gate__kicker {
+  margin: 0 0 18px !important;
+  color: rgba(143,208,255,.92) !important;
+  font-size: clamp(10px, 1.5vw, 12px) !important;
+  font-weight: 800 !important;
+}
+
+.entry-gate__name {
+  margin: 0 !important;
+  color: rgba(240,248,255,.98) !important;
+  font-size: clamp(34px, 7vw, 72px) !important;
+  line-height: .96 !important;
+  letter-spacing: .035em !important;
+  font-weight: 850 !important;
+}
+
+.entry-gate__archive {
+  margin: 14px 0 0 !important;
+  color: rgba(213,229,243,.76) !important;
+  font-size: clamp(15px, 2.2vw, 20px) !important;
+  line-height: 1.45 !important;
+  letter-spacing: .035em !important;
+}
+
+.entry-gate__meta {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 9px !important;
+  margin: 28px 0 0 !important;
+}
+
+.entry-gate__meta span {
+  display: inline-flex !important;
+  align-items: center !important;
+  min-height: 28px !important;
+  padding: 0 12px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(143,208,255,.18) !important;
+  background: rgba(143,208,255,.08) !important;
+  color: rgba(224,240,255,.82) !important;
+  font-size: 11px !important;
+  letter-spacing: .055em !important;
+  font-weight: 680 !important;
+}
+
+.entry-gate__line {
+  position: relative !important;
+  width: 100% !important;
+  height: 1px !important;
+  margin: 34px 0 18px !important;
+  overflow: hidden !important;
+  background: rgba(143,208,255,.12) !important;
+}
+
+.entry-gate__line::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 auto 0 0 !important;
+  width: 42% !important;
+  background:
+    linear-gradient(90deg, transparent, rgba(143,208,255,.95), rgba(255,217,154,.78), transparent) !important;
+  transform: translateX(-110%) !important;
+  animation: entryGateScan 1.28s .38s cubic-bezier(.2,.8,.2,1) forwards !important;
+}
+
+.entry-gate__footer {
+  display: flex !important;
+  justify-content: space-between !important;
+  gap: 18px !important;
+  align-items: center !important;
+}
+
+.entry-gate__mode,
+.entry-gate__status {
+  margin: 0 !important;
+  color: rgba(178,211,244,.72) !important;
+  font-size: 10px !important;
+  font-weight: 760 !important;
+}
+
+.entry-gate__status {
+  color: rgba(255,217,154,.72) !important;
+}
+
+body.entry-gate-active > .ui2046-progress {
+  opacity: 0 !important;
+}
+
+@keyframes entryGateScan {
+  from { transform: translateX(-110%); }
+  to { transform: translateX(250%); }
+}
+
+@media (max-width: 760px) {
+  .entry-gate__panel {
+    width: calc(100vw - 34px) !important;
+    padding: 28px 22px !important;
+    border-radius: 24px !important;
+  }
+
+  .entry-gate__footer {
+    display: grid !important;
+    gap: 8px !important;
+  }
+
+  .entry-gate__meta {
+    gap: 8px !important;
+  }
+
+  .entry-gate__meta span {
+    min-height: 26px !important;
+    padding: 0 10px !important;
+    font-size: 10px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entry-gate,
+  .entry-gate__panel,
+  .entry-gate__line::before {
+    animation: none !important;
+    transition: none !important;
+  }
+}

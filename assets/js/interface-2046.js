@@ -186,3 +186,92 @@
   window.addEventListener('load', updateProgress, { once: true });
   setTimeout(updateProgress, 250);
 })();
+
+
+/* Astromaterials Archive Entry Gate
+   Plays once per browser session. */
+(() => {
+  const KEY = 'mads-entry-gate-v1';
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const hasPlayed = () => {
+    try {
+      return sessionStorage.getItem(KEY) === 'done';
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const markPlayed = () => {
+    try {
+      sessionStorage.setItem(KEY, 'done');
+    } catch (error) {
+      // Ignore private-mode storage failures.
+    }
+  };
+
+  const init = () => {
+    const body = document.body;
+    if (!body || body.dataset.entryGate === 'ready') return;
+
+    if (reduceMotion || hasPlayed()) {
+      markPlayed();
+      return;
+    }
+
+    body.dataset.entryGate = 'ready';
+    body.classList.add('entry-gate-active');
+
+    const gate = document.createElement('div');
+    gate.className = 'entry-gate';
+    gate.setAttribute('aria-hidden', 'true');
+    gate.innerHTML = `
+      <div class="entry-gate__panel">
+        <p class="entry-gate__kicker">Astromaterials Research Archive</p>
+        <h2 class="entry-gate__name">MADS LIU YONG</h2>
+        <p class="entry-gate__archive">Cosmic mineralogy / primitive Solar System materials</p>
+        <div class="entry-gate__meta">
+          <span>CI Chondrite</span>
+          <span>Orgueil</span>
+          <span>Dolomite</span>
+          <span>SEM · EPMA · TEM</span>
+        </div>
+        <div class="entry-gate__line"></div>
+        <div class="entry-gate__footer">
+          <p class="entry-gate__mode">Entering Interface 2046</p>
+          <p class="entry-gate__status">Archive online</p>
+        </div>
+      </div>
+    `;
+
+    body.appendChild(gate);
+
+    requestAnimationFrame(() => {
+      gate.classList.add('is-visible');
+    });
+
+    const exit = () => {
+      gate.classList.add('is-exiting');
+      markPlayed();
+      window.setTimeout(() => {
+        gate.remove();
+        body.classList.remove('entry-gate-active');
+      }, 680);
+    };
+
+    window.setTimeout(exit, 1680);
+    window.setTimeout(() => {
+      if (document.body?.contains(gate)) {
+        gate.remove();
+        body.classList.remove('entry-gate-active');
+        markPlayed();
+      }
+    }, 3200);
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
+})();
