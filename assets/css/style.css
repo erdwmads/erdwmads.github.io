@@ -12349,3 +12349,68 @@ html:not([data-theme="space"]) .mission-jump-meta::before {
     height: 6px !important;
   }
 }
+
+
+/* ============================================================
+   Light Mode LOG Dot + SOL Marker Spacing Fix
+   Fixes:
+   1. LOG badge dot looked doubled in Light Mode because the capsule background
+      still contained a radial-gradient dot while ::before also drew a signal dot.
+   2. The small SOL/date telemetry mark was too close to the "SOL" text in the
+      Mission Index / Quick Jump area.
+   ============================================================ */
+
+/* Use only the real ::before signal dot. Remove background-drawn fake dot. */
+.research-note-date,
+.mission-jump-log {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.17), rgba(255,255,255,.050)),
+    linear-gradient(90deg, rgba(52, 157, 228, .20), rgba(143,208,255,.065) 42%, rgba(255,255,255,.025)) !important;
+}
+
+html:not([data-theme="space"]) .research-note-date,
+html:not([data-theme="space"]) .mission-jump-log {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.86), rgba(230,243,251,.56)),
+    linear-gradient(90deg, rgba(18,109,168,.14), rgba(255,255,255,.38)) !important;
+}
+
+/* Make the single LOG signal dot crisp and centered in both modes. */
+.research-note-date::before,
+.mission-jump-log::before {
+  margin-right: 2px !important;
+  transform: none !important;
+}
+
+/* SOL/date telemetry marker: give it breathing room before "SOL".
+   The marker remains a small blue signal mark, not a glass strip. */
+.mission-entry-kicker,
+.mission-jump-meta {
+  gap: 12px !important;
+}
+
+.mission-entry-kicker::before,
+.mission-jump-meta::before {
+  margin-right: 4px !important;
+  transform: translateY(-1px) rotate(-45deg) !important;
+}
+
+/* Quick Jump / Mission Index date line needs a bit more spacing because the
+   line starts immediately below the LOG capsule. */
+.mission-jump-card .mission-jump-meta,
+.compact-jump-card .mission-jump-meta {
+  gap: 13px !important;
+  padding-left: 1px !important;
+}
+
+@media (max-width: 760px) {
+  .mission-entry-kicker,
+  .mission-jump-meta {
+    gap: 10px !important;
+  }
+
+  .mission-entry-kicker::before,
+  .mission-jump-meta::before {
+    margin-right: 3px !important;
+  }
+}
