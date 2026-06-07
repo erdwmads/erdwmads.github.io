@@ -10554,111 +10554,41 @@ html {
 
 
 /* ============================================================
-   Mobile LOG002 Flicker Compositor Fix
-   Base: Mission Lightbox + Navigator Alignment Fix.
-   Goal:
-   - Fix the remaining mobile flicker around LOG002 and when opening images.
-   - Do NOT remove mobile blur, ambient-space-layer, solar-system layer,
-     glass cards, or lightbox blur.
-   Diagnosis:
-   - The previous mobile stability rule promoted the whole page, fixed
-     asteroid background, and UI layers with translate3d().
-   - In Android/WebView/Chromium mobile this can make the content layer
-     blink while scrolling over large images.
-   - This patch reverses whole-page layer promotion and stabilizes only the
-     image/lightbox components.
+   Mobile Mission Image Pipeline Fix
+   Method change:
+   - Do not fight flicker by hiding effects.
+   - Reduce image decode/raster pressure around LOG002 and lightbox opening.
+   - Keep mobile blur, ambient field, solar-system layer, glass cards,
+     and lightbox blur.
    ============================================================ */
 
 @media (hover: none), (pointer: coarse), (max-width: 760px) {
-  /* Do not promote the whole page or fixed background. This is the important
-     correction: preserving the visual effect, but avoiding full-layer flicker. */
-  .site-header,
-  .main,
-  .site-footer,
-  body::before,
-  body::after,
-  .ambient-space-layer,
-  .ui2046-layer {
-    transform: none !important;
-    -webkit-transform: none !important;
-    will-change: auto !important;
-    backface-visibility: visible !important;
-    -webkit-backface-visibility: visible !important;
-  }
-
-  /* Keep the progress bar transform, because it is tiny and fixes the
-     right-edge issue. */
-  .ui2046-progress,
-  .ui2046-progress span {
-    backface-visibility: hidden !important;
-    -webkit-backface-visibility: hidden !important;
-  }
-
-  /* The fixed Bennu background stays visually the same, but do not force it
-     into a promoted transform layer. */
-  body::before {
-    position: fixed !important;
-    width: 100vw !important;
-    height: 100lvh !important;
-    min-height: 100vh !important;
-    transform: none !important;
-    -webkit-transform: none !important;
-    will-change: auto !important;
-    contain: strict !important;
-  }
-
-  @supports not (height: 100lvh) {
-    body::before {
-      height: 115vh !important;
-    }
-  }
-
-  /* Keep LOG entries stable without turning the whole document into a moving
-     composite layer. */
-  .mission-log-entry,
-  .research-note-card.mission-log-entry {
-    isolation: isolate !important;
-    contain: layout style !important;
-    transform: none !important;
-    -webkit-transform: none !important;
-    will-change: auto !important;
-  }
-
-  .mission-photo-grid {
-    isolation: isolate !important;
-    contain: layout style !important;
-    transform: none !important;
-    -webkit-transform: none !important;
-    will-change: auto !important;
-  }
-
+  /* Reserve a stable image box before image decoding finishes.
+     This prevents large layout/raster jumps around LOG002. */
   .mission-photo-grid figure {
-    position: relative !important;
-    isolation: isolate !important;
-    contain: layout paint style !important;
+    aspect-ratio: 4 / 3 !important;
     overflow: hidden !important;
+    contain: layout paint style !important;
+    isolation: isolate !important;
     transform: none !important;
     -webkit-transform: none !important;
     will-change: auto !important;
-    backface-visibility: visible !important;
-    -webkit-backface-visibility: visible !important;
   }
 
   .mission-photo-grid img {
-    display: block !important;
     width: 100% !important;
-    height: auto !important;
+    height: 100% !important;
     aspect-ratio: 4 / 3 !important;
     object-fit: cover !important;
+    display: block !important;
     transform: none !important;
     -webkit-transform: none !important;
     will-change: auto !important;
-    backface-visibility: visible !important;
-    -webkit-backface-visibility: visible !important;
   }
 
-  /* Keep the OPEN chip. Remove only the animated blended scanline on touch.
-     This does not change the background or blur effects. */
+  /* Touch browsers can keep hover/focus state during scrolling.
+     Remove only the animated blended scanline; keep the OPEN chip and all
+     page background/blur effects. */
   .mission-photo-grid figure::after,
   .mission-photo-grid figure:hover::after,
   .mission-photo-grid figure:focus::after,
@@ -10677,20 +10607,11 @@ html {
     -webkit-transform: none !important;
   }
 
-  .mission-photo-grid figure::before {
-    transform: none !important;
-    -webkit-transform: none !important;
-    transition: opacity .12s ease !important;
-  }
-
-  /* Lightbox: preserve blur, but avoid mobile opacity/backdrop transition
-     causing a whole-screen repaint flash. */
+  /* The lightbox remains glass/blurred, but opening no longer animates opacity
+     on top of many full-size thumbnail decodes. */
   .mission-lightbox {
-    transform: none !important;
-    -webkit-transform: none !important;
-    will-change: auto !important;
     transition: visibility .01s linear !important;
-    contain: layout style !important;
+    will-change: auto !important;
   }
 
   .mission-lightbox.is-open {
@@ -10698,18 +10619,9 @@ html {
     visibility: visible !important;
   }
 
-  .mission-lightbox__panel,
-  .mission-lightbox__stage,
-  .mission-lightbox__captionbar,
-  .mission-lightbox__thumbs {
-    transform: none !important;
-    -webkit-transform: none !important;
-    will-change: auto !important;
-    contain: layout paint style !important;
-  }
-
   .mission-lightbox__img,
-  .mission-lightbox__image {
+  .mission-lightbox__image,
+  .mission-lightbox__thumb img {
     transform: none !important;
     -webkit-transform: none !important;
     will-change: auto !important;
@@ -10717,7 +10629,6 @@ html {
     -webkit-backface-visibility: visible !important;
   }
 
-  /* Do not let thumbnails trigger sticky hover repaint on touch screens. */
   .mission-lightbox__thumb,
   .mission-lightbox__thumb:hover,
   .mission-lightbox__thumb:focus,
@@ -10728,21 +10639,12 @@ html {
   }
 }
 
-/* Android/WebView fallback:
-   Some Android browsers support both pointer:coarse and hover:hover; this
-   catches them too, without removing visual effects. */
-@media (max-width: 760px) {
-  .mission-photo-grid figure::after {
-    animation: none !important;
-    mix-blend-mode: normal !important;
-    opacity: 0 !important;
-  }
+/* While a large Mission image is being decoded, keep the stage visually stable.
+   This class is controlled by mission-lightbox.js and disappears after decode. */
+.mission-lightbox__img.is-decoding {
+  opacity: .001 !important;
+}
 
-  .mission-log-entry,
-  .mission-photo-grid,
-  .mission-photo-grid figure,
-  .mission-lightbox,
-  .mission-lightbox__panel {
-    will-change: auto !important;
-  }
+.mission-lightbox__img.is-ready {
+  opacity: 1 !important;
 }

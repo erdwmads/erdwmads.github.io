@@ -1,7 +1,37 @@
-
 (() => {
   const figures = Array.from(document.querySelectorAll('.mission-photo-grid figure'));
   if (!figures.length) return;
+
+  const isTouch = window.matchMedia('(hover: none), (pointer: coarse), (max-width: 760px)').matches;
+  const idle = window.requestIdleCallback || ((callback) => window.setTimeout(callback, 180));
+
+  const decodeQueue = new Set();
+
+  function prepareImage(img, priority = 'low') {
+    if (!img) return;
+    img.loading = priority === 'high' ? 'eager' : 'lazy';
+    img.decoding = 'async';
+    try {
+      img.fetchPriority = priority;
+    } catch (error) {
+      // fetchPriority is not supported everywhere.
+    }
+  }
+
+  function decodeSoon(img) {
+    if (!img || decodeQueue.has(img)) return;
+    decodeQueue.add(img);
+    idle(() => {
+      if (!img.complete && img.loading === 'lazy') {
+        // Keep browser lazy loading policy; do not force network eagerly.
+      }
+      if (typeof img.decode === 'function') {
+        img.decode().catch(() => {}).finally(() => decodeQueue.delete(img));
+      } else {
+        decodeQueue.delete(img);
+      }
+    });
+  }
 
   const items = figures.map((figure, index) => {
     const img = figure.querySelector('img');
@@ -11,12 +41,15 @@
     const kicker = entry?.querySelector('.mission-entry-kicker')?.textContent?.trim() || 'Mission Image Viewer';
     const caption = captionEl?.textContent?.trim() || img?.alt || `Image ${index + 1}`;
 
+    prepareImage(img, index < 1 ? 'auto' : 'low');
+
     figure.setAttribute('tabindex', '0');
     figure.setAttribute('role', 'button');
     figure.setAttribute('aria-label', `Open large image: ${caption}`);
 
     return {
       figure,
+      img,
       src: img?.currentSrc || img?.src,
       alt: img?.alt || caption,
       caption,
@@ -24,6 +57,23 @@
       kicker
     };
   }).filter(item => item.src);
+
+  /* Pre-decode images shortly before they enter the viewport.
+     This targets LOG002/LOG003 flicker without changing visual effects. */
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const img = entry.target.querySelector('img');
+        decodeSoon(img);
+        observer.unobserve(entry.target);
+      });
+    }, { root: null, rootMargin: isTouch ? '900px 0px' : '500px 0px', threshold: 0.01 });
+
+    figures.forEach((figure) => observer.observe(figure));
+  } else {
+    idle(() => items.forEach(item => decodeSoon(item.img)));
+  }
 
   const overlay = document.createElement('div');
   overlay.className = 'mission-lightbox';
@@ -43,7 +93,7 @@
 
       <div class="mission-lightbox__stage">
         <button class="mission-lightbox__btn mission-lightbox__nav mission-lightbox__prev" type="button" aria-label="Previous image">‹</button>
-        <img class="mission-lightbox__img" alt="">
+        <img class="mission-lightbox__img" alt="" decoding="async">
         <button class="mission-lightbox__btn mission-lightbox__nav mission-lightbox__next" type="button" aria-label="Next image">›</button>
       </div>
 
@@ -79,17 +129,49 @@
     btn.type = 'button';
     btn.className = 'mission-lightbox__thumb';
     btn.setAttribute('aria-label', `Open image ${idx + 1}`);
-    btn.innerHTML = `<img src="${item.src}" alt="">`;
+
+    const thumbImg = document.createElement('img');
+    thumbImg.alt = '';
+    thumbImg.loading = 'lazy';
+    thumbImg.decoding = 'async';
+    thumbImg.dataset.src = item.src;
+
+    btn.appendChild(thumbImg);
     btn.addEventListener('click', () => show(idx));
     thumbsEl.appendChild(btn);
     return btn;
   });
 
+  function hydrateThumb(index) {
+    const img = thumbs[index]?.querySelector('img');
+    if (!img || img.src) return;
+    img.src = img.dataset.src;
+  }
+
+  function hydrateNearbyThumbs(index) {
+    const span = isTouch ? 1 : 3;
+    for (let i = index - span; i <= index + span; i += 1) {
+      const wrapped = (i + thumbs.length) % thumbs.length;
+      hydrateThumb(wrapped);
+    }
+  }
+
+  function hydrateRemainingThumbs() {
+    idle(() => {
+      thumbs.forEach((_, idx) => hydrateThumb(idx));
+    });
+  }
+
   function show(index) {
     current = (index + items.length) % items.length;
     const item = items[current];
 
-    imgEl.src = item.src;
+    imgEl.classList.remove('is-ready');
+    imgEl.classList.add('is-decoding');
+
+    if (imgEl.src !== item.src) {
+      imgEl.src = item.src;
+    }
     imgEl.alt = item.alt;
     kickerEl.textContent = item.kicker;
     titleEl.textContent = item.title;
@@ -101,20 +183,42 @@
       thumb.setAttribute('aria-current', idx === current ? 'true' : 'false');
     });
 
-    thumbs[current]?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+    hydrateNearbyThumbs(current);
+
+    const reveal = () => {
+      imgEl.classList.remove('is-decoding');
+      imgEl.classList.add('is-ready');
+    };
+
+    if (typeof imgEl.decode === 'function') {
+      imgEl.decode().then(reveal).catch(reveal);
+    } else {
+      reveal();
+    }
+
+    thumbs[current]?.scrollIntoView({
+      block: 'nearest',
+      inline: 'center',
+      behavior: isTouch ? 'auto' : 'smooth'
+    });
   }
 
   function open(index) {
     lastFocus = document.activeElement;
+    document.body.classList.add('mission-lightbox-open', 'mission-lightbox-raster-open');
+
     show(index);
     overlay.classList.add('is-open');
-    document.body.classList.add('mission-lightbox-open');
+
+    // Delay non-nearby thumbnail hydration until after the viewer is open.
+    window.setTimeout(hydrateRemainingThumbs, isTouch ? 850 : 250);
+
     closeBtn.focus({ preventScroll: true });
   }
 
   function close() {
     overlay.classList.remove('is-open');
-    document.body.classList.remove('mission-lightbox-open');
+    document.body.classList.remove('mission-lightbox-open', 'mission-lightbox-raster-open');
     if (lastFocus && typeof lastFocus.focus === 'function') {
       lastFocus.focus({ preventScroll: true });
     }
