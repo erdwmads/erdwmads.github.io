@@ -13403,3 +13403,50 @@ html.is-edge-browser body.space-mode .project-progress > div {
   clip-path: inset(0 round inherit) !important;
   -webkit-clip-path: inset(0 round inherit) !important;
 }
+
+
+/* ============================================================
+   Top-left Circle Highlight Removed
+   Scope:
+   - Removes the round/circular glint that appears near the top-left corner of
+     cards/status cards.
+   - Keeps the blue-gold glass language, borders, shadows, and scan-line feel.
+   - Does not change layout, text, Mission Log, Navigator, Paper Shelf, or entry animation.
+   ============================================================ */
+
+/* General archive-glass card surface without a top-left radial spot. */
+:root {
+  --archive-panel-dark:
+    linear-gradient(180deg, rgba(255,255,255,.112), rgba(255,255,255,.034)),
+    linear-gradient(115deg, rgba(143,208,255,.060), transparent 38%, rgba(255,211,128,.050) 100%),
+    radial-gradient(circle at 90% 12%, rgba(255,211,128,.060), transparent 34%),
+    rgba(6, 14, 25, .68) !important;
+}
+
+/* Edge + Space Mode status-card fallback: remove the top-left radial glint
+   that looked like a circular stain. */
+html.is-edge-browser[data-theme="space"] .status-card,
+html.is-edge-browser[data-theme-space] .status-card,
+html.is-edge-browser body.space-mode .status-card,
+html.is-edge-browser[data-theme="space"] .project-progress > div,
+html.is-edge-browser[data-theme-space] .project-progress > div,
+html.is-edge-browser body.space-mode .project-progress > div {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.118), rgba(255,255,255,.038)),
+    linear-gradient(115deg, rgba(143,208,255,.060), transparent 42%, rgba(255,211,128,.050) 100%),
+    radial-gradient(circle at 88% 10%, rgba(255,211,128,.074), transparent 34%),
+    radial-gradient(circle at 50% 110%, rgba(143,208,255,.040), transparent 42%),
+    rgba(7, 15, 27, .86) !important;
+}
+
+/* The stable internal glint should be linear, not circular. */
+html.is-edge-browser[data-theme="space"] .status-card::before,
+html.is-edge-browser[data-theme-space] .status-card::before,
+html.is-edge-browser body.space-mode .status-card::before,
+html.is-edge-browser[data-theme="space"] .project-progress > div::before,
+html.is-edge-browser[data-theme-space] .project-progress > div::before,
+html.is-edge-browser body.space-mode .project-progress > div::before {
+  background:
+    linear-gradient(90deg, transparent 0%, rgba(255,255,255,.055) 48%, transparent 66%),
+    linear-gradient(180deg, rgba(255,255,255,.082), transparent 32%) !important;
+}
