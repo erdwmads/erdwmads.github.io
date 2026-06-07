@@ -11329,39 +11329,7 @@ html {
     will-change: auto !important;
   }
 
-  /* Explicitly keep hover from changing typography. */
-  .research-note-card:hover,
-  .research-note-card:hover *,
-  .mission-log-entry:hover,
-  .mission-log-entry:hover *,
-  .mission-jump-card:hover,
-  .mission-jump-card:hover *,
-  .compact-jump-card:hover,
-  .compact-jump-card:hover *,
-  .project-link-card:hover,
-  .project-link-card:hover *,
-  .paper-card:hover,
-  .paper-card:hover *,
-  .cv-edu-card:hover,
-  .cv-edu-card:hover *,
-  .contact-card:hover,
-  .contact-card:hover *,
-  .feature-card:hover,
-  .feature-card:hover *,
-  .photo-card:hover,
-  .photo-card:hover *,
-  .status-card:hover,
-  .status-card:hover *,
-  .project-progress > div:hover,
-  .project-progress > div:hover * {
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
-    font-style: inherit;
-    font-stretch: inherit;
-    font-variation-settings: inherit;
-    text-transform: inherit;
-  }
+  
 }
 
 /* Restore important text weights that must never be flattened by hover rules. */
@@ -11386,4 +11354,95 @@ html {
 .research-tags span,
 .paper-status {
   font-weight: 700;
+}
+
+
+/* ============================================================
+   Hover Title Size Lock Fix
+   Problem:
+   - A previous hover-stability rule tried to preserve typography by forcing
+     descendants to inherit font-size / line-height / family on hover.
+   - That made h3 and small headings visually change size while the card was
+     hovered.
+   Fix:
+   - No hover rule is allowed to change typography metrics.
+   - Hover still moves only the outer card.
+   - Inner content is only transform-locked, not font-locked.
+   ============================================================ */
+
+/* Defensive audit rule: hover descendants may not animate transform or reserve
+   compositor memory, but their font metrics are left exactly as originally
+   defined by the normal CSS cascade. */
+@media (hover: hover) and (pointer: fine) {
+  .research-note-card:hover *,
+  .mission-log-entry:hover *,
+  .mission-jump-card:hover *,
+  .compact-jump-card:hover *,
+  .project-link-card:hover *,
+  .paper-card:hover *,
+  .cv-edu-card:hover *,
+  .contact-card:hover *,
+  .feature-card:hover *,
+  .photo-card:hover *,
+  .status-card:hover *,
+  .project-progress > div:hover * {
+    transform: none !important;
+    will-change: auto !important;
+  }
+}
+
+/* Lock title/subtitle visual identity with normal, non-hover selectors.
+   These are intentionally not :hover rules, so the values do not switch when
+   the pointer enters or leaves the card. */
+.research-note-card h3,
+.mission-log-entry h3 {
+  font-size: clamp(1.35rem, 2vw, 1.95rem);
+  line-height: 1.22;
+  font-weight: 700;
+  letter-spacing: .01em;
+}
+
+.research-note-date,
+.mission-entry-kicker {
+  font-size: .78rem;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.mission-jump-log,
+.mission-index-mode {
+  font-size: .78rem;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.log-tags span,
+.hero-tags span,
+.project-tags span,
+.research-tags span,
+.paper-status {
+  font-size: .78rem;
+  line-height: 1;
+  font-weight: 700;
+}
+
+/* No title/subtitle font metric changes on hover. This rule deliberately only
+   repeats transform behaviour; it does not touch font-family, font-size,
+   line-height, letter-spacing, font-weight, or font-variation-settings. */
+@media (hover: hover) and (pointer: fine) {
+  .research-note-card:hover h3,
+  .mission-log-entry:hover h3,
+  .research-note-card:hover .research-note-date,
+  .mission-log-entry:hover .mission-entry-kicker,
+  .mission-jump-card:hover .mission-jump-log,
+  .mission-jump-card:hover .mission-jump-meta,
+  .compact-jump-card:hover .mission-jump-log,
+  .compact-jump-card:hover .mission-jump-meta {
+    transform: none !important;
+    will-change: auto !important;
+  }
 }
