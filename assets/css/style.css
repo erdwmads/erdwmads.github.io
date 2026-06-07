@@ -5527,7 +5527,6 @@ html:not([data-theme="space"]) .action-row a[href="research.html"] {
       url("../img/asteroid-bennu.jpg") !important;
     background-size: cover !important;
     background-position: center center !important;
-    filter: none !important;
   }
 
   html:not([data-theme="space"]) .site-header::before {
@@ -10831,12 +10830,10 @@ html {
   /* Opening the resized mobile image should not trigger heavy visual filters. */
   .mission-lightbox__img.is-decoding {
     opacity: .98 !important;
-    filter: none !important;
   }
 
   .mission-lightbox__img.is-ready {
     opacity: 1 !important;
-    filter: none !important;
   }
 }
 
@@ -11267,9 +11264,6 @@ html {
   .photo-card:hover *,
   .status-card:hover *,
   .project-progress > div:hover * {
-    letter-spacing: inherit !important;
-    font-weight: inherit;
-    filter: none !important;
     transform: none !important;
   }
 }
@@ -11303,4 +11297,93 @@ html {
     will-change: auto !important;
     transform: none !important;
   }
+}
+
+
+/* ============================================================
+   Hover Font Preservation Fix
+   Problem introduced by the previous hover-stability patch:
+   - The rule for hover descendants used font-weight/letter-spacing inheritance.
+   - That stabilised movement, but could make text look like it changed font
+     while the card was hovered.
+   Fix:
+   - Hover still moves only the outer card.
+   - Inner elements still do not transform.
+   - Typography metrics are no longer overridden on hover.
+   ============================================================ */
+
+@media (hover: hover) and (pointer: fine) {
+  .research-note-card:hover *,
+  .mission-log-entry:hover *,
+  .mission-jump-card:hover *,
+  .compact-jump-card:hover *,
+  .project-link-card:hover *,
+  .paper-card:hover *,
+  .cv-edu-card:hover *,
+  .contact-card:hover *,
+  .feature-card:hover *,
+  .photo-card:hover *,
+  .status-card:hover *,
+  .project-progress > div:hover * {
+    transform: none !important;
+    will-change: auto !important;
+  }
+
+  /* Explicitly keep hover from changing typography. */
+  .research-note-card:hover,
+  .research-note-card:hover *,
+  .mission-log-entry:hover,
+  .mission-log-entry:hover *,
+  .mission-jump-card:hover,
+  .mission-jump-card:hover *,
+  .compact-jump-card:hover,
+  .compact-jump-card:hover *,
+  .project-link-card:hover,
+  .project-link-card:hover *,
+  .paper-card:hover,
+  .paper-card:hover *,
+  .cv-edu-card:hover,
+  .cv-edu-card:hover *,
+  .contact-card:hover,
+  .contact-card:hover *,
+  .feature-card:hover,
+  .feature-card:hover *,
+  .photo-card:hover,
+  .photo-card:hover *,
+  .status-card:hover,
+  .status-card:hover *,
+  .project-progress > div:hover,
+  .project-progress > div:hover * {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    font-style: inherit;
+    font-stretch: inherit;
+    font-variation-settings: inherit;
+    text-transform: inherit;
+  }
+}
+
+/* Restore important text weights that must never be flattened by hover rules. */
+.research-note-card h3,
+.mission-log-entry h3,
+.project-link-card h3,
+.paper-card h3,
+.cv-edu-card h3,
+.contact-card h3,
+.feature-card h3,
+.photo-card h3 {
+  font-weight: 700;
+}
+
+.research-note-date,
+.mission-entry-kicker,
+.mission-jump-log,
+.mission-index-mode,
+.log-tags span,
+.hero-tags span,
+.project-tags span,
+.research-tags span,
+.paper-status {
+  font-weight: 700;
 }
