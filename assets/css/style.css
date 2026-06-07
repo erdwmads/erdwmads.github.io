@@ -12140,3 +12140,212 @@ html:not([data-theme="space"]) .mission-jump-meta {
     width: 100% !important;
   }
 }
+
+
+/* ============================================================
+   LOG / SOL Blue Accent — No-Glass Telemetry Fix
+   Purpose:
+   - LOG 00X gets a controlled blue command-badge accent.
+   - SOL/date becomes plain telemetry text with blue signal marks.
+   - SOL/date must NOT sit inside a transparent glass bar in either mode.
+   - Text alignment remains stable and hover-safe.
+   ============================================================ */
+
+/* LOG = primary command badge. Blue accent is inside the capsule, not a
+   separate glass bar. */
+.research-note-date,
+.mission-jump-log {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  min-height: 34px !important;
+  padding: 0 18px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(126, 210, 255, .36) !important;
+  color: rgba(240, 249, 255, .97) !important;
+  background:
+    radial-gradient(circle at 18px 50%, rgba(116, 215, 255, .55) 0 2px, transparent 3px),
+    linear-gradient(180deg, rgba(255,255,255,.17), rgba(255,255,255,.050)),
+    linear-gradient(90deg, rgba(52, 157, 228, .20), rgba(143,208,255,.065) 42%, rgba(255,255,255,.025)) !important;
+  box-shadow:
+    0 12px 28px rgba(0,0,0,.18),
+    0 0 22px rgba(88, 188, 255, .10),
+    inset 0 1px 0 rgba(255,255,255,.25),
+    inset 0 -1px 0 rgba(79, 180, 255,.13) !important;
+  text-shadow: 0 0 14px rgba(125, 210, 255, .16) !important;
+}
+
+/* LOG blue signal dot. */
+.research-note-date::before,
+.mission-jump-log::before {
+  content: "" !important;
+  display: inline-block !important;
+  width: 6px !important;
+  height: 6px !important;
+  flex: 0 0 6px !important;
+  border-radius: 50% !important;
+  background: rgba(126, 216, 255, .96) !important;
+  box-shadow:
+    0 0 8px rgba(126,216,255,.42),
+    0 0 18px rgba(126,216,255,.18) !important;
+}
+
+/* SOL/date = plain telemetry text.
+   Critical: no background, no border box, no glass strip, no backdrop filter. */
+.mission-entry-kicker,
+.mission-jump-meta {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: baseline !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  width: max-content !important;
+  min-height: 0 !important;
+  height: auto !important;
+  padding: 0 !important;
+  margin: 0 0 15px 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  color: rgba(174, 211, 237, .88) !important;
+  text-shadow: 0 0 12px rgba(110, 200, 255, .12) !important;
+  vertical-align: baseline !important;
+}
+
+/* SOL/date blue mark: tiny telemetry bracket, not a bar/container. */
+.mission-entry-kicker::before,
+.mission-jump-meta::before {
+  content: "" !important;
+  display: inline-block !important;
+  flex: 0 0 auto !important;
+  width: 7px !important;
+  height: 7px !important;
+  margin-right: 2px !important;
+  border-left: 2px solid rgba(126,216,255,.92) !important;
+  border-bottom: 2px solid rgba(126,216,255,.55) !important;
+  transform: translateY(-1px) rotate(-45deg) !important;
+  background: transparent !important;
+  box-shadow: 0 0 10px rgba(126,216,255,.20) !important;
+}
+
+/* Quick Jump date line is compact and not pill-like. */
+.mission-jump-meta {
+  margin: 3px 0 0 1px !important;
+  padding: 0 !important;
+}
+
+/* Light Mode: LOG keeps an archive-blue capsule, SOL/date remains plain text.
+   Explicitly remove any transparent/glass strip inherited from older rules. */
+html:not([data-theme="space"]) .research-note-date,
+html:not([data-theme="space"]) .mission-jump-log {
+  color: #104f7d !important;
+  border-color: rgba(18, 109, 168, .26) !important;
+  background:
+    radial-gradient(circle at 18px 50%, rgba(18, 109, 168, .62) 0 2px, transparent 3px),
+    linear-gradient(180deg, rgba(255,255,255,.86), rgba(230,243,251,.56)),
+    linear-gradient(90deg, rgba(18,109,168,.14), rgba(255,255,255,.38)) !important;
+  box-shadow:
+    0 10px 24px rgba(32, 70, 103, .085),
+    inset 0 1px 0 rgba(255,255,255,.74),
+    inset 0 -1px 0 rgba(18,109,168,.10) !important;
+  text-shadow: none !important;
+}
+
+html:not([data-theme="space"]) .research-note-date::before,
+html:not([data-theme="space"]) .mission-jump-log::before {
+  background: #126da8 !important;
+  box-shadow:
+    0 0 7px rgba(18,109,168,.24),
+    0 0 14px rgba(18,109,168,.10) !important;
+}
+
+/* Important Light Mode no-glass rule for SOL/date. */
+html:not([data-theme="space"]) .mission-entry-kicker,
+html:not([data-theme="space"]) .mission-jump-meta {
+  color: rgba(24, 79, 116, .82) !important;
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  text-shadow: none !important;
+  padding: 0 !important;
+}
+
+html:not([data-theme="space"]) .mission-entry-kicker::before,
+html:not([data-theme="space"]) .mission-jump-meta::before {
+  border-left-color: rgba(18,109,168,.92) !important;
+  border-bottom-color: rgba(18,109,168,.45) !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+/* Hover safety: only the outer card can move. LOG/SOL/date stay visually
+   fixed and do not receive metric or scale changes. */
+@media (hover: hover) and (pointer: fine) {
+  .mission-log-entry:hover .research-note-date,
+  .mission-log-entry:hover .mission-entry-kicker,
+  .mission-jump-card:hover .mission-jump-log,
+  .mission-jump-card:hover .mission-jump-meta,
+  .compact-jump-card:hover .mission-jump-log,
+  .compact-jump-card:hover .mission-jump-meta {
+    transform: none !important;
+    will-change: auto !important;
+  }
+
+  .mission-log-entry:hover .research-note-date::before,
+  .mission-log-entry:hover .mission-entry-kicker::before,
+  .mission-jump-card:hover .mission-jump-log::before,
+  .mission-jump-card:hover .mission-jump-meta::before,
+  .compact-jump-card:hover .mission-jump-log::before,
+  .compact-jump-card:hover .mission-jump-meta::before {
+    transform: translateY(-1px) rotate(-45deg) !important;
+  }
+
+  .mission-log-entry:hover .research-note-date::before,
+  .mission-jump-card:hover .mission-jump-log::before,
+  .compact-jump-card:hover .mission-jump-log::before {
+    transform: none !important;
+  }
+}
+
+/* Mobile sizing. */
+@media (max-width: 760px) {
+  .research-note-date,
+  .mission-jump-log {
+    min-height: 30px !important;
+    padding: 0 13px !important;
+    gap: 7px !important;
+    font-size: 10px !important;
+    letter-spacing: .13em !important;
+  }
+
+  .research-note-date::before,
+  .mission-jump-log::before {
+    width: 5px !important;
+    height: 5px !important;
+    flex-basis: 5px !important;
+  }
+
+  .mission-entry-kicker,
+  .mission-jump-meta {
+    gap: 7px !important;
+    font-size: 10px !important;
+    letter-spacing: .075em !important;
+    white-space: normal !important;
+  }
+
+  .mission-entry-kicker::before,
+  .mission-jump-meta::before {
+    width: 6px !important;
+    height: 6px !important;
+  }
+}
