@@ -127,8 +127,8 @@
       // keep a varied meteor speed distribution, but prevent occasional
       // absurdly fast meteors on large/diagonal trajectories.
       const distance = Math.hypot(dx, dy);
-      const targetSpeed = rand(190, 310); // px/s; restrained fast meteors, no harsh streaks
-      const duration = Math.min(10500, Math.max(3600, (distance / targetSpeed) * 1000));
+      const targetSpeed = rand(150, 235); // px/s; all meteors are calmer, with gentle variation only
+      const duration = Math.min(13200, Math.max(4600, (distance / targetSpeed) * 1000));
 
       el.style.setProperty("--meteor-len", len + "px");
       el.style.left = start[0] + "px";
