@@ -13450,3 +13450,73 @@ html.is-edge-browser body.space-mode .project-progress > div::before {
     linear-gradient(90deg, transparent 0%, rgba(255,255,255,.055) 48%, transparent 66%),
     linear-gradient(180deg, rgba(255,255,255,.082), transparent 32%) !important;
 }
+
+
+/* ============================================================
+   Edge Status No-Circle Linear Surface Fix
+   Scope:
+   - Microsoft Edge only
+   - Space Mode only
+   - Status / project-progress cards only
+   Purpose:
+   - Remove the remaining circular highlight completely.
+   - Keep the Edge white-stripe fallback.
+   - Use a Firefox-like clean glass surface without radial spot layers.
+   ============================================================ */
+
+html.is-edge-browser[data-theme="space"] .status-card,
+html.is-edge-browser[data-theme-space] .status-card,
+html.is-edge-browser body.space-mode .status-card,
+html.is-edge-browser[data-theme="space"] .project-progress > div,
+html.is-edge-browser[data-theme-space] .project-progress > div,
+html.is-edge-browser body.space-mode .project-progress > div {
+  isolation: isolate !important;
+  contain: layout paint style !important;
+  overflow: hidden !important;
+  background-clip: padding-box !important;
+  background-origin: padding-box !important;
+  background-attachment: scroll !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  transform: translate3d(0, 0, 0) !important;
+  -webkit-transform: translate3d(0, 0, 0) !important;
+  clip-path: inset(0 round inherit) !important;
+  -webkit-clip-path: inset(0 round inherit) !important;
+
+  /* Edge-only: remove live backdrop sampling and all radial spot layers.
+     This keeps the card stable and eliminates the circular highlight. */
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.118), rgba(255,255,255,.038)),
+    linear-gradient(115deg, rgba(143,208,255,.058), rgba(255,255,255,.020) 48%, rgba(255,211,128,.048) 100%),
+    rgba(7, 15, 27, .86) !important;
+
+  box-shadow:
+    0 28px 78px rgba(0,0,0,.34),
+    0 0 38px rgba(143,208,255,.042),
+    0 0 34px rgba(255,211,128,.030),
+    0 0 0 1px rgba(255,255,255,.026) inset,
+    inset 0 1px 0 rgba(255,255,255,.122),
+    inset 0 -1px 0 rgba(255,211,128,.060) !important;
+}
+
+/* Do not draw pseudo glints on Edge status cards.
+   The original Firefox rendering is visually clean; this avoids the Edge-only
+   circular stain while leaving all other browsers untouched. */
+html.is-edge-browser[data-theme="space"] .status-card::before,
+html.is-edge-browser[data-theme="space"] .status-card::after,
+html.is-edge-browser[data-theme-space] .status-card::before,
+html.is-edge-browser[data-theme-space] .status-card::after,
+html.is-edge-browser body.space-mode .status-card::before,
+html.is-edge-browser body.space-mode .status-card::after,
+html.is-edge-browser[data-theme="space"] .project-progress > div::before,
+html.is-edge-browser[data-theme="space"] .project-progress > div::after,
+html.is-edge-browser[data-theme-space] .project-progress > div::before,
+html.is-edge-browser[data-theme-space] .project-progress > div::after,
+html.is-edge-browser body.space-mode .project-progress > div::before,
+html.is-edge-browser body.space-mode .project-progress > div::after {
+  content: none !important;
+  display: none !important;
+}
