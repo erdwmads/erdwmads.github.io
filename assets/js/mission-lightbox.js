@@ -275,4 +275,75 @@
       else prev();
     }
   }, { passive: true });
+
+  /* Mobile raster-safe mission zone.
+     This is a different strategy from previous compositor patches:
+     it does not hide effects. It switches only the implementation of fixed
+     pseudo-background layers while large mission image grids/lightbox are
+     active, and pauses moving particles instead of removing them. */
+  const rasterMedia = window.matchMedia('(hover: none), (pointer: coarse), (max-width: 760px)');
+  const rasterState = {
+    zones: new Set(),
+    scrollTimer: 0
+  };
+
+  function updatePageHeightForRaster() {
+    if (!document.body) return;
+    const doc = document.documentElement;
+    const height = Math.max(
+      document.body.scrollHeight || 0,
+      doc.scrollHeight || 0,
+      document.body.offsetHeight || 0,
+      doc.offsetHeight || 0,
+      window.innerHeight || 0
+    );
+    document.body.style.setProperty('--mission-page-height', `${height}px`);
+  }
+
+  function updateRasterZoneClass() {
+    if (!document.body) return;
+    const enabled = rasterMedia.matches && rasterState.zones.size > 0;
+    document.body.classList.toggle('mission-raster-zone', enabled);
+    if (enabled) updatePageHeightForRaster();
+  }
+
+  if (rasterMedia.matches && 'IntersectionObserver' in window) {
+    const rasterObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          rasterState.zones.add(entry.target);
+        } else {
+          rasterState.zones.delete(entry.target);
+        }
+      });
+      updateRasterZoneClass();
+    }, {
+      root: null,
+      rootMargin: '650px 0px 650px 0px',
+      threshold: 0.001
+    });
+
+    document.querySelectorAll('.mission-photo-grid').forEach((grid) => {
+      rasterObserver.observe(grid);
+    });
+  }
+
+  if (rasterMedia.matches) {
+    window.addEventListener('scroll', () => {
+      document.body.classList.add('mission-raster-scrolling');
+      updatePageHeightForRaster();
+      window.clearTimeout(rasterState.scrollTimer);
+      rasterState.scrollTimer = window.setTimeout(() => {
+        document.body.classList.remove('mission-raster-scrolling');
+      }, 180);
+    }, { passive: true });
+
+    window.addEventListener('resize', updatePageHeightForRaster, { passive: true });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', updatePageHeightForRaster, { passive: true });
+    }
+    updatePageHeightForRaster();
+  }
+
+
 })();

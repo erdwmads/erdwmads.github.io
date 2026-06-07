@@ -10648,3 +10648,125 @@ html {
 .mission-lightbox__img.is-ready {
   opacity: 1 !important;
 }
+
+
+/* ============================================================
+   Mobile Raster-Safe Mission Zone Fix
+   New strategy:
+   - The remaining flicker is treated as a mobile browser compositor bug
+     caused by fixed pseudo-backgrounds + animated ambient layer + large
+     image grids/lightbox.
+   - Visual effects are preserved.
+   - Implementation changes only while the user is near Mission Log image
+     zones or while the lightbox is open.
+   ============================================================ */
+
+@media (hover: none), (pointer: coarse), (max-width: 760px) {
+  body.mission-raster-zone,
+  body.mission-lightbox-raster-open {
+    position: relative !important;
+    min-height: 100% !important;
+  }
+
+  /* Keep the same asteroid/HUD look, but temporarily make the expensive
+     fixed pseudo-layers scroll-bound while large Mission images are near.
+     This avoids the mobile full-screen compositor blink seen around LOG002.
+     No blur/background/ambient layer is removed. */
+  body.mission-raster-zone::before,
+  body.mission-lightbox-raster-open::before,
+  body.mission-raster-zone::after,
+  body.mission-lightbox-raster-open::after {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: auto !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    height: var(--mission-page-height, 100%) !important;
+    transform: none !important;
+    -webkit-transform: none !important;
+    will-change: auto !important;
+    backface-visibility: visible !important;
+    -webkit-backface-visibility: visible !important;
+    contain: paint !important;
+  }
+
+  /* While the image-heavy zone is active, pause moving particles instead of
+     hiding them. They remain visible but no longer trigger continuous raster
+     work during image decode / lightbox opening. */
+  body.mission-raster-zone .ambient-dust,
+  body.mission-raster-zone .ambient-pebble,
+  body.mission-raster-zone .ambient-meteor,
+  body.mission-lightbox-raster-open .ambient-dust,
+  body.mission-lightbox-raster-open .ambient-pebble,
+  body.mission-lightbox-raster-open .ambient-meteor,
+  body.mission-raster-scrolling .ambient-dust,
+  body.mission-raster-scrolling .ambient-pebble,
+  body.mission-raster-scrolling .ambient-meteor {
+    animation-play-state: paused !important;
+    transition: none !important;
+    will-change: auto !important;
+  }
+
+  body.mission-raster-zone .ambient-space-layer,
+  body.mission-lightbox-raster-open .ambient-space-layer {
+    transform: none !important;
+    -webkit-transform: none !important;
+    will-change: auto !important;
+    contain: paint !important;
+  }
+
+  /* Do not promote the whole page. Keep stable local containment only. */
+  body.mission-raster-zone .main,
+  body.mission-lightbox-raster-open .main {
+    transform: none !important;
+    -webkit-transform: none !important;
+    will-change: auto !important;
+  }
+
+  body.mission-raster-zone .mission-log-entry,
+  body.mission-raster-zone .mission-photo-grid,
+  body.mission-raster-zone .mission-photo-grid figure {
+    contain: layout paint style !important;
+    isolation: isolate !important;
+    transform: none !important;
+    -webkit-transform: none !important;
+    will-change: auto !important;
+  }
+
+  /* Lightbox open: keep visual design, but avoid animated opacity/raster
+     transitions in the frame where image decoding begins. */
+  body.mission-lightbox-raster-open .mission-lightbox {
+    transition: visibility .01s linear !important;
+    will-change: auto !important;
+  }
+
+  body.mission-lightbox-raster-open .mission-lightbox__panel,
+  body.mission-lightbox-raster-open .mission-lightbox__stage,
+  body.mission-lightbox-raster-open .mission-lightbox__img,
+  body.mission-lightbox-raster-open .mission-lightbox__thumbs {
+    contain: layout paint style !important;
+    transform: none !important;
+    -webkit-transform: none !important;
+    will-change: auto !important;
+  }
+
+  /* Force a stable reserved raster area for thumbnails and grid images. */
+  .mission-photo-grid figure {
+    aspect-ratio: 4 / 3 !important;
+  }
+
+  .mission-lightbox__thumb {
+    contain: layout paint style !important;
+  }
+
+  .mission-lightbox__thumb img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    transform: none !important;
+    -webkit-transform: none !important;
+    will-change: auto !important;
+  }
+}
