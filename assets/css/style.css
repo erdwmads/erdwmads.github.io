@@ -11116,3 +11116,35 @@ html {
       var(--lightbox-thumbs-row) !important;
   }
 }
+
+
+/* Mission Index minimal repair: spacing + centered navigator items
+   ------------------------------------------------------------ */
+body.ui-page-research-graduation .mission-index-section > .section-label {
+  display: block !important;
+  margin-bottom: 18px !important;
+}
+
+body.ui-page-research-graduation .mission-index-panel {
+  margin-top: 0 !important;
+}
+
+@media (min-width: 761px) {
+  body.ui-page-research-graduation .mission-jump-grid.compact-mission-jump-grid,
+  body.ui-page-research-graduation .mission-jump-grid {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    align-content: flex-start !important;
+    gap: 16px 26px !important;
+    margin-top: 18px !important;
+  }
+
+  body.ui-page-research-graduation .mission-jump-grid.compact-mission-jump-grid > .mission-jump-card,
+  body.ui-page-research-graduation .mission-jump-grid > .mission-jump-card {
+    flex: 0 1 320px !important;
+    max-width: 320px !important;
+    min-width: 220px !important;
+  }
+}
