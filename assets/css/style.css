@@ -13118,3 +13118,41 @@ html:not([data-theme="space"]) .pill,
 html:not([data-theme="space"]) .badge {
   font-weight: 700 !important;
 }
+
+
+/* ============================================================
+   Mission Index Gold Dot Alignment Fix
+   Scope:
+   - Only the Mission Index section label.
+   - Keeps the sitewide gold signal-dot system.
+   - Fixes the Mission Index dot so it uses the same optical alignment as
+     other left-side section labels such as Project Info / Mission Log.
+   ============================================================ */
+
+body.ui-page-research-graduation #mission-index > .section-label {
+  display: inline-grid !important;
+  grid-template-columns: 6px auto !important;
+  column-gap: .62em !important;
+  align-items: center !important;
+  justify-content: start !important;
+  line-height: 1 !important;
+  padding-top: 10px !important;
+}
+
+body.ui-page-research-graduation #mission-index > .section-label::before {
+  content: "" !important;
+  display: block !important;
+  width: 6px !important;
+  height: 6px !important;
+  min-width: 6px !important;
+  min-height: 6px !important;
+  flex: none !important;
+  align-self: center !important;
+  justify-self: center !important;
+  margin: 0 !important;
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  transform: none !important;
+  border-radius: 50% !important;
+}
