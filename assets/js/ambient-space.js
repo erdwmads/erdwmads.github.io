@@ -127,8 +127,8 @@
       // keep a varied meteor speed distribution, but prevent occasional
       // absurdly fast meteors on large/diagonal trajectories.
       const distance = Math.hypot(dx, dy);
-      const targetSpeed = rand(360, 590); // px/s; varied, but no absurd fast meteors
-      const duration = Math.min(6200, Math.max(2200, (distance / targetSpeed) * 1000));
+      const targetSpeed = rand(260, 430); // px/s; still varied, but noticeably calmer
+      const duration = Math.min(8200, Math.max(2800, (distance / targetSpeed) * 1000));
 
       el.style.setProperty("--meteor-len", len + "px");
       el.style.left = start[0] + "px";
@@ -157,8 +157,8 @@
     }
 
     // Reduced counts, but visible.
-    for (let i = 0; i < 95; i++) makeDust();
-    for (let i = 0; i < 18; i++) makePebble();
+    for (let i = 0; i < 112; i++) makeDust();
+    for (let i = 0; i < 22; i++) makePebble();
 
     // Make meteors immediately visible after load, then continuously spawn.
     spawnMeteor();
