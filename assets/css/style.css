@@ -12414,3 +12414,120 @@ html:not([data-theme="space"]) .mission-jump-log {
     margin-right: 3px !important;
   }
 }
+
+
+/* ============================================================
+   Mission Index Centering + Telemetry Marker Alignment Fix
+   Fixes:
+   1. Mission Log Navigator first-row LOG items are centered as a group.
+   2. The blue telemetry marker in Mission Index gets proper spacing before SOL.
+   3. The blue marker beside SOL/date in Mission Log entries is vertically
+      aligned with the text baseline, not slightly lower.
+   ============================================================ */
+
+/* Desktop Mission Log Navigator: center the five-item row as a group instead
+   of letting it visually lean left. */
+@media (min-width: 1120px) {
+  .mission-index-panel .compact-mission-jump-grid,
+  .mission-index-panel .mission-jump-grid.compact-mission-jump-grid {
+    display: grid !important;
+    grid-template-columns: repeat(5, max-content) !important;
+    justify-content: center !important;
+    justify-items: start !important;
+    align-items: start !important;
+    column-gap: clamp(56px, 6.4vw, 128px) !important;
+    row-gap: 18px !important;
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .mission-index-panel .mission-jump-card.compact-jump-card,
+  .mission-index-panel .compact-jump-card {
+    width: max-content !important;
+    min-width: 0 !important;
+  }
+}
+
+/* Medium screens: keep the group centered without forcing five columns. */
+@media (min-width: 761px) and (max-width: 1119px) {
+  .mission-index-panel .compact-mission-jump-grid,
+  .mission-index-panel .mission-jump-grid.compact-mission-jump-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, max-content) !important;
+    justify-content: center !important;
+    column-gap: clamp(38px, 6vw, 78px) !important;
+    row-gap: 18px !important;
+  }
+}
+
+/* Mission Index SOL/date line: use spacing through flex gap, not a tight
+   pseudo-element margin. */
+.mission-index-panel .mission-jump-meta,
+.mission-jump-card.compact-jump-card .mission-jump-meta,
+.compact-jump-card .mission-jump-meta {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 15px !important;
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+}
+
+/* Quick Jump marker: centered with the SOL/date line and spaced clearly. */
+.mission-index-panel .mission-jump-meta::before,
+.mission-jump-card.compact-jump-card .mission-jump-meta::before,
+.compact-jump-card .mission-jump-meta::before {
+  flex: 0 0 auto !important;
+  margin-right: 0 !important;
+  transform: translateY(0) rotate(-45deg) !important;
+  transform-origin: center center !important;
+}
+
+/* Mission Log entry SOL/date line: make marker and text share one horizontal
+   centerline. */
+.mission-log-entry .mission-entry-kicker {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 15px !important;
+  line-height: 1 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.mission-log-entry .mission-entry-kicker::before {
+  flex: 0 0 auto !important;
+  margin-right: 0 !important;
+  transform: translateY(0) rotate(-45deg) !important;
+  transform-origin: center center !important;
+}
+
+/* Keep hover from shifting marker geometry. */
+@media (hover: hover) and (pointer: fine) {
+  .mission-log-entry:hover .mission-entry-kicker::before,
+  .mission-jump-card:hover .mission-jump-meta::before,
+  .compact-jump-card:hover .mission-jump-meta::before {
+    transform: translateY(0) rotate(-45deg) !important;
+  }
+}
+
+/* Light Mode: no glass strip is reintroduced; only spacing/alignment changes. */
+html:not([data-theme="space"]) .mission-entry-kicker,
+html:not([data-theme="space"]) .mission-jump-meta {
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Mobile keeps the compact one-column/two-column logic from previous rules,
+   just with a little less gap so it doesn't crowd narrow screens. */
+@media (max-width: 760px) {
+  .mission-index-panel .mission-jump-meta,
+  .mission-jump-card.compact-jump-card .mission-jump-meta,
+  .compact-jump-card .mission-jump-meta,
+  .mission-log-entry .mission-entry-kicker {
+    gap: 11px !important;
+  }
+}
