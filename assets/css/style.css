@@ -10867,3 +10867,154 @@ html {
     grid-template-columns: 1fr !important;
   }
 }
+
+
+/* ============================================================
+   Mission Lightbox Long Caption Safe Layout
+   Fixes image bottom clipping when a figure caption is long.
+   The image stage now owns a stable vertical area; long captions scroll
+   inside the caption bar instead of pushing/cutting the image.
+   ============================================================ */
+
+.mission-lightbox__panel {
+  display: grid !important;
+  grid-template-rows: auto minmax(260px, 1fr) auto auto !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+.mission-lightbox__stage {
+  position: relative !important;
+  min-height: 0 !important;
+  height: auto !important;
+  display: grid !important;
+  place-items: center !important;
+  box-sizing: border-box !important;
+  padding:
+    clamp(22px, 3.2vh, 40px)
+    clamp(56px, 5vw, 88px) !important;
+  overflow: hidden !important;
+}
+
+.mission-lightbox__img,
+.mission-lightbox__image {
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  margin: 0 auto !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+  clip-path: inset(0 round 18px) !important;
+}
+
+/* Caption length must never change/cut the image geometry. */
+.mission-lightbox__captionbar {
+  box-sizing: border-box !important;
+  max-height: clamp(70px, 12vh, 124px) !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  scrollbar-width: thin !important;
+}
+
+.mission-lightbox__caption {
+  margin: 0 !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+}
+
+.mission-lightbox__counter {
+  flex: 0 0 auto !important;
+}
+
+/* Navigation buttons are anchored to the stage, not the rendered image. */
+.mission-lightbox__nav {
+  position: absolute !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  z-index: 8 !important;
+  margin: 0 !important;
+}
+
+.mission-lightbox__prev {
+  left: clamp(12px, 2.4vw, 30px) !important;
+}
+
+.mission-lightbox__next {
+  right: clamp(12px, 2.4vw, 30px) !important;
+}
+
+@media (max-width: 900px), (max-height: 760px) {
+  .mission-lightbox__panel {
+    grid-template-rows: auto minmax(220px, 1fr) auto auto !important;
+    max-height: calc(100dvh - 24px) !important;
+  }
+
+  .mission-lightbox__stage {
+    min-height: clamp(260px, 48dvh, 520px) !important;
+    height: auto !important;
+    padding:
+      clamp(16px, 2.4vh, 28px)
+      clamp(52px, 8vw, 72px) !important;
+  }
+
+  .mission-lightbox__img,
+  .mission-lightbox__image {
+    max-height: 100% !important;
+    border-radius: 16px !important;
+    clip-path: inset(0 round 16px) !important;
+  }
+
+  .mission-lightbox__captionbar {
+    max-height: clamp(64px, 14dvh, 112px) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .mission-lightbox__panel {
+    grid-template-rows: auto minmax(220px, 1fr) auto auto !important;
+  }
+
+  .mission-lightbox__stage {
+    min-height: clamp(260px, 46dvh, 500px) !important;
+    padding: 16px 58px !important;
+  }
+
+  .mission-lightbox__img,
+  .mission-lightbox__image {
+    border-radius: 14px !important;
+    clip-path: inset(0 round 14px) !important;
+  }
+
+  .mission-lightbox__captionbar {
+    max-height: clamp(62px, 15dvh, 106px) !important;
+  }
+
+  .mission-lightbox__prev {
+    left: 10px !important;
+  }
+
+  .mission-lightbox__next {
+    right: 10px !important;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 560px) {
+  .mission-lightbox__panel {
+    grid-template-rows: auto minmax(180px, 1fr) auto auto !important;
+    max-height: calc(100dvh - 18px) !important;
+  }
+
+  .mission-lightbox__stage {
+    min-height: clamp(190px, 44dvh, 400px) !important;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+  }
+
+  .mission-lightbox__captionbar {
+    max-height: clamp(48px, 16dvh, 76px) !important;
+  }
+}
