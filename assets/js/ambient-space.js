@@ -127,8 +127,13 @@
       // keep a varied meteor speed distribution, but prevent occasional
       // absurdly fast meteors on large/diagonal trajectories.
       const distance = Math.hypot(dx, dy);
-      const targetSpeed = rand(150, 235); // px/s; all meteors are calmer, with gentle variation only
-      const duration = Math.min(13200, Math.max(4600, (distance / targetSpeed) * 1000));
+      const targetSpeed = rand(260, 390); // px/s; varied, but hard-capped against flash meteors
+
+      // True speed cap:
+      // Do NOT clamp with a short maximum duration. A max-duration clamp was the
+      // reason very long cross-screen routes could still become absurdly fast.
+      // The meteor now keeps its assigned px/s speed until it exits the screen.
+      const duration = Math.max(2800, (distance / targetSpeed) * 1000);
 
       el.style.setProperty("--meteor-len", len + "px");
       el.style.left = start[0] + "px";
