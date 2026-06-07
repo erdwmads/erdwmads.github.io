@@ -10851,3 +10851,19 @@ html {
     max-height: calc(50dvh - 18px) !important;
   }
 }
+
+
+/* ============================================================
+   LOG006 two-photo layout
+   2026-06-01 Epocure 2 resin embedding and demoulding.
+   ============================================================ */
+
+.mission-photo-grid.two-photos {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .mission-photo-grid.two-photos {
+    grid-template-columns: 1fr !important;
+  }
+}
