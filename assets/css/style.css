@@ -10287,19 +10287,23 @@ html:not([data-theme="space"]) .mission-index-mode {
 
 
 /* ============================================================
-   Mobile progress bar + Mission Log image flicker fix
-   Built on Interface 2046 v4 Refinement + Stability Pass.
+   Mobile Mission Log Flicker Fix — preserve visual effects
+   This intentionally does NOT disable mobile background blur, ambient layer,
+   solar system layer, lightbox blur, or glass styling.
+   Root cause targeted:
+   - touch browsers keep :hover/:focus active on image figures;
+   - animated mix-blend scanline over large images + glass cards can make the
+     main content layer disappear/repaint against the fixed asteroid background;
+   - width-based progress repaint can aggravate mobile compositor flicker.
    ============================================================ */
 
-/* Scroll progress now uses transform instead of width.
-   This avoids mobile viewport rounding where the bar stops slightly short. */
+/* Progress bar fix: transform-based progress reaches the exact right edge. */
 .ui2046-progress {
   left: 0 !important;
   right: auto !important;
   width: 100vw !important;
   overflow: hidden !important;
-  transform: translateZ(0) !important;
-  contain: strict !important;
+  contain: paint !important;
 }
 
 .ui2046-progress span {
@@ -10310,136 +10314,124 @@ html:not([data-theme="space"]) .mission-index-mode {
   transition: transform .06s linear !important;
 }
 
-/* Mobile Mission Log flicker fix:
-   On iOS/Android/Chromium mobile, large images + animated/fixed overlays +
-   backdrop-filter can create severe repaint flicker while scrolling.
-   Keep the visual style, but remove the risky live compositor effects only on
-   compact/touch screens. */
-@media (max-width: 900px), (pointer: coarse) {
-  /* Stop animated ambient layers from repainting behind heavy mission photos. */
-  .ambient-space-layer,
-  .ui2046-solar-system {
-    display: none !important;
+/* Desktop/laptop pointer keeps the original Mission Log hover scanline. */
+@media (hover: hover) and (pointer: fine) {
+  .mission-photo-grid figure:hover::after,
+  .mission-photo-grid figure:focus::after {
+    opacity: .72 !important;
+    animation: missionScanline 1.8s linear infinite !important;
+    mix-blend-mode: screen !important;
+  }
+}
+
+/* Touch/mobile: do not remove blur or background effects.
+   Only remove the touch-sticky animated scanline and stabilize layers. */
+@media (hover: none), (pointer: coarse), (max-width: 760px) {
+  html,
+  body {
+    -webkit-text-size-adjust: 100%;
   }
 
-  /* Avoid fixed overlay + filtered card repaint loops on mobile. */
-  html[data-theme="space"] body::after,
-  html[data-theme-space] body::after,
-  body.space-mode::after {
-    opacity: .16 !important;
-    mix-blend-mode: normal !important;
-    transform: none !important;
-    will-change: auto !important;
-  }
-
-  html[data-theme="space"] body::before,
-  html[data-theme-space] body::before,
-  body.space-mode::before {
-    background-attachment: scroll !important;
-    transform: none !important;
-    will-change: auto !important;
-  }
-
-  /* Mission Log entries and photo cards become compositor-stable on mobile. */
-  html[data-theme="space"] .research-note-card,
-  html[data-theme-space] .research-note-card,
-  body.space-mode .research-note-card,
-  html[data-theme="space"] .mission-index-panel,
-  html[data-theme-space] .mission-index-panel,
-  body.space-mode .mission-index-panel,
-  html[data-theme="space"] .mission-photo-grid figure,
-  html[data-theme-space] .mission-photo-grid figure,
-  body.space-mode .mission-photo-grid figure,
-  html[data-theme="space"] .status-card,
-  html[data-theme-space] .status-card,
-  body.space-mode .status-card,
-  html[data-theme="space"] .project-progress > div,
-  html[data-theme-space] .project-progress > div,
-  body.space-mode .project-progress > div {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    transform: none !important;
-    will-change: auto !important;
-    contain: layout paint !important;
+  .site-header,
+  .main,
+  .site-footer {
+    transform: translate3d(0, 0, 0) !important;
+    -webkit-transform: translate3d(0, 0, 0) !important;
     backface-visibility: hidden !important;
-    background:
-      linear-gradient(180deg, rgba(18, 33, 50, .84), rgba(7, 18, 31, .76)) !important;
-    box-shadow:
-      0 14px 34px rgba(0,0,0,.20),
-      0 0 0 1px rgba(255,255,255,.035) inset,
-      inset 0 1px 0 rgba(255,255,255,.11),
-      inset 0 -1px 0 rgba(143,208,255,.050) !important;
+    -webkit-backface-visibility: hidden !important;
   }
 
-  /* The scanline hover/focus layer is desktop-only.
-     On mobile it can stick during touch-scroll and cause very visible flashing. */
-  .mission-photo-grid figure::before,
-  .mission-photo-grid figure::after {
-    content: none !important;
-    display: none !important;
+  body::before,
+  body::after,
+  .ambient-space-layer,
+  .ui2046-layer,
+  .ui2046-progress {
+    transform: translate3d(0, 0, 0) !important;
+    -webkit-transform: translate3d(0, 0, 0) !important;
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+  }
+
+  .research-note-list,
+  .mission-log-list,
+  .mission-log-entry,
+  .mission-photo-grid,
+  .mission-photo-grid figure,
+  .mission-photo-grid img,
+  .mission-photo-grid figcaption {
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+  }
+
+  .mission-log-entry {
+    isolation: isolate !important;
+    contain: layout paint !important;
+    transform: translate3d(0, 0, 0) !important;
+    -webkit-transform: translate3d(0, 0, 0) !important;
+  }
+
+  .mission-photo-grid {
+    isolation: isolate !important;
+    contain: layout paint !important;
+  }
+
+  .mission-photo-grid figure {
+    position: relative !important;
+    isolation: isolate !important;
+    contain: paint !important;
+    transform: translate3d(0, 0, 0) !important;
+    -webkit-transform: translate3d(0, 0, 0) !important;
+    will-change: auto !important;
+  }
+
+  .mission-photo-grid img {
+    display: block !important;
+    transform: translate3d(0, 0, 0) !important;
+    -webkit-transform: translate3d(0, 0, 0) !important;
+    will-change: auto !important;
+  }
+
+  /* This is the actual flicker fix.
+     Touch browsers can keep :hover active while scrolling, which leaves this
+     animated blend layer running over large images. Keep the visual label, but
+     remove the animated blended scanline on touch screens only. */
+  .mission-photo-grid figure::after,
+  .mission-photo-grid figure:hover::after,
+  .mission-photo-grid figure:focus::after,
+  .mission-photo-grid figure:active::after {
     animation: none !important;
-    opacity: 0 !important;
-    background: none !important;
     mix-blend-mode: normal !important;
+    opacity: 0 !important;
+    transition: none !important;
+    background-position: 0 0 !important;
   }
 
   .mission-photo-grid figure:hover,
   .mission-photo-grid figure:focus,
   .mission-photo-grid figure:active {
-    transform: none !important;
-    box-shadow:
-      0 12px 26px rgba(0,0,0,.18),
-      inset 0 1px 0 rgba(255,255,255,.10) !important;
+    transform: translate3d(0, 0, 0) !important;
+    -webkit-transform: translate3d(0, 0, 0) !important;
   }
 
-  .mission-photo-grid img {
-    display: block !important;
-    width: 100% !important;
-    height: auto !important;
+  /* Keep the "Open" label from the original mobile design. */
+  .mission-photo-grid figure::before {
+    opacity: 1 !important;
+    transform: translate3d(0, 0, 0) !important;
+    -webkit-transform: translate3d(0, 0, 0) !important;
+  }
+
+  /* Images keep the same layout; no blur/ambient/background effect is removed. */
+  .mission-log-entry .mission-photo-grid img {
     aspect-ratio: 4 / 3 !important;
     object-fit: cover !important;
-    transform: none !important;
-    will-change: auto !important;
-    backface-visibility: hidden !important;
-    image-rendering: auto !important;
-  }
-
-  .mission-photo-grid {
-    contain: layout paint !important;
-    transform: none !important;
-    will-change: auto !important;
-  }
-
-  .mission-log-list {
-    contain: layout !important;
-  }
-
-  /* Lightbox still opens, but mobile no longer blurs the whole page behind it. */
-  .mission-lightbox {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    background:
-      linear-gradient(180deg, rgba(3, 7, 14, .86), rgba(3, 7, 14, .96)) !important;
-  }
-
-  .mission-lightbox__panel {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    contain: layout paint !important;
   }
 }
 
-@media (max-width: 560px) {
-  .ui2046-progress {
-    height: 2px !important;
-  }
-
+/* Extra Android/Chromium guard:
+   avoid re-rasterising the entire page while the browser address bar changes. */
+@supports (-webkit-touch-callout: none) or (font: -apple-system-body) {
+  .mission-log-entry,
   .mission-photo-grid figure {
-    border-radius: 14px !important;
-  }
-
-  .mission-photo-grid figcaption {
-    font-size: 10.5px !important;
-    line-height: 1.35 !important;
+    -webkit-transform: translate3d(0, 0, 0) !important;
   }
 }
