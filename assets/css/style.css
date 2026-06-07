@@ -13086,3 +13086,35 @@ html:not([data-theme="space"]) .mission-jump-log {
       inset 0 1px 0 rgba(255,255,255,.09) !important;
   }
 }
+
+
+/* ============================================================
+   Light-mode badge contrast rescue
+   Fix: "Ongoing" and similar metadata pills were too pale on light cards.
+   Scope: visual contrast only; no layout/size change.
+   ============================================================ */
+html:not([data-theme="space"]) .status-badge,
+html:not([data-theme="space"]) .pill,
+html:not([data-theme="space"]) .badge,
+html:not([data-theme="space"]) .project-tags span,
+html:not([data-theme="space"]) .hero-tags span,
+html:not([data-theme="space"]) .research-tags span,
+html:not([data-theme="space"]) .log-tags span,
+html:not([data-theme="space"]) .paper-status {
+  color: #1f6ea3 !important;
+  border-color: rgba(31,110,163,.22) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.93), rgba(234,242,248,.84)),
+    linear-gradient(90deg, rgba(31,110,163,.08), rgba(174,111,28,.04)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.82),
+    inset 0 -1px 0 rgba(31,110,163,.05),
+    0 8px 20px rgba(32,70,103,.045) !important;
+  text-shadow: none !important;
+}
+
+html:not([data-theme="space"]) .status-badge,
+html:not([data-theme="space"]) .pill,
+html:not([data-theme="space"]) .badge {
+  font-weight: 700 !important;
+}
