@@ -10554,17 +10554,30 @@ html {
 
 
 /* ============================================================
-   Mobile Mission Image Pipeline Fix
-   Method change:
-   - Do not fight flicker by hiding effects.
-   - Reduce image decode/raster pressure around LOG002 and lightbox opening.
-   - Keep mobile blur, ambient field, solar-system layer, glass cards,
-     and lightbox blur.
+   Mobile Mission True Lazy Image Fix
+   Different method from previous attempts:
+   - Do not alter background/blur/ambient effects.
+   - Prevent mobile flicker by stopping heavy Mission Log images from loading
+     and decoding during scroll.
+   - Mobile grid images load after scroll settles, one by one.
    ============================================================ */
 
+.mission-photo-grid figure.is-lazy-pending,
+.mission-photo-grid figure.is-lazy-loading {
+  background:
+    linear-gradient(180deg, rgba(18, 33, 50, .76), rgba(7, 18, 31, .66)) !important;
+}
+
+.mission-photo-grid img.mission-lazy-img {
+  background:
+    linear-gradient(180deg, rgba(18, 33, 50, .76), rgba(7, 18, 31, .66)) !important;
+}
+
+.mission-photo-grid figure.is-lazy-loaded img.mission-lazy-img {
+  background: transparent !important;
+}
+
 @media (hover: none), (pointer: coarse), (max-width: 760px) {
-  /* Reserve a stable image box before image decoding finishes.
-     This prevents large layout/raster jumps around LOG002. */
   .mission-photo-grid figure {
     aspect-ratio: 4 / 3 !important;
     overflow: hidden !important;
@@ -10575,6 +10588,7 @@ html {
     will-change: auto !important;
   }
 
+  .mission-photo-grid img.mission-lazy-img,
   .mission-photo-grid img {
     width: 100% !important;
     height: 100% !important;
@@ -10586,9 +10600,7 @@ html {
     will-change: auto !important;
   }
 
-  /* Touch browsers can keep hover/focus state during scrolling.
-     Remove only the animated blended scanline; keep the OPEN chip and all
-     page background/blur effects. */
+  /* Keep the OPEN chip; remove only touch-sticky animated scanline. */
   .mission-photo-grid figure::after,
   .mission-photo-grid figure:hover::after,
   .mission-photo-grid figure:focus::after,
@@ -10607,195 +10619,20 @@ html {
     -webkit-transform: none !important;
   }
 
-  /* The lightbox remains glass/blurred, but opening no longer animates opacity
-     on top of many full-size thumbnail decodes. */
-  .mission-lightbox {
-    transition: visibility .01s linear !important;
-    will-change: auto !important;
-  }
-
-  .mission-lightbox.is-open {
-    opacity: 1 !important;
-    visibility: visible !important;
-  }
-
-  .mission-lightbox__img,
-  .mission-lightbox__image,
-  .mission-lightbox__thumb img {
-    transform: none !important;
-    -webkit-transform: none !important;
-    will-change: auto !important;
-    backface-visibility: visible !important;
-    -webkit-backface-visibility: visible !important;
-  }
-
-  .mission-lightbox__thumb,
-  .mission-lightbox__thumb:hover,
-  .mission-lightbox__thumb:focus,
-  .mission-lightbox__thumb:active {
-    transform: none !important;
-    -webkit-transform: none !important;
-    will-change: auto !important;
+  /* While the JS loader is decoding a real mission image, do not animate or
+     transition the figure. This avoids the LOG002 blinking pattern. */
+  body.mission-image-loading .mission-photo-grid figure,
+  body.mission-image-loading .mission-photo-grid img {
+    transition: none !important;
+    animation-play-state: paused !important;
   }
 }
 
-/* While a large Mission image is being decoded, keep the stage visually stable.
-   This class is controlled by mission-lightbox.js and disappears after decode. */
+/* Lightbox decode state: preserve layout while the selected image decodes. */
 .mission-lightbox__img.is-decoding {
   opacity: .001 !important;
 }
 
 .mission-lightbox__img.is-ready {
   opacity: 1 !important;
-}
-
-
-/* ============================================================
-   Mobile Real Background Layer Fix
-   New method after compositor/image-pipeline attempts:
-   - On touch/mobile, replace body::before/body::after fixed pseudo layers
-     with real fixed DOM layers.
-   - This preserves the same visual background/HUD, but avoids a known mobile
-     WebView/Chromium instability with fixed pseudo-elements behind large image
-     grids and backdrop-filter cards.
-   - No background blur, ambient layer, solar system layer, glass cards, or
-     lightbox blur is removed.
-   ============================================================ */
-
-/* Default: injected layers stay inert unless mobile/touch rules activate them. */
-.mobile-fixed-bg,
-.mobile-fixed-hud {
-  display: none;
-}
-
-@media (hover: none), (pointer: coarse), (max-width: 760px) {
-  /* The original fixed pseudo-layers are replaced by real fixed layers below.
-     This should look the same, but it changes the compositor path. */
-  body::before,
-  body::after {
-    content: none !important;
-    display: none !important;
-  }
-
-  .mobile-fixed-bg,
-  .mobile-fixed-hud {
-    display: block !important;
-    position: fixed !important;
-    inset: 0 !important;
-    pointer-events: none !important;
-    transform: none !important;
-    -webkit-transform: none !important;
-    will-change: auto !important;
-    backface-visibility: hidden !important;
-    -webkit-backface-visibility: hidden !important;
-  }
-
-  .mobile-fixed-bg {
-    z-index: 0 !important;
-    background-image: url("../img/asteroid-bennu.jpg") !important;
-    background-size: cover !important;
-    background-position: center center !important;
-    background-repeat: no-repeat !important;
-    opacity: .20 !important;
-  }
-
-  html[data-theme="space"] .mobile-fixed-bg,
-  html[data-theme-space] .mobile-fixed-bg,
-  body.space-mode .mobile-fixed-bg {
-    opacity: .30 !important;
-    filter: grayscale(.10) contrast(1.06) brightness(.70) !important;
-  }
-
-  .mobile-fixed-hud {
-    z-index: 0 !important;
-    background:
-      radial-gradient(circle at 12% 22%, rgba(143,208,255,.12), transparent 28rem),
-      radial-gradient(circle at 88% 18%, rgba(255,217,154,.075), transparent 24rem),
-      radial-gradient(circle at 76% 78%, rgba(143,208,255,.08), transparent 26rem),
-      linear-gradient(90deg, rgba(143,208,255,.055) 1px, transparent 1px),
-      linear-gradient(0deg, rgba(143,208,255,.045) 1px, transparent 1px) !important;
-    background-size: auto, auto, auto, 96px 96px, 96px 96px !important;
-    opacity: .24 !important;
-    mix-blend-mode: normal !important;
-  }
-
-  html:not([data-theme="space"]) .mobile-fixed-hud {
-    background:
-      linear-gradient(90deg, rgba(35, 83, 122, .045) 1px, transparent 1px),
-      linear-gradient(0deg, rgba(35, 83, 122, .040) 1px, transparent 1px) !important;
-    background-size: 88px 88px, 88px 88px !important;
-    opacity: .22 !important;
-    mix-blend-mode: normal !important;
-  }
-
-  .site-header,
-  .main,
-  .site-footer {
-    position: relative !important;
-    z-index: 3 !important;
-  }
-
-  .ambient-space-layer {
-    z-index: 1 !important;
-  }
-
-  /* Keep Mission Log image zones stable, but do not hide effects. */
-  .mission-log-entry,
-  .mission-photo-grid,
-  .mission-photo-grid figure {
-    contain: layout paint style !important;
-    isolation: isolate !important;
-    transform: none !important;
-    -webkit-transform: none !important;
-    will-change: auto !important;
-  }
-
-  .mission-photo-grid figure {
-    aspect-ratio: 4 / 3 !important;
-    overflow: hidden !important;
-  }
-
-  .mission-photo-grid img {
-    width: 100% !important;
-    height: 100% !important;
-    aspect-ratio: 4 / 3 !important;
-    object-fit: cover !important;
-    display: block !important;
-    transform: none !important;
-    -webkit-transform: none !important;
-    will-change: auto !important;
-  }
-
-  .mission-photo-grid figure::after,
-  .mission-photo-grid figure:hover::after,
-  .mission-photo-grid figure:focus::after,
-  .mission-photo-grid figure:active::after {
-    animation: none !important;
-    mix-blend-mode: normal !important;
-    opacity: 0 !important;
-    transition: none !important;
-    background: none !important;
-  }
-
-  /* Do not animate lightbox opacity on mobile. Blur/glass remains. */
-  .mission-lightbox {
-    transition: visibility .01s linear !important;
-    will-change: auto !important;
-  }
-
-  .mission-lightbox.is-open {
-    opacity: 1 !important;
-    visibility: visible !important;
-  }
-
-  .mission-lightbox__panel,
-  .mission-lightbox__stage,
-  .mission-lightbox__img,
-  .mission-lightbox__thumbs,
-  .mission-lightbox__thumb {
-    contain: layout paint style !important;
-    transform: none !important;
-    -webkit-transform: none !important;
-    will-change: auto !important;
-  }
 }

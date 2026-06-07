@@ -4,33 +4,91 @@
 
   const isTouch = window.matchMedia('(hover: none), (pointer: coarse), (max-width: 760px)').matches;
   const idle = window.requestIdleCallback || ((callback) => window.setTimeout(callback, 180));
+  const placeholderPrefix = 'data:image/svg+xml';
 
-  const decodeQueue = new Set();
+  let isScrolling = false;
+  let scrollTimer = 0;
+  let activeLoader = false;
+  const loadQueue = [];
+  const queued = new Set();
 
-  function prepareImage(img, priority = 'low') {
-    if (!img) return;
-    img.loading = priority === 'high' ? 'eager' : 'lazy';
-    img.decoding = 'async';
-    try {
-      img.fetchPriority = priority;
-    } catch (error) {
-      // fetchPriority is not supported everywhere.
-    }
+  function originalSrc(img) {
+    return img?.dataset?.src || img?.currentSrc || img?.src || '';
   }
 
-  function decodeSoon(img) {
-    if (!img || decodeQueue.has(img)) return;
-    decodeQueue.add(img);
-    idle(() => {
-      if (!img.complete && img.loading === 'lazy') {
-        // Keep browser lazy loading policy; do not force network eagerly.
-      }
+  function isPlaceholder(img) {
+    return !!img && img.src && img.src.startsWith(placeholderPrefix);
+  }
+
+  function markFigure(figure, state) {
+    figure.classList.remove('is-lazy-pending', 'is-lazy-loading', 'is-lazy-loaded');
+    if (state) figure.classList.add(state);
+  }
+
+  function queueImage(item, priority = false) {
+    if (!item?.img || !item.src || item.loaded || queued.has(item)) return;
+    queued.add(item);
+    if (priority) loadQueue.unshift(item);
+    else loadQueue.push(item);
+    scheduleQueue();
+  }
+
+  function scheduleQueue() {
+    if (activeLoader) return;
+    const delay = isTouch && isScrolling ? 240 : 40;
+    window.setTimeout(processQueue, delay);
+  }
+
+  function processQueue() {
+    if (activeLoader) return;
+    if (isTouch && isScrolling) {
+      scheduleQueue();
+      return;
+    }
+
+    const item = loadQueue.shift();
+    if (!item) return;
+
+    activeLoader = true;
+    document.body.classList.add('mission-image-loading');
+    markFigure(item.figure, 'is-lazy-loading');
+
+    const img = item.img;
+    const finish = () => {
+      item.loaded = true;
+      queued.delete(item);
+      markFigure(item.figure, 'is-lazy-loaded');
+      document.body.classList.remove('mission-image-loading');
+      activeLoader = false;
+      if (loadQueue.length) scheduleQueue();
+    };
+
+    const fail = () => {
+      queued.delete(item);
+      markFigure(item.figure, 'is-lazy-pending');
+      document.body.classList.remove('mission-image-loading');
+      activeLoader = false;
+      if (loadQueue.length) scheduleQueue();
+    };
+
+    img.onload = finish;
+    img.onerror = fail;
+
+    img.loading = priority === 'high' ? 'eager' : 'lazy';
+    img.decoding = 'async';
+    try { img.fetchPriority = 'low'; } catch (error) {}
+
+    if (img.src !== item.src) {
+      img.src = item.src;
+    }
+
+    if (img.complete && !isPlaceholder(img)) {
       if (typeof img.decode === 'function') {
-        img.decode().catch(() => {}).finally(() => decodeQueue.delete(img));
+        img.decode().then(finish).catch(finish);
       } else {
-        decodeQueue.delete(img);
+        finish();
       }
-    });
+    }
   }
 
   const items = figures.map((figure, index) => {
@@ -40,8 +98,15 @@
     const title = entry?.querySelector('h3')?.textContent?.trim() || 'Mission Log';
     const kicker = entry?.querySelector('.mission-entry-kicker')?.textContent?.trim() || 'Mission Image Viewer';
     const caption = captionEl?.textContent?.trim() || img?.alt || `Image ${index + 1}`;
+    const src = originalSrc(img);
 
-    prepareImage(img, index < 1 ? 'auto' : 'low');
+    if (isTouch && img && src && isPlaceholder(img)) {
+      markFigure(figure, 'is-lazy-pending');
+    } else if (img && src) {
+      // Desktop: restore original image immediately to preserve normal behavior.
+      if (img.dataset?.src && img.src !== src) img.src = src;
+      markFigure(figure, 'is-lazy-loaded');
+    }
 
     figure.setAttribute('tabindex', '0');
     figure.setAttribute('role', 'button');
@@ -50,29 +115,44 @@
     return {
       figure,
       img,
-      src: img?.currentSrc || img?.src,
+      src,
       alt: img?.alt || caption,
       caption,
       title,
-      kicker
+      kicker,
+      loaded: !isTouch || (img && !isPlaceholder(img))
     };
   }).filter(item => item.src);
 
-  /* Pre-decode images shortly before they enter the viewport.
-     This targets LOG002/LOG003 flicker without changing visual effects. */
+  // Track scroll idle; heavy image loads happen after scrolling settles.
+  if (isTouch) {
+    window.addEventListener('scroll', () => {
+      isScrolling = true;
+      window.clearTimeout(scrollTimer);
+      scrollTimer = window.setTimeout(() => {
+        isScrolling = false;
+        scheduleQueue();
+      }, 180);
+    }, { passive: true });
+  }
+
+  // Queue only images close to the viewport, and load them sequentially.
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
-        const img = entry.target.querySelector('img');
-        decodeSoon(img);
-        observer.unobserve(entry.target);
+        const item = items.find(candidate => candidate.figure === entry.target);
+        if (item) queueImage(item);
       });
-    }, { root: null, rootMargin: isTouch ? '900px 0px' : '500px 0px', threshold: 0.01 });
+    }, {
+      root: null,
+      rootMargin: isTouch ? '220px 0px 220px 0px' : '600px 0px',
+      threshold: 0.01
+    });
 
-    figures.forEach((figure) => observer.observe(figure));
+    items.forEach(item => observer.observe(item.figure));
   } else {
-    idle(() => items.forEach(item => decodeSoon(item.img)));
+    idle(() => items.forEach(item => queueImage(item)));
   }
 
   const overlay = document.createElement('div');
@@ -151,8 +231,7 @@
   function hydrateNearbyThumbs(index) {
     const span = isTouch ? 1 : 3;
     for (let i = index - span; i <= index + span; i += 1) {
-      const wrapped = (i + thumbs.length) % thumbs.length;
-      hydrateThumb(wrapped);
+      hydrateThumb((i + thumbs.length) % thumbs.length);
     }
   }
 
@@ -169,10 +248,9 @@
     imgEl.classList.remove('is-ready');
     imgEl.classList.add('is-decoding');
 
-    if (imgEl.src !== item.src) {
-      imgEl.src = item.src;
-    }
+    if (imgEl.src !== item.src) imgEl.src = item.src;
     imgEl.alt = item.alt;
+
     kickerEl.textContent = item.kicker;
     titleEl.textContent = item.title;
     captionEl.textContent = item.caption;
@@ -205,20 +283,21 @@
 
   function open(index) {
     lastFocus = document.activeElement;
-    document.body.classList.add('mission-lightbox-open', 'mission-lightbox-raster-open', 'mission-lightbox-mobile-open');
+    document.body.classList.add('mission-lightbox-open', 'mission-lightbox-mobile-open');
+
+    // Prioritize the tapped image for page grid replacement too, but do not wait.
+    queueImage(items[index], true);
 
     show(index);
     overlay.classList.add('is-open');
 
-    // Delay non-nearby thumbnail hydration until after the viewer is open.
-    window.setTimeout(hydrateRemainingThumbs, isTouch ? 850 : 250);
-
+    window.setTimeout(hydrateRemainingThumbs, isTouch ? 900 : 250);
     closeBtn.focus({ preventScroll: true });
   }
 
   function close() {
     overlay.classList.remove('is-open');
-    document.body.classList.remove('mission-lightbox-open', 'mission-lightbox-raster-open', 'mission-lightbox-mobile-open');
+    document.body.classList.remove('mission-lightbox-open', 'mission-lightbox-mobile-open');
     if (lastFocus && typeof lastFocus.focus === 'function') {
       lastFocus.focus({ preventScroll: true });
     }
@@ -251,7 +330,6 @@
 
   document.addEventListener('keydown', (event) => {
     if (!overlay.classList.contains('is-open')) return;
-
     if (event.key === 'Escape') close();
     if (event.key === 'ArrowRight') next();
     if (event.key === 'ArrowLeft') prev();
