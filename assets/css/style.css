@@ -14873,3 +14873,66 @@ html[data-theme="space"] .nav a[aria-current="page"] {
     0 0 22px rgba(244,217,152,.085),
     inset 0 1px 0 rgba(255,255,255,.10) !important;
 }
+
+
+/* ------------------------------------------------------------
+   Direction B meteor continuity safeguard
+   - keep non-gold meteors permanently white/blue
+   - prevent nth-child reindexing from making a meteor turn gold or white
+   - gold meteors are now controlled only by the stable .is-gold-meteor class
+   ------------------------------------------------------------ */
+html[data-theme="space"] .ambient-space-layer .ambient-meteor:not(.is-gold-meteor),
+html[data-theme="space"] .ambient-space-layer .ambient-meteor:not(.is-gold-meteor).is-flying,
+html[data-theme-space] .ambient-space-layer .ambient-meteor:not(.is-gold-meteor),
+html[data-theme-space] .ambient-space-layer .ambient-meteor:not(.is-gold-meteor).is-flying,
+body.space-mode .ambient-space-layer .ambient-meteor:not(.is-gold-meteor),
+body.space-mode .ambient-space-layer .ambient-meteor:not(.is-gold-meteor).is-flying {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0) 0%,
+    rgba(160,210,255,.18) 18%,
+    rgba(216,238,255,.84) 68%,
+    rgba(255,255,255,1) 100%
+  ) !important;
+  filter: drop-shadow(0 0 8px rgba(190, 230, 255, .72)) !important;
+}
+
+html[data-theme="space"] .ambient-space-layer .ambient-meteor:not(.is-gold-meteor)::after,
+html[data-theme-space] .ambient-space-layer .ambient-meteor:not(.is-gold-meteor)::after,
+body.space-mode .ambient-space-layer .ambient-meteor:not(.is-gold-meteor)::after {
+  background: rgba(255,255,255,1) !important;
+  box-shadow:
+    0 0 10px rgba(230,245,255,.95),
+    0 0 22px rgba(160,215,255,.55) !important;
+}
+
+
+/* ------------------------------------------------------------
+   Direction B pebble continuity fix
+   Fixes small meteorites / pebbles disappearing too quickly.
+   They now drift more slowly and remain visible through the animation cycle.
+   ------------------------------------------------------------ */
+
+html[data-theme="space"] .ambient-pebble,
+html[data-theme-space] .ambient-pebble,
+body.space-mode .ambient-pebble {
+  opacity: var(--pebble-opacity, .66) !important;
+  animation-duration: var(--pebble-duration, 72s) !important;
+}
+
+@keyframes ambientPebbleMove {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: calc(var(--pebble-opacity, .66) * .72);
+  }
+  10% {
+    opacity: var(--pebble-opacity, .66);
+  }
+  88% {
+    opacity: calc(var(--pebble-opacity, .66) * .92);
+  }
+  100% {
+    transform: translate3d(var(--pebble-x, 90px), var(--pebble-y, 70px), 0) rotate(var(--pebble-rotate, 220deg));
+    opacity: calc(var(--pebble-opacity, .66) * .70);
+  }
+}
