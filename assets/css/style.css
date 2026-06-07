@@ -11350,3 +11350,51 @@ body.ui-page-research-graduation #mission-index > .mission-index-panel {
     max-width: none !important;
   }
 }
+
+
+/* ============================================================
+   Mission Navigator Force Five Desktop Fix
+   The previous row system used cards that were too wide for this panel width,
+   so the browser wrapped after four items. This keeps the future-proof flex
+   row system, but uses a slimmer fixed item width/gap so five items fit on
+   the first desktop row.
+   ============================================================ */
+
+@media (min-width: 1180px) {
+  body.ui-page-research-graduation #mission-index .mission-jump-grid.compact-mission-jump-grid,
+  body.ui-page-research-graduation #mission-index .mission-jump-grid {
+    --mission-nav-item-width: clamp(148px, 8.6vw, 170px) !important;
+    --mission-nav-column-gap: clamp(24px, 2.2vw, 38px) !important;
+    --mission-nav-row-gap: 18px !important;
+
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-content: flex-start !important;
+    align-items: flex-start !important;
+
+    width: 100% !important;
+    max-width: calc((var(--mission-nav-item-width) * 5) + (var(--mission-nav-column-gap) * 4)) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    column-gap: var(--mission-nav-column-gap) !important;
+    row-gap: var(--mission-nav-row-gap) !important;
+  }
+
+  body.ui-page-research-graduation #mission-index .mission-jump-card.compact-jump-card,
+  body.ui-page-research-graduation #mission-index .mission-jump-card {
+    flex: 0 0 var(--mission-nav-item-width) !important;
+    width: var(--mission-nav-item-width) !important;
+    min-width: var(--mission-nav-item-width) !important;
+    max-width: var(--mission-nav-item-width) !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    box-sizing: border-box !important;
+  }
+
+  body.ui-page-research-graduation #mission-index .mission-jump-meta {
+    font-size: 10.5px !important;
+    letter-spacing: .015em !important;
+    white-space: nowrap !important;
+  }
+}
