@@ -11236,3 +11236,25 @@ body.ui-page-research-graduation #mission-index > .mission-index-panel {
     margin-top: 0 !important;
   }
 }
+
+
+/* ============================================================
+   Mission Navigator Chronological Order Guard
+   Navigator order is chronological: LOG001 → LOG006.
+   Desktop keeps five items in the first row and centers the sixth below.
+   ============================================================ */
+
+@media (min-width: 1180px) {
+  body.ui-page-research-graduation #mission-index .mission-jump-grid.compact-mission-jump-grid,
+  body.ui-page-research-graduation #mission-index .mission-jump-grid {
+    display: grid !important;
+    grid-template-columns: repeat(5, max-content) !important;
+    justify-content: center !important;
+    justify-items: start !important;
+    align-items: start !important;
+  }
+
+  body.ui-page-research-graduation #mission-index .mission-jump-card:nth-child(6):last-child {
+    grid-column: 3 !important;
+  }
+}
