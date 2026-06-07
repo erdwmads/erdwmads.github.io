@@ -12242,3 +12242,110 @@ body.entry-gate-active > .ui2046-progress {
     transform: none !important;
   }
 }
+
+
+/* ============================================================
+   Entry Gate V2 Visibility + Balance Fix
+   Problem:
+   - V2 hid the split-name spans at opacity:0 and relied on animation.
+   - On some browsers / timing states this leaves a large empty area where
+     MADS LIU YONG should appear.
+   Fix:
+   - The identity line is visible by default.
+   - Animation becomes a subtle visible movement, not a hidden-to-visible risk.
+   - Card spacing is rebalanced so the entrance screen no longer looks empty.
+   ============================================================ */
+
+.entry-gate__panel {
+  display: grid !important;
+  grid-template-rows: auto auto auto auto auto auto !important;
+  align-content: start !important;
+  min-height: 0 !important;
+}
+
+.entry-gate__topline {
+  margin-bottom: clamp(22px, 3vw, 32px) !important;
+}
+
+.entry-gate__name {
+  display: grid !important;
+  gap: .08em !important;
+  margin: 0 !important;
+  max-width: 100% !important;
+  color: rgba(244,250,255,.99) !important;
+  font-size: clamp(48px, 7.1vw, 76px) !important;
+  line-height: .88 !important;
+  letter-spacing: .030em !important;
+  font-weight: 880 !important;
+  text-shadow:
+    0 0 28px rgba(143,208,255,.10),
+    0 1px 0 rgba(255,255,255,.10) !important;
+}
+
+.entry-gate__name span {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  color: inherit !important;
+  transform: translateY(0) !important;
+  animation: entryGateNameBreath .72s cubic-bezier(.2,.8,.2,1) both !important;
+}
+
+.entry-gate__name span:nth-child(2) {
+  animation-delay: .08s !important;
+}
+
+.entry-gate__archive {
+  margin-top: clamp(20px, 2.2vw, 28px) !important;
+}
+
+.entry-gate__meta {
+  margin-top: clamp(24px, 2.8vw, 32px) !important;
+}
+
+.entry-gate__sequence {
+  margin-top: clamp(22px, 2.6vw, 30px) !important;
+}
+
+.entry-gate__line {
+  margin-top: clamp(28px, 3.2vw, 38px) !important;
+  margin-bottom: 18px !important;
+}
+
+@keyframes entryGateNameBreath {
+  from {
+    opacity: .72;
+    transform: translateY(8px);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@media (max-width: 760px) {
+  .entry-gate__name {
+    font-size: clamp(38px, 11.5vw, 54px) !important;
+    line-height: .92 !important;
+  }
+
+  .entry-gate__topline {
+    margin-bottom: 18px !important;
+  }
+
+  .entry-gate__archive {
+    margin-top: 18px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entry-gate__name span {
+    animation: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
