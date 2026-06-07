@@ -12349,3 +12349,150 @@ body.entry-gate-active > .ui2046-progress {
     filter: none !important;
   }
 }
+
+
+/* ============================================================
+   Entry Gate Gold Accent Preview
+   Scope:
+   - Entry screen only.
+   - Adds restrained gold / meteoritic-brass accents to test whether the
+     language should later be applied across the full site.
+   ============================================================ */
+
+.entry-gate {
+  --entry-gold: rgba(255, 211, 128, .92);
+  --entry-gold-soft: rgba(255, 211, 128, .20);
+  --entry-gold-faint: rgba(255, 211, 128, .075);
+  --entry-blue: rgba(143, 208, 255, .88);
+}
+
+.entry-gate__panel {
+  border-color: rgba(255, 211, 128, .20) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.040)),
+    radial-gradient(circle at 18% 14%, rgba(143,208,255,.11), transparent 32%),
+    radial-gradient(circle at 84% 16%, rgba(255,211,128,.105), transparent 34%),
+    radial-gradient(circle at 86% 86%, rgba(255,211,128,.070), transparent 34%),
+    rgba(6, 14, 25, .64) !important;
+  box-shadow:
+    0 42px 120px rgba(0,0,0,.50),
+    0 0 42px rgba(255,211,128,.055),
+    0 0 0 1px rgba(255,255,255,.034) inset,
+    inset 0 1px 0 rgba(255,255,255,.16),
+    inset 0 -1px 0 rgba(255,211,128,.10) !important;
+}
+
+.entry-gate__kicker {
+  color: rgba(255, 211, 128, .84) !important;
+}
+
+.entry-gate__code,
+.entry-gate__status {
+  color: rgba(255, 211, 128, .82) !important;
+  text-shadow: 0 0 18px rgba(255,211,128,.16) !important;
+}
+
+.entry-gate__name {
+  color: transparent !important;
+  background:
+    linear-gradient(105deg,
+      rgba(244,250,255,.98) 0%,
+      rgba(244,250,255,.98) 46%,
+      rgba(255,224,156,.96) 58%,
+      rgba(244,250,255,.98) 74%,
+      rgba(220,237,255,.96) 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  text-shadow: none !important;
+  filter:
+    drop-shadow(0 0 22px rgba(143,208,255,.055))
+    drop-shadow(0 0 20px rgba(255,211,128,.035)) !important;
+}
+
+.entry-gate__archive {
+  color: rgba(225, 235, 243, .80) !important;
+}
+
+.entry-gate__meta span {
+  border-color: rgba(255,211,128,.22) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.030)),
+    linear-gradient(90deg, rgba(143,208,255,.070), rgba(255,211,128,.055)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.13),
+    inset 0 -1px 0 rgba(255,211,128,.060),
+    0 0 16px rgba(255,211,128,.035) !important;
+}
+
+.entry-gate__sequence span {
+  border-color: rgba(255,211,128,.16) !important;
+  background:
+    linear-gradient(180deg, rgba(255,211,128,.060), rgba(255,255,255,.018)),
+    linear-gradient(90deg, rgba(143,208,255,.050), transparent) !important;
+  color: rgba(224, 236, 246, .78) !important;
+}
+
+.entry-gate__sequence span:nth-child(2) {
+  border-color: rgba(255,211,128,.26) !important;
+  color: rgba(255, 224, 156, .86) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 0 20px rgba(255,211,128,.055) !important;
+}
+
+.entry-gate__line {
+  background:
+    linear-gradient(90deg,
+      rgba(143,208,255,.10),
+      rgba(255,211,128,.16),
+      rgba(143,208,255,.10)) !important;
+}
+
+.entry-gate__line::before {
+  background:
+    linear-gradient(90deg,
+      transparent,
+      rgba(143,208,255,.76),
+      rgba(255,211,128,.96),
+      rgba(255,234,185,.70),
+      transparent) !important;
+  box-shadow:
+    0 0 14px rgba(255,211,128,.22),
+    0 0 28px rgba(143,208,255,.12) !important;
+}
+
+.entry-gate__corner.is-tl {
+  border-left-color: rgba(143,208,255,.34) !important;
+  border-top-color: rgba(255,211,128,.34) !important;
+}
+
+.entry-gate__corner.is-br {
+  border-right-color: rgba(255,211,128,.34) !important;
+  border-bottom-color: rgba(143,208,255,.26) !important;
+}
+
+.entry-gate__orbit span:nth-child(2) {
+  border-color: rgba(255,211,128,.16) !important;
+  box-shadow:
+    0 0 38px rgba(255,211,128,.040) inset,
+    0 0 34px rgba(255,211,128,.035) !important;
+}
+
+.entry-gate__constellation span {
+  background: rgba(255, 230, 174, .94) !important;
+  box-shadow:
+    0 0 10px rgba(255,211,128,.48),
+    0 0 24px rgba(255,211,128,.18) !important;
+}
+
+.entry-gate__constellation span::after {
+  background:
+    linear-gradient(90deg, rgba(255,211,128,.28), rgba(143,208,255,.14), transparent) !important;
+}
+
+.entry-gate__mode::before {
+  content: "◆";
+  color: rgba(255,211,128,.80);
+  margin-right: .75em;
+  text-shadow: 0 0 12px rgba(255,211,128,.24);
+}
