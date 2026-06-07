@@ -14022,3 +14022,369 @@ html:not([data-theme="space"]) .mission-card-badge {
       inset 0 -1px 0 rgba(255,211,128,.075) !important;
   }
 }
+
+
+/* ============================================================
+   Header Overflow + 6/3/1 Gold Ratio Fix
+   User-facing goals:
+   1. Header navigation must not protrude at small desktop widths or 125% zoom.
+   2. Sitewide gold follows a 6/3/1 visual ratio:
+      60% dark/light base, 30% blue/cool archive glass, 10% gold signal.
+   3. Light Mode gold becomes muted champagne, not brown/tacky gold.
+   Scope:
+   - CSS only.
+   - No layout logic changes.
+   - No Mission Log / Navigator / Paper Shelf / lightbox / entry timing changes.
+   ============================================================ */
+
+/* ---------- A. Header overflow hardening ---------- */
+
+.site-header {
+  overflow-x: clip !important;
+}
+
+.header-inner {
+  box-sizing: border-box !important;
+  width: min(var(--max), calc(100vw - 48px)) !important;
+  max-width: calc(100vw - 48px) !important;
+  min-width: 0 !important;
+}
+
+.brand {
+  min-width: 0 !important;
+  flex: 1 1 220px !important;
+  max-width: min(34vw, 360px) !important;
+}
+
+.brand span {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.nav {
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  flex: 0 1 auto !important;
+  flex-wrap: wrap !important;
+  overflow: visible !important;
+  gap: clamp(5px, .62vw, 10px) !important;
+  padding: clamp(6px, .72vw, 10px) !important;
+}
+
+.nav a,
+.theme-toggle {
+  box-sizing: border-box !important;
+  flex: 0 1 auto !important;
+  min-width: 0 !important;
+  white-space: nowrap !important;
+}
+
+.nav a {
+  padding-left: clamp(8px, .72vw, 14px) !important;
+  padding-right: clamp(8px, .72vw, 14px) !important;
+  font-size: clamp(11.5px, .82vw, 13.5px) !important;
+  letter-spacing: .025em !important;
+}
+
+.theme-toggle {
+  width: auto !important;
+  min-width: clamp(104px, 8.2vw, 132px) !important;
+  padding-left: clamp(10px, .9vw, 18px) !important;
+  padding-right: clamp(10px, .9vw, 18px) !important;
+  font-size: clamp(11.5px, .82vw, 13.5px) !important;
+}
+
+/* At medium desktop widths / 125% zoom, use a clean second-row dock
+   instead of squeezing the nav past the viewport. */
+@media (min-width: 761px) and (max-width: 1320px) {
+  .header-inner {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: center !important;
+    gap: 14px !important;
+    width: min(100%, calc(100vw - 48px)) !important;
+    max-width: calc(100vw - 48px) !important;
+  }
+
+  .brand {
+    align-self: flex-start !important;
+    max-width: min(620px, 100%) !important;
+    flex: 0 1 auto !important;
+  }
+
+  .nav {
+    align-self: center !important;
+    justify-content: center !important;
+    width: min(100%, 980px) !important;
+    max-width: 100% !important;
+  }
+}
+
+/* Extra guard for narrow desktop but before mobile layout. */
+@media (min-width: 761px) and (max-width: 1040px) {
+  .nav {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+  }
+
+  .nav a,
+  .theme-toggle {
+    width: 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .theme-toggle {
+    min-width: 0 !important;
+  }
+}
+
+/* ---------- B. 6/3/1 gold ratio: cool archive base, gold as signal ---------- */
+
+:root {
+  --mads-gold: rgba(226, 190, 112, .78);
+  --mads-gold-strong: rgba(242, 210, 145, .86);
+  --mads-gold-soft: rgba(226, 190, 112, .16);
+  --mads-gold-line: rgba(226, 190, 112, .22);
+  --mads-gold-faint: rgba(226, 190, 112, .050);
+}
+
+/* Labels return to blue-white; gold lives in the signal dot and underline. */
+.eyebrow,
+.section-label,
+.project-sync-note::before {
+  color: rgba(178, 214, 240, .92) !important;
+  text-shadow:
+    0 0 16px rgba(143,208,255,.13),
+    0 0 10px rgba(226,190,112,.045) !important;
+}
+
+.eyebrow::before,
+.section-label::before {
+  background:
+    radial-gradient(circle, rgba(242,220,166,.96), rgba(226,190,112,.76) 48%, transparent 74%) !important;
+  box-shadow:
+    0 0 9px rgba(226,190,112,.30),
+    0 0 18px rgba(226,190,112,.10) !important;
+}
+
+/* Headings stay light/cool; gold is not the main text colour. */
+h1,
+.hero h1,
+.page-title,
+h2,
+h3,
+.card h3,
+.paper-card h3,
+.project-link-card h3,
+.research-note-card h3,
+.mission-log-entry h3 {
+  color: rgba(238, 247, 255, .965) !important;
+  text-shadow:
+    0 0 22px rgba(143,208,255,.075),
+    0 0 12px rgba(226,190,112,.032) !important;
+}
+
+/* Cards: reduce previous trial's gold from decorative mass to edge signal. */
+.card,
+.hero-card,
+.callout,
+.focus-card,
+.status-card,
+.project-link-card,
+.paper-card,
+.research-note-card,
+.cv-edu-card,
+.contact-card,
+.affiliation-card,
+.mission-index-panel,
+.mission-log-entry,
+.mission-log-panel,
+.photo-card {
+  border-color: rgba(226,190,112,.15) !important;
+  box-shadow:
+    0 28px 78px rgba(0,0,0,.34),
+    0 0 34px rgba(143,208,255,.034),
+    0 0 22px rgba(226,190,112,.026),
+    0 0 0 1px rgba(226,190,112,.030) inset,
+    inset 0 1px 0 rgba(255,255,255,.108),
+    inset 0 -1px 0 rgba(226,190,112,.056) !important;
+}
+
+/* Navigation / progress: gold remains the 10% high-signal accent. */
+.nav a[aria-current="page"]::after,
+.nav a:hover::after,
+.site-nav a[aria-current="page"]::after,
+.site-nav a:hover::after,
+body > .ui2046-progress span,
+.ui2046-progress span {
+  background:
+    linear-gradient(90deg,
+      rgba(143,208,255,.18),
+      rgba(143,208,255,.76) 46%,
+      rgba(226,190,112,.86) 78%,
+      rgba(242,220,166,.70)) !important;
+  box-shadow:
+    0 0 12px rgba(143,208,255,.24),
+    0 0 18px rgba(226,190,112,.14) !important;
+}
+
+/* Buttons and chips: gold rim, blue-cool interior. */
+.button,
+button,
+.hero-actions a,
+.cta-row a,
+.action-row a {
+  border-color: rgba(226,190,112,.20) !important;
+  box-shadow:
+    0 14px 32px rgba(0,0,0,.18),
+    0 0 16px rgba(226,190,112,.040),
+    0 0 0 1px rgba(226,190,112,.026) inset,
+    inset 0 1px 0 rgba(255,255,255,.108),
+    inset 0 -1px 0 rgba(226,190,112,.045) !important;
+}
+
+.pill,
+.status-badge,
+.badge,
+.project-tags span,
+.log-tags span,
+.paper-status,
+.hero-tags span,
+.research-tags span,
+.mission-index-mode,
+.research-note-date,
+.mission-jump-log,
+.mission-card-badge {
+  color: rgba(222, 234, 244, .88) !important;
+  border-color: rgba(226,190,112,.20) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.092), rgba(255,255,255,.028)),
+    linear-gradient(90deg, rgba(143,208,255,.060), rgba(226,190,112,.048)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.115),
+    inset 0 -1px 0 rgba(226,190,112,.046),
+    0 0 14px rgba(226,190,112,.024) !important;
+}
+
+.status-badge,
+.paper-status,
+.mission-index-mode,
+.mission-card-badge,
+.research-note-date {
+  color: rgba(224, 205, 157, .90) !important;
+}
+
+/* ---------- C. Light Mode: champagne gold, not brown/tacky gold ---------- */
+
+html:not([data-theme="space"]) {
+  --mads-gold: rgba(190, 164, 106, .72);
+  --mads-gold-strong: rgba(164, 136, 78, .82);
+  --mads-gold-soft: rgba(190, 164, 106, .115);
+  --mads-gold-line: rgba(190, 164, 106, .18);
+  --mads-gold-faint: rgba(190, 164, 106, .050);
+}
+
+/* In Light Mode, labels stay mineral-blue; champagne is used only as an accent. */
+html:not([data-theme="space"]) .eyebrow,
+html:not([data-theme="space"]) .section-label,
+html:not([data-theme="space"]) .project-sync-note::before {
+  color: rgba(26, 92, 137, .88) !important;
+  text-shadow: none !important;
+}
+
+html:not([data-theme="space"]) .eyebrow::before,
+html:not([data-theme="space"]) .section-label::before {
+  background:
+    radial-gradient(circle, rgba(215,196,150,.88), rgba(190,164,106,.58) 48%, transparent 74%) !important;
+  box-shadow: none !important;
+}
+
+html:not([data-theme="space"]) .card,
+html:not([data-theme="space"]) .hero-card,
+html:not([data-theme="space"]) .callout,
+html:not([data-theme="space"]) .focus-card,
+html:not([data-theme="space"]) .status-card,
+html:not([data-theme="space"]) .project-link-card,
+html:not([data-theme="space"]) .paper-card,
+html:not([data-theme="space"]) .research-note-card,
+html:not([data-theme="space"]) .cv-edu-card,
+html:not([data-theme="space"]) .contact-card,
+html:not([data-theme="space"]) .affiliation-card,
+html:not([data-theme="space"]) .mission-index-panel,
+html:not([data-theme="space"]) .mission-log-entry,
+html:not([data-theme="space"]) .mission-log-panel,
+html:not([data-theme="space"]) .photo-card {
+  border-color: rgba(190,164,106,.14) !important;
+  box-shadow:
+    0 22px 56px rgba(32,70,103,.076),
+    0 0 0 1px rgba(190,164,106,.034) inset,
+    inset 0 1px 0 rgba(255,255,255,.70),
+    inset 0 -1px 0 rgba(190,164,106,.044) !important;
+}
+
+html:not([data-theme="space"]) .pill,
+html:not([data-theme="space"]) .status-badge,
+html:not([data-theme="space"]) .badge,
+html:not([data-theme="space"]) .project-tags span,
+html:not([data-theme="space"]) .log-tags span,
+html:not([data-theme="space"]) .paper-status,
+html:not([data-theme="space"]) .hero-tags span,
+html:not([data-theme="space"]) .research-tags span,
+html:not([data-theme="space"]) .mission-index-mode,
+html:not([data-theme="space"]) .research-note-date,
+html:not([data-theme="space"]) .mission-jump-log,
+html:not([data-theme="space"]) .mission-card-badge {
+  color: rgba(38, 76, 106, .92) !important;
+  border-color: rgba(190,164,106,.16) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.84), rgba(244,249,253,.58)),
+    linear-gradient(90deg, rgba(35,93,135,.050), rgba(190,164,106,.040)) !important;
+}
+
+html:not([data-theme="space"]) .nav a[aria-current="page"]::after,
+html:not([data-theme="space"]) .nav a:hover::after,
+html:not([data-theme="space"]) .site-nav a[aria-current="page"]::after,
+html:not([data-theme="space"]) .site-nav a:hover::after,
+html:not([data-theme="space"]) body > .ui2046-progress span,
+html:not([data-theme="space"]) .ui2046-progress span {
+  background:
+    linear-gradient(90deg,
+      rgba(35,93,135,.18),
+      rgba(35,93,135,.70) 46%,
+      rgba(190,164,106,.50) 78%,
+      rgba(215,196,150,.36)) !important;
+  box-shadow: none !important;
+}
+
+/* Mobile: prevent gold from visually dominating small screens. */
+@media (max-width: 760px), (hover: none) and (pointer: coarse) {
+  .card,
+  .hero-card,
+  .callout,
+  .focus-card,
+  .status-card,
+  .project-link-card,
+  .paper-card,
+  .research-note-card,
+  .cv-edu-card,
+  .contact-card,
+  .affiliation-card,
+  .mission-index-panel,
+  .mission-log-entry,
+  .mission-log-panel,
+  .photo-card {
+    border-color: rgba(226,190,112,.13) !important;
+    box-shadow:
+      0 22px 52px rgba(0,0,0,.30),
+      0 0 0 1px rgba(226,190,112,.028) inset,
+      inset 0 1px 0 rgba(255,255,255,.09),
+      inset 0 -1px 0 rgba(226,190,112,.040) !important;
+  }
+}
