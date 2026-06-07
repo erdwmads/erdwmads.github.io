@@ -14624,3 +14624,193 @@ html[data-theme="space"] .entry-gate__mode {
       0 0 12px rgba(232,197,116,.06) !important;
   }
 }
+
+
+/* ============================================================
+   Stable Gold Meteors + CV Gold Foundation
+   Fixes:
+   - Gold meteors no longer turn white mid-flight.
+   - CV page receives the same archive-gold language.
+   - Gold hover-edge language is broadened from Mission/Research pages.
+   ============================================================ */
+
+/* Stable class-based gold meteors/dust.
+   Do not rely on nth-child: spawned meteors change index when old meteors are removed. */
+html[data-theme="space"] .ambient-space-layer .ambient-dust.is-gold-dust,
+html[data-theme-space] .ambient-space-layer .ambient-dust.is-gold-dust,
+body.space-mode .ambient-space-layer .ambient-dust.is-gold-dust {
+  background: rgba(244, 217, 152, .96) !important;
+  box-shadow:
+    0 0 8px rgba(244, 217, 152, .86),
+    0 0 18px rgba(232, 197, 116, .42),
+    0 0 30px rgba(255, 225, 168, .14) !important;
+}
+
+html[data-theme="space"] .ambient-space-layer .ambient-meteor.is-gold-meteor,
+html[data-theme="space"] .ambient-space-layer .ambient-meteor.is-gold-meteor.is-flying,
+html[data-theme-space] .ambient-space-layer .ambient-meteor.is-gold-meteor,
+html[data-theme-space] .ambient-space-layer .ambient-meteor.is-gold-meteor.is-flying,
+body.space-mode .ambient-space-layer .ambient-meteor.is-gold-meteor,
+body.space-mode .ambient-space-layer .ambient-meteor.is-gold-meteor.is-flying {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0) 0%,
+    rgba(232,197,116,.16) 16%,
+    rgba(244,217,152,.78) 58%,
+    rgba(255,239,198,.98) 100%
+  ) !important;
+  filter: drop-shadow(0 0 8px rgba(244, 217, 152, .62)) !important;
+}
+
+html[data-theme="space"] .ambient-space-layer .ambient-meteor.is-gold-meteor::after,
+html[data-theme-space] .ambient-space-layer .ambient-meteor.is-gold-meteor::after,
+body.space-mode .ambient-space-layer .ambient-meteor.is-gold-meteor::after {
+  background: rgba(255, 240, 202, .98) !important;
+  box-shadow:
+    0 0 12px rgba(255, 238, 195, .96),
+    0 0 24px rgba(232, 197, 116, .56) !important;
+}
+
+/* CV page: use the same refined gold pill/edge system. */
+html[data-theme="space"] body.ui-page-cv .cv-edu-date,
+html[data-theme="space"] body.ui-page-cv .status-badge,
+html[data-theme="space"] body.ui-page-cv .pill,
+html[data-theme="space"] body.ui-page-cv .badge,
+html[data-theme-space] body.ui-page-cv .cv-edu-date,
+html[data-theme-space] body.ui-page-cv .status-badge,
+html[data-theme-space] body.ui-page-cv .pill,
+html[data-theme-space] body.ui-page-cv .badge,
+body.space-mode.ui-page-cv .cv-edu-date,
+body.space-mode.ui-page-cv .status-badge,
+body.space-mode.ui-page-cv .pill,
+body.space-mode.ui-page-cv .badge {
+  color: rgba(237, 208, 139, .96) !important;
+  border-color: rgba(232, 197, 116, .32) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.032)),
+    linear-gradient(90deg, rgba(232,197,116,.16), rgba(143,208,255,.052) 58%, rgba(232,197,116,.07)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.14),
+    inset 0 -1px 0 rgba(232,197,116,.060),
+    0 0 16px rgba(232,197,116,.070) !important;
+}
+
+html[data-theme="space"] body.ui-page-cv .cv-edu-card,
+html[data-theme="space"] body.ui-page-cv .cv-card,
+html[data-theme="space"] body.ui-page-cv .panel,
+html[data-theme-space] body.ui-page-cv .cv-edu-card,
+html[data-theme-space] body.ui-page-cv .cv-card,
+html[data-theme-space] body.ui-page-cv .panel,
+body.space-mode.ui-page-cv .cv-edu-card,
+body.space-mode.ui-page-cv .cv-card,
+body.space-mode.ui-page-cv .panel {
+  border-color: rgba(232,197,116,.18) !important;
+  border-left-color: rgba(232,197,116,.34) !important;
+  background:
+    linear-gradient(90deg, rgba(232,197,116,.070), transparent 22%),
+    linear-gradient(180deg, rgba(255,255,255,.105), rgba(255,255,255,.040)) !important;
+  box-shadow:
+    0 22px 48px rgba(0,0,0,.26),
+    0 0 24px rgba(232,197,116,.045),
+    inset 0 1px 0 rgba(255,255,255,.12),
+    inset 0 -1px 0 rgba(232,197,116,.050) !important;
+}
+
+/* Light mode CV: champagne, not brown. */
+html:not([data-theme="space"]) body.ui-page-cv .cv-edu-date,
+html:not([data-theme="space"]) body.ui-page-cv .status-badge,
+html:not([data-theme="space"]) body.ui-page-cv .pill,
+html:not([data-theme="space"]) body.ui-page-cv .badge {
+  color: rgba(150, 120, 68, .92) !important;
+  border-color: rgba(198,171,117,.22) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.92), rgba(248,246,240,.72)),
+    linear-gradient(90deg, rgba(198,171,117,.075), rgba(35,93,135,.025)) !important;
+}
+
+html:not([data-theme="space"]) body.ui-page-cv .cv-edu-card,
+html:not([data-theme="space"]) body.ui-page-cv .cv-card,
+html:not([data-theme="space"]) body.ui-page-cv .panel {
+  border-color: rgba(198,171,117,.14) !important;
+  border-left-color: rgba(198,171,117,.26) !important;
+  box-shadow:
+    0 22px 54px rgba(28,58,92,.08),
+    0 0 0 1px rgba(198,171,117,.030) inset,
+    inset 0 1px 0 rgba(255,255,255,.72),
+    inset 0 -1px 0 rgba(198,171,117,.040) !important;
+}
+
+
+/* ============================================================
+   Direction A — restrained institutional archive
+   Gold is more present, but still about 10–13% of the visual system.
+   ============================================================ */
+
+/* Broaden the loved hover gold-edge design, restrained version. */
+html[data-theme="space"] .card:hover,
+html[data-theme="space"] .project-link-card:hover,
+html[data-theme="space"] .research-note-card:hover,
+html[data-theme="space"] .mission-log-entry:hover,
+html[data-theme="space"] .mission-log-panel:hover,
+html[data-theme="space"] .paper-card:hover,
+html[data-theme="space"] .cv-edu-card:hover,
+html[data-theme="space"] .cv-card:hover,
+html[data-theme="space"] .contact-card:hover,
+html[data-theme="space"] .affiliation-card:hover,
+html[data-theme="space"] .mission-jump-card:hover,
+html[data-theme="space"] .research-log-index-link:hover,
+html[data-theme-space] .card:hover,
+html[data-theme-space] .project-link-card:hover,
+html[data-theme-space] .research-note-card:hover,
+html[data-theme-space] .mission-log-entry:hover,
+html[data-theme-space] .mission-log-panel:hover,
+html[data-theme-space] .paper-card:hover,
+html[data-theme-space] .cv-edu-card:hover,
+html[data-theme-space] .cv-card:hover,
+html[data-theme-space] .contact-card:hover,
+html[data-theme-space] .affiliation-card:hover,
+html[data-theme-space] .mission-jump-card:hover,
+html[data-theme-space] .research-log-index-link:hover,
+body.space-mode .card:hover,
+body.space-mode .project-link-card:hover,
+body.space-mode .research-note-card:hover,
+body.space-mode .mission-log-entry:hover,
+body.space-mode .mission-log-panel:hover,
+body.space-mode .paper-card:hover,
+body.space-mode .cv-edu-card:hover,
+body.space-mode .cv-card:hover,
+body.space-mode .contact-card:hover,
+body.space-mode .affiliation-card:hover,
+body.space-mode .mission-jump-card:hover,
+body.space-mode .research-log-index-link:hover {
+  border-color: rgba(232,197,116,.28) !important;
+  box-shadow:
+    0 26px 58px rgba(0,0,0,.30),
+    0 0 30px rgba(232,197,116,.080),
+    0 0 22px rgba(143,208,255,.045),
+    inset 0 1px 0 rgba(255,255,255,.14),
+    inset 0 -1px 0 rgba(232,197,116,.070) !important;
+}
+
+/* A keeps chips clean but visibly gold. */
+html[data-theme="space"] .mission-entry-kicker,
+html[data-theme="space"] .mission-card-badge,
+html[data-theme="space"] .research-note-date,
+html[data-theme="space"] .paper-status,
+html[data-theme="space"] .status-badge,
+html[data-theme="space"] .mission-index-mode,
+html[data-theme="space"] .cv-edu-date,
+html[data-theme="space"] .project-tags span,
+html[data-theme="space"] .log-tags span,
+html[data-theme="space"] .research-tags span,
+html[data-theme="space"] .hero-tags span {
+  border-color: rgba(232,197,116,.30) !important;
+  color: rgba(234,207,143,.92) !important;
+}
+
+html[data-theme="space"] .nav a:hover,
+html[data-theme="space"] .nav a[aria-current="page"] {
+  box-shadow:
+    0 0 18px rgba(232,197,116,.050),
+    inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
