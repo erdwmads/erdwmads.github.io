@@ -11615,3 +11615,49 @@ body.ui-page-research-graduation #mission-index > .mission-index-panel {
     }
   }
 }
+
+
+/* ============================================================
+   Mobile Progress Above Cards Fix
+   The progress beam is now created by JS as a direct body child, outside the
+   Interface 2046 background layer. Keep it above all cards and browser-safe.
+   ============================================================ */
+
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+  body > .ui2046-progress {
+    position: fixed !important;
+    top: 0 !important;
+    bottom: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 2px !important;
+    z-index: 2147483646 !important;
+    pointer-events: none !important;
+    overflow: hidden !important;
+    transform: none !important;
+    -webkit-transform: none !important;
+    contain: paint !important;
+  }
+
+  body > .ui2046-progress span {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    transform-origin: left center !important;
+    will-change: transform !important;
+  }
+
+  /* Keep the visual background/interface layer below content on mobile. */
+  .ui2046-layer {
+    z-index: 1 !important;
+  }
+
+  .site-header,
+  .main,
+  .site-footer {
+    position: relative !important;
+    z-index: 3 !important;
+  }
+}

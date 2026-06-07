@@ -73,8 +73,6 @@
   layer.setAttribute('aria-hidden', 'true');
 
   layer.innerHTML = `
-    <div class="ui2046-progress"><span></span></div>
-
     <div class="ui2046-solar-system">
       <span class="ui2046-kuiper-belt"></span>
       <span class="ui2046-planet sun-marker" style="--left:50%;--top:50%;--size:6px;--color:rgba(255,217,154,.74);"></span>
@@ -91,7 +89,16 @@
 
   body.appendChild(layer);
 
-  const bar = layer.querySelector('.ui2046-progress span');
+  // The scroll progress beam must live outside .ui2046-layer.
+  // If it is nested inside the interface/background layer, mobile stacking
+  // contexts can place it under cards even with a high child z-index.
+  const progress = document.createElement('div');
+  progress.className = 'ui2046-progress';
+  progress.setAttribute('aria-hidden', 'true');
+  progress.innerHTML = '<span></span>';
+  body.appendChild(progress);
+
+  const bar = progress.querySelector('span');
 
   const updateProgress = () => {
     const doc = document.documentElement;
@@ -178,56 +185,4 @@
 
   window.addEventListener('load', updateProgress, { once: true });
   setTimeout(updateProgress, 250);
-
-  /* Mission Log Navigator precise anchor alignment.
-     Native hash scrolling lands inconsistently with sticky headers and mobile
-     browser chrome. This uses a measured offset, then updates the hash without
-     causing a second native jump. */
-  const getAnchorOffset = () => {
-    const header = document.querySelector('.site-header');
-    const headerHeight = header ? Math.ceil(header.getBoundingClientRect().height) : 0;
-    const visualTop = window.visualViewport ? Math.max(0, Math.round(window.visualViewport.offsetTop || 0)) : 0;
-    return headerHeight + visualTop + 18;
-  };
-
-  const scrollToMissionTarget = (target, behavior = 'smooth') => {
-    if (!target) return;
-    const top = target.getBoundingClientRect().top + window.scrollY - getAnchorOffset();
-    window.scrollTo({
-      top: Math.max(0, Math.round(top)),
-      behavior
-    });
-  };
-
-  document.addEventListener('click', (event) => {
-    const link = event.target.closest('a[href^="#"]');
-    if (!link) return;
-
-    const hash = link.getAttribute('href');
-    if (!hash || hash === '#') return;
-
-    const target = document.querySelector(hash);
-    if (!target) return;
-
-    if (
-      hash.startsWith('#log-') ||
-      hash === '#mission-log' ||
-      hash === '#mission-index'
-    ) {
-      event.preventDefault();
-      scrollToMissionTarget(target, 'smooth');
-      history.pushState(null, '', hash);
-    }
-  });
-
-  if (window.location.hash) {
-    const target = document.querySelector(window.location.hash);
-    if (target && (window.location.hash.startsWith('#log-') || window.location.hash === '#mission-log' || window.location.hash === '#mission-index')) {
-      window.addEventListener('load', () => {
-        setTimeout(() => scrollToMissionTarget(target, 'auto'), 80);
-      }, { once: true });
-    }
-  }
-
-
 })();
