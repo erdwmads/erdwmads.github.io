@@ -10409,3 +10409,145 @@ body.space-mode .project-progress > div {
     object-fit: contain !important;
   }
 }
+
+
+/* ============================================================
+   Mission Lightbox Image Bounds + Anchor Alignment Fix
+   Base: Interface v4 clean consolidated build.
+   Fixes:
+   1. Large Mission Log image had asymmetric top/bottom spacing and bottom
+      corners could appear clipped/straight.
+   2. Mission Log Navigator anchors landed slightly off because native hash
+      scrolling did not account for the sticky header / mobile browser chrome.
+   ============================================================ */
+
+/* Anchor targets: browser-native fallback. JS below provides the precise
+   calculated scroll. This keeps direct #log-002 URL access sane too. */
+html {
+  scroll-padding-top: clamp(86px, 12vh, 132px);
+}
+
+.mission-log-entry,
+.research-note-card[id^="log-"] {
+  scroll-margin-top: clamp(86px, 12vh, 132px) !important;
+}
+
+/* Large-image viewer: create a symmetric image bay.
+   The panel still keeps the same glass/lightbox style; this only fixes the
+   image geometry and clipping. */
+.mission-lightbox__panel {
+  box-sizing: border-box !important;
+}
+
+.mission-lightbox__stage {
+  box-sizing: border-box !important;
+  min-height: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  padding:
+    clamp(14px, 2.2vw, 28px)
+    clamp(18px, 4vw, 60px) !important;
+  overflow: hidden !important;
+}
+
+.mission-lightbox__img,
+.mission-lightbox__image {
+  display: block !important;
+  box-sizing: border-box !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: min(60vh, 620px) !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  margin: 0 auto !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+  clip-path: inset(0 round 18px) !important;
+}
+
+/* Make the caption and thumbnail bands separate from the image bay, instead
+   of visually cutting into the image bottom edge. */
+.mission-lightbox__captionbar {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.mission-lightbox__thumbs {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* Landscape / short mobile browser viewport:
+   use dynamic viewport units so address-bar changes do not clip the bottom of
+   the image. */
+@media (max-width: 900px), (max-height: 760px) {
+  .mission-lightbox,
+  .mission-lightbox.is-open {
+    padding: clamp(10px, 2.5vw, 18px) !important;
+  }
+
+  .mission-lightbox__panel {
+    width: min(1180px, calc(100vw - 24px)) !important;
+    max-height: calc(100dvh - 24px) !important;
+    grid-template-rows: auto minmax(0, 1fr) auto auto !important;
+  }
+
+  .mission-lightbox__stage {
+    padding:
+      clamp(12px, 2vw, 18px)
+      clamp(14px, 3.2vw, 44px) !important;
+  }
+
+  .mission-lightbox__img,
+  .mission-lightbox__image {
+    max-height: calc(100dvh - 236px) !important;
+    border-radius: 16px !important;
+    clip-path: inset(0 round 16px) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .mission-lightbox__stage {
+    padding: 12px 14px !important;
+  }
+
+  .mission-lightbox__img,
+  .mission-lightbox__image {
+    max-width: 100% !important;
+    max-height: calc(100dvh - 248px) !important;
+    border-radius: 14px !important;
+    clip-path: inset(0 round 14px) !important;
+  }
+
+  .mission-lightbox__captionbar {
+    margin-top: 0 !important;
+  }
+}
+
+/* Extremely short landscape webviews: keep a clear lower breathing space
+   rather than letting the caption cut the image. */
+@media (orientation: landscape) and (max-height: 560px) {
+  .mission-lightbox__panel {
+    max-height: calc(100dvh - 18px) !important;
+  }
+
+  .mission-lightbox__topbar {
+    padding-top: 9px !important;
+    padding-bottom: 9px !important;
+  }
+
+  .mission-lightbox__captionbar {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+
+  .mission-lightbox__thumbs {
+    padding-bottom: 10px !important;
+  }
+
+  .mission-lightbox__img,
+  .mission-lightbox__image {
+    max-height: calc(100dvh - 214px) !important;
+  }
+}
