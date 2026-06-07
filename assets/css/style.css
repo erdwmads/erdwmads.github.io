@@ -11148,3 +11148,91 @@ body.ui-page-research-graduation .mission-index-panel {
     min-width: 220px !important;
   }
 }
+
+
+/* ============================================================
+   Mission Index Center + Spacing Only
+   Scope:
+   1. Add breathing room between the "Mission Index" section label and the
+      Mission Log Navigator panel.
+   2. Keep the normal desktop navigator layout as five items on the first row,
+      centred as a group.
+   No badge redesign, no LOG/SOL marker redesign, no lightbox change.
+   ============================================================ */
+
+body.ui-page-research-graduation #mission-index.mission-index-section {
+  display: grid !important;
+  grid-template-columns: 230px minmax(0, 1fr) !important;
+  column-gap: 54px !important;
+  align-items: start !important;
+}
+
+body.ui-page-research-graduation #mission-index > .section-label {
+  padding-top: 18px !important;
+}
+
+body.ui-page-research-graduation #mission-index > .mission-index-panel {
+  margin-top: 22px !important;
+}
+
+/* Desktop: exactly five entries in the first row, centred within the panel.
+   The sixth entry is centred below them. */
+@media (min-width: 1180px) {
+  body.ui-page-research-graduation #mission-index .mission-jump-grid.compact-mission-jump-grid,
+  body.ui-page-research-graduation #mission-index .mission-jump-grid {
+    display: grid !important;
+    grid-template-columns: repeat(5, max-content) !important;
+    justify-content: center !important;
+    justify-items: start !important;
+    align-items: start !important;
+    column-gap: clamp(58px, 5.6vw, 128px) !important;
+    row-gap: 18px !important;
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  body.ui-page-research-graduation #mission-index .mission-jump-card.compact-jump-card,
+  body.ui-page-research-graduation #mission-index .mission-jump-card {
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+  }
+
+  body.ui-page-research-graduation #mission-index .mission-jump-card:nth-child(6):last-child {
+    grid-column: 3 !important;
+  }
+}
+
+/* Tablet: centred three-column navigator. */
+@media (min-width: 761px) and (max-width: 1179px) {
+  body.ui-page-research-graduation #mission-index.mission-index-section {
+    grid-template-columns: 190px minmax(0, 1fr) !important;
+    column-gap: 34px !important;
+  }
+
+  body.ui-page-research-graduation #mission-index .mission-jump-grid.compact-mission-jump-grid,
+  body.ui-page-research-graduation #mission-index .mission-jump-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, max-content) !important;
+    justify-content: center !important;
+    column-gap: clamp(32px, 5vw, 72px) !important;
+    row-gap: 16px !important;
+  }
+}
+
+/* Mobile: keep the compact stacked layout. */
+@media (max-width: 760px) {
+  body.ui-page-research-graduation #mission-index.mission-index-section {
+    grid-template-columns: 1fr !important;
+    row-gap: 14px !important;
+  }
+
+  body.ui-page-research-graduation #mission-index > .section-label {
+    padding-top: 0 !important;
+  }
+
+  body.ui-page-research-graduation #mission-index > .mission-index-panel {
+    margin-top: 0 !important;
+  }
+}
