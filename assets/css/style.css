@@ -13743,3 +13743,282 @@ html.is-edge-browser body.space-mode .project-progress > div::after {
       rgba(255,211,128,.56),
       transparent) !important;
 }
+
+
+/* ============================================================
+   Sitewide More Gold Trial
+   Direction:
+   - Bring the whole site closer to the entry gate:
+     more meteoritic gold, archive brass rims, warmer scan-line accents.
+   - Keep main body text readable blue-white / slate-white.
+   - Do not change layout, spacing, Mission Log logic, Navigator, Paper Shelf,
+     lightbox, entry timing, or Edge status-card fallback.
+   ============================================================ */
+
+:root {
+  --mads-gold: rgba(255, 211, 128, .96);
+  --mads-gold-strong: rgba(255, 224, 156, .92);
+  --mads-gold-soft: rgba(255, 211, 128, .26);
+  --mads-gold-line: rgba(255, 211, 128, .34);
+  --mads-gold-faint: rgba(255, 211, 128, .085);
+}
+
+/* 1. Section identity: more gold in labels and signal dots. */
+.eyebrow,
+.section-label,
+.project-sync-note::before {
+  color: rgba(255, 211, 128, .88) !important;
+  text-shadow:
+    0 0 18px rgba(255,211,128,.18),
+    0 0 12px rgba(143,208,255,.055) !important;
+}
+
+.eyebrow::before,
+.section-label::before {
+  background:
+    radial-gradient(circle, rgba(255,238,190,.98), rgba(255,211,128,.88) 48%, transparent 74%) !important;
+  box-shadow:
+    0 0 12px rgba(255,211,128,.42),
+    0 0 24px rgba(255,211,128,.14) !important;
+}
+
+/* 2. Headings stay light, but gain a warm mineral edge. */
+h1,
+.hero h1,
+.page-title {
+  color: rgba(242, 249, 255, .985) !important;
+  text-shadow:
+    0 0 30px rgba(143,208,255,.085),
+    0 0 28px rgba(255,211,128,.075) !important;
+}
+
+h2,
+h3,
+.card h3,
+.paper-card h3,
+.project-link-card h3,
+.research-note-card h3,
+.mission-log-entry h3 {
+  color: rgba(238, 246, 253, .96) !important;
+  text-shadow:
+    0 0 18px rgba(255,211,128,.055),
+    0 0 16px rgba(143,208,255,.045) !important;
+}
+
+/* 3. Cards: stronger archive-brass rim and lower glint, no layout changes.
+   No circular top-left glow is introduced here. */
+.card,
+.hero-card,
+.callout,
+.focus-card,
+.status-card,
+.project-link-card,
+.paper-card,
+.research-note-card,
+.cv-edu-card,
+.contact-card,
+.affiliation-card,
+.mission-index-panel,
+.mission-log-entry,
+.mission-log-panel,
+.photo-card {
+  border-color: rgba(255,211,128,.24) !important;
+  box-shadow:
+    0 28px 78px rgba(0,0,0,.34),
+    0 0 44px rgba(255,211,128,.052),
+    0 0 28px rgba(143,208,255,.030),
+    0 0 0 1px rgba(255,211,128,.052) inset,
+    inset 0 1px 0 rgba(255,255,255,.118),
+    inset 0 -1px 0 rgba(255,211,128,.105) !important;
+}
+
+/* 4. Navigation and progress: more gold, still thin and refined. */
+.nav a[aria-current="page"]::after,
+.nav a:hover::after,
+.site-nav a[aria-current="page"]::after,
+.site-nav a:hover::after,
+body > .ui2046-progress span,
+.ui2046-progress span {
+  background:
+    linear-gradient(90deg,
+      rgba(143,208,255,.14),
+      rgba(143,208,255,.58) 30%,
+      rgba(255,211,128,.96) 68%,
+      rgba(255,236,190,.82)) !important;
+  box-shadow:
+    0 0 12px rgba(143,208,255,.18),
+    0 0 28px rgba(255,211,128,.25) !important;
+}
+
+/* 5. Buttons: stronger gold-rim archive controls. */
+.button,
+button,
+.hero-actions a,
+.cta-row a,
+.action-row a {
+  border-color: rgba(255,211,128,.30) !important;
+  box-shadow:
+    0 14px 32px rgba(0,0,0,.18),
+    0 0 24px rgba(255,211,128,.070),
+    0 0 0 1px rgba(255,211,128,.050) inset,
+    inset 0 1px 0 rgba(255,255,255,.12),
+    inset 0 -1px 0 rgba(255,211,128,.070) !important;
+}
+
+/* Do not make the Home Research/CV buttons childish-gold; only warm the edge. */
+.hero a[href="research.html"],
+.hero-actions a[href="research.html"],
+.cta-row a[href="research.html"],
+.action-row a[href="research.html"] {
+  background:
+    linear-gradient(135deg,
+      rgba(7, 31, 58, .94),
+      rgba(16, 68, 111, .76) 62%,
+      rgba(255,211,128,.13)) !important;
+}
+
+.hero a[href="cv.html"],
+.hero-actions a[href="cv.html"],
+.cta-row a[href="cv.html"],
+.action-row a[href="cv.html"] {
+  background:
+    linear-gradient(135deg,
+      rgba(255,255,255,.118),
+      rgba(143,208,255,.058) 58%,
+      rgba(255,211,128,.090)) !important;
+}
+
+/* 6. Tags, pills, status badges: closer to entry-gate sequence chips. */
+.pill,
+.status-badge,
+.badge,
+.project-tags span,
+.log-tags span,
+.paper-status,
+.hero-tags span,
+.research-tags span,
+.mission-index-mode,
+.research-note-date,
+.mission-jump-log,
+.mission-card-badge {
+  color: rgba(232, 239, 246, .88) !important;
+  border-color: rgba(255,211,128,.30) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.100), rgba(255,255,255,.030)),
+    linear-gradient(90deg, rgba(143,208,255,.052), rgba(255,211,128,.090)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.13),
+    inset 0 -1px 0 rgba(255,211,128,.088),
+    0 0 18px rgba(255,211,128,.050) !important;
+}
+
+/* Active/important small meta gets more gold, not body paragraphs. */
+.status-badge,
+.paper-status,
+.mission-index-mode,
+.mission-card-badge,
+.research-note-date {
+  color: rgba(255, 222, 154, .92) !important;
+}
+
+/* 7. Table/rule separators: warmer archive lines. */
+hr,
+.section,
+.card + .card,
+.mission-index-panel,
+.research-note-card,
+.paper-card,
+.cv-edu-card {
+  border-color: rgba(255,211,128,.18) !important;
+}
+
+/* 8. Links: blue text with gold hover accent. */
+a {
+  text-decoration-color: rgba(255,211,128,.30) !important;
+}
+
+a:hover {
+  text-decoration-color: rgba(255,211,128,.72) !important;
+}
+
+/* 9. Light Mode: archive-paper with stronger but still controlled gold. */
+html:not([data-theme="space"]) {
+  --mads-gold: rgba(174, 111, 28, .88);
+  --mads-gold-strong: rgba(145, 88, 18, .92);
+  --mads-gold-soft: rgba(174, 111, 28, .16);
+  --mads-gold-line: rgba(174, 111, 28, .24);
+}
+
+html:not([data-theme="space"]) .eyebrow,
+html:not([data-theme="space"]) .section-label,
+html:not([data-theme="space"]) .project-sync-note::before {
+  color: rgba(145, 88, 18, .88) !important;
+  text-shadow: none !important;
+}
+
+html:not([data-theme="space"]) .card,
+html:not([data-theme="space"]) .hero-card,
+html:not([data-theme="space"]) .callout,
+html:not([data-theme="space"]) .focus-card,
+html:not([data-theme="space"]) .status-card,
+html:not([data-theme="space"]) .project-link-card,
+html:not([data-theme="space"]) .paper-card,
+html:not([data-theme="space"]) .research-note-card,
+html:not([data-theme="space"]) .cv-edu-card,
+html:not([data-theme="space"]) .contact-card,
+html:not([data-theme="space"]) .affiliation-card,
+html:not([data-theme="space"]) .mission-index-panel,
+html:not([data-theme="space"]) .mission-log-entry,
+html:not([data-theme="space"]) .mission-log-panel,
+html:not([data-theme="space"]) .photo-card {
+  border-color: rgba(174,111,28,.20) !important;
+  box-shadow:
+    0 22px 56px rgba(32,70,103,.076),
+    0 0 0 1px rgba(174,111,28,.050) inset,
+    inset 0 1px 0 rgba(255,255,255,.70),
+    inset 0 -1px 0 rgba(174,111,28,.080) !important;
+}
+
+html:not([data-theme="space"]) .pill,
+html:not([data-theme="space"]) .status-badge,
+html:not([data-theme="space"]) .badge,
+html:not([data-theme="space"]) .project-tags span,
+html:not([data-theme="space"]) .log-tags span,
+html:not([data-theme="space"]) .paper-status,
+html:not([data-theme="space"]) .hero-tags span,
+html:not([data-theme="space"]) .research-tags span,
+html:not([data-theme="space"]) .mission-index-mode,
+html:not([data-theme="space"]) .research-note-date,
+html:not([data-theme="space"]) .mission-jump-log,
+html:not([data-theme="space"]) .mission-card-badge {
+  color: rgba(122, 76, 16, .94) !important;
+  border-color: rgba(174,111,28,.24) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.84), rgba(244,249,253,.58)),
+    linear-gradient(90deg, rgba(35,93,135,.044), rgba(174,111,28,.082)) !important;
+}
+
+/* 10. Mobile: keep the gold controlled and avoid heavy glow. */
+@media (max-width: 760px), (hover: none) and (pointer: coarse) {
+  .card,
+  .hero-card,
+  .callout,
+  .focus-card,
+  .status-card,
+  .project-link-card,
+  .paper-card,
+  .research-note-card,
+  .cv-edu-card,
+  .contact-card,
+  .affiliation-card,
+  .mission-index-panel,
+  .mission-log-entry,
+  .mission-log-panel,
+  .photo-card {
+    box-shadow:
+      0 22px 52px rgba(0,0,0,.30),
+      0 0 0 1px rgba(255,211,128,.048) inset,
+      inset 0 1px 0 rgba(255,255,255,.09),
+      inset 0 -1px 0 rgba(255,211,128,.075) !important;
+  }
+}
