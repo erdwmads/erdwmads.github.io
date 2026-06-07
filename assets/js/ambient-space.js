@@ -12,6 +12,27 @@
     return array[Math.floor(Math.random() * array.length)];
   }
 
+
+  function meteorTravelDistance(startX, startY, angleDeg, width, height) {
+    // Ensure every meteor fully crosses the viewport and exits beyond the far edge.
+    // The previous max(width, height) estimate could be too short on diagonals,
+    // so some meteors appeared to stop and vanish midway.
+    const rad = angleDeg * Math.PI / 180;
+    const vx = Math.cos(rad);
+    const vy = Math.sin(rad);
+    const buffer = 260;
+    const candidates = [];
+
+    if (vx > 0) candidates.push((width + buffer - startX) / vx);
+    if (vx < 0) candidates.push((-buffer - startX) / vx);
+    if (vy > 0) candidates.push((height + buffer - startY) / vy);
+    if (vy < 0) candidates.push((-buffer - startY) / vy);
+
+    const positive = candidates.filter(function (v) { return Number.isFinite(v) && v > 0; });
+    const minExit = positive.length ? Math.max.apply(null, positive) : Math.hypot(width + 520, height + 520);
+    return minExit + 180;
+  }
+
   // Stable gold assignment.
   // Classes are assigned once at creation so a meteor cannot start gold and
   // turn white later when previous meteor nodes are removed.
@@ -115,11 +136,11 @@
 
       window.setTimeout(function () {
         el.style.opacity = "0";
-      }, Math.max(500, duration - 260));
+      }, Math.max(900, duration - 140));
 
       window.setTimeout(function () {
         el.remove();
-      }, duration + 420);
+      }, duration + 620);
     }
 
     // Reduced counts, but visible.
