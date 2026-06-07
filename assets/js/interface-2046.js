@@ -5,6 +5,23 @@
   if (body.dataset.interface2046 === 'ready') return;
   body.dataset.interface2046 = 'ready';
 
+  const ensureMobileBackgroundLayers = () => {
+    if (document.querySelector('.mobile-fixed-bg')) return;
+
+    const bg = document.createElement('div');
+    bg.className = 'mobile-fixed-bg';
+    bg.setAttribute('aria-hidden', 'true');
+
+    const hud = document.createElement('div');
+    hud.className = 'mobile-fixed-hud';
+    hud.setAttribute('aria-hidden', 'true');
+
+    body.prepend(hud);
+    body.prepend(bg);
+  };
+
+  ensureMobileBackgroundLayers();
+
   const rawPath = window.location.pathname.split('/').pop() || 'index.html';
   const page = rawPath.replace('.html', '') || 'index';
   const pageClass = {

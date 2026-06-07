@@ -10651,83 +10651,98 @@ html {
 
 
 /* ============================================================
-   Mobile Raster-Safe Mission Zone Fix
-   New strategy:
-   - The remaining flicker is treated as a mobile browser compositor bug
-     caused by fixed pseudo-backgrounds + animated ambient layer + large
-     image grids/lightbox.
-   - Visual effects are preserved.
-   - Implementation changes only while the user is near Mission Log image
-     zones or while the lightbox is open.
+   Mobile Real Background Layer Fix
+   New method after compositor/image-pipeline attempts:
+   - On touch/mobile, replace body::before/body::after fixed pseudo layers
+     with real fixed DOM layers.
+   - This preserves the same visual background/HUD, but avoids a known mobile
+     WebView/Chromium instability with fixed pseudo-elements behind large image
+     grids and backdrop-filter cards.
+   - No background blur, ambient layer, solar system layer, glass cards, or
+     lightbox blur is removed.
    ============================================================ */
 
+/* Default: injected layers stay inert unless mobile/touch rules activate them. */
+.mobile-fixed-bg,
+.mobile-fixed-hud {
+  display: none;
+}
+
 @media (hover: none), (pointer: coarse), (max-width: 760px) {
-  body.mission-raster-zone,
-  body.mission-lightbox-raster-open {
+  /* The original fixed pseudo-layers are replaced by real fixed layers below.
+     This should look the same, but it changes the compositor path. */
+  body::before,
+  body::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  .mobile-fixed-bg,
+  .mobile-fixed-hud {
+    display: block !important;
+    position: fixed !important;
+    inset: 0 !important;
+    pointer-events: none !important;
+    transform: none !important;
+    -webkit-transform: none !important;
+    will-change: auto !important;
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+  }
+
+  .mobile-fixed-bg {
+    z-index: 0 !important;
+    background-image: url("../img/asteroid-bennu.jpg") !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    opacity: .20 !important;
+  }
+
+  html[data-theme="space"] .mobile-fixed-bg,
+  html[data-theme-space] .mobile-fixed-bg,
+  body.space-mode .mobile-fixed-bg {
+    opacity: .30 !important;
+    filter: grayscale(.10) contrast(1.06) brightness(.70) !important;
+  }
+
+  .mobile-fixed-hud {
+    z-index: 0 !important;
+    background:
+      radial-gradient(circle at 12% 22%, rgba(143,208,255,.12), transparent 28rem),
+      radial-gradient(circle at 88% 18%, rgba(255,217,154,.075), transparent 24rem),
+      radial-gradient(circle at 76% 78%, rgba(143,208,255,.08), transparent 26rem),
+      linear-gradient(90deg, rgba(143,208,255,.055) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(143,208,255,.045) 1px, transparent 1px) !important;
+    background-size: auto, auto, auto, 96px 96px, 96px 96px !important;
+    opacity: .24 !important;
+    mix-blend-mode: normal !important;
+  }
+
+  html:not([data-theme="space"]) .mobile-fixed-hud {
+    background:
+      linear-gradient(90deg, rgba(35, 83, 122, .045) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(35, 83, 122, .040) 1px, transparent 1px) !important;
+    background-size: 88px 88px, 88px 88px !important;
+    opacity: .22 !important;
+    mix-blend-mode: normal !important;
+  }
+
+  .site-header,
+  .main,
+  .site-footer {
     position: relative !important;
-    min-height: 100% !important;
+    z-index: 3 !important;
   }
 
-  /* Keep the same asteroid/HUD look, but temporarily make the expensive
-     fixed pseudo-layers scroll-bound while large Mission images are near.
-     This avoids the mobile full-screen compositor blink seen around LOG002.
-     No blur/background/ambient layer is removed. */
-  body.mission-raster-zone::before,
-  body.mission-lightbox-raster-open::before,
-  body.mission-raster-zone::after,
-  body.mission-lightbox-raster-open::after {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: auto !important;
-    width: 100% !important;
-    min-height: 100vh !important;
-    height: var(--mission-page-height, 100%) !important;
-    transform: none !important;
-    -webkit-transform: none !important;
-    will-change: auto !important;
-    backface-visibility: visible !important;
-    -webkit-backface-visibility: visible !important;
-    contain: paint !important;
+  .ambient-space-layer {
+    z-index: 1 !important;
   }
 
-  /* While the image-heavy zone is active, pause moving particles instead of
-     hiding them. They remain visible but no longer trigger continuous raster
-     work during image decode / lightbox opening. */
-  body.mission-raster-zone .ambient-dust,
-  body.mission-raster-zone .ambient-pebble,
-  body.mission-raster-zone .ambient-meteor,
-  body.mission-lightbox-raster-open .ambient-dust,
-  body.mission-lightbox-raster-open .ambient-pebble,
-  body.mission-lightbox-raster-open .ambient-meteor,
-  body.mission-raster-scrolling .ambient-dust,
-  body.mission-raster-scrolling .ambient-pebble,
-  body.mission-raster-scrolling .ambient-meteor {
-    animation-play-state: paused !important;
-    transition: none !important;
-    will-change: auto !important;
-  }
-
-  body.mission-raster-zone .ambient-space-layer,
-  body.mission-lightbox-raster-open .ambient-space-layer {
-    transform: none !important;
-    -webkit-transform: none !important;
-    will-change: auto !important;
-    contain: paint !important;
-  }
-
-  /* Do not promote the whole page. Keep stable local containment only. */
-  body.mission-raster-zone .main,
-  body.mission-lightbox-raster-open .main {
-    transform: none !important;
-    -webkit-transform: none !important;
-    will-change: auto !important;
-  }
-
-  body.mission-raster-zone .mission-log-entry,
-  body.mission-raster-zone .mission-photo-grid,
-  body.mission-raster-zone .mission-photo-grid figure {
+  /* Keep Mission Log image zones stable, but do not hide effects. */
+  .mission-log-entry,
+  .mission-photo-grid,
+  .mission-photo-grid figure {
     contain: layout paint style !important;
     isolation: isolate !important;
     transform: none !important;
@@ -10735,36 +10750,50 @@ html {
     will-change: auto !important;
   }
 
-  /* Lightbox open: keep visual design, but avoid animated opacity/raster
-     transitions in the frame where image decoding begins. */
-  body.mission-lightbox-raster-open .mission-lightbox {
-    transition: visibility .01s linear !important;
-    will-change: auto !important;
+  .mission-photo-grid figure {
+    aspect-ratio: 4 / 3 !important;
+    overflow: hidden !important;
   }
 
-  body.mission-lightbox-raster-open .mission-lightbox__panel,
-  body.mission-lightbox-raster-open .mission-lightbox__stage,
-  body.mission-lightbox-raster-open .mission-lightbox__img,
-  body.mission-lightbox-raster-open .mission-lightbox__thumbs {
-    contain: layout paint style !important;
+  .mission-photo-grid img {
+    width: 100% !important;
+    height: 100% !important;
+    aspect-ratio: 4 / 3 !important;
+    object-fit: cover !important;
+    display: block !important;
     transform: none !important;
     -webkit-transform: none !important;
     will-change: auto !important;
   }
 
-  /* Force a stable reserved raster area for thumbnails and grid images. */
-  .mission-photo-grid figure {
-    aspect-ratio: 4 / 3 !important;
+  .mission-photo-grid figure::after,
+  .mission-photo-grid figure:hover::after,
+  .mission-photo-grid figure:focus::after,
+  .mission-photo-grid figure:active::after {
+    animation: none !important;
+    mix-blend-mode: normal !important;
+    opacity: 0 !important;
+    transition: none !important;
+    background: none !important;
   }
 
+  /* Do not animate lightbox opacity on mobile. Blur/glass remains. */
+  .mission-lightbox {
+    transition: visibility .01s linear !important;
+    will-change: auto !important;
+  }
+
+  .mission-lightbox.is-open {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  .mission-lightbox__panel,
+  .mission-lightbox__stage,
+  .mission-lightbox__img,
+  .mission-lightbox__thumbs,
   .mission-lightbox__thumb {
     contain: layout paint style !important;
-  }
-
-  .mission-lightbox__thumb img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
     transform: none !important;
     -webkit-transform: none !important;
     will-change: auto !important;

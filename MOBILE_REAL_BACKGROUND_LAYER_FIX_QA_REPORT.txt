@@ -1,0 +1,28 @@
+Mobile Real Background Layer Fix QA
+
+Reason for method change:
+- Previous raster-safe zone changed the visual too much and did not fix the flicker.
+- Image pipeline alone also did not fix it.
+- This patch targets a lower-level cause: mobile WebView/Chromium instability with fixed body pseudo-elements behind large image grids and glass/backdrop layers.
+
+What changed:
+1. On touch/mobile only, body::before/body::after are replaced by real fixed DOM layers: .mobile-fixed-bg and .mobile-fixed-hud.
+2. The visual background/HUD is copied from the old pseudo-elements.
+3. Ambient layer remains visible.
+4. Blur/glass/lightbox blur remain enabled.
+5. Existing image lazy/decode pipeline remains.
+
+What this does NOT do:
+- Does not add raster-safe absolute page-height background.
+- Does not blur the background more.
+- Does not hide ambient particles.
+- Does not remove backdrop-filter from the lightbox or cards.
+
+Static feasibility checks:
+- PASS: CSS braces balanced
+- PASS: Real mobile background layers CSS present
+- PASS: Original body pseudo layers disabled only in mobile rule
+- PASS: No visual effects hidden
+- PASS: Interface JS injects mobile fixed layers
+- PASS: Image pipeline still retained
+- PASS: No raster-safe absolute page-height mode
