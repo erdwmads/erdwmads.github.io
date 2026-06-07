@@ -13156,3 +13156,67 @@ body.ui-page-research-graduation #mission-index > .section-label::before {
   transform: none !important;
   border-radius: 50% !important;
 }
+
+
+/* ============================================================
+   Status Card Stripe Minimal Fix — Effects Preserved
+   Scope:
+   - Only fixes repaint seams on status cards.
+   - Keeps backdrop-filter / glass / highlight effects.
+   - Does NOT remove pseudo highlights.
+   - Does NOT change layout, text, Mission Log, Navigator, Paper Shelf, or entry animation.
+   ============================================================ */
+
+html[data-theme="space"] .status-card,
+html[data-theme-space] .status-card,
+body.space-mode .status-card,
+html[data-theme="space"] .project-progress > div,
+html[data-theme-space] .project-progress > div,
+body.space-mode .project-progress > div {
+  isolation: isolate !important;
+  contain: paint !important;
+  overflow: hidden !important;
+  background-clip: padding-box !important;
+  background-origin: padding-box !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  transform: translate3d(0, 0, 0) !important;
+  -webkit-transform: translate3d(0, 0, 0) !important;
+  will-change: transform !important;
+}
+
+/* Keep the original glass/highlight layers, but force them to stay clipped
+   inside the card so browser repaint seams do not appear as vertical white bars. */
+html[data-theme="space"] .status-card::before,
+html[data-theme="space"] .status-card::after,
+html[data-theme-space] .status-card::before,
+html[data-theme-space] .status-card::after,
+body.space-mode .status-card::before,
+body.space-mode .status-card::after,
+html[data-theme="space"] .project-progress > div::before,
+html[data-theme="space"] .project-progress > div::after,
+html[data-theme-space] .project-progress > div::before,
+html[data-theme-space] .project-progress > div::after,
+body.space-mode .project-progress > div::before,
+body.space-mode .project-progress > div::after {
+  pointer-events: none !important;
+  overflow: hidden !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  transform: translate3d(0, 0, 0) !important;
+  -webkit-transform: translate3d(0, 0, 0) !important;
+}
+
+/* Mobile / Chromium WebView guard:
+   keep glass effects, but avoid subpixel right/left bleed on rounded cards. */
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+  html[data-theme="space"] .status-card,
+  html[data-theme-space] .status-card,
+  body.space-mode .status-card,
+  html[data-theme="space"] .project-progress > div,
+  html[data-theme-space] .project-progress > div,
+  body.space-mode .project-progress > div {
+    clip-path: inset(0 round inherit) !important;
+    -webkit-clip-path: inset(0 round inherit) !important;
+  }
+}
