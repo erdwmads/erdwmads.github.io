@@ -14388,3 +14388,239 @@ html:not([data-theme="space"]) .ui2046-progress span {
       inset 0 -1px 0 rgba(226,190,112,.040) !important;
   }
 }
+
+
+/* ============================================================
+   Mission Log / Research Log Gold Language Expansion
+   Goals:
+   1. Broaden the favourite gold pill language from the screenshot
+      across Mission Log / Research Log / adjacent archive UI.
+   2. Increase gold presence slightly, but keep the archive look elegant.
+   3. Turn part of the meteors and star dust into gold meteors / gold dust.
+   4. Preserve existing layout and behavioural fixes.
+   ============================================================ */
+
+:root {
+  --archive-gold-rich: rgba(232, 197, 116, .88);
+  --archive-gold-mid: rgba(217, 183, 106, .72);
+  --archive-gold-soft: rgba(232, 197, 116, .14);
+  --archive-gold-fog: rgba(232, 197, 116, .08);
+  --archive-gold-line-strong: rgba(232, 197, 116, .28);
+  --archive-gold-shadow: rgba(232, 197, 116, .18);
+}
+
+/* ---------- A. Gold pill language for Mission Log / Research Log ---------- */
+
+html[data-theme="space"] .mission-entry-kicker,
+html[data-theme="space"] .mission-card-badge,
+html[data-theme="space"] .research-note-date,
+html[data-theme="space"] .paper-status,
+html[data-theme="space"] .status-badge,
+html[data-theme="space"] .mission-index-mode,
+html[data-theme="space"] .cabinet-chip,
+html[data-theme="space"] .project-topline .status-badge,
+html[data-theme="space"] .project-link-card .status-badge,
+html[data-theme="space"] .mission-log-panel .status-badge,
+html[data-theme="space"] .research-log-index-link .mission-jump-log,
+html[data-theme="space"] .mission-jump-log {
+  color: rgba(237, 208, 139, .96) !important;
+  border-color: rgba(232, 197, 116, .34) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.032)),
+    linear-gradient(90deg, rgba(232,197,116,.18), rgba(143,208,255,.06) 54%, rgba(232,197,116,.08)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.14),
+    inset 0 -1px 0 rgba(232,197,116,.06),
+    0 0 0 1px rgba(232,197,116,.04),
+    0 8px 20px rgba(0,0,0,.12),
+    0 0 16px rgba(232,197,116,.08) !important;
+}
+
+/* Stronger special prominence for the sorter / mode pills like EARLIEST FIRST */
+html[data-theme="space"] .mission-index-mode,
+html[data-theme="space"] .entry-gate__mode,
+html[data-theme="space"] .entry-gate__status {
+  letter-spacing: .12em !important;
+}
+
+/* Research Log / Mission Log cards get slightly more gold framing */
+html[data-theme="space"] .research-note-card,
+html[data-theme="space"] .log-entry,
+html[data-theme="space"] .mission-log-panel,
+html[data-theme="space"] .mission-log-entry,
+html[data-theme="space"] .mission-jump-card,
+html[data-theme="space"] .research-log-index-link,
+html[data-theme="space"] .project-link-card,
+html[data-theme="space"] .paper-card {
+  border-color: rgba(232, 197, 116, .18) !important;
+  box-shadow:
+    0 22px 48px rgba(0,0,0,.28),
+    0 0 30px rgba(143,208,255,.038),
+    0 0 20px rgba(232,197,116,.045),
+    inset 0 1px 0 rgba(255,255,255,.13),
+    inset 0 -1px 0 rgba(232,197,116,.05) !important;
+}
+
+html[data-theme="space"] .research-note-card:hover,
+html[data-theme="space"] .log-entry:hover,
+html[data-theme="space"] .mission-jump-card:hover,
+html[data-theme="space"] .research-log-index-link:hover,
+html[data-theme="space"] .project-link-card:hover,
+html[data-theme="space"] .paper-card:hover {
+  border-color: rgba(232, 197, 116, .26) !important;
+  box-shadow:
+    0 26px 58px rgba(0,0,0,.30),
+    0 0 34px rgba(232,197,116,.08),
+    0 0 22px rgba(143,208,255,.05),
+    inset 0 1px 0 rgba(255,255,255,.15),
+    inset 0 -1px 0 rgba(232,197,116,.07) !important;
+}
+
+/* Log / Research index metadata lines can lean slightly gold for better coherence */
+html[data-theme="space"] .mission-jump-meta,
+html[data-theme="space"] .research-log-index-link em,
+html[data-theme="space"] .section-label-note {
+  color: rgba(218, 199, 156, .82) !important;
+}
+
+/* Section-level labels: a bit more gold without dominating headlines */
+html[data-theme="space"] .research-log-page .section-label,
+html[data-theme="space"] .research-graduation-page .section-label,
+html[data-theme="space"] .mission-log-page .section-label,
+html[data-theme="space"] body.ui-page-research-log .section-label,
+html[data-theme="space"] body.ui-page-research-graduation .section-label {
+  color: rgba(218, 234, 247, .94) !important;
+  text-shadow:
+    0 0 14px rgba(143,208,255,.11),
+    0 0 10px rgba(232,197,116,.06) !important;
+}
+
+html[data-theme="space"] .research-log-page .section-label::before,
+html[data-theme="space"] .research-graduation-page .section-label::before,
+html[data-theme="space"] .mission-log-page .section-label::before,
+html[data-theme="space"] body.ui-page-research-log .section-label::before,
+html[data-theme="space"] body.ui-page-research-graduation .section-label::before {
+  background:
+    radial-gradient(circle, rgba(246,220,153,.96), rgba(232,197,116,.82) 52%, transparent 76%) !important;
+  box-shadow:
+    0 0 10px rgba(232,197,116,.32),
+    0 0 22px rgba(232,197,116,.10) !important;
+}
+
+/* Tag groups near research / paper cards: slightly more gold than before */
+html[data-theme="space"] .project-tags span,
+html[data-theme="space"] .log-tags span,
+html[data-theme="space"] .research-tags span,
+html[data-theme="space"] .hero-tags span {
+  border-color: rgba(232, 197, 116, .20) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.026)),
+    linear-gradient(90deg, rgba(232,197,116,.11), rgba(143,208,255,.048)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.11),
+    0 0 14px rgba(232,197,116,.035) !important;
+}
+
+/* Selected buttons / CTAs on these archive-style pages get more of the favourite gold trim */
+html[data-theme="space"] body.ui-page-research-log .button,
+html[data-theme="space"] body.ui-page-research-log button,
+html[data-theme="space"] body.ui-page-research-graduation .button,
+html[data-theme="space"] body.ui-page-research-graduation button,
+html[data-theme="space"] body.ui-page-paper-shelf .button,
+html[data-theme="space"] body.ui-page-paper-shelf button {
+  border-color: rgba(232,197,116,.22) !important;
+  box-shadow:
+    0 14px 30px rgba(0,0,0,.18),
+    0 0 18px rgba(232,197,116,.05),
+    inset 0 1px 0 rgba(255,255,255,.11),
+    inset 0 -1px 0 rgba(232,197,116,.05) !important;
+}
+
+/* ---------- B. Light mode keeps refined champagne, not dirty gold ---------- */
+html:not([data-theme="space"]) .mission-entry-kicker,
+html:not([data-theme="space"]) .mission-card-badge,
+html:not([data-theme="space"]) .research-note-date,
+html:not([data-theme="space"]) .paper-status,
+html:not([data-theme="space"]) .status-badge,
+html:not([data-theme="space"]) .mission-index-mode,
+html:not([data-theme="space"]) .cabinet-chip {
+  color: rgba(150, 120, 68, .92) !important;
+  border-color: rgba(198, 171, 117, .24) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.92), rgba(248,246,240,.72)),
+    linear-gradient(90deg, rgba(198,171,117,.08), rgba(35,93,135,.025)) !important;
+  box-shadow:
+    0 8px 18px rgba(20,48,78,.06),
+    inset 0 1px 0 rgba(255,255,255,.82),
+    inset 0 -1px 0 rgba(198,171,117,.06) !important;
+}
+
+html:not([data-theme="space"]) .research-note-card,
+html:not([data-theme="space"]) .log-entry,
+html:not([data-theme="space"]) .mission-log-panel,
+html:not([data-theme="space"]) .mission-jump-card,
+html:not([data-theme="space"]) .research-log-index-link,
+html:not([data-theme="space"]) .project-link-card,
+html:not([data-theme="space"]) .paper-card {
+  border-color: rgba(198,171,117,.14) !important;
+  box-shadow:
+    0 22px 54px rgba(28,58,92,.08),
+    0 0 0 1px rgba(198,171,117,.03) inset,
+    inset 0 1px 0 rgba(255,255,255,.72),
+    inset 0 -1px 0 rgba(198,171,117,.04) !important;
+}
+
+/* ---------- C. Gold meteors + gold stardust ---------- */
+
+/* keep the majority cool white/blue; only a curated subset becomes gold */
+html[data-theme="space"] .ambient-space-layer .ambient-dust:nth-child(6n),
+html[data-theme="space"] .ambient-space-layer .ambient-dust:nth-child(11n) {
+  background: rgba(244, 217, 152, .94) !important;
+  box-shadow:
+    0 0 8px rgba(244, 217, 152, .82),
+    0 0 18px rgba(232, 197, 116, .36),
+    0 0 28px rgba(255, 225, 168, .12) !important;
+}
+
+html[data-theme="space"] .ambient-space-layer .ambient-meteor:nth-child(4n),
+html[data-theme="space"] .ambient-space-layer .ambient-meteor:nth-child(7n) {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0) 0%,
+    rgba(232,197,116,.12) 16%,
+    rgba(244,217,152,.74) 58%,
+    rgba(255,239,198,.98) 100%
+  ) !important;
+  filter: drop-shadow(0 0 8px rgba(244, 217, 152, .56)) !important;
+}
+
+html[data-theme="space"] .ambient-space-layer .ambient-meteor:nth-child(4n)::after,
+html[data-theme="space"] .ambient-space-layer .ambient-meteor:nth-child(7n)::after {
+  background: rgba(255, 240, 202, .98) !important;
+  box-shadow:
+    0 0 12px rgba(255, 238, 195, .95),
+    0 0 24px rgba(232, 197, 116, .52) !important;
+}
+
+/* also let a small number of mode labels and tiny archive meta pick up gold */
+html[data-theme="space"] .entry-gate__kicker,
+html[data-theme="space"] .entry-gate__code,
+html[data-theme="space"] .entry-gate__status,
+html[data-theme="space"] .entry-gate__mode {
+  color: rgba(233, 201, 127, .92) !important;
+}
+
+/* Mobile keeps the same direction, just slightly quieter */
+@media (max-width: 760px) {
+  html[data-theme="space"] .mission-entry-kicker,
+  html[data-theme="space"] .mission-card-badge,
+  html[data-theme="space"] .research-note-date,
+  html[data-theme="space"] .paper-status,
+  html[data-theme="space"] .status-badge,
+  html[data-theme="space"] .mission-index-mode,
+  html[data-theme="space"] .cabinet-chip {
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.12),
+      0 0 12px rgba(232,197,116,.06) !important;
+  }
+}
