@@ -11903,3 +11903,342 @@ body.entry-gate-active > .ui2046-progress {
     transition: none !important;
   }
 }
+
+
+/* ============================================================
+   Astromaterials Archive Entry Gate V2
+   More cinematic, still restrained:
+   - institutional archive boot
+   - orbital mineral record motif
+   - constellation points
+   - split-name reveal
+   - no cheap game HUD
+   ============================================================ */
+
+.entry-gate {
+  background:
+    radial-gradient(circle at 16% 18%, rgba(143,208,255,.18), transparent 28rem),
+    radial-gradient(circle at 82% 22%, rgba(255,217,154,.10), transparent 28rem),
+    radial-gradient(circle at 50% 92%, rgba(143,208,255,.085), transparent 34rem),
+    linear-gradient(180deg, rgba(2,6,12,.99), rgba(5,12,22,.965) 52%, rgba(2,5,10,.995)) !important;
+}
+
+.entry-gate::before {
+  opacity: .26 !important;
+  filter: grayscale(1) contrast(1.28) brightness(.66) !important;
+  transform: scale(1.075) !important;
+  animation: entryGateAsteroidDrift 2.6s cubic-bezier(.2,.8,.2,1) forwards !important;
+}
+
+.entry-gate::after {
+  background:
+    linear-gradient(90deg, rgba(143,208,255,.050) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(143,208,255,.036) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, transparent 0, rgba(4,9,16,.30) 56%, rgba(4,9,16,.92) 100%),
+    linear-gradient(115deg, transparent 0 42%, rgba(143,208,255,.08) 48%, transparent 56% 100%) !important;
+  background-size: 88px 88px, 88px 88px, auto, auto !important;
+  opacity: .82 !important;
+}
+
+.entry-gate__frame {
+  position: relative !important;
+  width: min(900px, calc(100vw - 44px)) !important;
+  display: grid !important;
+  place-items: center !important;
+}
+
+.entry-gate__panel {
+  width: min(760px, 100%) !important;
+  padding: clamp(34px, 5.4vw, 58px) !important;
+  border-radius: 34px !important;
+  border: 1px solid rgba(190,226,255,.20) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.040)),
+    radial-gradient(circle at 18% 14%, rgba(143,208,255,.12), transparent 32%),
+    radial-gradient(circle at 86% 86%, rgba(255,217,154,.055), transparent 34%),
+    rgba(6, 14, 25, .64) !important;
+  box-shadow:
+    0 42px 120px rgba(0,0,0,.50),
+    0 0 0 1px rgba(255,255,255,.034) inset,
+    inset 0 1px 0 rgba(255,255,255,.16),
+    inset 0 -1px 0 rgba(143,208,255,.08) !important;
+  backdrop-filter: blur(22px) saturate(1.13) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.13) !important;
+  overflow: hidden !important;
+}
+
+.entry-gate__panel::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  pointer-events: none !important;
+  background:
+    linear-gradient(90deg, transparent, rgba(255,255,255,.10), transparent),
+    linear-gradient(180deg, rgba(255,255,255,.12), transparent 26%) !important;
+  opacity: .38 !important;
+  transform: translateX(-35%) !important;
+  animation: entryGateGlassSweep 1.5s .18s cubic-bezier(.2,.8,.2,1) forwards !important;
+}
+
+.entry-gate__topline {
+  display: flex !important;
+  justify-content: space-between !important;
+  gap: 18px !important;
+  align-items: center !important;
+  margin-bottom: 20px !important;
+}
+
+.entry-gate__code {
+  margin: 0 !important;
+  color: rgba(255,217,154,.68) !important;
+  font-family:
+    "Aptos Mono","SFMono-Regular","Cascadia Mono","Cascadia Code","Roboto Mono",ui-monospace,monospace !important;
+  font-size: 10px !important;
+  font-weight: 760 !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+}
+
+.entry-gate__name {
+  display: grid !important;
+  gap: .06em !important;
+  margin: 0 !important;
+  color: rgba(240,248,255,.99) !important;
+  font-size: clamp(40px, 8vw, 82px) !important;
+  line-height: .88 !important;
+  letter-spacing: .025em !important;
+  font-weight: 880 !important;
+}
+
+.entry-gate__name span {
+  display: block !important;
+  opacity: 0 !important;
+  transform: translateY(14px) !important;
+  animation: entryGateNameRise .72s cubic-bezier(.2,.8,.2,1) forwards !important;
+}
+
+.entry-gate__name span:nth-child(2) {
+  animation-delay: .13s !important;
+}
+
+.entry-gate__archive {
+  max-width: 620px !important;
+  margin-top: 18px !important;
+}
+
+.entry-gate__meta {
+  gap: 10px !important;
+  margin-top: 30px !important;
+}
+
+.entry-gate__meta span {
+  border-color: rgba(143,208,255,.22) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.030)),
+    rgba(143,208,255,.075) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.13),
+    0 0 16px rgba(143,208,255,.045) !important;
+}
+
+.entry-gate__sequence {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  margin-top: 28px !important;
+}
+
+.entry-gate__sequence span {
+  min-height: 34px !important;
+  display: grid !important;
+  place-items: center !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(143,208,255,.14) !important;
+  background:
+    linear-gradient(180deg, rgba(143,208,255,.075), rgba(255,255,255,.020)) !important;
+  color: rgba(183,211,236,.76) !important;
+  font-family:
+    "Aptos Mono","SFMono-Regular","Cascadia Mono","Cascadia Code","Roboto Mono",ui-monospace,monospace !important;
+  font-size: 9.5px !important;
+  letter-spacing: .10em !important;
+  text-transform: uppercase !important;
+  font-weight: 720 !important;
+}
+
+.entry-gate__line {
+  margin-top: 32px !important;
+}
+
+.entry-gate__line::before {
+  width: 54% !important;
+  animation: entryGateScanV2 1.55s .35s cubic-bezier(.2,.8,.2,1) forwards !important;
+}
+
+.entry-gate__orbit {
+  position: absolute !important;
+  inset: 50% auto auto 50% !important;
+  width: min(740px, 86vw) !important;
+  aspect-ratio: 1 / .52 !important;
+  transform: translate(-50%, -50%) rotate(-8deg) !important;
+  pointer-events: none !important;
+  opacity: .80 !important;
+  z-index: -1 !important;
+}
+
+.entry-gate__orbit span {
+  position: absolute !important;
+  inset: 0 !important;
+  border-radius: 50% !important;
+  border: 1px solid rgba(143,208,255,.13) !important;
+  box-shadow: 0 0 42px rgba(143,208,255,.035) inset !important;
+  animation: entryGateOrbit 2.4s cubic-bezier(.2,.8,.2,1) forwards !important;
+}
+
+.entry-gate__orbit span:nth-child(2) {
+  inset: 9% 7% !important;
+  border-color: rgba(255,217,154,.10) !important;
+  animation-delay: .08s !important;
+}
+
+.entry-gate__orbit span:nth-child(3) {
+  inset: 18% 14% !important;
+  border-color: rgba(143,208,255,.10) !important;
+  animation-delay: .16s !important;
+}
+
+.entry-gate__corner {
+  position: absolute !important;
+  width: 70px !important;
+  height: 70px !important;
+  pointer-events: none !important;
+  opacity: .75 !important;
+}
+
+.entry-gate__corner.is-tl {
+  left: -4px !important;
+  top: -4px !important;
+  border-left: 1px solid rgba(143,208,255,.36) !important;
+  border-top: 1px solid rgba(143,208,255,.36) !important;
+}
+
+.entry-gate__corner.is-br {
+  right: -4px !important;
+  bottom: -4px !important;
+  border-right: 1px solid rgba(255,217,154,.24) !important;
+  border-bottom: 1px solid rgba(255,217,154,.24) !important;
+}
+
+.entry-gate__constellation {
+  position: absolute !important;
+  inset: 0 !important;
+  pointer-events: none !important;
+}
+
+.entry-gate__constellation span {
+  position: absolute !important;
+  left: var(--x) !important;
+  top: var(--y) !important;
+  width: 4px !important;
+  height: 4px !important;
+  border-radius: 999px !important;
+  background: rgba(230,244,255,.90) !important;
+  box-shadow:
+    0 0 10px rgba(143,208,255,.55),
+    0 0 24px rgba(143,208,255,.18) !important;
+  opacity: 0 !important;
+  animation: entryGateStar .88s var(--d) ease forwards !important;
+}
+
+.entry-gate__constellation span::after {
+  content: "" !important;
+  position: absolute !important;
+  left: 3px !important;
+  top: 50% !important;
+  width: clamp(60px, 12vw, 160px) !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, rgba(143,208,255,.34), transparent) !important;
+  transform: translateY(-50%) rotate(12deg) !important;
+  transform-origin: left center !important;
+  opacity: .50 !important;
+}
+
+@keyframes entryGateNameRise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes entryGateGlassSweep {
+  to {
+    transform: translateX(48%);
+  }
+}
+
+@keyframes entryGateScanV2 {
+  from { transform: translateX(-120%); }
+  to { transform: translateX(235%); }
+}
+
+@keyframes entryGateOrbit {
+  from {
+    opacity: 0;
+    transform: scale(.92) rotate(-2deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes entryGateStar {
+  to { opacity: 1; }
+}
+
+@keyframes entryGateAsteroidDrift {
+  from { transform: scale(1.09) translate3d(0, 0, 0); }
+  to { transform: scale(1.04) translate3d(-10px, 4px, 0); }
+}
+
+@media (max-width: 760px) {
+  .entry-gate__frame {
+    width: calc(100vw - 30px) !important;
+  }
+
+  .entry-gate__panel {
+    padding: 30px 22px !important;
+    border-radius: 26px !important;
+  }
+
+  .entry-gate__topline {
+    display: grid !important;
+    gap: 7px !important;
+  }
+
+  .entry-gate__name {
+    font-size: clamp(40px, 13vw, 58px) !important;
+  }
+
+  .entry-gate__sequence {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .entry-gate__orbit {
+    width: 92vw !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entry-gate::before,
+  .entry-gate__panel::before,
+  .entry-gate__name span,
+  .entry-gate__line::before,
+  .entry-gate__orbit span,
+  .entry-gate__constellation span {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

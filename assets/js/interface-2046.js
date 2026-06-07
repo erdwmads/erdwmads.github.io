@@ -226,20 +226,46 @@
     gate.className = 'entry-gate';
     gate.setAttribute('aria-hidden', 'true');
     gate.innerHTML = `
-      <div class="entry-gate__panel">
-        <p class="entry-gate__kicker">Astromaterials Research Archive</p>
-        <h2 class="entry-gate__name">MADS LIU YONG</h2>
-        <p class="entry-gate__archive">Cosmic mineralogy / primitive Solar System materials</p>
-        <div class="entry-gate__meta">
-          <span>CI Chondrite</span>
-          <span>Orgueil</span>
-          <span>Dolomite</span>
-          <span>SEM · EPMA · TEM</span>
+      <div class="entry-gate__constellation" aria-hidden="true">
+        <span style="--x:12%;--y:18%;--d:.1s"></span>
+        <span style="--x:26%;--y:72%;--d:.35s"></span>
+        <span style="--x:70%;--y:20%;--d:.55s"></span>
+        <span style="--x:84%;--y:66%;--d:.25s"></span>
+      </div>
+      <div class="entry-gate__frame">
+        <div class="entry-gate__corner is-tl"></div>
+        <div class="entry-gate__corner is-br"></div>
+        <div class="entry-gate__orbit" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
-        <div class="entry-gate__line"></div>
-        <div class="entry-gate__footer">
-          <p class="entry-gate__mode">Entering Interface 2046</p>
-          <p class="entry-gate__status">Archive online</p>
+        <div class="entry-gate__panel">
+          <div class="entry-gate__topline">
+            <p class="entry-gate__kicker">Astromaterials Research Archive</p>
+            <p class="entry-gate__code">CI-ORGUEIL / 2046</p>
+          </div>
+          <h2 class="entry-gate__name">
+            <span>MADS</span>
+            <span>LIU YONG</span>
+          </h2>
+          <p class="entry-gate__archive">Cosmic mineralogy / primitive Solar System materials</p>
+          <div class="entry-gate__meta">
+            <span>CI Chondrite</span>
+            <span>Orgueil</span>
+            <span>Dolomite</span>
+            <span>SEM · EPMA · TEM</span>
+          </div>
+          <div class="entry-gate__sequence" aria-hidden="true">
+            <span>MINERAL RECORD</span>
+            <span>AQUEOUS ALTERATION</span>
+            <span>PRIMITIVE MATERIAL</span>
+          </div>
+          <div class="entry-gate__line"></div>
+          <div class="entry-gate__footer">
+            <p class="entry-gate__mode">Entering Interface 2046</p>
+            <p class="entry-gate__status">Archive online</p>
+          </div>
         </div>
       </div>
     `;
@@ -259,14 +285,15 @@
       }, 680);
     };
 
-    window.setTimeout(exit, 1680);
+    gate.addEventListener('click', exit, { once: true });
+    window.setTimeout(exit, 1980);
     window.setTimeout(() => {
       if (document.body?.contains(gate)) {
         gate.remove();
         body.classList.remove('entry-gate-active');
         markPlayed();
       }
-    }, 3200);
+    }, 3600);
   };
 
   if (document.readyState === 'loading') {
