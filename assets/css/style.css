@@ -13220,3 +13220,71 @@ body.space-mode .project-progress > div::after {
     -webkit-clip-path: inset(0 round inherit) !important;
   }
 }
+
+
+/* ============================================================
+   Edge-only Status Card Repaint Stripe Fix
+   Scope:
+   - Only Microsoft Edge / Edge WebView, detected by JS as .is-edge-browser.
+   - Only Ongoing / Project status cards.
+   - Firefox and other browsers keep the original glass effects unchanged.
+   Reason:
+   - The white vertical stripe is an Edge/Chromium compositing seam caused by
+     backdrop-filter + fixed/animated background + layered rounded cards.
+   ============================================================ */
+
+html.is-edge-browser[data-theme="space"] .status-card,
+html.is-edge-browser[data-theme-space] .status-card,
+html.is-edge-browser body.space-mode .status-card,
+html.is-edge-browser[data-theme="space"] .project-progress > div,
+html.is-edge-browser[data-theme-space] .project-progress > div,
+html.is-edge-browser body.space-mode .project-progress > div {
+  isolation: isolate !important;
+  contain: paint !important;
+  overflow: hidden !important;
+  background-clip: padding-box !important;
+  background-origin: padding-box !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  transform: translate3d(0, 0, 0) !important;
+  -webkit-transform: translate3d(0, 0, 0) !important;
+  will-change: transform !important;
+}
+
+/* Edge-only deeper guard:
+   Keep the pseudo highlight layers visible, but prevent them from becoming
+   separate large repaint surfaces that create vertical seams. */
+html.is-edge-browser[data-theme="space"] .status-card::before,
+html.is-edge-browser[data-theme="space"] .status-card::after,
+html.is-edge-browser[data-theme-space] .status-card::before,
+html.is-edge-browser[data-theme-space] .status-card::after,
+html.is-edge-browser body.space-mode .status-card::before,
+html.is-edge-browser body.space-mode .status-card::after,
+html.is-edge-browser[data-theme="space"] .project-progress > div::before,
+html.is-edge-browser[data-theme="space"] .project-progress > div::after,
+html.is-edge-browser[data-theme-space] .project-progress > div::before,
+html.is-edge-browser[data-theme-space] .project-progress > div::after,
+html.is-edge-browser body.space-mode .project-progress > div::before,
+html.is-edge-browser body.space-mode .project-progress > div::after {
+  pointer-events: none !important;
+  overflow: hidden !important;
+  background-attachment: scroll !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  transform: translate3d(0, 0, 0) !important;
+  -webkit-transform: translate3d(0, 0, 0) !important;
+}
+
+/* Edge mobile / Edge WebView:
+   only clip the rounded card paint area; this does not remove the glass/highlight. */
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+  html.is-edge-browser[data-theme="space"] .status-card,
+  html.is-edge-browser[data-theme-space] .status-card,
+  html.is-edge-browser body.space-mode .status-card,
+  html.is-edge-browser[data-theme="space"] .project-progress > div,
+  html.is-edge-browser[data-theme-space] .project-progress > div,
+  html.is-edge-browser body.space-mode .project-progress > div {
+    clip-path: inset(0 round inherit) !important;
+    -webkit-clip-path: inset(0 round inherit) !important;
+  }
+}

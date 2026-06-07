@@ -302,3 +302,15 @@
     init();
   }
 })();
+
+
+/* Edge-specific rendering guard.
+   Adds a class only for Microsoft Edge / Edge WebView so Edge-only Chromium
+   repaint seams can be fixed without changing Firefox/Safari/other browsers. */
+(() => {
+  const ua = navigator.userAgent || "";
+  const isEdge = /\bEdgA?\/|\bEdgiOS\/|\bEdg\//.test(ua);
+  if (isEdge) {
+    document.documentElement.classList.add("is-edge-browser");
+  }
+})();
