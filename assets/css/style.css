@@ -11446,3 +11446,399 @@ html {
     will-change: auto !important;
   }
 }
+
+
+/* ============================================================
+   Mission Badge Future Refinement
+   Purpose:
+   - Restore a consistent premium/futuristic look for LOG / SOL / mission
+     index labels after the hover-size stability patches.
+   - Typography is defined in normal state only, never in :hover, so it will
+     not change when the mouse enters/leaves a card.
+   ============================================================ */
+
+/* Shared mission label typography: stable, technical, future-archive feel. */
+.research-note-date,
+.mission-entry-kicker,
+.mission-jump-log,
+.mission-index-mode {
+  font-family:
+    "Aptos Mono",
+    "SFMono-Regular",
+    "Cascadia Mono",
+    "Cascadia Code",
+    "Roboto Mono",
+    "IBM Plex Mono",
+    ui-monospace,
+    monospace !important;
+  font-size: 11px !important;
+  line-height: 1 !important;
+  font-weight: 800 !important;
+  letter-spacing: .145em !important;
+  text-transform: uppercase !important;
+  font-variant-numeric: tabular-nums !important;
+  white-space: nowrap !important;
+  transform: none !important;
+  will-change: auto !important;
+}
+
+/* Main LOG pill on each Mission Log card. */
+.research-note-date {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: max-content !important;
+  min-height: 34px !important;
+  padding: 0 18px !important;
+  margin: 0 0 14px 0 !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(205, 230, 255, .28) !important;
+  color: rgba(235, 246, 255, .94) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.055)),
+    linear-gradient(90deg, rgba(143,208,255,.12), rgba(255,255,255,.035) 48%, rgba(143,208,255,.10)) !important;
+  box-shadow:
+    0 10px 26px rgba(0,0,0,.18),
+    0 0 0 1px rgba(255,255,255,.026) inset,
+    inset 0 1px 0 rgba(255,255,255,.24),
+    inset 0 -1px 0 rgba(143,208,255,.08) !important;
+  backdrop-filter: blur(14px) saturate(1.18) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(1.18) !important;
+}
+
+/* SOL/date pill inside each card. */
+.mission-entry-kicker {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: max-content !important;
+  min-height: 31px !important;
+  padding: 0 14px !important;
+  margin: 0 0 14px 0 !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(143,208,255,.22) !important;
+  color: rgba(183, 207, 226, .92) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.135), rgba(255,255,255,.045)),
+    linear-gradient(90deg, rgba(143,208,255,.09), rgba(255,255,255,.025)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.18),
+    inset 0 -1px 0 rgba(143,208,255,.055),
+    0 8px 20px rgba(0,0,0,.12) !important;
+  backdrop-filter: blur(12px) saturate(1.14) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(1.14) !important;
+}
+
+/* Mission Index compact LOG pill. */
+.mission-jump-log,
+.mission-index-mode {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 30px !important;
+  padding: 0 13px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(190, 226, 255, .24) !important;
+  color: rgba(231, 244, 255, .92) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.165), rgba(255,255,255,.055)),
+    linear-gradient(90deg, rgba(143,208,255,.10), rgba(255,255,255,.026)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.20),
+    inset 0 -1px 0 rgba(143,208,255,.060),
+    0 0 16px rgba(143,208,255,.075) !important;
+}
+
+/* Keep meta/date text aligned with the same system without turning it into a
+   second heavy badge. */
+.mission-jump-meta {
+  font-family:
+    "Aptos Mono",
+    "SFMono-Regular",
+    "Cascadia Mono",
+    "Cascadia Code",
+    "Roboto Mono",
+    "IBM Plex Mono",
+    ui-monospace,
+    monospace !important;
+  font-size: 11px !important;
+  line-height: 1.25 !important;
+  font-weight: 650 !important;
+  letter-spacing: .055em !important;
+  font-variant-numeric: tabular-nums !important;
+  color: rgba(183, 204, 223, .78) !important;
+  white-space: nowrap !important;
+}
+
+/* Prevent hover from changing label typography or scale.
+   Hover may move the outer card only. */
+@media (hover: hover) and (pointer: fine) {
+  .research-note-card:hover .research-note-date,
+  .mission-log-entry:hover .mission-entry-kicker,
+  .mission-jump-card:hover .mission-jump-log,
+  .mission-jump-card:hover .mission-index-mode,
+  .mission-jump-card:hover .mission-jump-meta,
+  .compact-jump-card:hover .mission-jump-log,
+  .compact-jump-card:hover .mission-index-mode,
+  .compact-jump-card:hover .mission-jump-meta {
+    transform: none !important;
+    font-size: inherit;
+    line-height: inherit;
+    letter-spacing: inherit;
+    font-weight: inherit;
+    font-family: inherit;
+  }
+}
+
+/* Light Mode keeps the same hierarchy with lunar archive tones. */
+html:not([data-theme="space"]) .research-note-date,
+html:not([data-theme="space"]) .mission-entry-kicker,
+html:not([data-theme="space"]) .mission-jump-log,
+html:not([data-theme="space"]) .mission-index-mode {
+  color: #154f78 !important;
+  border-color: rgba(35, 93, 135, .18) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.82), rgba(229,241,249,.52)),
+    linear-gradient(90deg, rgba(35,93,135,.09), rgba(255,255,255,.28)) !important;
+  box-shadow:
+    0 10px 24px rgba(32, 70, 103, .08),
+    inset 0 1px 0 rgba(255,255,255,.72),
+    inset 0 -1px 0 rgba(35,93,135,.065) !important;
+}
+
+html:not([data-theme="space"]) .mission-jump-meta {
+  color: rgba(37, 64, 87, .70) !important;
+}
+
+/* Responsive: keep the premium shape but avoid oversized pills on mobile. */
+@media (max-width: 760px) {
+  .research-note-date {
+    min-height: 30px !important;
+    padding: 0 13px !important;
+    font-size: 10px !important;
+    letter-spacing: .13em !important;
+  }
+
+  .mission-entry-kicker,
+  .mission-jump-log,
+  .mission-index-mode {
+    min-height: 28px !important;
+    padding: 0 11px !important;
+    font-size: 9.5px !important;
+    letter-spacing: .12em !important;
+  }
+
+  .mission-jump-meta {
+    font-size: 10px !important;
+    letter-spacing: .035em !important;
+    white-space: normal !important;
+  }
+}
+
+
+/* ============================================================
+   Global Badge Future System
+   Purpose:
+   - Apply the same premium/future archive badge style to Paper Shelf,
+     Research, Home, CV, Contact, and Mission Log labels.
+   - Prevent hover from changing any badge typography or apparent size.
+   - Keep card hover lift, but do not let labels/tags/pills re-rasterise or
+     inherit different font metrics on hover.
+   ============================================================ */
+
+/* One technical label system for all small badges/chips. */
+.paper-status,
+.hero-tags span,
+.project-tags span,
+.research-tags span,
+.log-tags span,
+.pill,
+.tag,
+.badge,
+.chip,
+.status-card span,
+.project-progress span,
+.project-sync-note::before,
+.section-label,
+.eyebrow,
+.research-note-date,
+.mission-entry-kicker,
+.mission-jump-log,
+.mission-index-mode {
+  font-family:
+    "Aptos Mono",
+    "SFMono-Regular",
+    "Cascadia Mono",
+    "Cascadia Code",
+    "Roboto Mono",
+    "IBM Plex Mono",
+    ui-monospace,
+    monospace !important;
+  font-size: 11px !important;
+  line-height: 1 !important;
+  font-weight: 800 !important;
+  letter-spacing: .145em !important;
+  text-transform: uppercase !important;
+  font-variant-numeric: tabular-nums !important;
+  white-space: nowrap !important;
+  transform: none !important;
+  will-change: auto !important;
+}
+
+/* Glass badge skin: used for visible chips inside cards, especially Paper Shelf. */
+.paper-status,
+.hero-tags span,
+.project-tags span,
+.research-tags span,
+.log-tags span,
+.pill,
+.tag,
+.badge,
+.chip {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: max-content !important;
+  min-height: 31px !important;
+  padding: 0 14px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(190, 226, 255, .24) !important;
+  color: rgba(231, 244, 255, .92) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.165), rgba(255,255,255,.055)),
+    linear-gradient(90deg, rgba(143,208,255,.10), rgba(255,255,255,.026)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.20),
+    inset 0 -1px 0 rgba(143,208,255,.060),
+    0 0 16px rgba(143,208,255,.075) !important;
+  backdrop-filter: blur(12px) saturate(1.14) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(1.14) !important;
+}
+
+/* Section labels should remain text-like, not heavy pills. */
+.section-label,
+.eyebrow {
+  color: rgba(148, 204, 244, .95) !important;
+  text-shadow: 0 0 18px rgba(143,208,255,.15) !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Status labels inside status cards: technical text label, not button shape. */
+.status-card span,
+.project-progress span,
+.project-sync-note::before {
+  color: rgba(148, 204, 244, .95) !important;
+  text-shadow: 0 0 18px rgba(143,208,255,.14) !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Paper Shelf specific: keep two-card badges visually identical and stable. */
+.paper-card .paper-status,
+.paper-card .tag,
+.paper-card .badge,
+.paper-card .chip {
+  min-height: 32px !important;
+  padding: 0 15px !important;
+  margin-bottom: 14px !important;
+  letter-spacing: .15em !important;
+}
+
+/* Light Mode version: same hierarchy with Lunar Archive tones. */
+html:not([data-theme="space"]) .paper-status,
+html:not([data-theme="space"]) .hero-tags span,
+html:not([data-theme="space"]) .project-tags span,
+html:not([data-theme="space"]) .research-tags span,
+html:not([data-theme="space"]) .log-tags span,
+html:not([data-theme="space"]) .pill,
+html:not([data-theme="space"]) .tag,
+html:not([data-theme="space"]) .badge,
+html:not([data-theme="space"]) .chip,
+html:not([data-theme="space"]) .research-note-date,
+html:not([data-theme="space"]) .mission-entry-kicker,
+html:not([data-theme="space"]) .mission-jump-log,
+html:not([data-theme="space"]) .mission-index-mode {
+  color: #154f78 !important;
+  border-color: rgba(35, 93, 135, .18) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.82), rgba(229,241,249,.52)),
+    linear-gradient(90deg, rgba(35,93,135,.09), rgba(255,255,255,.28)) !important;
+  box-shadow:
+    0 10px 24px rgba(32, 70, 103, .08),
+    inset 0 1px 0 rgba(255,255,255,.72),
+    inset 0 -1px 0 rgba(35,93,135,.065) !important;
+}
+
+html:not([data-theme="space"]) .section-label,
+html:not([data-theme="space"]) .eyebrow,
+html:not([data-theme="space"]) .status-card span,
+html:not([data-theme="space"]) .project-progress span,
+html:not([data-theme="space"]) .project-sync-note::before {
+  color: #0d679f !important;
+  text-shadow: none !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Hover safety: badge typography and scale cannot change while card moves. */
+@media (hover: hover) and (pointer: fine) {
+  .paper-card:hover .paper-status,
+  .paper-card:hover .tag,
+  .paper-card:hover .badge,
+  .paper-card:hover .chip,
+  .project-link-card:hover .project-tags span,
+  .research-note-card:hover .research-tags span,
+  .research-note-card:hover .log-tags span,
+  .mission-log-entry:hover .log-tags span,
+  .feature-card:hover .tag,
+  .feature-card:hover .badge,
+  .feature-card:hover .chip,
+  .status-card:hover span,
+  .project-progress > div:hover span,
+  .research-note-card:hover .research-note-date,
+  .mission-log-entry:hover .mission-entry-kicker,
+  .mission-jump-card:hover .mission-jump-log,
+  .mission-jump-card:hover .mission-index-mode,
+  .compact-jump-card:hover .mission-jump-log,
+  .compact-jump-card:hover .mission-index-mode {
+    transform: none !important;
+    will-change: auto !important;
+  }
+}
+
+/* Responsive: preserve the advanced shape without overcrowding narrow screens. */
+@media (max-width: 760px) {
+  .paper-status,
+  .hero-tags span,
+  .project-tags span,
+  .research-tags span,
+  .log-tags span,
+  .pill,
+  .tag,
+  .badge,
+  .chip,
+  .research-note-date,
+  .mission-entry-kicker,
+  .mission-jump-log,
+  .mission-index-mode {
+    min-height: 28px !important;
+    padding: 0 11px !important;
+    font-size: 9.5px !important;
+    letter-spacing: .12em !important;
+  }
+
+  .section-label,
+  .eyebrow,
+  .status-card span,
+  .project-progress span,
+  .project-sync-note::before {
+    font-size: 10px !important;
+    letter-spacing: .13em !important;
+  }
+}
