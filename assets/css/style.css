@@ -11018,3 +11018,289 @@ html {
     max-height: clamp(48px, 16dvh, 76px) !important;
   }
 }
+
+
+/* ============================================================
+   Mission Lightbox Arrow Caption-Invariant Fix
+   Problem:
+   - When captions wrap to two lines, the caption row becomes taller and the
+     stage row becomes slightly shorter.
+   - Because the prev/next buttons are centered in the stage, they appear to
+     move upward only for long-caption images.
+   Fix:
+   - Reserve a constant caption-row height.
+   - Captions scroll internally if longer.
+   - The image stage and navigation button center no longer depend on caption
+     line count.
+   ============================================================ */
+
+.mission-lightbox__panel {
+  --lightbox-caption-row: clamp(92px, 13vh, 132px);
+  --lightbox-thumbs-row: clamp(58px, 8vh, 78px);
+  grid-template-rows:
+    auto
+    minmax(260px, 1fr)
+    var(--lightbox-caption-row)
+    var(--lightbox-thumbs-row) !important;
+}
+
+.mission-lightbox__stage {
+  min-height: 0 !important;
+  height: 100% !important;
+  align-self: stretch !important;
+}
+
+.mission-lightbox__captionbar {
+  height: var(--lightbox-caption-row) !important;
+  min-height: var(--lightbox-caption-row) !important;
+  max-height: var(--lightbox-caption-row) !important;
+  overflow-y: auto !important;
+  align-self: stretch !important;
+}
+
+.mission-lightbox__caption {
+  max-height: 100% !important;
+  overflow-wrap: anywhere !important;
+}
+
+.mission-lightbox__thumbs {
+  height: var(--lightbox-thumbs-row) !important;
+  min-height: var(--lightbox-thumbs-row) !important;
+  max-height: var(--lightbox-thumbs-row) !important;
+  align-self: stretch !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+}
+
+.mission-lightbox__nav {
+  position: absolute !important;
+  top: 50% !important;
+  bottom: auto !important;
+  transform: translateY(-50%) !important;
+  margin: 0 !important;
+  z-index: 12 !important;
+}
+
+@media (max-width: 900px), (max-height: 760px) {
+  .mission-lightbox__panel {
+    --lightbox-caption-row: clamp(86px, 14dvh, 118px);
+    --lightbox-thumbs-row: clamp(54px, 8dvh, 72px);
+    grid-template-rows:
+      auto
+      minmax(220px, 1fr)
+      var(--lightbox-caption-row)
+      var(--lightbox-thumbs-row) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .mission-lightbox__panel {
+    --lightbox-caption-row: clamp(82px, 15dvh, 112px);
+    --lightbox-thumbs-row: clamp(52px, 8dvh, 68px);
+  }
+
+  .mission-lightbox__captionbar {
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 560px) {
+  .mission-lightbox__panel {
+    --lightbox-caption-row: clamp(58px, 17dvh, 76px);
+    --lightbox-thumbs-row: clamp(44px, 12dvh, 58px);
+    grid-template-rows:
+      auto
+      minmax(170px, 1fr)
+      var(--lightbox-caption-row)
+      var(--lightbox-thumbs-row) !important;
+  }
+}
+
+
+/* ============================================================
+   Hover Text Stability Fix
+   Problem:
+   - Timeline / Mission Log cards use subtle hover lift.
+   - On glass cards, text can appear to move inconsistently because browser
+     subpixel font antialiasing is recalculated during transform/backdrop
+     compositing.
+   Fix:
+   - Hover lift is locked to the outer card only.
+   - Inner text/content layers are prevented from receiving extra transform.
+   - Hover movement uses an integer translate3d value.
+   - Font rendering and transform composition are stabilised.
+   - Hover no longer changes blur/filter/font metrics.
+   ============================================================ */
+
+/* Outer interactive cards: one compositor layer, integer-pixel movement. */
+.research-note-card,
+.mission-log-entry,
+.mission-jump-card,
+.compact-jump-card,
+.project-link-card,
+.paper-card,
+.cv-edu-card,
+.contact-card,
+.feature-card,
+.photo-card,
+.status-card,
+.project-progress > div {
+  transform: translate3d(0, 0, 0) !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  transform-style: flat !important;
+  will-change: transform !important;
+  transition:
+    transform .22s cubic-bezier(.2,.8,.2,1),
+    border-color .22s ease,
+    box-shadow .22s ease,
+    background-color .22s ease !important;
+}
+
+/* Keep the floating feeling, but avoid fractional/subpixel drift. */
+@media (hover: hover) and (pointer: fine) {
+  .research-note-card:hover,
+  .mission-log-entry:hover,
+  .mission-jump-card:hover,
+  .compact-jump-card:hover,
+  .project-link-card:hover,
+  .paper-card:hover,
+  .cv-edu-card:hover,
+  .contact-card:hover,
+  .feature-card:hover,
+  .photo-card:hover,
+  .status-card:hover,
+  .project-progress > div:hover {
+    transform: translate3d(0, -4px, 0) !important;
+  }
+
+  .research-note-card:active,
+  .mission-log-entry:active,
+  .mission-jump-card:active,
+  .compact-jump-card:active,
+  .project-link-card:active,
+  .paper-card:active,
+  .cv-edu-card:active,
+  .contact-card:active,
+  .feature-card:active,
+  .photo-card:active,
+  .status-card:active,
+  .project-progress > div:active {
+    transform: translate3d(0, -2px, 0) !important;
+  }
+}
+
+/* Inner content must not apply its own hover transform.
+   This prevents separate text rows from being rasterised on different
+   subpixel layers. */
+.research-note-card > *,
+.mission-log-entry > *,
+.mission-jump-card > *,
+.compact-jump-card > *,
+.project-link-card > *,
+.paper-card > *,
+.cv-edu-card > *,
+.contact-card > *,
+.feature-card > *,
+.photo-card > *,
+.status-card > *,
+.project-progress > div > *,
+.research-note-body,
+.research-note-body > *,
+.mission-entry-kicker,
+.log-tags,
+.log-tags > *,
+.mission-photo-grid,
+.mission-photo-grid > *,
+.mission-jump-log,
+.mission-jump-meta {
+  transform: none !important;
+  will-change: auto !important;
+  backface-visibility: visible !important;
+  -webkit-backface-visibility: visible !important;
+}
+
+/* Text-rendering stabilisation inside hoverable cards.
+   Avoids the "some lines up, some lines down" visual jitter. */
+.research-note-card,
+.research-note-card *,
+.mission-log-entry,
+.mission-log-entry *,
+.mission-jump-card,
+.mission-jump-card *,
+.compact-jump-card,
+.compact-jump-card *,
+.project-link-card,
+.project-link-card *,
+.paper-card,
+.paper-card *,
+.cv-edu-card,
+.cv-edu-card *,
+.contact-card,
+.contact-card *,
+.feature-card,
+.feature-card *,
+.photo-card,
+.photo-card *,
+.status-card,
+.status-card *,
+.project-progress > div,
+.project-progress > div * {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+}
+
+/* Hover should not change font metrics or backdrop filter intensity.
+   Shadows/borders can change; text layout should not. */
+@media (hover: hover) and (pointer: fine) {
+  .research-note-card:hover *,
+  .mission-log-entry:hover *,
+  .mission-jump-card:hover *,
+  .compact-jump-card:hover *,
+  .project-link-card:hover *,
+  .paper-card:hover *,
+  .cv-edu-card:hover *,
+  .contact-card:hover *,
+  .feature-card:hover *,
+  .photo-card:hover *,
+  .status-card:hover *,
+  .project-progress > div:hover * {
+    letter-spacing: inherit !important;
+    font-weight: inherit;
+    filter: none !important;
+    transform: none !important;
+  }
+}
+
+/* Mission photo figures may keep their own visual hover, but do not move text
+   independently inside the figure. */
+@media (hover: hover) and (pointer: fine) {
+  .mission-photo-grid figure:hover figcaption,
+  .mission-photo-grid figure:hover img,
+  .mission-photo-grid figure:hover::before,
+  .mission-photo-grid figure:hover::after {
+    transform: none !important;
+  }
+}
+
+/* Mobile/touch does not need hover lift and should not reserve compositor
+   memory for it. */
+@media (hover: none), (pointer: coarse) {
+  .research-note-card,
+  .mission-log-entry,
+  .mission-jump-card,
+  .compact-jump-card,
+  .project-link-card,
+  .paper-card,
+  .cv-edu-card,
+  .contact-card,
+  .feature-card,
+  .photo-card,
+  .status-card,
+  .project-progress > div {
+    will-change: auto !important;
+    transform: none !important;
+  }
+}
