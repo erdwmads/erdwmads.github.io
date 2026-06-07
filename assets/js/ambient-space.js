@@ -32,14 +32,19 @@
       el.className = "ambient-dust";
       if (Math.random() < GOLD_DUST_RATIO) el.classList.add("is-gold-dust");
 
-      const size = rand(2.4, 5.0);
+      const size = rand(2.2, 4.7);
+      const duration = rand(36, 68);
+
       el.style.left = rand(0, 100) + "vw";
       el.style.top = rand(0, 100) + "vh";
       el.style.setProperty("--dust-size", size + "px");
-      el.style.setProperty("--dust-x", rand(-120, 120) + "px");
-      el.style.setProperty("--dust-y", rand(-120, 120) + "px");
-      el.style.setProperty("--dust-duration", rand(14, 26) + "s");
-      el.style.animationDelay = (-rand(0, 26)) + "s";
+      el.style.setProperty("--dust-x", rand(-92, 92) + "px");
+      el.style.setProperty("--dust-y", rand(-88, 88) + "px");
+      el.style.setProperty("--dust-duration", duration + "s");
+      el.style.setProperty("--dust-opacity", rand(0.42, 0.86).toFixed(2));
+
+      // Keep dust alive instead of dropping into the invisible end of its loop.
+      el.style.animationDelay = (-rand(0, duration * 0.64)) + "s";
 
       layer.appendChild(el);
     }
@@ -122,8 +127,8 @@
       // keep a varied meteor speed distribution, but prevent occasional
       // absurdly fast meteors on large/diagonal trajectories.
       const distance = Math.hypot(dx, dy);
-      const targetSpeed = rand(500, 760); // px/s; fast, but not ridiculous
-      const duration = Math.min(4600, Math.max(1650, (distance / targetSpeed) * 1000));
+      const targetSpeed = rand(360, 590); // px/s; varied, but no absurd fast meteors
+      const duration = Math.min(6200, Math.max(2200, (distance / targetSpeed) * 1000));
 
       el.style.setProperty("--meteor-len", len + "px");
       el.style.left = start[0] + "px";

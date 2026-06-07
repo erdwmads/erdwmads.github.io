@@ -14936,3 +14936,45 @@ body.space-mode .ambient-pebble {
     opacity: calc(var(--pebble-opacity, .66) * .70);
   }
 }
+
+
+/* ------------------------------------------------------------
+   Direction B stardust continuity fix
+   My preferred compromise:
+   - star dust should not suddenly disappear like broken pixels
+   - but it should still breathe and drift subtly, otherwise it looks like dirt
+   ------------------------------------------------------------ */
+
+html[data-theme="space"] .ambient-dust,
+html[data-theme-space] .ambient-dust,
+body.space-mode .ambient-dust {
+  opacity: var(--dust-opacity, .68) !important;
+  animation-duration: var(--dust-duration, 48s) !important;
+}
+
+@keyframes ambientDustMove {
+  0% {
+    transform: translate3d(0, 0, 0) scale(.90);
+    opacity: calc(var(--dust-opacity, .68) * .70);
+  }
+  14% {
+    opacity: var(--dust-opacity, .68);
+  }
+  54% {
+    opacity: calc(var(--dust-opacity, .68) * .88);
+  }
+  86% {
+    opacity: var(--dust-opacity, .68);
+  }
+  100% {
+    transform: translate3d(var(--dust-x, 70px), var(--dust-y, -70px), 0) scale(1.08);
+    opacity: calc(var(--dust-opacity, .68) * .72);
+  }
+}
+
+/* Gold dust also stays alive; it no longer blinks out at the loop boundary. */
+html[data-theme="space"] .ambient-space-layer .ambient-dust.is-gold-dust,
+html[data-theme-space] .ambient-space-layer .ambient-dust.is-gold-dust,
+body.space-mode .ambient-space-layer .ambient-dust.is-gold-dust {
+  opacity: var(--dust-opacity, .72) !important;
+}
