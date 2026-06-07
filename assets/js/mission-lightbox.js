@@ -4,90 +4,52 @@
 
   const isTouch = window.matchMedia('(hover: none), (pointer: coarse), (max-width: 760px)').matches;
   const idle = window.requestIdleCallback || ((callback) => window.setTimeout(callback, 180));
-  const placeholderPrefix = 'data:image/svg+xml';
 
   let isScrolling = false;
   let scrollTimer = 0;
-  let activeLoader = false;
-  const loadQueue = [];
-  const queued = new Set();
+  let decodeRunning = false;
+  const decodeQueue = [];
 
-  function originalSrc(img) {
-    return img?.dataset?.src || img?.currentSrc || img?.src || '';
+  function getSrc(img) {
+    return img?.currentSrc || img?.src || img?.dataset?.src || '';
   }
 
-  function isPlaceholder(img) {
-    return !!img && img.src && img.src.startsWith(placeholderPrefix);
+  function queueDecode(img, priority = false) {
+    if (!img || !img.src || img.dataset.decoded === 'true') return;
+    if (decodeQueue.includes(img)) return;
+    if (priority) decodeQueue.unshift(img);
+    else decodeQueue.push(img);
+    scheduleDecode();
   }
 
-  function markFigure(figure, state) {
-    figure.classList.remove('is-lazy-pending', 'is-lazy-loading', 'is-lazy-loaded');
-    if (state) figure.classList.add(state);
+  function scheduleDecode() {
+    if (decodeRunning) return;
+    const delay = isTouch && isScrolling ? 260 : 80;
+    window.setTimeout(runDecodeQueue, delay);
   }
 
-  function queueImage(item, priority = false) {
-    if (!item?.img || !item.src || item.loaded || queued.has(item)) return;
-    queued.add(item);
-    if (priority) loadQueue.unshift(item);
-    else loadQueue.push(item);
-    scheduleQueue();
-  }
-
-  function scheduleQueue() {
-    if (activeLoader) return;
-    const delay = isTouch && isScrolling ? 240 : 40;
-    window.setTimeout(processQueue, delay);
-  }
-
-  function processQueue() {
-    if (activeLoader) return;
+  function runDecodeQueue() {
+    if (decodeRunning) return;
     if (isTouch && isScrolling) {
-      scheduleQueue();
+      scheduleDecode();
       return;
     }
 
-    const item = loadQueue.shift();
-    if (!item) return;
+    const img = decodeQueue.shift();
+    if (!img) return;
 
-    activeLoader = true;
-    document.body.classList.add('mission-image-loading');
-    markFigure(item.figure, 'is-lazy-loading');
+    decodeRunning = true;
 
-    const img = item.img;
-    const finish = () => {
-      item.loaded = true;
-      queued.delete(item);
-      markFigure(item.figure, 'is-lazy-loaded');
-      document.body.classList.remove('mission-image-loading');
-      activeLoader = false;
-      if (loadQueue.length) scheduleQueue();
+    const done = () => {
+      img.dataset.decoded = 'true';
+      decodeRunning = false;
+      if (decodeQueue.length) scheduleDecode();
     };
 
-    const fail = () => {
-      queued.delete(item);
-      markFigure(item.figure, 'is-lazy-pending');
-      document.body.classList.remove('mission-image-loading');
-      activeLoader = false;
-      if (loadQueue.length) scheduleQueue();
-    };
-
-    img.onload = finish;
-    img.onerror = fail;
-
-    img.loading = priority === 'high' ? 'eager' : 'lazy';
-    img.decoding = 'async';
-    try { img.fetchPriority = 'low'; } catch (error) {}
-
-    if (img.src !== item.src) {
-      img.src = item.src;
-    }
-
-    if (img.complete && !isPlaceholder(img)) {
-      if (typeof img.decode === 'function') {
-        img.decode().then(finish).catch(finish);
-      } else {
-        finish();
-      }
+    if (typeof img.decode === 'function') {
+      img.decode().then(done).catch(done);
+    } else {
+      done();
     }
   }
 
@@ -98,14 +60,12 @@
     const title = entry?.querySelector('h3')?.textContent?.trim() || 'Mission Log';
     const kicker = entry?.querySelector('.mission-entry-kicker')?.textContent?.trim() || 'Mission Image Viewer';
     const caption = captionEl?.textContent?.trim() || img?.alt || `Image ${index + 1}`;
-    const src = originalSrc(img);
+    const src = getSrc(img);
 
-    if (isTouch && img && src && isPlaceholder(img)) {
-      markFigure(figure, 'is-lazy-pending');
-    } else if (img && src) {
-      // Desktop: restore original image immediately to preserve normal behavior.
-      if (img.dataset?.src && img.src !== src) img.src = src;
-      markFigure(figure, 'is-lazy-loaded');
+    if (img) {
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      try { img.fetchPriority = index < 1 ? 'auto' : 'low'; } catch (error) {}
     }
 
     figure.setAttribute('tabindex', '0');
@@ -119,40 +79,38 @@
       alt: img?.alt || caption,
       caption,
       title,
-      kicker,
-      loaded: !isTouch || (img && !isPlaceholder(img))
+      kicker
     };
   }).filter(item => item.src);
 
-  // Track scroll idle; heavy image loads happen after scrolling settles.
   if (isTouch) {
     window.addEventListener('scroll', () => {
       isScrolling = true;
       window.clearTimeout(scrollTimer);
       scrollTimer = window.setTimeout(() => {
         isScrolling = false;
-        scheduleQueue();
+        scheduleDecode();
       }, 180);
     }, { passive: true });
   }
 
-  // Queue only images close to the viewport, and load them sequentially.
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
         const item = items.find(candidate => candidate.figure === entry.target);
-        if (item) queueImage(item);
+        if (!item) return;
+        queueDecode(item.img, false);
       });
     }, {
       root: null,
-      rootMargin: isTouch ? '220px 0px 220px 0px' : '600px 0px',
+      rootMargin: isTouch ? '260px 0px 260px 0px' : '650px 0px',
       threshold: 0.01
     });
 
     items.forEach(item => observer.observe(item.figure));
   } else {
-    idle(() => items.forEach(item => queueImage(item)));
+    idle(() => items.forEach(item => queueDecode(item.img)));
   }
 
   const overlay = document.createElement('div');
@@ -262,6 +220,7 @@
     });
 
     hydrateNearbyThumbs(current);
+    queueDecode(item.img, true);
 
     const reveal = () => {
       imgEl.classList.remove('is-decoding');
@@ -283,22 +242,26 @@
 
   function open(index) {
     lastFocus = document.activeElement;
-    document.body.classList.add('mission-lightbox-open', 'mission-lightbox-mobile-open');
-
-    // Prioritize the tapped image for page grid replacement too, but do not wait.
-    queueImage(items[index], true);
-
     show(index);
+
     overlay.classList.add('is-open');
+    document.body.classList.add('mission-lightbox-mobile-open');
+    if (!isTouch) {
+      document.body.classList.add('mission-lightbox-open');
+    }
 
     window.setTimeout(hydrateRemainingThumbs, isTouch ? 900 : 250);
-    closeBtn.focus({ preventScroll: true });
+
+    if (!isTouch) {
+      closeBtn.focus({ preventScroll: true });
+    }
   }
 
   function close() {
     overlay.classList.remove('is-open');
     document.body.classList.remove('mission-lightbox-open', 'mission-lightbox-mobile-open');
-    if (lastFocus && typeof lastFocus.focus === 'function') {
+
+    if (!isTouch && lastFocus && typeof lastFocus.focus === 'function') {
       lastFocus.focus({ preventScroll: true });
     }
   }
@@ -327,6 +290,11 @@
   panel.addEventListener('click', (event) => {
     event.stopPropagation();
   });
+
+  overlay.addEventListener('touchmove', (event) => {
+    if (!overlay.classList.contains('is-open')) return;
+    event.preventDefault();
+  }, { passive: false });
 
   document.addEventListener('keydown', (event) => {
     if (!overlay.classList.contains('is-open')) return;

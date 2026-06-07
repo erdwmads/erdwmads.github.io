@@ -10554,53 +10554,46 @@ html {
 
 
 /* ============================================================
-   Mobile Mission True Lazy Image Fix
-   Different method from previous attempts:
-   - Do not alter background/blur/ambient effects.
-   - Prevent mobile flicker by stopping heavy Mission Log images from loading
-     and decoding during scroll.
-   - Mobile grid images load after scroll settles, one by one.
+   Mobile Mission Images Restore + Lightbox Exit Stability
+   Fixes the broken placeholder lazy-load attempt:
+   - Real images are restored in HTML.
+   - No placeholder blank cards.
+   - Mobile lightbox no longer toggles body overflow, avoiding close/open page flash.
+   - Visual effects are kept.
    ============================================================ */
 
-.mission-photo-grid figure.is-lazy-pending,
-.mission-photo-grid figure.is-lazy-loading {
-  background:
-    linear-gradient(180deg, rgba(18, 33, 50, .76), rgba(7, 18, 31, .66)) !important;
+.mission-photo-grid img {
+  opacity: 1 !important;
 }
 
-.mission-photo-grid img.mission-lazy-img {
-  background:
-    linear-gradient(180deg, rgba(18, 33, 50, .76), rgba(7, 18, 31, .66)) !important;
+.mission-lightbox__img.is-decoding {
+  opacity: .001 !important;
 }
 
-.mission-photo-grid figure.is-lazy-loaded img.mission-lazy-img {
-  background: transparent !important;
+.mission-lightbox__img.is-ready {
+  opacity: 1 !important;
 }
 
 @media (hover: none), (pointer: coarse), (max-width: 760px) {
+  /* Keep image tiles as real image tiles, not blank lazy placeholders. */
   .mission-photo-grid figure {
     aspect-ratio: 4 / 3 !important;
     overflow: hidden !important;
     contain: layout paint style !important;
     isolation: isolate !important;
-    transform: none !important;
-    -webkit-transform: none !important;
-    will-change: auto !important;
   }
 
-  .mission-photo-grid img.mission-lazy-img,
   .mission-photo-grid img {
+    display: block !important;
     width: 100% !important;
     height: 100% !important;
     aspect-ratio: 4 / 3 !important;
     object-fit: cover !important;
-    display: block !important;
-    transform: none !important;
-    -webkit-transform: none !important;
-    will-change: auto !important;
+    background: transparent !important;
   }
 
-  /* Keep the OPEN chip; remove only touch-sticky animated scanline. */
+  /* Touch browsers can keep hover during scroll; kill only the animated
+     scanline layer, not the background/glass effects. */
   .mission-photo-grid figure::after,
   .mission-photo-grid figure:hover::after,
   .mission-photo-grid figure:focus::after,
@@ -10612,27 +10605,30 @@ html {
     background: none !important;
   }
 
-  .mission-photo-grid figure:hover,
-  .mission-photo-grid figure:focus,
-  .mission-photo-grid figure:active {
+  /* Mobile lightbox keeps blur/glass, but does not lock body overflow.
+     This avoids the flash after closing on Android/Chrome/WebView. */
+  body.mission-lightbox-mobile-open {
+    overflow: visible !important;
+  }
+
+  .mission-lightbox {
+    transition: visibility .01s linear !important;
+    will-change: auto !important;
+  }
+
+  .mission-lightbox.is-open {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  .mission-lightbox__panel,
+  .mission-lightbox__stage,
+  .mission-lightbox__img,
+  .mission-lightbox__thumbs,
+  .mission-lightbox__thumb {
+    contain: layout paint style !important;
     transform: none !important;
     -webkit-transform: none !important;
+    will-change: auto !important;
   }
-
-  /* While the JS loader is decoding a real mission image, do not animate or
-     transition the figure. This avoids the LOG002 blinking pattern. */
-  body.mission-image-loading .mission-photo-grid figure,
-  body.mission-image-loading .mission-photo-grid img {
-    transition: none !important;
-    animation-play-state: paused !important;
-  }
-}
-
-/* Lightbox decode state: preserve layout while the selected image decodes. */
-.mission-lightbox__img.is-decoding {
-  opacity: .001 !important;
-}
-
-.mission-lightbox__img.is-ready {
-  opacity: 1 !important;
 }
