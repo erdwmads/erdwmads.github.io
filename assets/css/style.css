@@ -12784,3 +12784,305 @@ html:not([data-theme="space"]) .section-label::first-letter {
 .entry-gate__line::before {
   animation-duration: 2.25s !important;
 }
+
+
+/* ============================================================
+   Sitewide Entry-Gate Visual Unification
+   Direction:
+   - Pull the whole site closer to the entry screen:
+     deep archive glass, blue + meteoritic gold, softer orbital lighting.
+   - Remove the awkward first-letter gold effect.
+   - Keep layout unchanged.
+   - Keep navigation underline style.
+   - Do not touch Paper Shelf download-button policy.
+   ============================================================ */
+
+/* 0. Remove first-letter gold. It looked like a typo on all-caps labels. */
+.eyebrow::first-letter,
+.section-label::first-letter,
+html:not([data-theme="space"]) .eyebrow::first-letter,
+html:not([data-theme="space"]) .section-label::first-letter {
+  color: inherit !important;
+}
+
+/* 1. Site-level palette: same blue/gold language as entry gate. */
+:root {
+  --archive-gold: rgba(255, 211, 128, .92);
+  --archive-gold-soft: rgba(255, 211, 128, .18);
+  --archive-gold-faint: rgba(255, 211, 128, .060);
+  --archive-gold-line: rgba(255, 211, 128, .22);
+  --archive-blue: rgba(143, 208, 255, .90);
+  --archive-blue-soft: rgba(143, 208, 255, .16);
+  --archive-panel-dark:
+    linear-gradient(180deg, rgba(255,255,255,.112), rgba(255,255,255,.034)),
+    radial-gradient(circle at 16% 12%, rgba(143,208,255,.098), transparent 30%),
+    radial-gradient(circle at 90% 12%, rgba(255,211,128,.070), transparent 34%),
+    rgba(6, 14, 25, .68);
+}
+
+/* 2. Background lighting: closer to the boot screen, but not as dominant. */
+html[data-theme="space"] body,
+html[data-theme-space] body,
+body.space-mode {
+  background:
+    radial-gradient(circle at 14% 18%, rgba(143,208,255,.105), transparent 32rem),
+    radial-gradient(circle at 82% 20%, rgba(255,211,128,.070), transparent 30rem),
+    radial-gradient(circle at 54% 90%, rgba(143,208,255,.060), transparent 34rem),
+    #040910 !important;
+}
+
+html[data-theme="space"] body::after,
+html[data-theme-space] body::after,
+body.space-mode::after {
+  background:
+    linear-gradient(90deg, rgba(143,208,255,.044) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(143,208,255,.032) 1px, transparent 1px),
+    radial-gradient(circle at 50% 48%, transparent 0, rgba(4,9,16,.26) 58%, rgba(4,9,16,.80) 100%),
+    linear-gradient(118deg, transparent 0 43%, rgba(255,211,128,.052) 48%, transparent 56% 100%) !important;
+  background-size: 92px 92px, 92px 92px, auto, auto !important;
+  opacity: .52 !important;
+  mix-blend-mode: screen !important;
+}
+
+/* 3. Archive labels: no first-letter trick; use a small gold signal mark. */
+.eyebrow,
+.section-label {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: .62em !important;
+  color: rgba(171, 214, 246, .94) !important;
+  letter-spacing: .18em !important;
+  text-shadow:
+    0 0 18px rgba(143,208,255,.16),
+    0 0 22px rgba(255,211,128,.055) !important;
+}
+
+.eyebrow::before,
+.section-label::before {
+  content: "" !important;
+  display: inline-block !important;
+  width: .46em !important;
+  height: .46em !important;
+  flex: 0 0 .46em !important;
+  border-radius: 50% !important;
+  background:
+    radial-gradient(circle, rgba(255,232,178,.96), rgba(255,211,128,.80) 45%, transparent 72%) !important;
+  box-shadow:
+    0 0 10px rgba(255,211,128,.30),
+    0 0 22px rgba(143,208,255,.10) !important;
+  transform: translateY(-.03em) !important;
+}
+
+/* If the label already visually starts with a decorative glyph in markup,
+   the dot remains small enough to read as the entry-gate signal light. */
+
+/* 4. Headings: very slight entry-screen glow, not gold text. */
+h1,
+.hero h1,
+.page-title {
+  color: rgba(244, 250, 255, .985) !important;
+  text-shadow:
+    0 0 34px rgba(143,208,255,.085),
+    0 0 28px rgba(255,211,128,.040) !important;
+}
+
+h2,
+h3 {
+  text-shadow:
+    0 0 24px rgba(143,208,255,.055),
+    0 0 20px rgba(255,211,128,.026) !important;
+}
+
+/* 5. Cards: entry-gate glass language without changing dimensions. */
+.card,
+.hero-card,
+.callout,
+.focus-card,
+.status-card,
+.project-link-card,
+.paper-card,
+.research-note-card,
+.cv-edu-card,
+.contact-card,
+.mission-index-panel,
+.mission-log-entry,
+.affiliation-card {
+  background: var(--archive-panel-dark) !important;
+  border-color: rgba(190,226,255,.18) !important;
+  box-shadow:
+    0 28px 78px rgba(0,0,0,.34),
+    0 0 38px rgba(143,208,255,.042),
+    0 0 34px rgba(255,211,128,.030),
+    0 0 0 1px rgba(255,255,255,.026) inset,
+    inset 0 1px 0 rgba(255,255,255,.122),
+    inset 0 -1px 0 rgba(255,211,128,.060) !important;
+  backdrop-filter: blur(18px) saturate(1.10) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.10) !important;
+}
+
+/* Keep cards from becoming over-bright on hover. */
+@media (hover: hover) and (pointer: fine) {
+  .card:hover,
+  .hero-card:hover,
+  .focus-card:hover,
+  .status-card:hover,
+  .project-link-card:hover,
+  .paper-card:hover,
+  .research-note-card:hover,
+  .cv-edu-card:hover,
+  .contact-card:hover,
+  .mission-log-entry:hover {
+    border-color: rgba(255,211,128,.20) !important;
+    box-shadow:
+      0 32px 86px rgba(0,0,0,.38),
+      0 0 42px rgba(143,208,255,.055),
+      0 0 40px rgba(255,211,128,.048),
+      0 0 0 1px rgba(255,211,128,.040) inset,
+      inset 0 1px 0 rgba(255,255,255,.138),
+      inset 0 -1px 0 rgba(255,211,128,.070) !important;
+  }
+}
+
+/* 6. Tags and chips: same glass-brass as entry gate meta pills. */
+.pill,
+.status-badge,
+.project-tags span,
+.log-tags span,
+.paper-status,
+.hero-tags span,
+.research-tags span,
+.mission-index-mode,
+.research-note-date,
+.mission-jump-log {
+  border-color: rgba(255,211,128,.18) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.105), rgba(255,255,255,.030)),
+    linear-gradient(90deg, rgba(143,208,255,.082), rgba(255,211,128,.056)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.13),
+    inset 0 -1px 0 rgba(255,211,128,.052),
+    0 0 16px rgba(255,211,128,.028) !important;
+}
+
+/* 7. Buttons: entry-gate scan energy, still restrained. */
+.button:not(.secondary) {
+  background:
+    linear-gradient(135deg,
+      rgba(31, 125, 190, .94),
+      rgba(12, 61, 98, .88) 58%,
+      rgba(255,211,128,.18)) !important;
+  border-color: rgba(255,211,128,.25) !important;
+}
+
+.button.secondary {
+  background:
+    linear-gradient(135deg,
+      rgba(255,255,255,.102),
+      rgba(143,208,255,.052) 58%,
+      rgba(255,211,128,.068)) !important;
+  border-color: rgba(255,211,128,.16) !important;
+}
+
+/* 8. Progress beam and active nav underline: closer to entry scan-line. */
+body > .ui2046-progress span,
+.ui2046-progress span,
+.nav a[aria-current="page"]::after,
+.nav a:hover::after,
+.site-nav a[aria-current="page"]::after,
+.site-nav a:hover::after {
+  background:
+    linear-gradient(90deg,
+      rgba(143,208,255,.16),
+      rgba(143,208,255,.90) 42%,
+      rgba(255,211,128,.92) 74%,
+      rgba(255,236,190,.70)) !important;
+  box-shadow:
+    0 0 12px rgba(143,208,255,.30),
+    0 0 24px rgba(255,211,128,.13) !important;
+}
+
+/* 9. Light Mode: archive-paper version of the same language. */
+html:not([data-theme="space"]) body {
+  background:
+    radial-gradient(circle at 14% 18%, rgba(35,93,135,.060), transparent 32rem),
+    radial-gradient(circle at 82% 16%, rgba(174,111,28,.055), transparent 26rem),
+    #edf3f7 !important;
+}
+
+html:not([data-theme="space"]) .eyebrow,
+html:not([data-theme="space"]) .section-label {
+  color: #0d679f !important;
+  text-shadow: none !important;
+}
+
+html:not([data-theme="space"]) .eyebrow::before,
+html:not([data-theme="space"]) .section-label::before {
+  background:
+    radial-gradient(circle, rgba(174,111,28,.92), rgba(174,111,28,.62) 45%, transparent 72%) !important;
+  box-shadow: none !important;
+}
+
+html:not([data-theme="space"]) .card,
+html:not([data-theme="space"]) .hero-card,
+html:not([data-theme="space"]) .callout,
+html:not([data-theme="space"]) .focus-card,
+html:not([data-theme="space"]) .status-card,
+html:not([data-theme="space"]) .project-link-card,
+html:not([data-theme="space"]) .paper-card,
+html:not([data-theme="space"]) .research-note-card,
+html:not([data-theme="space"]) .cv-edu-card,
+html:not([data-theme="space"]) .contact-card,
+html:not([data-theme="space"]) .mission-index-panel,
+html:not([data-theme="space"]) .mission-log-entry,
+html:not([data-theme="space"]) .affiliation-card {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.82), rgba(244,249,253,.54)),
+    radial-gradient(circle at 86% 12%, rgba(174,111,28,.052), transparent 32%),
+    rgba(255,255,255,.66) !important;
+  border-color: rgba(35,93,135,.14) !important;
+  box-shadow:
+    0 22px 56px rgba(32,70,103,.082),
+    0 0 0 1px rgba(174,111,28,.025) inset,
+    inset 0 1px 0 rgba(255,255,255,.70),
+    inset 0 -1px 0 rgba(174,111,28,.034) !important;
+}
+
+html:not([data-theme="space"]) .pill,
+html:not([data-theme="space"]) .status-badge,
+html:not([data-theme="space"]) .project-tags span,
+html:not([data-theme="space"]) .log-tags span,
+html:not([data-theme="space"]) .paper-status,
+html:not([data-theme="space"]) .hero-tags span,
+html:not([data-theme="space"]) .research-tags span,
+html:not([data-theme="space"]) .mission-index-mode,
+html:not([data-theme="space"]) .research-note-date,
+html:not([data-theme="space"]) .mission-jump-log {
+  border-color: rgba(174,111,28,.13) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.78), rgba(229,241,249,.50)),
+    linear-gradient(90deg, rgba(35,93,135,.064), rgba(174,111,28,.042)) !important;
+}
+
+/* 10. Mobile: keep the glow lighter for performance and readability. */
+@media (max-width: 760px), (hover: none) and (pointer: coarse) {
+  .card,
+  .hero-card,
+  .callout,
+  .focus-card,
+  .status-card,
+  .project-link-card,
+  .paper-card,
+  .research-note-card,
+  .cv-edu-card,
+  .contact-card,
+  .mission-index-panel,
+  .mission-log-entry,
+  .affiliation-card {
+    backdrop-filter: blur(14px) saturate(1.06) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(1.06) !important;
+    box-shadow:
+      0 22px 52px rgba(0,0,0,.30),
+      0 0 0 1px rgba(255,211,128,.030) inset,
+      inset 0 1px 0 rgba(255,255,255,.09) !important;
+  }
+}
