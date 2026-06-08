@@ -15836,3 +15836,91 @@ body.ambient-fx-disabled .ambient-space-layer {
     padding: 0 10px !important;
   }
 }
+
+
+/* ============================================================
+   Ambient FX Toggle Light Mode Skin
+   Light mode should not use the deep Space Mode capsule colour.
+   This gives the FX button a pale glass / champagne archive treatment.
+   ============================================================ */
+
+html:not([data-theme="space"]) .ambient-fx-toggle,
+html[data-theme="light"] .ambient-fx-toggle,
+body:not(.space-mode) .ambient-fx-toggle {
+  border-color: rgba(44, 78, 112, .18) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.78), rgba(238,244,250,.70)) !important;
+  color: rgba(50, 66, 82, .78) !important;
+  box-shadow:
+    0 12px 28px rgba(34, 58, 88, .12),
+    0 0 0 1px rgba(255,255,255,.52) inset,
+    inset 0 1px 0 rgba(255,255,255,.86) !important;
+  backdrop-filter: blur(12px) saturate(1.08) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(1.08) !important;
+}
+
+html:not([data-theme="space"]) .ambient-fx-toggle:hover,
+html:not([data-theme="space"]) .ambient-fx-toggle:focus-visible,
+html[data-theme="light"] .ambient-fx-toggle:hover,
+html[data-theme="light"] .ambient-fx-toggle:focus-visible,
+body:not(.space-mode) .ambient-fx-toggle:hover,
+body:not(.space-mode) .ambient-fx-toggle:focus-visible {
+  border-color: rgba(166, 136, 78, .32) !important;
+  color: rgba(44, 54, 66, .92) !important;
+  box-shadow:
+    0 16px 34px rgba(34, 58, 88, .16),
+    0 0 18px rgba(198, 171, 117, .16),
+    0 0 0 1px rgba(255,255,255,.66) inset,
+    inset 0 1px 0 rgba(255,255,255,.92) !important;
+}
+
+html:not([data-theme="space"]) .ambient-fx-toggle .ambient-fx-toggle__dot,
+html[data-theme="light"] .ambient-fx-toggle .ambient-fx-toggle__dot,
+body:not(.space-mode) .ambient-fx-toggle .ambient-fx-toggle__dot {
+  background: rgba(105, 124, 141, .58) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.62) inset,
+    0 0 8px rgba(70, 96, 122, .16) !important;
+}
+
+html:not([data-theme="space"]) .ambient-fx-toggle.is-on,
+html[data-theme="light"] .ambient-fx-toggle.is-on,
+body:not(.space-mode) .ambient-fx-toggle.is-on {
+  border-color: rgba(176, 144, 82, .36) !important;
+  color: rgba(112, 84, 38, .92) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 239, .84), rgba(242, 233, 211, .74)) !important;
+  box-shadow:
+    0 14px 34px rgba(44, 65, 90, .14),
+    0 0 20px rgba(198,171,117,.18),
+    0 0 0 1px rgba(255,255,255,.62) inset,
+    inset 0 1px 0 rgba(255,255,255,.94) !important;
+}
+
+html:not([data-theme="space"]) .ambient-fx-toggle.is-on .ambient-fx-toggle__dot,
+html[data-theme="light"] .ambient-fx-toggle.is-on .ambient-fx-toggle__dot,
+body:not(.space-mode) .ambient-fx-toggle.is-on .ambient-fx-toggle__dot {
+  background: rgba(196, 158, 82, .92) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.72) inset,
+    0 0 8px rgba(196, 158, 82, .46),
+    0 0 16px rgba(196, 158, 82, .16) !important;
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  html:not([data-theme="space"]) .ambient-fx-toggle,
+  html[data-theme="light"] .ambient-fx-toggle,
+  body:not(.space-mode) .ambient-fx-toggle {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.88), rgba(239,245,250,.82)) !important;
+  }
+
+  html:not([data-theme="space"]) .ambient-fx-toggle.is-on,
+  html[data-theme="light"] .ambient-fx-toggle.is-on,
+  body:not(.space-mode) .ambient-fx-toggle.is-on {
+    background:
+      linear-gradient(180deg, rgba(255,250,239,.92), rgba(244,235,214,.86)) !important;
+  }
+}
