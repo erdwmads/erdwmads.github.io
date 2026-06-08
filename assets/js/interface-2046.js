@@ -315,25 +315,35 @@
       gate.classList.add('is-visible');
     });
 
-    const exit = () => {
-      if (isEdge) gate.classList.add('is-edge-teardown');
+    let isExiting = false;
+    const exit = ({ instant = false } = {}) => {
+      if (isExiting) return;
+      isExiting = true;
       gate.classList.add('is-exiting');
       markPlayed();
-      window.setTimeout(() => {
+
+      const removeGate = () => {
         gate.remove();
         body.classList.remove('entry-gate-active');
-      }, 680);
+      };
+
+      if (instant) {
+        removeGate();
+        return;
+      }
+
+      window.setTimeout(removeGate, 520);
     };
 
-    gate.addEventListener('click', exit, { once: true });
-    window.setTimeout(exit, 3000);
+    gate.addEventListener('click', () => exit({ instant: true }), { once: true });
+    window.setTimeout(() => exit(), 1800);
     window.setTimeout(() => {
       if (document.body?.contains(gate)) {
         gate.remove();
         body.classList.remove('entry-gate-active');
         markPlayed();
       }
-    }, 5200);
+    }, 3400);
   };
 
   if (document.readyState === 'loading') {

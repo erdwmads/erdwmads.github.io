@@ -12218,8 +12218,7 @@ body.entry-gate-active > .ui2046-progress {
    exits. The JS adds these classes only in Edge and only during teardown.
    ============================================================ */
 
-html.is-edge-browser .entry-gate.is-edge-teardown,
-html.is-edge-browser .entry-gate.is-exiting {
+html.is-edge-browser .entry-gate.is-edge-teardown {
   filter: none !important;
   transition:
     opacity .14s linear,
@@ -12228,10 +12227,7 @@ html.is-edge-browser .entry-gate.is-exiting {
 
 html.is-edge-browser .entry-gate.is-edge-teardown *,
 html.is-edge-browser .entry-gate.is-edge-teardown *::before,
-html.is-edge-browser .entry-gate.is-edge-teardown *::after,
-html.is-edge-browser .entry-gate.is-exiting *,
-html.is-edge-browser .entry-gate.is-exiting *::before,
-html.is-edge-browser .entry-gate.is-exiting *::after {
+html.is-edge-browser .entry-gate.is-edge-teardown *::after {
   animation: none !important;
   transition: none !important;
   transform: none !important;
@@ -12241,8 +12237,7 @@ html.is-edge-browser .entry-gate.is-exiting *::after {
   box-shadow: none !important;
 }
 
-html.is-edge-browser .entry-gate.is-edge-teardown .entry-gate__panel,
-html.is-edge-browser .entry-gate.is-exiting .entry-gate__panel {
+html.is-edge-browser .entry-gate.is-edge-teardown .entry-gate__panel {
   opacity: 0 !important;
   background: rgba(6, 14, 25, .92) !important;
 }
