@@ -1,5 +1,22 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap");
 
+/* ============================================================
+   Maintenance map
+
+   This stylesheet is intentionally single-file for GitHub Pages.
+   Edit the latest matching section instead of appending another
+   late override.
+
+   Main groups:
+   - Base layout and shared components
+   - Global background and header/footer imagery
+   - Project and research log cards
+   - Typography and page-specific sections
+   - Photography slideshow
+   - Space Mode and ambient effects
+   - Mission Log, lightbox, and mobile rules
+   ============================================================ */
+
 
 :root {
   --bg: #f7fbff;
@@ -509,57 +526,10 @@ body::before {
 
 
 /* ============================================================
-   Header and footer: show the same asteroid background.
-   This overrides the previous white translucent header/footer.
-   ============================================================ */
+   Header and footer imagery
 
-.site-header,
-.site-footer {
-  position: relative;
-  overflow: hidden;
-  background: transparent !important;
-  backdrop-filter: none !important;
-}
-
-/* Asteroid image layer inside header and footer */
-.site-header::before,
-.site-footer::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(
-      rgba(247, 251, 255, 0.70),
-      rgba(247, 251, 255, 0.76)
-    ),
-    url("../img/asteroid-bennu.jpg");
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-}
-
-/* Keep header/footer text above the image layer */
-.header-inner,
-.footer-inner {
-  position: relative;
-  z-index: 1;
-}
-
-/* Slightly clearer navigation pills on the image background */
-.nav a[aria-current="page"],
-.nav a:hover {
-  background: rgba(234, 244, 255, 0.82) !important;
-}
-
-
-/* ============================================================
-   FINAL OVERRIDE:
    Use Solar_System_true_color.jpg for the header and footer.
    Keep the main page background unchanged.
-   Put the image here:
-   assets/img/Solar_System_true_color.jpg
    ============================================================ */
 
 .site-header,
@@ -723,120 +693,11 @@ body::before {
 
 
 /* ============================================================
-   Homepage profile photo fix
-   Use this file name for your homepage portrait:
+   Current image rules
+
+   Expected files used by current pages:
    assets/img/profile.jpg
-   ============================================================ */
-
-.hero-card {
-  max-width: 360px;
-  width: 100%;
-}
-
-.hero-card .avatar {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-  border-radius: 22px;
-  border: 1px solid var(--line);
-  background: var(--blue-soft);
-}
-
-.hero-card .avatar img {
-  width: 100% !important;
-  height: 100% !important;
-  max-width: 100%;
-  display: block;
-  object-fit: cover !important;
-  object-position: center center;
-}
-
-/* If the photo appears too zoomed in, change object-position above,
-   for example: object-position: center 35%; */
-
-@media (max-width: 860px) {
-  .hero-card {
-    max-width: 320px;
-  }
-}
-
-
-/* ============================================================
-   FINAL image rules
-   Homepage portrait: assets/img/profile.jpg
-   Photography gallery: assets/img/photo1.jpg, photo2.jpg, photo3.jpg
-   ============================================================ */
-
-/* Homepage portrait */
-.hero-card {
-  max-width: 360px;
-  width: 100%;
-}
-
-.hero-card .avatar {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-  border-radius: 22px;
-  border: 1px solid var(--line);
-  background: var(--blue-soft);
-}
-
-.hero-card .avatar img {
-  width: 100% !important;
-  height: 100% !important;
-  max-width: 100%;
-  display: block;
-  object-fit: cover !important;
-  object-position: center center;
-}
-
-/* Photography gallery: cropped and aligned */
-.photo-grid {
-  display: grid !important;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  gap: 18px;
-  margin-top: 22px;
-  align-items: start;
-}
-
-.photo-grid img,
-.gallery-photo {
-  width: 100% !important;
-  height: 360px !important;
-  max-width: 100%;
-  display: block;
-  object-fit: cover !important;
-  object-position: center center;
-  border-radius: 18px;
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow);
-  background: var(--paper);
-}
-
-@media (max-width: 860px) {
-  .hero-card {
-    max-width: 320px;
-  }
-
-  .photo-grid {
-    grid-template-columns: 1fr !important;
-  }
-
-  .photo-grid img,
-  .gallery-photo {
-    height: 300px !important;
-  }
-}
-
-
-/* ============================================================
-   FINAL file-name based image rules
-   Expected files:
-   assets/img/profile.jpg
-   assets/img/photo01.jpg
-   assets/img/photo02.jpg
-   assets/img/photo03.jpg
+   assets/img/photo (1).jpg through photo (21).jpg
    assets/img/Solar_System_true_color.jpg
    assets/img/asteroid-bennu.jpg
    ============================================================ */
@@ -1179,9 +1040,7 @@ h3 {
 /* ============================================================
    Photography slideshow / cinematic auto display
    Files shown by default:
-   assets/img/photo01.jpg
-   assets/img/photo02.jpg
-   assets/img/photo03.jpg
+   assets/img/photo (1).jpg through photo (21).jpg
    ============================================================ */
 
 .photo-experience {
