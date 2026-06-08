@@ -15760,3 +15760,23 @@ body.ambient-fx-disabled .ambient-space-layer {
     -webkit-backdrop-filter: none !important;
   }
 }
+
+
+/* ============================================================
+   Ambient FX Toggle Reposition
+   Move the FX button away from the lower-right status card.
+   ============================================================ */
+
+.ambient-fx-toggle {
+  right: clamp(18px, 2.2vw, 30px) !important;
+  bottom: auto !important;
+  top: clamp(94px, 8.2vh, 118px) !important;
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .ambient-fx-toggle {
+    right: 12px !important;
+    bottom: auto !important;
+    top: 86px !important;
+  }
+}
