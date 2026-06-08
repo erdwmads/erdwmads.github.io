@@ -711,5 +711,84 @@
 })();
 </script>
 
+
+<script>
+/* Desktop Edge entry-exit artifact shield.
+   Safe version: no observer, no effect flattening, no ambient changes.
+   It only covers Chromium/Edge white square compositor artifacts during the
+   short moment when the opening gate is being dismissed. */
+(function () {
+  const ua = navigator.userAgent || "";
+  const isEdge = /\bEdg\//.test(ua);
+  const isMobile = window.matchMedia &&
+    window.matchMedia("(max-width: 760px), (pointer: coarse)").matches;
+
+  if (!isEdge || isMobile) return;
+
+  let shield = null;
+  let hideTimer = null;
+  let removeTimer = null;
+
+  function ensureShield() {
+    if (shield && shield.isConnected) return shield;
+
+    shield = document.createElement("div");
+    shield.className = "edge-entry-exit-shield";
+    shield.setAttribute("aria-hidden", "true");
+    document.body.appendChild(shield);
+    return shield;
+  }
+
+  function showShield(duration) {
+    const gate = document.querySelector(".entry-gate");
+    if (!gate) return;
+
+    const panel = ensureShield();
+
+    if (hideTimer) window.clearTimeout(hideTimer);
+    if (removeTimer) window.clearTimeout(removeTimer);
+
+    void panel.offsetWidth;
+    panel.classList.add("is-visible");
+
+    hideTimer = window.setTimeout(function () {
+      panel.classList.remove("is-visible");
+
+      removeTimer = window.setTimeout(function () {
+        if (panel && panel.parentNode && !panel.classList.contains("is-visible")) {
+          panel.remove();
+        }
+      }, 260);
+    }, duration || 1250);
+  }
+
+  function isInsideEntryGate(target) {
+    return !!(
+      target &&
+      target.closest &&
+      target.closest(".entry-gate")
+    );
+  }
+
+  function onGateDismissIntent(event) {
+    if (!isInsideEntryGate(event.target)) return;
+    showShield(1300);
+  }
+
+  document.addEventListener("pointerdown", onGateDismissIntent, { capture: true, passive: true });
+  document.addEventListener("click", onGateDismissIntent, { capture: true, passive: true });
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" || event.key === "Enter" || event.key === " ") {
+      const gate = document.querySelector(".entry-gate");
+      if (gate) showShield(1300);
+    }
+  }, { capture: true });
+
+  window.addEventListener("pagehide", function () {
+    if (shield && shield.parentNode) shield.remove();
+  }, { passive: true });
+})();
+</script>
+
 </body>
 </html>

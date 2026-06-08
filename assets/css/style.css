@@ -15665,3 +15665,43 @@ body.space-mode .ambient-space-layer .ambient-dust.is-gold-dust::after {
     border-top: 1px solid rgba(40, 80, 120, .12) !important;
   }
 }
+
+
+/* ============================================================
+   Desktop Edge Entry Exit Artifact Shield
+   Safe version:
+   - desktop Edge only
+   - no MutationObserver
+   - does not alter entry-gate effects
+   - does not alter stardust / micro-meteorite / meteor effects
+   - only places a temporary dark shield behind the closing entry gate
+   ============================================================ */
+
+.edge-entry-exit-shield {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483646 !important;
+  pointer-events: none !important;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(143,208,255,.035), transparent 34rem),
+    radial-gradient(circle at 78% 18%, rgba(255,217,154,.022), transparent 28rem),
+    linear-gradient(180deg, rgba(2,6,12,.992), rgba(4,10,18,.990) 58%, rgba(2,5,10,.997)) !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition: opacity .10s ease, visibility .10s step-end !important;
+  contain: strict !important;
+  isolation: isolate !important;
+}
+
+.edge-entry-exit-shield.is-visible {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transition: opacity .08s ease, visibility 0s step-start !important;
+}
+
+/* Do not use this shield on mobile; mobile entry animation is already disabled. */
+@media (max-width: 760px), (pointer: coarse) {
+  .edge-entry-exit-shield {
+    display: none !important;
+  }
+}
