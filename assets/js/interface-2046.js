@@ -1,9 +1,48 @@
 
 (() => {
+  const root = document.documentElement;
   const body = document.body;
+  const ua = navigator.userAgent || "";
+  const isEdge = /\bEdgA?\/|\bEdgiOS\/|\bEdg\//.test(ua);
 
   if (body.dataset.interface2046 === 'ready') return;
   body.dataset.interface2046 = 'ready';
+
+  if (isEdge) {
+    root.classList.add("is-edge-browser");
+  }
+
+  function beginEdgeTeardown() {
+    if (!isEdge) return;
+    root.classList.add("is-edge-page-exiting");
+    body.classList.add("is-edge-page-exiting");
+    document
+      .querySelectorAll(".entry-gate, .ambient-space-layer, .ui2046-layer, .ui2046-progress")
+      .forEach((node) => node.classList.add("is-edge-teardown"));
+  }
+
+  function restoreEdgeTeardown() {
+    if (!isEdge) return;
+    root.classList.remove("is-edge-page-exiting");
+    body.classList.remove("is-edge-page-exiting");
+    document
+      .querySelectorAll(".is-edge-teardown")
+      .forEach((node) => node.classList.remove("is-edge-teardown"));
+  }
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") {
+      beginEdgeTeardown();
+    } else {
+      restoreEdgeTeardown();
+    }
+  }, { passive: true });
+
+  window.addEventListener("pagehide", (event) => {
+    if (!event.persisted) beginEdgeTeardown();
+  }, { passive: true });
+
+  window.addEventListener("pageshow", restoreEdgeTeardown, { passive: true });
 
   const rawPath = window.location.pathname.split('/').pop() || 'index.html';
   const page = rawPath.replace('.html', '') || 'index';
@@ -277,6 +316,7 @@
     });
 
     const exit = () => {
+      if (isEdge) gate.classList.add('is-edge-teardown');
       gate.classList.add('is-exiting');
       markPlayed();
       window.setTimeout(() => {
@@ -304,13 +344,3 @@
 })();
 
 
-/* Edge-specific rendering guard.
-   Adds a class only for Microsoft Edge / Edge WebView so Edge-only Chromium
-   repaint seams can be fixed without changing Firefox/Safari/other browsers. */
-(() => {
-  const ua = navigator.userAgent || "";
-  const isEdge = /\bEdgA?\/|\bEdgiOS\/|\bEdg\//.test(ua);
-  if (isEdge) {
-    document.documentElement.classList.add("is-edge-browser");
-  }
-})();

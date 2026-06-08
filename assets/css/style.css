@@ -12211,6 +12211,82 @@ body.entry-gate-active > .ui2046-progress {
 
 
 /* ============================================================
+   Microsoft Edge teardown artifact guard
+
+   Edge can briefly repaint fixed backdrop-filter and animation layers as
+   white rectangular tiles while a page is hidden, closed, or the entry gate
+   exits. The JS adds these classes only in Edge and only during teardown.
+   ============================================================ */
+
+html.is-edge-browser .entry-gate.is-edge-teardown,
+html.is-edge-browser .entry-gate.is-exiting {
+  filter: none !important;
+  transition:
+    opacity .14s linear,
+    visibility .14s step-end !important;
+}
+
+html.is-edge-browser .entry-gate.is-edge-teardown *,
+html.is-edge-browser .entry-gate.is-edge-teardown *::before,
+html.is-edge-browser .entry-gate.is-edge-teardown *::after,
+html.is-edge-browser .entry-gate.is-exiting *,
+html.is-edge-browser .entry-gate.is-exiting *::before,
+html.is-edge-browser .entry-gate.is-exiting *::after {
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+html.is-edge-browser .entry-gate.is-edge-teardown .entry-gate__panel,
+html.is-edge-browser .entry-gate.is-exiting .entry-gate__panel {
+  opacity: 0 !important;
+  background: rgba(6, 14, 25, .92) !important;
+}
+
+html.is-edge-page-exiting *,
+html.is-edge-page-exiting *::before,
+html.is-edge-page-exiting *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+html.is-edge-page-exiting body::before,
+html.is-edge-page-exiting body::after,
+html.is-edge-page-exiting .ambient-space-layer,
+html.is-edge-page-exiting .ui2046-layer,
+html.is-edge-page-exiting .ui2046-progress,
+html.is-edge-page-exiting .entry-gate,
+html.is-edge-page-exiting .is-edge-teardown {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  animation: none !important;
+  transition: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html.is-edge-page-exiting .card,
+html.is-edge-page-exiting .hero-card,
+html.is-edge-page-exiting .callout,
+html.is-edge-page-exiting .site-header,
+html.is-edge-page-exiting .site-footer,
+html.is-edge-page-exiting .paper-card,
+html.is-edge-page-exiting .research-note-card,
+html.is-edge-page-exiting .mission-index-panel,
+html.is-edge-page-exiting .mission-lightbox,
+html.is-edge-page-exiting .mission-lightbox * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+
+/* ============================================================
    Entry Gate Gold Accent Preview
    Scope:
    - Entry screen only.
