@@ -15582,3 +15582,86 @@ body.space-mode .ambient-space-layer .ambient-dust.is-gold-dust::after {
   background-size: cover;
   background-position: center;
 }
+
+
+/* ============================================================
+   Mobile Mission Log: Disable Large Image Lightbox
+   Mobile shows images and captions directly inside Mission Log.
+   Desktop lightbox remains unchanged.
+   ============================================================ */
+
+@media (max-width: 760px), (pointer: coarse) {
+  html.mobile-mission-lightbox-disabled .mission-lightbox,
+  html.mobile-mission-lightbox-disabled .mission-lightbox.is-open,
+  html.mobile-mission-lightbox-disabled .mission-gallery-lightbox,
+  html.mobile-mission-lightbox-disabled .mission-gallery-lightbox.is-open,
+  html.mobile-mission-lightbox-disabled .mission-modal,
+  html.mobile-mission-lightbox-disabled .gallery-modal,
+  html.mobile-mission-lightbox-disabled .lightbox {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  html.mobile-mission-lightbox-disabled body,
+  html.mobile-mission-lightbox-disabled body.mission-lightbox-open,
+  html.mobile-mission-lightbox-disabled body.mission-lightbox-mobile-open {
+    overflow: visible !important;
+  }
+
+  html.mobile-mission-lightbox-disabled .mission-photo-grid figure,
+  html.mobile-mission-lightbox-disabled .mission-log-entry .mission-photo-grid figure {
+    cursor: default !important;
+    aspect-ratio: auto !important;
+    overflow: hidden !important;
+    contain: layout paint style !important;
+  }
+
+  html.mobile-mission-lightbox-disabled .mission-photo-grid figure::before,
+  html.mobile-mission-lightbox-disabled .mission-photo-grid figure::after,
+  html.mobile-mission-lightbox-disabled .mission-photo-grid figure:hover::before,
+  html.mobile-mission-lightbox-disabled .mission-photo-grid figure:hover::after,
+  html.mobile-mission-lightbox-disabled .mission-photo-grid figure:focus::before,
+  html.mobile-mission-lightbox-disabled .mission-photo-grid figure:focus::after,
+  html.mobile-mission-lightbox-disabled .mission-photo-grid figure:active::before,
+  html.mobile-mission-lightbox-disabled .mission-photo-grid figure:active::after {
+    display: none !important;
+    content: none !important;
+    opacity: 0 !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  html.mobile-mission-lightbox-disabled .mission-photo-grid img,
+  html.mobile-mission-lightbox-disabled .mission-log-entry .mission-photo-grid img {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 4 / 3 !important;
+    object-fit: cover !important;
+    pointer-events: none !important;
+  }
+
+  html.mobile-mission-lightbox-disabled .mission-photo-grid figcaption,
+  html.mobile-mission-lightbox-disabled .mission-log-entry .mission-photo-grid figcaption {
+    display: block !important;
+    min-height: 0 !important;
+    padding: 9px 11px 11px !important;
+    color: rgba(205, 217, 228, .88) !important;
+    font-size: 12px !important;
+    line-height: 1.42 !important;
+    letter-spacing: .005em !important;
+    background:
+      linear-gradient(180deg, rgba(10, 22, 36, .76), rgba(6, 14, 25, .86)) !important;
+    border-top: 1px solid rgba(190, 226, 255, .12) !important;
+  }
+
+  html:not([data-theme="space"]).mobile-mission-lightbox-disabled .mission-photo-grid figcaption,
+  html:not([data-theme="space"]).mobile-mission-lightbox-disabled .mission-log-entry .mission-photo-grid figcaption {
+    color: rgba(45, 63, 82, .86) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.80), rgba(244,248,252,.92)) !important;
+    border-top: 1px solid rgba(40, 80, 120, .12) !important;
+  }
+}

@@ -608,5 +608,108 @@
 })();
 </script>
 
+
+<script>
+/* Mobile Mission Log lightbox disable.
+   On mobile/coarse-pointer devices, Mission Log images stay as inline figures.
+   Tapping them will not open the desktop lightbox/gallery. Captions stay on
+   the Mission Log page itself. */
+(function () {
+  function isMobileMissionView() {
+    return !!(
+      window.matchMedia &&
+      window.matchMedia("(max-width: 760px), (pointer: coarse)").matches
+    );
+  }
+
+  function setMobileFlag() {
+    document.documentElement.classList.toggle("mobile-mission-lightbox-disabled", isMobileMissionView());
+  }
+
+  function getMissionTrigger(target) {
+    if (!target || !target.closest) return null;
+
+    return target.closest([
+      ".mission-log-entry figure",
+      ".mission-log-entry img",
+      ".mission-entry figure",
+      ".mission-entry img",
+      ".mission-photo-grid figure",
+      ".mission-photo-grid img",
+      ".mission-photo-grid a",
+      ".mission-log-entry [data-lightbox]",
+      ".mission-log-entry [data-lightbox-src]",
+      ".mission-log-entry [data-full-src]",
+      ".mission-log-entry [data-full]",
+      ".mission-log-entry [data-image]",
+      ".mission-gallery [data-lightbox]",
+      ".mission-gallery [data-lightbox-src]",
+      ".mission-gallery [data-full-src]",
+      ".mission-gallery [data-full]",
+      ".mission-gallery [data-image]"
+    ].join(","));
+  }
+
+  function closeMissionLightbox() {
+    if (!isMobileMissionView()) return;
+
+    document.body.classList.remove("mission-lightbox-open", "mission-lightbox-mobile-open");
+
+    document.querySelectorAll(
+      ".mission-lightbox, .mission-gallery-lightbox, .mission-modal, .gallery-modal, .lightbox"
+    ).forEach(function (box) {
+      box.classList.remove("is-open", "is-active", "is-visible");
+      box.setAttribute("aria-hidden", "true");
+      box.style.display = "none";
+      box.style.visibility = "hidden";
+      box.style.opacity = "0";
+    });
+  }
+
+  function suppressMissionLightbox(event) {
+    if (!isMobileMissionView()) return;
+
+    const trigger = getMissionTrigger(event.target);
+    if (!trigger) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+
+    closeMissionLightbox();
+  }
+
+  ["click", "dblclick", "pointerdown", "pointerup", "touchstart", "touchend"].forEach(function (type) {
+    document.addEventListener(type, suppressMissionLightbox, true);
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (!isMobileMissionView()) return;
+    if (event.key !== "Enter" && event.key !== " ") return;
+
+    const trigger = getMissionTrigger(event.target);
+    if (!trigger) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    closeMissionLightbox();
+  }, true);
+
+  setMobileFlag();
+  closeMissionLightbox();
+
+  window.addEventListener("resize", function () {
+    setMobileFlag();
+    closeMissionLightbox();
+  }, { passive: true });
+
+  window.addEventListener("orientationchange", function () {
+    setMobileFlag();
+    window.setTimeout(closeMissionLightbox, 80);
+  }, { passive: true });
+})();
+</script>
+
 </body>
 </html>
