@@ -15780,3 +15780,59 @@ body.ambient-fx-disabled .ambient-space-layer {
     top: 86px !important;
   }
 }
+
+
+/* ============================================================
+   Ambient FX Toggle Stable Bottom Anchor
+   Put the FX button back near the lower-right area, but offset it above
+   the Target / Phase / Mode status card. No viewport-height positioning,
+   so it stays stable in small desktop windows.
+   ============================================================ */
+
+.ambient-fx-toggle {
+  top: auto !important;
+  left: auto !important;
+  right: calc(env(safe-area-inset-right, 0px) + clamp(16px, 1.8vw, 28px)) !important;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 116px) !important;
+  transform: none !important;
+}
+
+.ambient-fx-toggle:hover,
+.ambient-fx-toggle:focus-visible {
+  transform: translateY(-1px) !important;
+}
+
+/* Slightly tighter offset for short desktop windows, but still above the
+   lower-right status card rather than floating by viewport height. */
+@media (max-height: 760px) and (min-width: 761px) {
+  .ambient-fx-toggle {
+    right: calc(env(safe-area-inset-right, 0px) + 18px) !important;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 104px) !important;
+  }
+}
+
+/* Mobile: fixed lower-right, above browser safe area and above bottom content. */
+@media (max-width: 760px), (pointer: coarse) {
+  .ambient-fx-toggle {
+    top: auto !important;
+    left: auto !important;
+    right: calc(env(safe-area-inset-right, 0px) + 12px) !important;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 92px) !important;
+    transform: none !important;
+  }
+
+  .ambient-fx-toggle:hover,
+  .ambient-fx-toggle:focus-visible {
+    transform: translateY(-1px) !important;
+  }
+}
+
+/* Very narrow screens: keep it compact but still anchored. */
+@media (max-width: 390px) {
+  .ambient-fx-toggle {
+    right: calc(env(safe-area-inset-right, 0px) + 10px) !important;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 84px) !important;
+    min-height: 32px !important;
+    padding: 0 10px !important;
+  }
+}
