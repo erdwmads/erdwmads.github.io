@@ -34,6 +34,14 @@ Keep `.nojekyll` in the repository root so GitHub Pages serves all static assets
 
 For copy-ready update templates, see `docs/maintenance-templates.md`.
 
+Long-term maintenance references:
+
+- `docs/handoff-report.md` - full imported handoff report
+- `docs/content-workflow.md` - structured Mission Log fan-out rules
+- `docs/writing-style.md` - public website prose rules
+- `docs/ui-invariants.md` - design and behavior rules to preserve
+- `docs/perf-browser-watchlist.md` - performance and Edge-specific risk notes
+
 ## CSS Maintenance
 
 `assets/css/style.css` is intentionally kept as the single stylesheet for GitHub Pages. It has accumulated several design iterations, so changes should be made in small, reviewable passes:
