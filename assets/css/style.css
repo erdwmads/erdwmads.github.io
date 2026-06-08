@@ -15668,23 +15668,95 @@ body.space-mode .ambient-space-layer .ambient-dust.is-gold-dust::after {
 
 
 /* ============================================================
-   Edge Canvas Ambient Fallback
-   Edge/Chromium can rasterize individual glowing DOM particles as white
-   square compositor tiles during window close/tab snapshot. For Edge only,
-   ambient-space.js uses a single canvas layer instead of many DOM particles.
-   Entry gate, site layout, and non-Edge ambient DOM effects are unchanged.
+   Ambient FX Toggle
+   Off = true low-power mode: ambient-space.js does not create/render
+   stardust, micro-meteorites, or meteors. On = render full ambient effects.
    ============================================================ */
 
-.ambient-space-layer.ambient-canvas-mode {
-  contain: strict !important;
-  isolation: isolate !important;
+.ambient-fx-toggle {
+  position: fixed !important;
+  right: clamp(14px, 2.1vw, 28px) !important;
+  bottom: clamp(14px, 2.1vw, 28px) !important;
+  z-index: 2147482000 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  min-height: 36px !important;
+  padding: 0 13px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(190, 226, 255, .20) !important;
+  background:
+    linear-gradient(180deg, rgba(13, 27, 44, .78), rgba(6, 14, 25, .78)) !important;
+  color: rgba(218, 230, 240, .82) !important;
+  font-family: "Aptos", "Inter", "SF Pro Text", system-ui, sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 760 !important;
+  letter-spacing: .04em !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  box-shadow:
+    0 12px 28px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.10) !important;
+  backdrop-filter: blur(12px) saturate(1.08) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(1.08) !important;
+  transition:
+    border-color .18s ease,
+    color .18s ease,
+    box-shadow .18s ease,
+    transform .18s ease,
+    background .18s ease !important;
 }
 
-.ambient-space-layer .ambient-canvas {
-  position: absolute !important;
-  inset: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  display: block !important;
-  pointer-events: none !important;
+.ambient-fx-toggle:hover,
+.ambient-fx-toggle:focus-visible {
+  transform: translateY(-1px) !important;
+  border-color: rgba(143, 208, 255, .42) !important;
+  color: rgba(238, 247, 255, .94) !important;
+  box-shadow:
+    0 16px 36px rgba(0,0,0,.34),
+    0 0 18px rgba(143,208,255,.12),
+    inset 0 1px 0 rgba(255,255,255,.14) !important;
+}
+
+.ambient-fx-toggle__dot {
+  width: 7px !important;
+  height: 7px !important;
+  border-radius: 50% !important;
+  background: rgba(125, 143, 158, .86) !important;
+  box-shadow: 0 0 8px rgba(125, 143, 158, .28) !important;
+}
+
+.ambient-fx-toggle.is-on {
+  border-color: rgba(255, 224, 156, .35) !important;
+  color: rgba(255, 234, 188, .92) !important;
+  background:
+    linear-gradient(180deg, rgba(24, 31, 38, .82), rgba(8, 16, 26, .80)) !important;
+  box-shadow:
+    0 14px 34px rgba(0,0,0,.34),
+    0 0 20px rgba(255,224,156,.12),
+    inset 0 1px 0 rgba(255,255,255,.12) !important;
+}
+
+.ambient-fx-toggle.is-on .ambient-fx-toggle__dot {
+  background: rgba(255, 224, 156, .94) !important;
+  box-shadow:
+    0 0 8px rgba(255, 224, 156, .70),
+    0 0 18px rgba(255, 224, 156, .22) !important;
+}
+
+html.ambient-fx-disabled .ambient-space-layer,
+body.ambient-fx-disabled .ambient-space-layer {
+  display: none !important;
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .ambient-fx-toggle {
+    right: 12px !important;
+    bottom: 12px !important;
+    min-height: 34px !important;
+    padding: 0 11px !important;
+    font-size: 10px !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
 }
