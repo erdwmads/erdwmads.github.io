@@ -15507,3 +15507,43 @@ body.space-mode .ambient-space-layer .ambient-dust.is-gold-dust::after {
     opacity: 0;
   }
 }
+
+
+/* ============================================================
+   Minimal Ambient Power Saver
+   Design goal:
+   - Reduce heat/power with the smallest visible change.
+   - Keep colours, gold ratio, motion style, random respawn, and entry screen.
+   - Do not add Edge artifact masks or entry-gate flattening.
+   ============================================================ */
+
+.ambient-space-layer {
+  contain: layout style paint !important;
+  isolation: isolate !important;
+}
+
+.ambient-dust,
+.ambient-pebble {
+  will-change: auto !important;
+  transform-style: flat !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+}
+
+.ambient-meteor {
+  will-change: auto !important;
+  transform-style: flat !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+}
+
+.ambient-meteor.is-flying {
+  will-change: transform, opacity !important;
+}
+
+.ambient-space-layer.ambient-paused .ambient-dust,
+.ambient-space-layer.ambient-paused .ambient-pebble,
+.ambient-space-layer.ambient-paused .ambient-meteor {
+  animation-play-state: paused !important;
+  transition: none !important;
+}

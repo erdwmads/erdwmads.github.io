@@ -54,7 +54,9 @@
       resetDustMotion(el, true);
 
       el.addEventListener("animationiteration", function () {
-        resetDustMotion(el, false);
+        requestAnimationFrame(function () {
+          resetDustMotion(el, false);
+        });
       });
 
       layer.appendChild(el);
@@ -87,7 +89,9 @@
       resetPebbleMotion(el, true);
 
       el.addEventListener("animationiteration", function () {
-        resetPebbleMotion(el, false);
+        requestAnimationFrame(function () {
+          resetPebbleMotion(el, false);
+        });
       });
 
       layer.appendChild(el);
@@ -179,15 +183,54 @@
       }, duration + 420);
     }
 
-    // Keep the scene rich, but slightly reduce micro-meteorite density.
-    for (let i = 0; i < 146; i++) makeDust();
-    for (let i = 0; i < 26; i++) makePebble();
+    // Minimal power saver:
+    // keep the same visual language, but reduce always-on particle work.
+    const isMobileAmbient = window.matchMedia &&
+      window.matchMedia("(max-width: 760px), (pointer: coarse)").matches;
 
-    // Make meteors immediately visible after load, then continuously spawn.
-    spawnMeteor();
-    setTimeout(spawnMeteor, 450);
-    setTimeout(spawnMeteor, 1050);
-    setInterval(spawnMeteor, 1400);
+    const dustCount = isMobileAmbient ? 88 : 122;
+    const pebbleCount = isMobileAmbient ? 14 : 20;
+    const meteorInterval = isMobileAmbient ? 2600 : 1900;
+
+    for (let i = 0; i < dustCount; i++) makeDust();
+    for (let i = 0; i < pebbleCount; i++) makePebble();
+
+    // Make meteors visible after load, then spawn at a slightly calmer cadence.
+    function spawnMeteorIfVisible() {
+      if (!document.hidden) spawnMeteor();
+    }
+
+    spawnMeteorIfVisible();
+    setTimeout(spawnMeteorIfVisible, isMobileAmbient ? 900 : 550);
+    setTimeout(spawnMeteorIfVisible, isMobileAmbient ? 1850 : 1200);
+
+    let meteorTimer = window.setInterval(spawnMeteorIfVisible, meteorInterval);
+
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) {
+        window.clearInterval(meteorTimer);
+        meteorTimer = null;
+        layer.classList.add("ambient-paused");
+      } else {
+        layer.classList.remove("ambient-paused");
+        if (!meteorTimer) {
+          meteorTimer = window.setInterval(spawnMeteorIfVisible, meteorInterval);
+        }
+      }
+    });
+
+    window.addEventListener("pagehide", function () {
+      window.clearInterval(meteorTimer);
+      meteorTimer = null;
+      layer.classList.add("ambient-paused");
+    }, { passive: true });
+
+    window.addEventListener("pageshow", function () {
+      layer.classList.remove("ambient-paused");
+      if (!meteorTimer) {
+        meteorTimer = window.setInterval(spawnMeteorIfVisible, meteorInterval);
+      }
+    }, { passive: true });
   }
 
   if (document.readyState === "loading") {
