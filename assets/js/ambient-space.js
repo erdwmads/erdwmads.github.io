@@ -184,43 +184,10 @@
     for (let i = 0; i < 26; i++) makePebble();
 
     // Make meteors immediately visible after load, then continuously spawn.
-    // Same visible timing as before, but pause the timer when the page is hidden.
-    // This lowers heat/battery drain without changing the visible effect.
-    function spawnMeteorIfVisible() {
-      if (!document.hidden) spawnMeteor();
-    }
-
-    spawnMeteorIfVisible();
-    setTimeout(spawnMeteorIfVisible, 450);
-    setTimeout(spawnMeteorIfVisible, 1050);
-
-    let meteorTimer = null;
-
-    function startMeteorTimer() {
-      if (meteorTimer) return;
-      meteorTimer = setInterval(spawnMeteorIfVisible, 1400);
-    }
-
-    function stopMeteorTimer() {
-      if (!meteorTimer) return;
-      clearInterval(meteorTimer);
-      meteorTimer = null;
-    }
-
-    startMeteorTimer();
-
-    document.addEventListener("visibilitychange", function () {
-      if (document.hidden) {
-        stopMeteorTimer();
-        layer.classList.add("ambient-paused");
-      } else {
-        layer.classList.remove("ambient-paused");
-        startMeteorTimer();
-      }
-    });
-
-    window.addEventListener("pagehide", stopMeteorTimer, { passive: true });
-    window.addEventListener("pageshow", startMeteorTimer, { passive: true });
+    spawnMeteor();
+    setTimeout(spawnMeteor, 450);
+    setTimeout(spawnMeteor, 1050);
+    setInterval(spawnMeteor, 1400);
   }
 
   if (document.readyState === "loading") {
