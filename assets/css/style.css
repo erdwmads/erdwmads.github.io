@@ -15629,3 +15629,132 @@ body.gate-exiting .ambient-space-layer {
     display: none !important;
   }
 }
+
+
+/* ============================================================
+   Edge Entry-Gate White Blocks Stronger Fix
+   Remaining white blocks usually happen while the opening gate is being
+   dismissed, not only during page unload. Edge/Chromium can cache glowing
+   fixed particles behind a fading glass overlay as square white raster tiles.
+   This temporarily removes the ambient layer while the gate exists/closes.
+   ============================================================ */
+
+html.edge-entry-guard-active .ambient-space-layer,
+body.edge-entry-guard-active .ambient-space-layer,
+.ambient-space-layer.edge-entry-guard-active,
+.ambient-space-layer.edge-entry-guard-active * {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  animation-play-state: paused !important;
+  transition: none !important;
+  filter: none !important;
+  box-shadow: none !important;
+}
+
+html.edge-entry-guard-active .ambient-dust,
+html.edge-entry-guard-active .ambient-pebble,
+html.edge-entry-guard-active .ambient-meteor,
+body.edge-entry-guard-active .ambient-dust,
+body.edge-entry-guard-active .ambient-pebble,
+body.edge-entry-guard-active .ambient-meteor {
+  opacity: 0 !important;
+  filter: none !important;
+  box-shadow: none !important;
+}
+
+html.edge-entry-guard-active .ambient-dust::before,
+html.edge-entry-guard-active .ambient-dust::after,
+html.edge-entry-guard-active .ambient-pebble::before,
+html.edge-entry-guard-active .ambient-pebble::after,
+html.edge-entry-guard-active .ambient-meteor::before,
+html.edge-entry-guard-active .ambient-meteor::after,
+body.edge-entry-guard-active .ambient-dust::before,
+body.edge-entry-guard-active .ambient-dust::after,
+body.edge-entry-guard-active .ambient-pebble::before,
+body.edge-entry-guard-active .ambient-pebble::after,
+body.edge-entry-guard-active .ambient-meteor::before,
+body.edge-entry-guard-active .ambient-meteor::after {
+  content: none !important;
+  display: none !important;
+  opacity: 0 !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+html.has-entry-gate .ambient-space-layer,
+body.has-entry-gate .ambient-space-layer {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+
+/* ============================================================
+   Edge Entry-Gate Exit Compositor Fix
+   In Edge, the white square artifacts are produced by the entry gate's own
+   blur / grid / glow layers during the closing frame. Flatten the gate only
+   during its exit phase so the visible main-page design remains unchanged.
+   ============================================================ */
+
+html.is-edge-browser.edge-entry-exit-phase .entry-gate,
+body.is-edge-browser.edge-entry-exit-phase .entry-gate,
+html.is-edge-browser .entry-gate.edge-safe-exit,
+html.is-edge-browser .entry-gate.is-exiting {
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background:
+    linear-gradient(180deg, rgba(3,8,15,.995), rgba(5,12,22,.985) 58%, rgba(2,5,10,.998)) !important;
+}
+
+html.is-edge-browser.edge-entry-exit-phase .entry-gate::before,
+html.is-edge-browser.edge-entry-exit-phase .entry-gate::after,
+html.is-edge-browser .entry-gate.edge-safe-exit::before,
+html.is-edge-browser .entry-gate.edge-safe-exit::after,
+html.is-edge-browser .entry-gate.is-exiting::before,
+html.is-edge-browser .entry-gate.is-exiting::after {
+  opacity: 0 !important;
+  animation: none !important;
+  filter: none !important;
+  transform: none !important;
+}
+
+html.is-edge-browser.edge-entry-exit-phase .entry-gate__panel,
+html.is-edge-browser .entry-gate.edge-safe-exit .entry-gate__panel,
+html.is-edge-browser .entry-gate.is-exiting .entry-gate__panel {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(6, 14, 25, .94) !important;
+  box-shadow:
+    0 24px 64px rgba(0,0,0,.38),
+    0 0 0 1px rgba(255,255,255,.028) inset,
+    inset 0 1px 0 rgba(255,255,255,.08) !important;
+  border-color: rgba(190,226,255,.16) !important;
+}
+
+html.is-edge-browser.edge-entry-exit-phase .entry-gate__panel::before,
+html.is-edge-browser .entry-gate.edge-safe-exit .entry-gate__panel::before,
+html.is-edge-browser .entry-gate.is-exiting .entry-gate__panel::before,
+html.is-edge-browser.edge-entry-exit-phase .entry-gate__orbit,
+html.is-edge-browser .entry-gate.edge-safe-exit .entry-gate__orbit,
+html.is-edge-browser .entry-gate.is-exiting .entry-gate__orbit,
+html.is-edge-browser.edge-entry-exit-phase .entry-gate__constellation,
+html.is-edge-browser .entry-gate.edge-safe-exit .entry-gate__constellation,
+html.is-edge-browser .entry-gate.is-exiting .entry-gate__constellation,
+html.is-edge-browser.edge-entry-exit-phase .entry-gate__corner,
+html.is-edge-browser .entry-gate.edge-safe-exit .entry-gate__corner,
+html.is-edge-browser .entry-gate.is-exiting .entry-gate__corner,
+html.is-edge-browser.edge-entry-exit-phase .entry-gate__line::before,
+html.is-edge-browser .entry-gate.edge-safe-exit .entry-gate__line::before,
+html.is-edge-browser .entry-gate.is-exiting .entry-gate__line::before {
+  opacity: 0 !important;
+  animation: none !important;
+  display: none !important;
+}
+
+html.is-edge-browser.edge-entry-exit-phase .entry-gate__name span,
+html.is-edge-browser .entry-gate.edge-safe-exit .entry-gate__name span,
+html.is-edge-browser .entry-gate.is-exiting .entry-gate__name span {
+  filter: none !important;
+  text-shadow: none !important;
+}
