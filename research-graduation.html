@@ -450,5 +450,163 @@
   <script src="assets/js/mission-lightbox.js" defer></script>
   <script src="assets/js/mission-status-sync.js" defer></script>
   <script src="assets/js/interface-2046.js" defer></script>
+
+<script>
+/* Mission Log lightbox thumbnail hydration fix.
+   Some browsers leave lazy thumbnails blank until the carousel is navigated.
+   This helper preloads / rehydrates all thumbnail images whenever the lightbox opens
+   or when its slide index changes. It is intentionally defensive and does not
+   replace the existing lightbox logic. */
+(function () {
+  function getImageUrlFromNode(node) {
+    if (!node) return "";
+
+    if (node.dataset) {
+      const keys = [
+        "src", "thumb", "thumbnail", "full", "image", "lightboxSrc",
+        "lightboxThumb", "original", "lazySrc"
+      ];
+      for (const key of keys) {
+        if (node.dataset[key]) return node.dataset[key];
+      }
+    }
+
+    if (node.currentSrc) return node.currentSrc;
+    if (node.src) return node.src;
+
+    const attrKeys = [
+      "src", "data-src", "data-thumb", "data-thumbnail", "data-full",
+      "data-image", "data-lightbox-src", "data-lightbox-thumb",
+      "data-original", "data-lazy-src"
+    ];
+
+    for (const key of attrKeys) {
+      const value = node.getAttribute && node.getAttribute(key);
+      if (value) return value;
+    }
+
+    const bg = window.getComputedStyle(node).backgroundImage;
+    const match = bg && bg.match(/url\((["']?)(.*?)\1\)/);
+    return match ? match[2] : "";
+  }
+
+  function hydrateImage(img) {
+    if (!img || img.dataset.missionThumbHydrated === "1") return;
+
+    const url = getImageUrlFromNode(img);
+    if (!url) return;
+
+    img.loading = "eager";
+    img.decoding = "async";
+    img.dataset.missionThumbHydrated = "1";
+
+    if (img.tagName === "IMG") {
+      if (!img.getAttribute("src")) img.setAttribute("src", url);
+      if (img.dataset.src && img.getAttribute("src") !== img.dataset.src) {
+        img.setAttribute("src", img.dataset.src);
+      }
+    } else {
+      img.style.backgroundImage = 'url("' + url.replace(/"/g, '\\"') + '")';
+    }
+
+    const preloader = new Image();
+    preloader.decoding = "async";
+    preloader.onload = function () {
+      if (img.tagName === "IMG") {
+        img.classList.add("is-loaded");
+      } else {
+        img.classList.add("is-loaded");
+      }
+    };
+    preloader.src = url;
+  }
+
+  function hydrateMissionThumbs(root) {
+    const scope = root || document;
+
+    const selectors = [
+      ".mission-lightbox img",
+      ".mission-lightbox [data-src]",
+      ".mission-lightbox [data-thumb]",
+      ".mission-lightbox [data-thumbnail]",
+      ".mission-lightbox [data-lightbox-thumb]",
+      ".mission-lightbox [data-image]",
+      ".lightbox img",
+      ".lightbox [data-src]",
+      ".lightbox [data-thumb]",
+      ".lightbox [data-thumbnail]",
+      ".lightbox [data-lightbox-thumb]",
+      ".lightbox [data-image]",
+      ".mission-gallery-lightbox img",
+      ".mission-gallery-lightbox [data-src]",
+      ".mission-gallery-lightbox [data-thumb]",
+      ".mission-gallery-lightbox [data-thumbnail]",
+      ".mission-gallery-lightbox [data-lightbox-thumb]",
+      ".mission-gallery-lightbox [data-image]"
+    ];
+
+    scope.querySelectorAll(selectors.join(",")).forEach(hydrateImage);
+  }
+
+  let scheduled = false;
+  function scheduleHydration(root) {
+    if (scheduled) return;
+    scheduled = true;
+
+    requestAnimationFrame(function () {
+      scheduled = false;
+      hydrateMissionThumbs(root || document);
+    });
+  }
+
+  document.addEventListener("click", function (event) {
+    const trigger = event.target.closest && event.target.closest(
+      ".mission-log-entry img, .mission-entry img, .mission-figure img, .mission-gallery img, [data-lightbox], [data-lightbox-src]"
+    );
+
+    if (trigger) {
+      window.setTimeout(function () {
+        hydrateMissionThumbs(document);
+      }, 80);
+      window.setTimeout(function () {
+        hydrateMissionThumbs(document);
+      }, 420);
+    }
+  }, true);
+
+  const observer = new MutationObserver(function (mutations) {
+    for (const mutation of mutations) {
+      if (mutation.type === "childList") {
+        mutation.addedNodes.forEach(function (node) {
+          if (node.nodeType === 1) scheduleHydration(node);
+        });
+      } else if (mutation.type === "attributes") {
+        scheduleHydration(mutation.target);
+      }
+    }
+  });
+
+  function start() {
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: [
+        "class", "style", "src", "data-src", "data-thumb",
+        "data-thumbnail", "data-lightbox-thumb", "data-image"
+      ]
+    });
+
+    hydrateMissionThumbs(document);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", start, { once: true });
+  } else {
+    start();
+  }
+})();
+</script>
+
 </body>
 </html>

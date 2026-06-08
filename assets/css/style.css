@@ -15547,3 +15547,38 @@ body.space-mode .ambient-space-layer .ambient-dust.is-gold-dust::after {
   animation-play-state: paused !important;
   transition: none !important;
 }
+
+
+/* ============================================================
+   Mission Log Lightbox Thumbnail Loading Fix
+   Keeps existing lightbox design; only prevents the thumbnail strip from
+   staying visually blank until the user navigates.
+   ============================================================ */
+
+.mission-lightbox img.is-loaded,
+.lightbox img.is-loaded,
+.mission-gallery-lightbox img.is-loaded {
+  opacity: 1 !important;
+}
+
+.mission-lightbox [data-mission-thumb-hydrated="1"],
+.lightbox [data-mission-thumb-hydrated="1"],
+.mission-gallery-lightbox [data-mission-thumb-hydrated="1"] {
+  opacity: 1 !important;
+}
+
+/* For thumbnails that are waiting on network/cache decode, keep the slot stable
+   instead of showing an empty black rectangle. */
+.mission-lightbox .thumbnail,
+.mission-lightbox .thumb,
+.mission-lightbox [class*="thumb"],
+.lightbox .thumbnail,
+.lightbox .thumb,
+.lightbox [class*="thumb"],
+.mission-gallery-lightbox .thumbnail,
+.mission-gallery-lightbox .thumb,
+.mission-gallery-lightbox [class*="thumb"] {
+  background-color: rgba(12, 25, 41, .86);
+  background-size: cover;
+  background-position: center;
+}
