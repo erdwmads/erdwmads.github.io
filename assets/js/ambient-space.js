@@ -206,8 +206,12 @@
 
     let meteorTimer = window.setInterval(spawnMeteorIfVisible, meteorInterval);
 
-    document.addEventListener("visibilitychange", function () {
-      if (document.hidden) {
+    function setAmbientExitSafe(active) {
+      document.documentElement.classList.toggle("ambient-exit-safe", active);
+      document.body.classList.toggle("ambient-exit-safe", active);
+      layer.classList.toggle("ambient-exit-safe", active);
+
+      if (active) {
         window.clearInterval(meteorTimer);
         meteorTimer = null;
         layer.classList.add("ambient-paused");
@@ -217,19 +221,38 @@
           meteorTimer = window.setInterval(spawnMeteorIfVisible, meteorInterval);
         }
       }
+    }
+
+    document.addEventListener("visibilitychange", function () {
+      setAmbientExitSafe(document.hidden);
     });
 
-    window.addEventListener("pagehide", function () {
-      window.clearInterval(meteorTimer);
-      meteorTimer = null;
-      layer.classList.add("ambient-paused");
+    // Desktop Edge/Chromium often produces white square tiles when the user
+    // clicks the browser chrome close button. The page receives blur earlier
+    // than beforeunload, so this hides the ambient compositor before the close
+    // snapshot is taken. Effects return normally if the page gains focus again.
+    window.addEventListener("blur", function () {
+      setAmbientExitSafe(true);
     }, { passive: true });
 
+    window.addEventListener("focus", function () {
+      if (!document.hidden) setAmbientExitSafe(false);
+    }, { passive: true });
+
+    window.addEventListener("pagehide", function () {
+      setAmbientExitSafe(true);
+    }, { passive: true });
+
+    window.addEventListener("beforeunload", function () {
+      setAmbientExitSafe(true);
+    }, { capture: true });
+
+    window.addEventListener("unload", function () {
+      setAmbientExitSafe(true);
+    }, { capture: true });
+
     window.addEventListener("pageshow", function () {
-      layer.classList.remove("ambient-paused");
-      if (!meteorTimer) {
-        meteorTimer = window.setInterval(spawnMeteorIfVisible, meteorInterval);
-      }
+      if (!document.hidden) setAmbientExitSafe(false);
     }, { passive: true });
   }
 
