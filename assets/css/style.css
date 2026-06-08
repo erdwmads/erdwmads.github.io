@@ -15433,3 +15433,124 @@ html:not([data-theme="space"]) body.ui-page-research-graduation .mission-jump-ca
     display: none !important;
   }
 }
+
+
+/* ============================================================
+   Gold Stardust Visibility Boost
+   12% existed, but the dust itself was too faint.
+   This keeps gold dust as a subtle archive signal while making it visible.
+   ============================================================ */
+
+html[data-theme="space"] .ambient-space-layer .ambient-dust.is-gold-dust,
+html[data-theme-space] .ambient-space-layer .ambient-dust.is-gold-dust,
+body.space-mode .ambient-space-layer .ambient-dust.is-gold-dust {
+  opacity: var(--dust-opacity, .88) !important;
+  background: rgba(255, 222, 150, .92) !important;
+  box-shadow:
+    0 0 8px rgba(255, 226, 158, .72),
+    0 0 18px rgba(241, 199, 112, .36),
+    0 0 30px rgba(232, 181, 86, .18) !important;
+}
+
+html[data-theme="space"] .ambient-space-layer .ambient-dust.is-gold-dust::after,
+html[data-theme-space] .ambient-space-layer .ambient-dust.is-gold-dust::after,
+body.space-mode .ambient-space-layer .ambient-dust.is-gold-dust::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: -2px !important;
+  border-radius: inherit !important;
+  background: radial-gradient(circle, rgba(255, 236, 185, .34), rgba(255, 236, 185, 0) 68%) !important;
+  pointer-events: none !important;
+}
+
+
+/* ============================================================
+   Dust / Micro-meteorite Random Respawn Fix
+   Particles now fade down at the loop boundary; JS immediately re-seeds
+   their next cycle at a random viewport position. This removes the old
+   "reappears near where it disappeared / initial point" feeling.
+   ============================================================ */
+
+@keyframes ambientDustMove {
+  0% {
+    transform: translate3d(0, 0, 0) scale(.90);
+    opacity: 0;
+  }
+  8% {
+    opacity: var(--dust-opacity, .68);
+  }
+  52% {
+    opacity: calc(var(--dust-opacity, .68) * .94);
+  }
+  88% {
+    opacity: var(--dust-opacity, .68);
+  }
+  100% {
+    transform: translate3d(var(--dust-x, 70px), var(--dust-y, -70px), 0) scale(1.08);
+    opacity: 0;
+  }
+}
+
+@keyframes ambientPebbleMove {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: var(--pebble-opacity, .66);
+  }
+  84% {
+    opacity: calc(var(--pebble-opacity, .66) * .94);
+  }
+  100% {
+    transform: translate3d(var(--pebble-x, 90px), var(--pebble-y, 70px), 0) rotate(var(--pebble-rotate, 220deg));
+    opacity: 0;
+  }
+}
+
+
+/* ============================================================
+   No-Visual-Change Performance Pass
+   Keeps counts, timing, glow, colour, motion path, and visual density unchanged.
+   Only gives the browser cheaper compositing / paint boundaries and pauses
+   ambient work while the page is hidden.
+   ============================================================ */
+
+.ambient-space-layer {
+  contain: layout style paint !important;
+  isolation: isolate !important;
+  transform: translateZ(0) !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+}
+
+/* Too many always-on promoted layers can heat phones.
+   Let the browser decide for looped dust/pebbles; keep will-change only for
+   the short-lived flying meteor transition. Visual output is unchanged. */
+.ambient-dust,
+.ambient-pebble {
+  will-change: auto !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  transform-style: flat !important;
+}
+
+.ambient-meteor {
+  will-change: auto !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  transform-style: flat !important;
+}
+
+.ambient-meteor.is-flying {
+  will-change: transform, opacity !important;
+}
+
+/* When the tab/app is hidden, JS pauses new meteor generation and this freezes
+   existing ambient animations. Nothing changes while the page is visible. */
+.ambient-space-layer.ambient-paused .ambient-dust,
+.ambient-space-layer.ambient-paused .ambient-pebble,
+.ambient-space-layer.ambient-paused .ambient-meteor {
+  animation-play-state: paused !important;
+  transition: none !important;
+}

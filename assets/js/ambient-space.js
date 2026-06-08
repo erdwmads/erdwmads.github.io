@@ -15,7 +15,7 @@
   // Stable gold assignment.
   // Classes are assigned once at creation so a meteor cannot start gold and
   // turn white later when previous meteor nodes are removed.
-  const GOLD_DUST_RATIO = 0.035;
+  const GOLD_DUST_RATIO = 0.18;
   const GOLD_METEOR_RATIO = 0.07;
 
 
@@ -27,36 +27,46 @@
     layer.className = "ambient-space-layer";
     document.body.appendChild(layer);
 
-    function makeDust() {
-      const el = document.createElement("span");
-      el.className = "ambient-dust";
-      if (Math.random() < GOLD_DUST_RATIO) el.classList.add("is-gold-dust");
-
-      const size = rand(2.2, 4.8);
+    function resetDustMotion(el, initial) {
+      const isGoldDust = el.classList.contains("is-gold-dust");
+      const size = isGoldDust ? rand(3.1, 5.6) : rand(2.2, 4.8);
       const duration = rand(28, 50);
 
+      // On every new cycle, move the particle to a fresh viewport position.
+      // This prevents the loop-reset from reappearing near the previous/initial point.
       el.style.left = rand(0, 100) + "vw";
       el.style.top = rand(0, 100) + "vh";
       el.style.setProperty("--dust-size", size + "px");
       el.style.setProperty("--dust-x", rand(-118, 118) + "px");
       el.style.setProperty("--dust-y", rand(-108, 108) + "px");
       el.style.setProperty("--dust-duration", duration + "s");
-      el.style.setProperty("--dust-opacity", rand(0.46, 0.88).toFixed(2));
+      el.style.setProperty("--dust-opacity", (isGoldDust ? rand(0.72, 0.96) : rand(0.46, 0.88)).toFixed(2));
+      el.style.animationDuration = duration + "s";
+      el.style.animationDelay = initial ? (-rand(0, duration * 0.64)) + "s" : "0s";
+    }
 
-      // Keep dust alive instead of dropping into the invisible end of its loop.
-      el.style.animationDelay = (-rand(0, duration * 0.64)) + "s";
+    function makeDust() {
+      const el = document.createElement("span");
+      el.className = "ambient-dust";
+      const isGoldDust = Math.random() < GOLD_DUST_RATIO;
+      if (isGoldDust) el.classList.add("is-gold-dust");
+
+      resetDustMotion(el, true);
+
+      el.addEventListener("animationiteration", function () {
+        resetDustMotion(el, false);
+      });
 
       layer.appendChild(el);
     }
 
-    function makePebble() {
-      const el = document.createElement("span");
-      el.className = "ambient-pebble";
-
+    function resetPebbleMotion(el, initial) {
       const w = rand(8, 16);
       const h = w * rand(0.65, 1.05);
       const duration = rand(42, 74);
 
+      // Re-seed position and vector at each cycle so a pebble does not jump
+      // back to the same old start/end area.
       el.style.left = rand(0, 100) + "vw";
       el.style.top = rand(0, 100) + "vh";
       el.style.setProperty("--pebble-w", w + "px");
@@ -66,11 +76,19 @@
       el.style.setProperty("--pebble-rotate", rand(130, 390) + "deg");
       el.style.setProperty("--pebble-duration", duration + "s");
       el.style.setProperty("--pebble-opacity", rand(0.52, 0.82).toFixed(2));
+      el.style.animationDuration = duration + "s";
+      el.style.animationDelay = initial ? (-rand(0, duration * 0.48)) + "s" : "0s";
+    }
 
-      // Do not start close to the end of the animation cycle.
-      // The previous full negative-delay range could place pebbles at 95–100%,
-      // so they appeared and then disappeared almost immediately.
-      el.style.animationDelay = (-rand(0, duration * 0.48)) + "s";
+    function makePebble() {
+      const el = document.createElement("span");
+      el.className = "ambient-pebble";
+
+      resetPebbleMotion(el, true);
+
+      el.addEventListener("animationiteration", function () {
+        resetPebbleMotion(el, false);
+      });
 
       layer.appendChild(el);
     }
@@ -166,10 +184,43 @@
     for (let i = 0; i < 26; i++) makePebble();
 
     // Make meteors immediately visible after load, then continuously spawn.
-    spawnMeteor();
-    setTimeout(spawnMeteor, 450);
-    setTimeout(spawnMeteor, 1050);
-    setInterval(spawnMeteor, 1400);
+    // Same visible timing as before, but pause the timer when the page is hidden.
+    // This lowers heat/battery drain without changing the visible effect.
+    function spawnMeteorIfVisible() {
+      if (!document.hidden) spawnMeteor();
+    }
+
+    spawnMeteorIfVisible();
+    setTimeout(spawnMeteorIfVisible, 450);
+    setTimeout(spawnMeteorIfVisible, 1050);
+
+    let meteorTimer = null;
+
+    function startMeteorTimer() {
+      if (meteorTimer) return;
+      meteorTimer = setInterval(spawnMeteorIfVisible, 1400);
+    }
+
+    function stopMeteorTimer() {
+      if (!meteorTimer) return;
+      clearInterval(meteorTimer);
+      meteorTimer = null;
+    }
+
+    startMeteorTimer();
+
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) {
+        stopMeteorTimer();
+        layer.classList.add("ambient-paused");
+      } else {
+        layer.classList.remove("ambient-paused");
+        startMeteorTimer();
+      }
+    });
+
+    window.addEventListener("pagehide", stopMeteorTimer, { passive: true });
+    window.addEventListener("pageshow", startMeteorTimer, { passive: true });
   }
 
   if (document.readyState === "loading") {
