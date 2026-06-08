@@ -27,120 +27,6 @@
     layer.className = "ambient-space-layer";
     document.body.appendChild(layer);
 
-    const isEdgeBrowser = /\bEdg\//.test(navigator.userAgent || "");
-    if (isEdgeBrowser) {
-      document.documentElement.classList.add("is-edge-browser");
-      document.body.classList.add("is-edge-browser");
-    }
-
-    function setEdgeEntryExitPhase(active, gate) {
-      if (!isEdgeBrowser) return;
-      document.documentElement.classList.toggle("edge-entry-exit-phase", active);
-      document.body.classList.toggle("edge-entry-exit-phase", active);
-      if (gate) gate.classList.toggle("edge-safe-exit", active);
-    }
-
-    // Edge/Chromium white-square guard:
-    // Do not render glowing fixed particles under the opening gate while it is
-    // visible or fading out. Rebuild them after the gate is gone.
-    let entryGuardObserver = null;
-    let entryGuardReleaseTimer = null;
-
-    function hasVisibleEntryGate() {
-      const gate = document.querySelector(".entry-gate");
-      if (!gate) return false;
-      const rect = gate.getBoundingClientRect();
-      const style = window.getComputedStyle(gate);
-      return rect.width > 1 &&
-        rect.height > 1 &&
-        style.display !== "none" &&
-        style.visibility !== "hidden" &&
-        Number(style.opacity || "1") > 0.01;
-    }
-
-    function setEntryGuard(active) {
-      document.documentElement.classList.toggle("has-entry-gate", active);
-      document.body.classList.toggle("has-entry-gate", active);
-      document.documentElement.classList.toggle("edge-entry-guard-active", active);
-      document.body.classList.toggle("edge-entry-guard-active", active);
-      layer.classList.toggle("edge-entry-guard-active", active);
-    }
-
-    function clearAmbientChildren() {
-      while (layer.firstChild) layer.removeChild(layer.firstChild);
-    }
-
-    function refreshEntryGuard() {
-      const active = hasVisibleEntryGate();
-
-      if (entryGuardReleaseTimer) {
-        window.clearTimeout(entryGuardReleaseTimer);
-        entryGuardReleaseTimer = null;
-      }
-
-      if (active) {
-        const gate = document.querySelector(".entry-gate");
-        setEntryGuard(true);
-        if (gate && gate.classList.contains("is-exiting")) {
-          setEdgeEntryExitPhase(true, gate);
-        }
-        clearAmbientChildren();
-        return;
-      }
-
-      // Wait a little after the entry gate disappears; Edge often captures one
-      // stale compositor frame during the final close transition.
-      entryGuardReleaseTimer = window.setTimeout(function () {
-        setEntryGuard(false);
-        setEdgeEntryExitPhase(false, document.querySelector(".entry-gate"));
-        if (!layer.firstChild && !document.hidden) {
-          seedAmbientObjects();
-        }
-      }, 620);
-    }
-
-    function setupEntryGuard() {
-      refreshEntryGuard();
-
-      entryGuardObserver = new MutationObserver(refreshEntryGuard);
-      entryGuardObserver.observe(document.documentElement, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ["class", "style", "hidden", "aria-hidden"]
-      });
-
-      // Hide ambient immediately when the opening gate is interacted with.
-      // This catches the first frame of the close animation before Edge can
-      // rasterize glow tiles.
-      document.addEventListener("pointerdown", function (event) {
-        const gate = event.target && event.target.closest ? event.target.closest(".entry-gate") : null;
-        if (gate) {
-          setEntryGuard(true);
-          setEdgeEntryExitPhase(true, gate);
-          clearAmbientChildren();
-        }
-      }, { capture: true, passive: true });
-
-      document.addEventListener("transitionstart", function (event) {
-        const gate = event.target && event.target.closest ? event.target.closest(".entry-gate") : null;
-        if (gate) {
-          setEntryGuard(true);
-          setEdgeEntryExitPhase(true, gate);
-          clearAmbientChildren();
-        }
-      }, { capture: true, passive: true });
-
-      document.addEventListener("animationstart", function (event) {
-        const gate = event.target && event.target.closest ? event.target.closest(".entry-gate") : null;
-        if (gate && gate.classList.contains("is-exiting")) {
-          setEdgeEntryExitPhase(true, gate);
-        }
-      }, { capture: true, passive: true });
-
-      window.addEventListener("resize", refreshEntryGuard, { passive: true });
-    }
-
     function resetDustMotion(el, initial) {
       const isGoldDust = el.classList.contains("is-gold-dust");
       const size = isGoldDust ? rand(3.1, 5.6) : rand(2.2, 4.8);
@@ -293,25 +179,18 @@
       }, duration + 420);
     }
 
-    function seedAmbientObjects() {
-      if (hasVisibleEntryGate()) return;
-      clearAmbientChildren();
-
-      // Keep the scene rich, but slightly reduce micro-meteorite density.
-      for (let i = 0; i < 146; i++) makeDust();
-      for (let i = 0; i < 26; i++) makePebble();
-    }
-
-    setupEntryGuard();
-    seedAmbientObjects();
+    // Keep the scene rich, but slightly reduce micro-meteorite density.
+    for (let i = 0; i < 146; i++) makeDust();
+    for (let i = 0; i < 26; i++) makePebble();
 
     // Make meteors immediately visible after load, then continuously spawn.
     // Same visible timing as before, but pause the timer when the page is hidden.
     // This lowers heat/battery drain without changing the visible effect.
     function spawnMeteorIfVisible() {
-      if (!document.hidden && !hasVisibleEntryGate()) spawnMeteor();
+      if (!document.hidden) spawnMeteor();
     }
 
+    spawnMeteorIfVisible();
     setTimeout(spawnMeteorIfVisible, 450);
     setTimeout(spawnMeteorIfVisible, 1050);
 
@@ -340,41 +219,121 @@
       }
     });
 
-    function shutdownAmbientLayer() {
-      stopMeteorTimer();
-
-      // Edge/Chromium can leave glowing particles as square raster tiles during
-      // page exit. Hide and remove the ambient layer before the browser captures
-      // the closing frame.
-      document.documentElement.classList.add("is-page-leaving");
-      document.body.classList.add("is-page-leaving");
-      setEdgeEntryExitPhase(true, document.querySelector(".entry-gate"));
-      layer.classList.add("ambient-shutdown");
-      layer.style.opacity = "0";
-      layer.style.visibility = "hidden";
-      layer.style.transition = "none";
-
-      window.setTimeout(function () {
-        if (layer && layer.parentNode) layer.remove();
-      }, 0);
-    }
-
-    window.addEventListener("pagehide", shutdownAmbientLayer, { capture: true });
-    window.addEventListener("beforeunload", shutdownAmbientLayer, { capture: true });
-    window.addEventListener("unload", shutdownAmbientLayer, { capture: true });
-    window.addEventListener("pageshow", function () {
-      document.documentElement.classList.remove("is-page-leaving");
-      document.body.classList.remove("is-page-leaving");
-      setEdgeEntryExitPhase(false, document.querySelector(".entry-gate"));
-      refreshEntryGuard();
-      if (!hasVisibleEntryGate() && !layer.firstChild) seedAmbientObjects();
-      startMeteorTimer();
-    }, { passive: true });
+    window.addEventListener("pagehide", stopMeteorTimer, { passive: true });
+    window.addEventListener("pageshow", startMeteorTimer, { passive: true });
   }
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initAmbientSpace);
   } else {
     initAmbientSpace();
+  }
+})();
+
+
+/* Edge exit artifact mask: does not alter entry-gate or ambient effects. */
+(function () {
+  const ua = navigator.userAgent || "";
+  const isEdge = /\bEdg\//.test(ua);
+  if (!isEdge) return;
+
+  let mask = null;
+  let hideTimer = null;
+  let removeTimer = null;
+  let gateWasSeen = false;
+
+  function ensureMask() {
+    if (mask && mask.isConnected) return mask;
+
+    mask = document.createElement("div");
+    mask.className = "edge-exit-artifact-mask";
+    mask.setAttribute("aria-hidden", "true");
+    document.body.appendChild(mask);
+    return mask;
+  }
+
+  function showMask(duration) {
+    const m = ensureMask();
+
+    if (hideTimer) window.clearTimeout(hideTimer);
+    if (removeTimer) window.clearTimeout(removeTimer);
+
+    // Force style resolution before class toggle so Edge starts from opacity 0.
+    void m.offsetWidth;
+    m.classList.add("is-visible");
+
+    hideTimer = window.setTimeout(function () {
+      m.classList.remove("is-visible");
+
+      removeTimer = window.setTimeout(function () {
+        if (m && m.parentNode && !m.classList.contains("is-visible")) {
+          m.remove();
+        }
+      }, 320);
+    }, duration || 920);
+  }
+
+  function isGateNode(node) {
+    return !!(node && node.nodeType === 1 && node.matches && node.matches(".entry-gate"));
+  }
+
+  function findGateFromEvent(event) {
+    const target = event.target;
+    if (!target) return null;
+    if (target.closest) return target.closest(".entry-gate");
+    return isGateNode(target) ? target : null;
+  }
+
+  function watchEntryGate() {
+    const gate = document.querySelector(".entry-gate");
+    if (gate) gateWasSeen = true;
+
+    // If the gate enters its existing exit state, put the mask behind it.
+    // We do not add/remove/modify any gate classes or particle classes.
+    if (gate && gate.classList.contains("is-exiting")) {
+      showMask(1100);
+    }
+
+    // If the gate has just been removed, keep masking the main page for a
+    // short moment, because this is when Edge tends to show white square tiles.
+    if (!gate && gateWasSeen) {
+      showMask(760);
+      gateWasSeen = false;
+    }
+  }
+
+  function onMaybeGateClose(event) {
+    const gate = findGateFromEvent(event);
+    if (!gate) return;
+    gateWasSeen = true;
+    showMask(1150);
+  }
+
+  document.addEventListener("pointerdown", onMaybeGateClose, { capture: true, passive: true });
+  document.addEventListener("click", onMaybeGateClose, { capture: true, passive: true });
+  document.addEventListener("touchstart", onMaybeGateClose, { capture: true, passive: true });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" || event.key === "Enter" || event.key === " ") {
+      const gate = document.querySelector(".entry-gate");
+      if (gate) {
+        gateWasSeen = true;
+        showMask(1150);
+      }
+    }
+  }, { capture: true });
+
+  const observer = new MutationObserver(watchEntryGate);
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["class", "style", "hidden", "aria-hidden"]
+  });
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", watchEntryGate, { once: true });
+  } else {
+    watchEntryGate();
   }
 })();
