@@ -1,1 +1,0 @@
-Removed the Notes section: deleted notes.html, removed Notes from navigation, and removed the Notes card from the homepage if present.
