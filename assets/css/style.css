@@ -14978,3 +14978,94 @@ html[data-theme-space] .ambient-space-layer .ambient-dust.is-gold-dust,
 body.space-mode .ambient-space-layer .ambient-dust.is-gold-dust {
   opacity: var(--dust-opacity, .72) !important;
 }
+
+
+/* ------------------------------------------------------------
+   Direction B refined gold sky reduction
+   Design decision:
+   - Gold should mainly live in UI signals: badges, hover edges, active lines.
+   - Sky phenomena should stay mostly white / cool blue.
+   - Gold meteors are rare archive signals.
+   - Gold dust is almost removed and very faint.
+   ------------------------------------------------------------ */
+
+/* Neutralise older nth-child gold sky rules. Gold is now controlled only
+   by .is-gold-meteor and .is-gold-dust assigned in JS. */
+html[data-theme="space"] .ambient-space-layer .ambient-dust:nth-child(6n):not(.is-gold-dust),
+html[data-theme="space"] .ambient-space-layer .ambient-dust:nth-child(11n):not(.is-gold-dust),
+html[data-theme-space] .ambient-space-layer .ambient-dust:nth-child(6n):not(.is-gold-dust),
+html[data-theme-space] .ambient-space-layer .ambient-dust:nth-child(11n):not(.is-gold-dust),
+body.space-mode .ambient-space-layer .ambient-dust:nth-child(6n):not(.is-gold-dust),
+body.space-mode .ambient-space-layer .ambient-dust:nth-child(11n):not(.is-gold-dust) {
+  background: rgba(248, 252, 255, .96) !important;
+  box-shadow:
+    0 0 7px rgba(220, 240, 255, .78),
+    0 0 16px rgba(160, 215, 255, .34) !important;
+}
+
+html[data-theme="space"] .ambient-space-layer .ambient-meteor:nth-child(4n):not(.is-gold-meteor),
+html[data-theme="space"] .ambient-space-layer .ambient-meteor:nth-child(7n):not(.is-gold-meteor),
+html[data-theme="space"] .ambient-space-layer .ambient-meteor:nth-child(4n):not(.is-gold-meteor).is-flying,
+html[data-theme="space"] .ambient-space-layer .ambient-meteor:nth-child(7n):not(.is-gold-meteor).is-flying,
+html[data-theme-space] .ambient-space-layer .ambient-meteor:nth-child(4n):not(.is-gold-meteor),
+html[data-theme-space] .ambient-space-layer .ambient-meteor:nth-child(7n):not(.is-gold-meteor),
+body.space-mode .ambient-space-layer .ambient-meteor:nth-child(4n):not(.is-gold-meteor),
+body.space-mode .ambient-space-layer .ambient-meteor:nth-child(7n):not(.is-gold-meteor) {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0) 0%,
+    rgba(160,210,255,.18) 18%,
+    rgba(216,238,255,.84) 68%,
+    rgba(255,255,255,1) 100%
+  ) !important;
+  filter: drop-shadow(0 0 8px rgba(190, 230, 255, .72)) !important;
+}
+
+html[data-theme="space"] .ambient-space-layer .ambient-meteor:nth-child(4n):not(.is-gold-meteor)::after,
+html[data-theme="space"] .ambient-space-layer .ambient-meteor:nth-child(7n):not(.is-gold-meteor)::after,
+html[data-theme-space] .ambient-space-layer .ambient-meteor:nth-child(4n):not(.is-gold-meteor)::after,
+html[data-theme-space] .ambient-space-layer .ambient-meteor:nth-child(7n):not(.is-gold-meteor)::after,
+body.space-mode .ambient-space-layer .ambient-meteor:nth-child(4n):not(.is-gold-meteor)::after,
+body.space-mode .ambient-space-layer .ambient-meteor:nth-child(7n):not(.is-gold-meteor)::after {
+  background: rgba(255,255,255,1) !important;
+  box-shadow:
+    0 0 10px rgba(230,245,255,.95),
+    0 0 22px rgba(160,215,255,.55) !important;
+}
+
+/* Rare gold dust: almost gone and deliberately faint. */
+html[data-theme="space"] .ambient-space-layer .ambient-dust.is-gold-dust,
+html[data-theme-space] .ambient-space-layer .ambient-dust.is-gold-dust,
+body.space-mode .ambient-space-layer .ambient-dust.is-gold-dust {
+  opacity: calc(var(--dust-opacity, .62) * .58) !important;
+  background: rgba(238, 205, 132, .62) !important;
+  box-shadow:
+    0 0 6px rgba(238, 205, 132, .42),
+    0 0 14px rgba(232, 197, 116, .16) !important;
+}
+
+/* Rare gold meteors: present only as high-value archive accents. */
+html[data-theme="space"] .ambient-space-layer .ambient-meteor.is-gold-meteor,
+html[data-theme="space"] .ambient-space-layer .ambient-meteor.is-gold-meteor.is-flying,
+html[data-theme-space] .ambient-space-layer .ambient-meteor.is-gold-meteor,
+html[data-theme-space] .ambient-space-layer .ambient-meteor.is-gold-meteor.is-flying,
+body.space-mode .ambient-space-layer .ambient-meteor.is-gold-meteor,
+body.space-mode .ambient-space-layer .ambient-meteor.is-gold-meteor.is-flying {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0) 0%,
+    rgba(232,197,116,.11) 18%,
+    rgba(244,217,152,.58) 62%,
+    rgba(255,239,198,.90) 100%
+  ) !important;
+  filter: drop-shadow(0 0 7px rgba(244, 217, 152, .42)) !important;
+}
+
+html[data-theme="space"] .ambient-space-layer .ambient-meteor.is-gold-meteor::after,
+html[data-theme-space] .ambient-space-layer .ambient-meteor.is-gold-meteor::after,
+body.space-mode .ambient-space-layer .ambient-meteor.is-gold-meteor::after {
+  background: rgba(255, 240, 202, .92) !important;
+  box-shadow:
+    0 0 10px rgba(255, 238, 195, .72),
+    0 0 20px rgba(232, 197, 116, .34) !important;
+}
