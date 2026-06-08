@@ -219,8 +219,32 @@
       }
     });
 
-    window.addEventListener("pagehide", stopMeteorTimer, { passive: true });
-    window.addEventListener("pageshow", startMeteorTimer, { passive: true });
+    function shutdownAmbientLayer() {
+      stopMeteorTimer();
+
+      // Edge/Chromium can leave glowing particles as square raster tiles during
+      // page exit. Hide and remove the ambient layer before the browser captures
+      // the closing frame.
+      document.documentElement.classList.add("is-page-leaving");
+      document.body.classList.add("is-page-leaving");
+      layer.classList.add("ambient-shutdown");
+      layer.style.opacity = "0";
+      layer.style.visibility = "hidden";
+      layer.style.transition = "none";
+
+      window.setTimeout(function () {
+        if (layer && layer.parentNode) layer.remove();
+      }, 0);
+    }
+
+    window.addEventListener("pagehide", shutdownAmbientLayer, { capture: true });
+    window.addEventListener("beforeunload", shutdownAmbientLayer, { capture: true });
+    window.addEventListener("unload", shutdownAmbientLayer, { capture: true });
+    window.addEventListener("pageshow", function () {
+      document.documentElement.classList.remove("is-page-leaving");
+      document.body.classList.remove("is-page-leaving");
+      startMeteorTimer();
+    }, { passive: true });
   }
 
   if (document.readyState === "loading") {

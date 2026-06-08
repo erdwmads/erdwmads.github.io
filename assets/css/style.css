@@ -15554,3 +15554,78 @@ body.space-mode .ambient-space-layer .ambient-dust.is-gold-dust::after {
   animation-play-state: paused !important;
   transition: none !important;
 }
+
+
+/* ============================================================
+   Edge Exit White Blocks Artifact Fix
+   Edge/Chromium can rasterize glowing particle layers into square tiles during
+   page exit / navigation / entry-gate transition. During those moments, hide
+   the ambient layer cleanly instead of letting cached glow tiles remain visible.
+   ============================================================ */
+
+html.is-page-leaving .ambient-space-layer,
+body.is-page-leaving .ambient-space-layer,
+.ambient-space-layer.ambient-shutdown,
+.ambient-space-layer.ambient-shutdown * {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+  filter: none !important;
+  box-shadow: none !important;
+}
+
+/* Avoid Edge retaining square glow tiles from pseudo-elements while the page
+   is closing or the entry gate is disappearing. */
+html.is-page-leaving .ambient-dust::before,
+html.is-page-leaving .ambient-dust::after,
+html.is-page-leaving .ambient-pebble::before,
+html.is-page-leaving .ambient-pebble::after,
+html.is-page-leaving .ambient-meteor::before,
+html.is-page-leaving .ambient-meteor::after,
+body.is-page-leaving .ambient-dust::before,
+body.is-page-leaving .ambient-dust::after,
+body.is-page-leaving .ambient-pebble::before,
+body.is-page-leaving .ambient-pebble::after,
+body.is-page-leaving .ambient-meteor::before,
+body.is-page-leaving .ambient-meteor::after,
+.ambient-space-layer.ambient-shutdown .ambient-dust::before,
+.ambient-space-layer.ambient-shutdown .ambient-dust::after,
+.ambient-space-layer.ambient-shutdown .ambient-pebble::before,
+.ambient-space-layer.ambient-shutdown .ambient-pebble::after,
+.ambient-space-layer.ambient-shutdown .ambient-meteor::before,
+.ambient-space-layer.ambient-shutdown .ambient-meteor::after {
+  content: none !important;
+  display: none !important;
+  opacity: 0 !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Entry gate close/fade states: keep the background stable and prevent ambient
+   particles from being composited through the fading glass panel in Edge. */
+html.entry-gate-leaving .ambient-space-layer,
+body.entry-gate-leaving .ambient-space-layer,
+html.entry-gate-exiting .ambient-space-layer,
+body.entry-gate-exiting .ambient-space-layer,
+html.is-entry-exiting .ambient-space-layer,
+body.is-entry-exiting .ambient-space-layer,
+html.gate-exiting .ambient-space-layer,
+body.gate-exiting .ambient-space-layer {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Edge-specific fallback. This selector is harmless elsewhere, but targets
+   Chromium/Edge behavior where fixed translucent layers can tile during exit. */
+@supports (-ms-ime-align: auto) {
+  .ambient-space-layer.ambient-shutdown,
+  html.is-page-leaving .ambient-space-layer,
+  body.is-page-leaving .ambient-space-layer {
+    display: none !important;
+  }
+}
