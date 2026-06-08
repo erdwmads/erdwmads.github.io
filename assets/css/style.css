@@ -15554,34 +15554,3 @@ body.space-mode .ambient-space-layer .ambient-dust.is-gold-dust::after {
   animation-play-state: paused !important;
   transition: none !important;
 }
-
-
-/* ============================================================
-   Edge Exit Artifact Mask - No Effect Change
-   This does not change entry-gate effects or ambient particle effects.
-   It only places a temporary dark mask between the closing gate and the main
-   page in Edge, so Chromium's white raster tiles are hidden during the closing
-   frame.
-   ============================================================ */
-
-.edge-exit-artifact-mask {
-  position: fixed !important;
-  inset: 0 !important;
-  z-index: 2147483646 !important;
-  pointer-events: none !important;
-  background:
-    radial-gradient(circle at 18% 20%, rgba(143,208,255,.040), transparent 34rem),
-    radial-gradient(circle at 78% 18%, rgba(255,217,154,.026), transparent 28rem),
-    linear-gradient(180deg, rgba(2,6,12,.992), rgba(4,10,18,.988) 58%, rgba(2,5,10,.996)) !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-  transition: opacity .18s ease, visibility .18s step-end !important;
-  contain: strict !important;
-  isolation: isolate !important;
-}
-
-.edge-exit-artifact-mask.is-visible {
-  opacity: 1 !important;
-  visibility: visible !important;
-  transition: opacity .10s ease, visibility 0s step-start !important;
-}
