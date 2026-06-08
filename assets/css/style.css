@@ -15069,3 +15069,367 @@ body.space-mode .ambient-space-layer .ambient-meteor.is-gold-meteor::after {
     0 0 10px rgba(255, 238, 195, .72),
     0 0 20px rgba(232, 197, 116, .34) !important;
 }
+
+
+/* ============================================================
+   Mobile Entry Gate Complete View + Mission Log Gold Hover Edge
+   Fixes:
+   1. Mobile entry gate no longer gets vertically clipped by browser UI.
+   2. Entry panel becomes compact on mobile while preserving the archive look.
+   3. Mission Log cards / navigator tiles gain a clearer gold rim glow on hover.
+   ============================================================ */
+
+/* --- A. Mobile entry gate: fit inside the real small viewport --- */
+@media (max-width: 760px) {
+  .entry-gate {
+    height: 100svh !important;
+    min-height: 100svh !important;
+    max-height: 100svh !important;
+    padding: 12px 14px !important;
+    place-items: center !important;
+    align-items: center !important;
+    justify-items: center !important;
+    overflow: hidden !important;
+  }
+
+  .entry-gate::before {
+    inset: -5% !important;
+    transform: scale(1.025) !important;
+    background-position: center center !important;
+  }
+
+  .entry-gate__frame {
+    width: min(100%, calc(100vw - 22px)) !important;
+    max-width: 100% !important;
+    max-height: calc(100svh - 24px) !important;
+    display: grid !important;
+    place-items: center !important;
+  }
+
+  .entry-gate__panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: calc(100svh - 24px) !important;
+    min-height: 0 !important;
+    height: auto !important;
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior: contain !important;
+    padding: clamp(18px, 5.2vw, 24px) clamp(17px, 4.8vw, 22px) !important;
+    border-radius: 22px !important;
+    align-content: center !important;
+    row-gap: 0 !important;
+  }
+
+  .entry-gate__panel::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  .entry-gate__topline {
+    margin-bottom: 14px !important;
+    gap: 5px !important;
+  }
+
+  .entry-gate__kicker,
+  .entry-gate__code {
+    font-size: 9px !important;
+    letter-spacing: .15em !important;
+    line-height: 1.25 !important;
+    white-space: normal !important;
+  }
+
+  .entry-gate__name {
+    font-size: clamp(31px, 10.2vw, 44px) !important;
+    line-height: .94 !important;
+    letter-spacing: .028em !important;
+  }
+
+  .entry-gate__archive {
+    margin-top: 12px !important;
+    font-size: 12px !important;
+    line-height: 1.42 !important;
+  }
+
+  .entry-gate__meta {
+    margin-top: 14px !important;
+    gap: 6px !important;
+  }
+
+  .entry-gate__meta span {
+    min-height: 22px !important;
+    padding: 0 8px !important;
+    font-size: 8.5px !important;
+    letter-spacing: .045em !important;
+  }
+
+  .entry-gate__sequence {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+    margin-top: 14px !important;
+  }
+
+  .entry-gate__sequence span {
+    min-height: 25px !important;
+    padding: 0 5px !important;
+    border-radius: 10px !important;
+    font-size: 7.5px !important;
+    letter-spacing: .055em !important;
+    line-height: 1.15 !important;
+    text-align: center !important;
+  }
+
+  .entry-gate__line {
+    margin: 16px 0 10px !important;
+  }
+
+  .entry-gate__footer {
+    gap: 5px !important;
+  }
+
+  .entry-gate__mode,
+  .entry-gate__status,
+  .entry-gate__online {
+    font-size: 8.5px !important;
+    letter-spacing: .10em !important;
+    line-height: 1.25 !important;
+  }
+
+  .entry-gate__orbit {
+    width: 86vw !important;
+    opacity: .58 !important;
+  }
+
+  .entry-gate__corner {
+    width: 46px !important;
+    height: 46px !important;
+  }
+
+  .entry-gate__constellation {
+    opacity: .62 !important;
+  }
+}
+
+@media (max-width: 380px), (max-height: 690px) {
+  .entry-gate {
+    padding: 9px 12px !important;
+  }
+
+  .entry-gate__frame {
+    width: min(100%, calc(100vw - 18px)) !important;
+    max-height: calc(100svh - 18px) !important;
+  }
+
+  .entry-gate__panel {
+    max-height: calc(100svh - 18px) !important;
+    padding: 16px 15px !important;
+    border-radius: 20px !important;
+  }
+
+  .entry-gate__topline {
+    margin-bottom: 10px !important;
+  }
+
+  .entry-gate__name {
+    font-size: clamp(28px, 9.6vw, 39px) !important;
+    line-height: .95 !important;
+  }
+
+  .entry-gate__archive {
+    margin-top: 9px !important;
+    font-size: 11px !important;
+  }
+
+  .entry-gate__meta {
+    margin-top: 10px !important;
+  }
+
+  .entry-gate__sequence {
+    margin-top: 10px !important;
+  }
+
+  .entry-gate__line {
+    margin: 12px 0 8px !important;
+  }
+
+  .entry-gate__constellation,
+  .entry-gate__orbit {
+    opacity: .42 !important;
+  }
+}
+
+/* Browser fallback where svh is not available. */
+@supports not (height: 100svh) {
+  @media (max-width: 760px) {
+    .entry-gate {
+      height: 100vh !important;
+      min-height: 100vh !important;
+      max-height: 100vh !important;
+    }
+
+    .entry-gate__frame,
+    .entry-gate__panel {
+      max-height: calc(100vh - 24px) !important;
+    }
+  }
+}
+
+/* --- B. Mission Log hover: clear gold rim glow, without changing layout --- */
+html[data-theme="space"] body.ui-page-research-graduation .mission-log-entry,
+html[data-theme="space"] body.ui-page-research-graduation .mission-log-panel,
+html[data-theme="space"] body.ui-page-research-graduation .mission-index-panel,
+html[data-theme="space"] body.ui-page-research-graduation .mission-jump-card,
+html[data-theme-space] body.ui-page-research-graduation .mission-log-entry,
+html[data-theme-space] body.ui-page-research-graduation .mission-log-panel,
+html[data-theme-space] body.ui-page-research-graduation .mission-index-panel,
+html[data-theme-space] body.ui-page-research-graduation .mission-jump-card,
+body.space-mode.ui-page-research-graduation .mission-log-entry,
+body.space-mode.ui-page-research-graduation .mission-log-panel,
+body.space-mode.ui-page-research-graduation .mission-index-panel,
+body.space-mode.ui-page-research-graduation .mission-jump-card {
+  transition:
+    border-color .22s cubic-bezier(.2,.8,.2,1),
+    box-shadow .22s cubic-bezier(.2,.8,.2,1),
+    outline-color .22s cubic-bezier(.2,.8,.2,1),
+    transform .22s cubic-bezier(.2,.8,.2,1),
+    background .22s cubic-bezier(.2,.8,.2,1) !important;
+  outline: 1px solid transparent !important;
+  outline-offset: 0 !important;
+}
+
+html[data-theme="space"] body.ui-page-research-graduation .mission-log-entry:hover,
+html[data-theme="space"] body.ui-page-research-graduation .mission-log-entry:focus-within,
+html[data-theme="space"] body.ui-page-research-graduation .mission-log-panel:hover,
+html[data-theme="space"] body.ui-page-research-graduation .mission-log-panel:focus-within,
+html[data-theme="space"] body.ui-page-research-graduation .mission-index-panel:hover,
+html[data-theme="space"] body.ui-page-research-graduation .mission-index-panel:focus-within,
+html[data-theme="space"] body.ui-page-research-graduation .mission-jump-card:hover,
+html[data-theme="space"] body.ui-page-research-graduation .mission-jump-card:focus-visible,
+html[data-theme-space] body.ui-page-research-graduation .mission-log-entry:hover,
+html[data-theme-space] body.ui-page-research-graduation .mission-log-entry:focus-within,
+html[data-theme-space] body.ui-page-research-graduation .mission-log-panel:hover,
+html[data-theme-space] body.ui-page-research-graduation .mission-log-panel:focus-within,
+html[data-theme-space] body.ui-page-research-graduation .mission-index-panel:hover,
+html[data-theme-space] body.ui-page-research-graduation .mission-index-panel:focus-within,
+html[data-theme-space] body.ui-page-research-graduation .mission-jump-card:hover,
+html[data-theme-space] body.ui-page-research-graduation .mission-jump-card:focus-visible,
+body.space-mode.ui-page-research-graduation .mission-log-entry:hover,
+body.space-mode.ui-page-research-graduation .mission-log-entry:focus-within,
+body.space-mode.ui-page-research-graduation .mission-log-panel:hover,
+body.space-mode.ui-page-research-graduation .mission-log-panel:focus-within,
+body.space-mode.ui-page-research-graduation .mission-index-panel:hover,
+body.space-mode.ui-page-research-graduation .mission-index-panel:focus-within,
+body.space-mode.ui-page-research-graduation .mission-jump-card:hover,
+body.space-mode.ui-page-research-graduation .mission-jump-card:focus-visible {
+  border-color: rgba(255, 224, 156, .62) !important;
+  outline-color: rgba(255, 224, 156, .42) !important;
+  outline-offset: 2px !important;
+  transform: translateY(-2px) !important;
+  box-shadow:
+    0 30px 72px rgba(0,0,0,.36),
+    0 0 52px rgba(255, 224, 156, .18),
+    0 0 30px rgba(255, 224, 156, .14),
+    0 0 18px rgba(143,208,255,.060),
+    0 0 0 1px rgba(255, 224, 156, .18) inset,
+    inset 0 1px 0 rgba(255,255,255,.18),
+    inset 0 -1px 0 rgba(255, 224, 156, .16) !important;
+}
+
+/* Gold line response for the LOG/SOL chip inside navigator tiles. */
+html[data-theme="space"] body.ui-page-research-graduation .mission-jump-card:hover .mission-jump-log,
+html[data-theme="space"] body.ui-page-research-graduation .mission-jump-card:focus-visible .mission-jump-log,
+html[data-theme-space] body.ui-page-research-graduation .mission-jump-card:hover .mission-jump-log,
+html[data-theme-space] body.ui-page-research-graduation .mission-jump-card:focus-visible .mission-jump-log,
+body.space-mode.ui-page-research-graduation .mission-jump-card:hover .mission-jump-log,
+body.space-mode.ui-page-research-graduation .mission-jump-card:focus-visible .mission-jump-log {
+  border-color: rgba(255, 224, 156, .54) !important;
+  color: rgba(255, 230, 176, .96) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.15),
+    0 0 18px rgba(255,224,156,.14) !important;
+}
+
+/* Light mode gets champagne glow, not heavy yellow. */
+html:not([data-theme="space"]) body.ui-page-research-graduation .mission-log-entry:hover,
+html:not([data-theme="space"]) body.ui-page-research-graduation .mission-log-panel:hover,
+html:not([data-theme="space"]) body.ui-page-research-graduation .mission-index-panel:hover,
+html:not([data-theme="space"]) body.ui-page-research-graduation .mission-jump-card:hover {
+  border-color: rgba(198,171,117,.42) !important;
+  outline: 1px solid rgba(198,171,117,.24) !important;
+  outline-offset: 2px !important;
+  box-shadow:
+    0 24px 58px rgba(28,58,92,.12),
+    0 0 28px rgba(198,171,117,.16),
+    0 0 0 1px rgba(198,171,117,.08) inset,
+    inset 0 1px 0 rgba(255,255,255,.72),
+    inset 0 -1px 0 rgba(198,171,117,.08) !important;
+}
+
+
+/* ============================================================
+   Mobile Entry Gate Animation Off
+   Reason:
+   - Mobile browser chrome + heavy entry animation can cause visible jank.
+   - Keep the opening archive screen visually intact, but make it static on mobile.
+   ============================================================ */
+
+@media (max-width: 760px), (pointer: coarse) {
+  .entry-gate,
+  .entry-gate *,
+  .entry-gate::before,
+  .entry-gate::after,
+  .entry-gate__frame,
+  .entry-gate__frame::before,
+  .entry-gate__frame::after,
+  .entry-gate__panel,
+  .entry-gate__panel::before,
+  .entry-gate__panel::after,
+  .entry-gate__orbit,
+  .entry-gate__constellation,
+  .entry-gate__line,
+  .entry-gate__line::before,
+  .entry-gate__line::after,
+  .entry-gate__corner,
+  .entry-gate__corner::before,
+  .entry-gate__corner::after,
+  .entry-gate__status,
+  .entry-gate__online {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .entry-gate__orbit {
+    transform: none !important;
+  }
+
+  .entry-gate__constellation,
+  .entry-gate__line::before,
+  .entry-gate__line::after,
+  .entry-gate__panel::before,
+  .entry-gate__panel::after {
+    opacity: .48 !important;
+  }
+
+  .entry-gate__name,
+  .entry-gate__kicker,
+  .entry-gate__code,
+  .entry-gate__archive,
+  .entry-gate__meta span,
+  .entry-gate__sequence span,
+  .entry-gate__mode,
+  .entry-gate__status,
+  .entry-gate__online {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* More aggressive mobile fallback for old Android / Chromium WebView:
+   remove expensive backdrop/filter animation sources only inside the entry gate. */
+@media (max-width: 760px) {
+  .entry-gate .scanline,
+  .entry-gate .noise,
+  .entry-gate .animated-grid {
+    display: none !important;
+  }
+}

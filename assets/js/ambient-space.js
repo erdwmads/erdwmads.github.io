@@ -15,7 +15,7 @@
   // Stable gold assignment.
   // Classes are assigned once at creation so a meteor cannot start gold and
   // turn white later when previous meteor nodes are removed.
-  const GOLD_DUST_RATIO = 0.015;
+  const GOLD_DUST_RATIO = 0.035;
   const GOLD_METEOR_RATIO = 0.07;
 
 
@@ -161,9 +161,9 @@
       }, duration + 420);
     }
 
-    // Reduced counts, but visible.
+    // Keep the scene rich, but slightly reduce micro-meteorite density.
     for (let i = 0; i < 146; i++) makeDust();
-    for (let i = 0; i < 30; i++) makePebble();
+    for (let i = 0; i < 26; i++) makePebble();
 
     // Make meteors immediately visible after load, then continuously spawn.
     spawnMeteor();
