@@ -8,6 +8,10 @@ export const papers = [
       "CI chondrite",
       "XRD",
       "Modal mineralogy"
+    ],
+    "filters": [
+      "ci-orgueil",
+      "methods"
     ]
   },
   {
@@ -19,6 +23,9 @@ export const papers = [
       "Dolomite",
       "Nucleation",
       "Review"
+    ],
+    "filters": [
+      "dolomite"
     ]
   },
   {
@@ -30,6 +37,11 @@ export const papers = [
       "Ryugu",
       "Carbonates",
       "Isotopes"
+    ],
+    "filters": [
+      "dolomite",
+      "ryugu-bennu",
+      "methods"
     ]
   },
   {
@@ -41,6 +53,11 @@ export const papers = [
       "CM/CI",
       "Carbonate chemistry",
       "Aqueous alteration"
+    ],
+    "filters": [
+      "dolomite",
+      "ci-orgueil",
+      "methods"
     ]
   },
   {
@@ -52,6 +69,10 @@ export const papers = [
       "CI chondrite",
       "Parent body",
       "Carbonates"
+    ],
+    "filters": [
+      "dolomite",
+      "ci-orgueil"
     ]
   },
   {
@@ -63,6 +84,9 @@ export const papers = [
       "Ryugu",
       "Returned sample",
       "Aqueous alteration"
+    ],
+    "filters": [
+      "ryugu-bennu"
     ]
   },
   {
@@ -74,6 +98,10 @@ export const papers = [
       "Bennu",
       "Hydrothermal alteration",
       "TEM/XRD"
+    ],
+    "filters": [
+      "ryugu-bennu",
+      "methods"
     ]
   },
   {
@@ -85,6 +113,11 @@ export const papers = [
       "Mn–Cr",
       "Dolomite ages",
       "Chronology"
+    ],
+    "filters": [
+      "dolomite",
+      "ci-orgueil",
+      "chronology"
     ]
   },
   {
@@ -96,6 +129,10 @@ export const papers = [
       "Bennu",
       "Na,Ca carbonate",
       "Brines"
+    ],
+    "filters": [
+      "dolomite",
+      "ryugu-bennu"
     ]
   },
   {
@@ -107,6 +144,10 @@ export const papers = [
       "Bennu/Ryugu",
       "IR",
       "Sample return"
+    ],
+    "filters": [
+      "ryugu-bennu",
+      "methods"
     ]
   },
   {
@@ -118,6 +159,11 @@ export const papers = [
       "Orgueil",
       "Calcite",
       "Microstructure"
+    ],
+    "filters": [
+      "dolomite",
+      "ci-orgueil",
+      "methods"
     ]
   }
 ] as const;

@@ -2,12 +2,12 @@
 import { papers } from "../data/papers";
 
 const filters = [
-  { label: "All", query: "" },
-  { label: "Dolomite", query: "dolomite carbonate carbonates" },
-  { label: "CI / Orgueil", query: "ci chondrite orgueil ivuna" },
-  { label: "Ryugu / Bennu", query: "ryugu bennu returned sample" },
-  { label: "Methods", query: "xrd tem epma ir isotopes mineralogy" },
-  { label: "Chronology", query: "chronology ages mn cr" }
+  { label: "All", id: "" },
+  { label: "Dolomite", id: "dolomite" },
+  { label: "CI / Orgueil", id: "ci-orgueil" },
+  { label: "Ryugu / Bennu", id: "ryugu-bennu" },
+  { label: "Methods", id: "methods" },
+  { label: "Chronology", id: "chronology" }
 ];
 ---
 
@@ -30,7 +30,7 @@ const filters = [
       <button
         class="paper-filter"
         type="button"
-        data-paper-filter={filter.query}
+        data-paper-filter={filter.id}
         aria-pressed={index === 0 ? "true" : "false"}
       >
         {filter.label}
@@ -45,6 +45,7 @@ const filters = [
       class="paper-card"
       data-paper-card
       data-paper-text={`${paper.status} ${paper.title} ${paper.authors} ${paper.summary} ${paper.tags.join(" ")}`.toLowerCase()}
+      data-paper-filters={paper.filters.join(" ")}
     >
       <div class="paper-status">{paper.status}</div>
       <h2>{paper.title}</h2>

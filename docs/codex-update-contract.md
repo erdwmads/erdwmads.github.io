@@ -30,8 +30,9 @@ When the user sends a paper, Codex should:
 
 1. Normalize author/year, title, relevance, category, and tags.
 2. Add it to `src/data/papers.ts`.
-3. Keep filters useful without creating too many narrow categories.
-4. Run `npm run check`.
+3. Add reader-facing `tags` and button-matching `filters`.
+4. Use existing filter IDs unless a genuinely new shelf category is needed: `dolomite`, `ci-orgueil`, `ryugu-bennu`, `methods`, `chronology`.
+5. Run `npm run check`.
 
 ## PPT Rule
 

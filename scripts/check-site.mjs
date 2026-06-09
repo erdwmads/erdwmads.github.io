@@ -81,6 +81,36 @@ if ((paperShelf.match(/class="paper-card"/g) || []).length !== 11) {
 if (!paperShelf.includes("data-paper-search") || !paperShelf.includes("assets/js/paper-shelf.js")) {
   fail("paper-shelf.html: missing filter controls or script");
 }
+const expectedPaperFilters = ["dolomite", "ci-orgueil", "ryugu-bennu", "methods", "chronology"];
+for (const filter of expectedPaperFilters) {
+  if (!paperShelf.includes(`data-paper-filter="${filter}"`)) {
+    fail(`paper-shelf.html: missing stable filter button ${filter}`);
+  }
+}
+const paperCardMatches = [...paperShelf.matchAll(/<article\b[^>]*class="paper-card"[^>]*>/g)];
+const usedPaperFilters = new Set();
+for (const [index, match] of paperCardMatches.entries()) {
+  if (!match[0].includes("data-paper-filters=")) {
+    fail(`paper-shelf.html: paper card ${index + 1} missing data-paper-filters`);
+    continue;
+  }
+  const attr = match[0].match(/data-paper-filters="([^"]*)"/);
+  const filters = (attr?.[1] || "").split(/\s+/).filter(Boolean);
+  if (!filters.length) {
+    fail(`paper-shelf.html: paper card ${index + 1} has empty data-paper-filters`);
+  }
+  for (const filter of filters) {
+    if (!expectedPaperFilters.includes(filter)) {
+      fail(`paper-shelf.html: paper card ${index + 1} has unknown filter ${filter}`);
+    }
+    usedPaperFilters.add(filter);
+  }
+}
+for (const filter of expectedPaperFilters) {
+  if (!usedPaperFilters.has(filter)) {
+    fail(`paper-shelf.html: no paper cards mapped to ${filter}`);
+  }
+}
 
 const mission = readDistPage("research-graduation.html");
 if ((mission.match(/class="research-note-card mission-log-entry"/g) || []).length !== 6) {

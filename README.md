@@ -55,6 +55,7 @@ npm run export:ppt-data
 Codex should do the website edits. The user can send rough content.
 
 - Add papers: update `src/data/papers.ts`.
+  Each paper needs reader-facing `tags` and Paper Shelf `filters` (`dolomite`, `ci-orgueil`, `ryugu-bennu`, `methods`, `chronology`).
 - Add Mission Log entries: update `src/data/missionLog.ts`.
 - Change navigation, page scripts, sitemap list, or global metadata: update `src/data/site.ts`.
 - Replace normal images: add files under `public/assets/img/`, then update the relevant data or legacy fragment.

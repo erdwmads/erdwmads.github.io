@@ -43,6 +43,7 @@ Authors/year:
 Why it is relevant:
 Topic/category:
 Tags:
+Paper Shelf filters, if known:
 Priority or reading status:
 ```
 
@@ -50,7 +51,8 @@ Codex must:
 
 - Add or update entries in `src/data/papers.ts`.
 - Keep tags short enough for mobile.
-- Use existing Paper Shelf filters when possible.
+- Add `filters` for every paper using existing Paper Shelf filter IDs: `dolomite`, `ci-orgueil`, `ryugu-bennu`, `methods`, `chronology`.
+- Keep `tags` as reader-facing labels and `filters` as button-matching categories.
 - Run `npm run check`.
 
 ## Replace Or Add Images

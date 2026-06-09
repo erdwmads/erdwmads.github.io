@@ -36,7 +36,8 @@ const payload = {
     title: paper.title,
     authors: paper.authors,
     summary: paper.summary,
-    tags: [...paper.tags]
+    tags: [...paper.tags],
+    filters: [...paper.filters]
   })),
   missionLog: missionEntries.map((entry) => ({
     label: entry.label,

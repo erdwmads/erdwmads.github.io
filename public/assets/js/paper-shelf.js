@@ -22,7 +22,9 @@
 
     cards.forEach((card) => {
       const text = card.dataset.paperText || "";
-      const visible = matchesAllTerms(text, query) && matchesAllTerms(text, activeFilter);
+      const filters = normalise(card.dataset.paperFilters).split(/\s+/).filter(Boolean);
+      const matchesFilter = !activeFilter || filters.includes(activeFilter);
+      const visible = matchesAllTerms(text, query) && matchesFilter;
       card.hidden = !visible;
       if (visible) visibleCount += 1;
     });
