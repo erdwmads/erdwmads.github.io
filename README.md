@@ -2,27 +2,21 @@
 
 Static GitHub Pages website for `erdwmads.github.io`.
 
-This branch uses an Astro compatibility shell. The existing website files live
-under `public/` and are copied to `dist/` during `npm run build`, so the current
-visual effects and interactions remain unchanged while the project gains a
-repeatable build/deploy workflow.
+This branch uses an Astro compatibility shell. Shared page chrome now lives in
+`src/components/LegacyShell.astro`, while page bodies and page-specific scripts
+remain as raw legacy partials under `src/legacy/`. This reduces repeated
+head/header/footer code without changing the current visual effects or
+interactions.
 
 ## Structure
 
-- `public/index.html` - home page
-- `public/research.html` - research overview
-- `public/research-log.html` - research project index
-- `public/research-graduation.html` - graduation research mission log
-- `public/paper-shelf.html` - curated paper list
-- `public/cv.html` - CV page
-- `public/photography.html` - photography page
-- `public/contact.html` - contact page
-- `public/sample-cabinet.html` - sample cabinet page
+- `src/pages/` - Astro routes that generate the public pages
+- `src/components/LegacyShell.astro` - shared head, navigation, footer, and shell
+- `src/legacy/` - raw legacy page bodies and page-specific scripts
 - `public/assets/css/style.css` - site styling
 - `public/assets/js/` - theme, ambient effects, photography, and mission log scripts
 - `public/assets/img/` - portraits, gallery photos, research log images, and backgrounds
 - `public/assets/files/` - downloadable PDFs
-- `src/pages/.gitkeep` - keeps Astro page directory present for future migration work
 
 ## Deployment
 

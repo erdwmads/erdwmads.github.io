@@ -1,0 +1,9 @@
+---
+import LegacyShell from "../components/LegacyShell.astro";
+import mainHtml from "../legacy/paper-shelf-main.html?raw";
+import scriptHtml from "../legacy/paper-shelf-scripts.html?raw";
+---
+
+<LegacyShell title='Paper Shelf | Mads LIU YONG' description='Reading list and paper shelf of Mads LIU YONG.' current='paper-shelf' mainClass='main' scriptHtml={scriptHtml}>
+  <Fragment set:html={mainHtml} />
+</LegacyShell>

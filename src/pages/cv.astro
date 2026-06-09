@@ -1,0 +1,9 @@
+---
+import LegacyShell from "../components/LegacyShell.astro";
+import mainHtml from "../legacy/cv-main.html?raw";
+import scriptHtml from "../legacy/cv-scripts.html?raw";
+---
+
+<LegacyShell title='CV | Mads LIU YONG' description='Personal academic website of Mads LIU YONG.' current='cv' mainClass='main' scriptHtml={scriptHtml}>
+  <Fragment set:html={mainHtml} />
+</LegacyShell>
