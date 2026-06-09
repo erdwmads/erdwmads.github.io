@@ -44,9 +44,7 @@
 
   window.addEventListener("pageshow", restoreEdgeTeardown, { passive: true });
 
-  const rawPath = window.location.pathname.split('/').pop() || 'index.html';
-  const page = rawPath.replace('.html', '') || 'index';
-  const pageClass = {
+  const pageClassMap = {
     'index': 'ui-page-home',
     'research': 'ui-page-research',
     'research-log': 'ui-page-research-log',
@@ -54,14 +52,9 @@
     'paper-shelf': 'ui-page-paper-shelf',
     'cv': 'ui-page-cv',
     'photography': 'ui-page-photography',
-    'contact': 'ui-page-contact'
-  }[page] || `ui-page-${page.replace(/[^a-z0-9-]/gi, '').toLowerCase()}`;
-
-  body.classList.add(pageClass);
-
-  const pageTitle = (document.title || 'Mads LIU YONG').split('|')[0].trim() || 'Mission File';
-  const h1 = document.querySelector('main h1, .hero h1, .page-title');
-  const rawRoute = (h1?.textContent || pageTitle).replace(/\s+/g, ' ').trim();
+    'contact': 'ui-page-contact',
+    'sample-cabinet': 'ui-page-sample-cabinet'
+  };
 
   const shortRouteMap = {
     'index': 'Home',
@@ -71,8 +64,20 @@
     'paper-shelf': 'Paper Shelf',
     'cv': 'CV',
     'photography': 'Photography',
-    'contact': 'Contact'
+    'contact': 'Contact',
+    'sample-cabinet': 'Sample Cabinet'
   };
+
+  const pageKeyFromName = (name) => {
+    const clean = String(name || 'index.html').split('/').pop() || 'index.html';
+    return clean.replace('.html', '') || 'index';
+  };
+
+  const pageKeyFromLocation = () => pageKeyFromName(window.location.pathname.split('/').pop() || 'index.html');
+
+  const pageClassForKey = (key) => (
+    pageClassMap[key] || `ui-page-${key.replace(/[^a-z0-9-]/gi, '').toLowerCase()}`
+  );
 
   const shortenRoute = (value) => {
     const clean = String(value || '').replace(/\s+/g, ' ').trim();
@@ -81,7 +86,16 @@
     return clean.slice(0, 31).trim() + '…';
   };
 
-  const route = shortRouteMap[page] || shortenRoute(rawRoute);
+  const routeForPage = (key) => {
+    if (shortRouteMap[key]) return shortRouteMap[key];
+    const pageTitle = (document.title || 'Mads LIU YONG').split('|')[0].trim() || 'Mission File';
+    const h1 = document.querySelector('main h1, .hero h1, .page-title');
+    return shortenRoute(h1?.textContent || pageTitle);
+  };
+
+  const initialPage = pageKeyFromLocation();
+  body.classList.add(pageClassForKey(initialPage));
+  const route = routeForPage(initialPage);
 
   const orbitData = [
     { name: 'Mercury', label: 'Mercury', years: 0.241, w: 18, h: 11, angle: 26,  size: 2.0, color: 'rgba(180,190,196,.72)', cls: 'inner', alpha: .10, labelMode: 'minor' },
@@ -120,13 +134,19 @@
     </div>
 
     <aside class="ui2046-rail ui2046-right">
-      <strong>${route}</strong>
+      <strong data-ui2046-route>${route}</strong>
       <div class="ui2046-rail-line"></div>
       <span>INTERFACE 2046</span>
     </aside>
   `;
 
   body.appendChild(layer);
+  const routeLabel = layer.querySelector('[data-ui2046-route]');
+
+  const updateRouteLabel = (pageName) => {
+    if (!routeLabel) return;
+    routeLabel.textContent = routeForPage(pageName ? pageKeyFromName(pageName) : pageKeyFromLocation());
+  };
 
   // The scroll progress beam must live outside .ui2046-layer.
   // If it is nested inside the interface/background layer, mobile stacking
@@ -234,6 +254,12 @@
   startPlanetAnimation();
 
   window.addEventListener('mads:power-state', startPlanetAnimation);
+  window.addEventListener('mads:soft-nav-ready', (event) => {
+    updateRouteLabel(event.detail?.pageName);
+    updateProgress();
+    placePlanets(performance.now());
+    startPlanetAnimation();
+  });
   document.addEventListener('visibilitychange', startPlanetAnimation, { passive: true });
   window.addEventListener('pageshow', startPlanetAnimation, { passive: true });
 

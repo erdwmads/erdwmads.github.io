@@ -15883,6 +15883,37 @@ body.mads-power-low .photo-marquee-track {
   animation-play-state: paused !important;
 }
 
+/* Soft navigation stability */
+html.mads-soft-nav-active,
+body.mads-soft-nav-active {
+  scroll-behavior: auto !important;
+}
+
+html.mads-soft-nav-active body::before,
+body.mads-soft-nav-active::before,
+html.mads-soft-nav-active body::after,
+body.mads-soft-nav-active::after,
+html.mads-soft-nav-active .ui2046-layer,
+body.mads-soft-nav-active .ui2046-layer,
+html.mads-soft-nav-active .ambient-space-layer,
+body.mads-soft-nav-active .ambient-space-layer,
+html.mads-soft-nav-active .ui2046-progress,
+body.mads-soft-nav-active .ui2046-progress,
+html.mads-soft-nav-active main,
+body.mads-soft-nav-active main {
+  transition-property: none !important;
+}
+
+html.mads-soft-nav-active .ui2046-layer *,
+body.mads-soft-nav-active .ui2046-layer *,
+html.mads-soft-nav-active .ambient-space-layer *,
+body.mads-soft-nav-active .ambient-space-layer *,
+html.mads-soft-nav-active .ui2046-progress span,
+body.mads-soft-nav-active .ui2046-progress span {
+  animation-play-state: paused !important;
+  transition-property: none !important;
+}
+
 /* Paper Shelf filters */
 .paper-shelf-tools {
   display: grid;

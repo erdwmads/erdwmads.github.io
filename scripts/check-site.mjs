@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const distDir = path.join(root, "dist");
 const publicDir = path.join(root, "public");
+const assetsDir = path.join(publicDir, "assets");
 
 const pages = [
   "index.html",
@@ -93,6 +94,21 @@ for (const required of ["robots.txt", "sitemap.xml"]) {
   if (!fs.existsSync(path.join(distDir, required)) && !fs.existsSync(path.join(publicDir, required))) {
     fail(`Missing SEO file: ${required}`);
   }
+}
+
+const legacyNavigation = fs.readFileSync(path.join(assetsDir, "js", "legacy-navigation.js"), "utf8");
+if (!legacyNavigation.includes("mads-soft-nav-active") || !legacyNavigation.includes("mads:soft-nav-ready")) {
+  fail("legacy-navigation.js: missing soft navigation stability lifecycle");
+}
+
+const interface2046 = fs.readFileSync(path.join(assetsDir, "js", "interface-2046.js"), "utf8");
+if (!interface2046.includes("data-ui2046-route") || !interface2046.includes("mads:soft-nav-ready")) {
+  fail("interface-2046.js: missing soft navigation route refresh");
+}
+
+const styleCss = fs.readFileSync(path.join(assetsDir, "css", "style.css"), "utf8");
+if (!styleCss.includes("mads-soft-nav-active")) {
+  fail("style.css: missing soft navigation stability styles");
 }
 
 if (failures.length) {

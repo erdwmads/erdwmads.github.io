@@ -23,6 +23,33 @@
     "assets/js/legacy-navigation.js"
   ]);
 
+  let softNavToken = 0;
+
+  function dispatchSoftNavEvent(name, detail) {
+    window.dispatchEvent(new CustomEvent(name, { detail }));
+  }
+
+  function beginSoftNav(url) {
+    softNavToken += 1;
+    const token = softNavToken;
+    const detail = { url };
+    document.documentElement.classList.add("mads-soft-nav-active");
+    document.body.classList.add("mads-soft-nav-active");
+    dispatchSoftNavEvent("mads:soft-nav-start", detail);
+    return token;
+  }
+
+  function endSoftNav(token, detail) {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (token !== softNavToken) return;
+        document.documentElement.classList.remove("mads-soft-nav-active");
+        document.body.classList.remove("mads-soft-nav-active");
+        dispatchSoftNavEvent("mads:soft-nav-end", detail);
+      });
+    });
+  }
+
   function pageNameFromUrl(url) {
     const name = new URL(url, window.location.href).pathname.split("/").pop();
     return name || "index.html";
@@ -72,38 +99,46 @@
   }
 
   async function navigate(url, pushState) {
-    const response = await fetch(url, { credentials: "same-origin" });
-    if (!response.ok) {
-      window.location.href = url;
-      return;
-    }
+    const token = beginSoftNav(url);
+    let pageName = pageNameFromUrl(url);
 
-    const html = await response.text();
-    const nextDoc = new DOMParser().parseFromString(html, "text/html");
-    const nextMain = nextDoc.querySelector("main");
-    const currentMain = document.querySelector("main");
-    if (!nextMain || !currentMain) {
-      window.location.href = url;
-      return;
-    }
+    try {
+      const response = await fetch(url, { credentials: "same-origin" });
+      if (!response.ok) {
+        window.location.href = url;
+        return;
+      }
 
-    document.title = nextDoc.title || document.title;
-    const nextDescription = nextDoc.querySelector('meta[name="description"]');
-    const currentDescription = document.querySelector('meta[name="description"]');
-    if (nextDescription && currentDescription) {
-      currentDescription.setAttribute("content", nextDescription.getAttribute("content") || "");
-    }
+      const html = await response.text();
+      const nextDoc = new DOMParser().parseFromString(html, "text/html");
+      const nextMain = nextDoc.querySelector("main");
+      const currentMain = document.querySelector("main");
+      if (!nextMain || !currentMain) {
+        window.location.href = url;
+        return;
+      }
 
-    currentMain.replaceWith(nextMain);
-    const pageName = pageNameFromUrl(url);
-    setCurrentNav(pageName);
-    setBodyPageClass(pageName);
-    runPageScripts(nextDoc);
+      document.title = nextDoc.title || document.title;
+      const nextDescription = nextDoc.querySelector('meta[name="description"]');
+      const currentDescription = document.querySelector('meta[name="description"]');
+      if (nextDescription && currentDescription) {
+        currentDescription.setAttribute("content", nextDescription.getAttribute("content") || "");
+      }
 
-    if (pushState) {
-      history.pushState({ madsSoftNav: true }, "", url);
+      currentMain.replaceWith(nextMain);
+      pageName = pageNameFromUrl(url);
+      setCurrentNav(pageName);
+      setBodyPageClass(pageName);
+      runPageScripts(nextDoc);
+
+      if (pushState) {
+        history.pushState({ madsSoftNav: true }, "", url);
+      }
+      window.scrollTo({ top: 0, behavior: "instant" });
+      dispatchSoftNavEvent("mads:soft-nav-ready", { url, pageName });
+    } finally {
+      endSoftNav(token, { url, pageName });
     }
-    window.scrollTo({ top: 0, behavior: "instant" });
   }
 
   document.addEventListener("click", (event) => {
