@@ -1,7 +1,9 @@
 ---
 import LegacyShell from "../components/LegacyShell.astro";
+import { getPageScripts } from "../data/site";
 import mainHtml from "../legacy/cv-main.html?raw";
-import scriptHtml from "../legacy/cv-scripts.html?raw";
+
+const scriptHtml = getPageScripts("cv");
 ---
 
 <LegacyShell title='CV | Mads LIU YONG' description='Personal academic website of Mads LIU YONG.' current='cv' mainClass='main' scriptHtml={scriptHtml}>

@@ -1,0 +1,102 @@
+---
+import heroHtml from "../legacy/research-graduation-hero.html?raw";
+import projectInfoHtml from "../legacy/research-graduation-project-info.html?raw";
+import afterLogHtml from "../legacy/research-graduation-after-log.html?raw";
+import { latestMissionEntry, missionEntries } from "../data/missionLog";
+
+const navigatorEntries = [...missionEntries].sort((a, b) => a.number - b.number);
+const statusCards = [
+  {
+    key: "latest",
+    label: "Latest update",
+    strongField: "latest-date",
+    strong: latestMissionEntry.date,
+    noteField: "latest-note",
+    note: latestMissionEntry.latestNote
+  },
+  {
+    key: "stage",
+    label: "Current stage",
+    strongField: "current-stage",
+    strong: latestMissionEntry.stage,
+    noteField: "stage-note",
+    note: latestMissionEntry.stageNote
+  },
+  {
+    key: "question",
+    label: "Current question",
+    strongField: "current-question",
+    strong: latestMissionEntry.question,
+    noteField: "question-note",
+    note: latestMissionEntry.questionNote
+  },
+  {
+    key: "next",
+    label: "Next step",
+    strongField: "next-step",
+    strong: latestMissionEntry.nextStep,
+    noteField: "next-note",
+    note: latestMissionEntry.nextNote
+  }
+];
+---
+
+<Fragment set:html={heroHtml} />
+
+<section class="section research-status-grid" data-mission-status-grid>
+  {statusCards.map((card) => (
+    <article class="status-card" data-status-card={card.key}>
+      <span>{card.label}</span>
+      <strong data-status-field={card.strongField}>{card.strong}</strong>
+      <p data-status-field={card.noteField}>{card.note}</p>
+    </article>
+  ))}
+</section>
+
+<Fragment set:html={projectInfoHtml} />
+
+<section id="mission-index" class="section mission-index-section compact-mission-index">
+  <div class="section-label">Mission Index</div>
+  <div class="mission-index-panel">
+    <div class="mission-index-head">
+      <div>
+        <p class="eyebrow">Quick Jump</p>
+        <h2>Mission Log Navigator</h2>
+      </div>
+      <span class="mission-index-mode">Earliest first</span>
+    </div>
+    <div class="mission-jump-grid compact-mission-jump-grid" data-mission-index-list>
+      {navigatorEntries.map((entry) => (
+        <a class="mission-jump-card compact-jump-card" href={`#${entry.id}`}>
+          <span class="mission-jump-log">{entry.label}</span>
+          <span class="mission-jump-meta">{`SOL ${String(entry.sol).padStart(3, "0")} \u00B7 ${entry.date}`}</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section class="section two-col research-notes-section" id="mission-log">
+  <div class="section-label">Mission Log<span class="section-label-note">Latest first</span></div>
+  <div class="research-note-list mission-log-list" data-mission-log-list>
+    {missionEntries.map((entry) => (
+      <article
+        id={entry.id}
+        class="research-note-card mission-log-entry"
+        data-log-date={entry.date}
+        data-log-stage={entry.stage}
+        data-log-question={entry.question}
+        data-log-next-step={entry.nextStep}
+        data-log-latest-note={entry.latestNote}
+        data-log-stage-note={entry.stageNote}
+        data-log-question-note={entry.questionNote}
+        data-log-next-note={entry.nextNote}
+      >
+        <div class="research-note-date">{entry.label}</div>
+        <div class="research-note-body" set:html={entry.bodyHtml} />
+      </article>
+    ))}
+  </div>
+</section>
+
+<Fragment set:html={afterLogHtml} />

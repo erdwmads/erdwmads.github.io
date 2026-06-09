@@ -1,4 +1,5 @@
----
+﻿---import { brand, footerItems, navItems } from "../data/site";
+
 interface Props {
   title: string;
   description: string;
@@ -8,15 +9,6 @@ interface Props {
 }
 
 const { title, description, current, mainClass = "main", scriptHtml } = Astro.props;
-const navItems = [
-  { href: "index.html", label: "Home", key: "home" },
-  { href: "research.html", label: "Research", key: "research" },
-  { href: "research-log.html", label: "Research Log", key: "research-log" },
-  { href: "paper-shelf.html", label: "Paper Shelf", key: "paper-shelf" },
-  { href: "cv.html", label: "CV", key: "cv" },
-  { href: "photography.html", label: "Photography", key: "photography" },
-  { href: "contact.html", label: "Contact", key: "contact" }
-];
 ---
 
 <!doctype html>
@@ -66,9 +58,9 @@ const navItems = [
 <body>
 <header class="site-header">
   <div class="header-inner">
-    <a class="brand" href="index.html">
-      <strong>Mads LIU YONG</strong>
-      <span>Cosmic Mineralogy &bull; Planetary Sciences &bull; Meteoritics</span>
+    <a class="brand" href={brand.homeHref}>
+      <strong>{brand.name}</strong>
+      <span set:html={brand.tagline} />
     </a>
     <nav class="nav" aria-label="Main navigation">
       {navItems.map((item) => <a href={item.href} aria-current={current === item.key ? "page" : undefined}>{item.label}</a>)}
@@ -81,11 +73,12 @@ const navItems = [
 </main>
 <footer class="site-footer">
   <div class="footer-inner">
-    <span>(c) 2026 Mads LIU YONG</span>
-    <span>Built for GitHub Pages</span>
+    {footerItems.map((item) => <span>{item}</span>)}
   </div>
 </footer>
+<script is:inline src="assets/js/power-manager.js"></script>
 <Fragment set:html={scriptHtml} />
 <script src="assets/js/legacy-navigation.js" defer></script>
 </body>
 </html>
+

@@ -204,15 +204,38 @@
     });
   };
 
+  const shouldPausePlanetMotion = () => {
+    const state = window.__madsPowerState || {};
+    return document.hidden || state.hidden || state.idle || state.lowPower;
+  };
+
+  let planetAnimationRunning = false;
+
   const animatePlanets = (timeMs) => {
+    if (shouldPausePlanetMotion()) {
+      planetAnimationRunning = false;
+      return;
+    }
+
     placePlanets(timeMs);
-    if (!reduceMotion) requestAnimationFrame(animatePlanets);
+    if (!reduceMotion) {
+      requestAnimationFrame(animatePlanets);
+    }
+  };
+
+  const startPlanetAnimation = () => {
+    if (reduceMotion || planetAnimationRunning || shouldPausePlanetMotion()) return;
+    planetAnimationRunning = true;
+    requestAnimationFrame(animatePlanets);
   };
 
   updateProgress();
   placePlanets(0);
+  startPlanetAnimation();
 
-  if (!reduceMotion) requestAnimationFrame(animatePlanets);
+  window.addEventListener('mads:power-state', startPlanetAnimation);
+  document.addEventListener('visibilitychange', startPlanetAnimation, { passive: true });
+  window.addEventListener('pageshow', startPlanetAnimation, { passive: true });
 
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', updateProgress);

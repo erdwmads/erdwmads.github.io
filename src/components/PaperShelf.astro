@@ -1,0 +1,39 @@
+---
+import { papers } from "../data/papers";
+---
+
+<section>
+  <p class="eyebrow">Paper Shelf</p>
+  <h1>Paper Shelf</h1>
+  <p class="lead">
+    A curated reading shelf for papers related to my graduation research: dolomite, carbonates,
+    CI chondrites, Orgueil, Ryugu, Bennu, aqueous alteration, and analytical mineralogy.
+  </p>
+</section>
+
+<section class="section paper-shelf">
+  {papers.map((paper) => (
+    <article class="paper-card">
+      <div class="paper-status">{paper.status}</div>
+      <h2>{paper.title}</h2>
+      <p class="muted">{paper.authors}</p>
+      <p>{paper.summary}</p>
+      <div class="project-tags">
+        {paper.tags.map((tag) => <span>{tag}</span>)}
+      </div>
+    </article>
+  ))}
+</section>
+
+<section class="section reading-constellation-section">
+  <p class="eyebrow">Reading Constellation</p>
+  <h2>How the references connect</h2>
+  <div class="reading-constellation">
+    <div class="reading-core">Dolomite Problem</div>
+    <div>CI carbonates</div>
+    <div>Orgueil / Ivuna</div>
+    <div>Ryugu / Bennu</div>
+    <div>Aqueous alteration</div>
+    <div>Analytical mineralogy</div>
+  </div>
+</section>

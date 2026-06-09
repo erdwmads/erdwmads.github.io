@@ -1,7 +1,9 @@
 ---
 import LegacyShell from "../components/LegacyShell.astro";
+import { getPageScripts } from "../data/site";
 import mainHtml from "../legacy/research-log-main.html?raw";
-import scriptHtml from "../legacy/research-log-scripts.html?raw";
+
+const scriptHtml = getPageScripts("research-log");
 ---
 
 <LegacyShell title='Research Log | Mads LIU YONG' description='Project-based research log of Mads LIU YONG.' current='research-log' mainClass='main' scriptHtml={scriptHtml}>

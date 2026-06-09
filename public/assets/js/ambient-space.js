@@ -257,42 +257,51 @@
     for (let i = 0; i < dustCount; i++) makeDust();
     for (let i = 0; i < pebbleCount; i++) makePebble();
 
-    // Make meteors visible after load, then spawn at a slightly calmer cadence.
-    function spawnMeteorIfVisible() {
-      if (!document.hidden) spawnMeteor();
+    function shouldPauseAmbient() {
+      const state = window.__madsPowerState || {};
+      return document.hidden || state.hidden || state.idle || state.lowPower;
     }
+
+    function spawnMeteorIfVisible() {
+      if (!shouldPauseAmbient()) spawnMeteor();
+    }
+
+    function stopMeteorTimer() {
+      if (meteorTimer) {
+        window.clearInterval(meteorTimer);
+        meteorTimer = null;
+      }
+    }
+
+    function startMeteorTimer() {
+      if (!meteorTimer && !shouldPauseAmbient()) {
+        meteorTimer = window.setInterval(spawnMeteorIfVisible, meteorInterval);
+      }
+    }
+
+    function syncAmbientPowerState() {
+      if (shouldPauseAmbient()) {
+        stopMeteorTimer();
+        layer.classList.add("ambient-paused");
+      } else {
+        layer.classList.remove("ambient-paused");
+        startMeteorTimer();
+      }
+    }
+
+    // Make meteors visible after load, then spawn at a slightly calmer cadence.
+    let meteorTimer = null;
 
     spawnMeteorIfVisible();
     setTimeout(spawnMeteorIfVisible, isMobileAmbient ? 900 : 550);
     setTimeout(spawnMeteorIfVisible, isMobileAmbient ? 1850 : 1200);
+    startMeteorTimer();
+    syncAmbientPowerState();
 
-    let meteorTimer = window.setInterval(spawnMeteorIfVisible, meteorInterval);
-
-    document.addEventListener("visibilitychange", function () {
-      if (document.hidden) {
-        window.clearInterval(meteorTimer);
-        meteorTimer = null;
-        layer.classList.add("ambient-paused");
-      } else {
-        layer.classList.remove("ambient-paused");
-        if (!meteorTimer) {
-          meteorTimer = window.setInterval(spawnMeteorIfVisible, meteorInterval);
-        }
-      }
-    });
-
-    window.addEventListener("pagehide", function () {
-      window.clearInterval(meteorTimer);
-      meteorTimer = null;
-      layer.classList.add("ambient-paused");
-    }, { passive: true });
-
-    window.addEventListener("pageshow", function () {
-      layer.classList.remove("ambient-paused");
-      if (!meteorTimer) {
-        meteorTimer = window.setInterval(spawnMeteorIfVisible, meteorInterval);
-      }
-    }, { passive: true });
+    document.addEventListener("visibilitychange", syncAmbientPowerState, { passive: true });
+    window.addEventListener("mads:power-state", syncAmbientPowerState);
+    window.addEventListener("pagehide", syncAmbientPowerState, { passive: true });
+    window.addEventListener("pageshow", syncAmbientPowerState, { passive: true });
   }
 
   function bootAmbientSystem() {

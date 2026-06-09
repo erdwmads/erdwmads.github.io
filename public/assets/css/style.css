@@ -3,9 +3,13 @@
 /* ============================================================
    Maintenance map
 
-   This stylesheet is intentionally single-file for GitHub Pages.
-   Edit the latest matching section instead of appending another
-   late override.
+   This stylesheet is intentionally single-file for visual compatibility.
+   Page content now lives in Astro/data files under src/. Edit data first;
+   edit CSS only when the existing classes cannot express the change.
+
+   Rule order matters. Prefer editing the latest matching section over
+   appending another late override, and avoid moving animation/effect blocks
+   unless you are explicitly changing cascade order.
 
    Main groups:
    - Base layout and shared components
@@ -15,6 +19,8 @@
    - Photography slideshow
    - Space Mode and ambient effects
    - Mission Log, lightbox, and mobile rules
+   - Interface 2046, Entry Gate, Edge/browser fallbacks
+   - Adaptive power throttling
    ============================================================ */
 
 
@@ -15853,4 +15859,26 @@ body:not(.space-mode) .ambient-fx-toggle.is-on .ambient-fx-toggle__dot {
     background:
       linear-gradient(180deg, rgba(255,250,239,.92), rgba(244,235,214,.86)) !important;
   }
+}
+
+/* Adaptive power throttling */
+html.mads-page-hidden *,
+body.mads-page-hidden * {
+  animation-play-state: paused !important;
+  transition-property: none !important;
+}
+
+html.mads-power-idle .ambient-space-layer *,
+body.mads-power-idle .ambient-space-layer *,
+html.mads-power-low .ambient-space-layer *,
+body.mads-power-low .ambient-space-layer *,
+html.mads-power-idle .ui2046-layer *,
+body.mads-power-idle .ui2046-layer *,
+html.mads-power-low .ui2046-layer *,
+body.mads-power-low .ui2046-layer *,
+html.mads-power-idle .photo-marquee-track,
+body.mads-power-idle .photo-marquee-track,
+html.mads-power-low .photo-marquee-track,
+body.mads-power-low .photo-marquee-track {
+  animation-play-state: paused !important;
 }

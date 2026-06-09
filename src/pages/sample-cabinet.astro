@@ -1,7 +1,9 @@
 ---
 import LegacyShell from "../components/LegacyShell.astro";
+import { getPageScripts } from "../data/site";
 import mainHtml from "../legacy/sample-cabinet-main.html?raw";
-import scriptHtml from "../legacy/sample-cabinet-scripts.html?raw";
+
+const scriptHtml = getPageScripts("sample-cabinet");
 ---
 
 <LegacyShell title='Sample Cabinet | Mads LIU YONG' description="Sample cabinet for Mads LIU YONG's research interests in cosmic mineralogy, meteorites, and primitive Solar System materials." current='research' mainClass='main sample-cabinet-page' scriptHtml={scriptHtml}>
