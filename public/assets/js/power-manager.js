@@ -2,7 +2,9 @@
   const root = document.documentElement;
   const IDLE_MS = 25000;
   const LOW_POWER_MEDIA = [
-    "(prefers-reduced-motion: reduce)",
+    "(prefers-reduced-motion: reduce)"
+  ];
+  const MOBILE_MEDIA = [
     "(max-width: 760px)",
     "(pointer: coarse)"
   ];
@@ -14,6 +16,9 @@
   const mediaQueries = LOW_POWER_MEDIA
     .filter(function () { return !!window.matchMedia; })
     .map(function (query) { return window.matchMedia(query); });
+  const mobileQueries = MOBILE_MEDIA
+    .filter(function () { return !!window.matchMedia; })
+    .map(function (query) { return window.matchMedia(query); });
 
   function getBody() {
     return document.body || null;
@@ -23,6 +28,10 @@
     return mediaQueries.some(function (mq) { return mq.matches; });
   }
 
+  function mediaMobile() {
+    return mobileQueries.some(function (mq) { return mq.matches; });
+  }
+
   function publish() {
     const body = getBody();
     const lowPower = mediaLowPower();
@@ -30,7 +39,7 @@
       hidden: isHidden,
       idle: isIdle,
       lowPower: lowPower,
-      mobile: mediaQueries.slice(1).some(function (mq) { return mq.matches; })
+      mobile: mediaMobile()
     };
 
     window.__madsPowerState = state;
@@ -101,6 +110,10 @@
   }, { passive: true });
 
   mediaQueries.forEach(function (mq) {
+    if (mq.addEventListener) mq.addEventListener("change", publish);
+    else if (mq.addListener) mq.addListener(publish);
+  });
+  mobileQueries.forEach(function (mq) {
     if (mq.addEventListener) mq.addEventListener("change", publish);
     else if (mq.addListener) mq.addListener(publish);
   });

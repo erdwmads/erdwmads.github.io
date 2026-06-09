@@ -141,6 +141,15 @@ if (!styleCss.includes("mads-soft-nav-active")) {
   fail("style.css: missing soft navigation stability styles");
 }
 
+const powerManager = fs.readFileSync(path.join(assetsDir, "js", "power-manager.js"), "utf8");
+const lowPowerBlock = powerManager.match(/const LOW_POWER_MEDIA = \[([\s\S]*?)\];/)?.[1] || "";
+if (lowPowerBlock.includes("max-width") || lowPowerBlock.includes("pointer: coarse")) {
+  fail("power-manager.js: mobile viewports must not be classified as low power");
+}
+if (!powerManager.includes("const MOBILE_MEDIA")) {
+  fail("power-manager.js: missing separate mobile media state");
+}
+
 if (failures.length) {
   console.error("Site check failed:");
   failures.forEach((failure) => console.error(`- ${failure}`));
