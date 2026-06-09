@@ -1,5 +1,14 @@
 ---
 import { papers } from "../data/papers";
+
+const filters = [
+  { label: "All", query: "" },
+  { label: "Dolomite", query: "dolomite carbonate carbonates" },
+  { label: "CI / Orgueil", query: "ci chondrite orgueil ivuna" },
+  { label: "Ryugu / Bennu", query: "ryugu bennu returned sample" },
+  { label: "Methods", query: "xrd tem epma ir isotopes mineralogy" },
+  { label: "Chronology", query: "chronology ages mn cr" }
+];
 ---
 
 <section>
@@ -11,9 +20,32 @@ import { papers } from "../data/papers";
   </p>
 </section>
 
+<section class="section paper-shelf-tools" aria-label="Paper Shelf filters">
+  <div class="paper-shelf-search">
+    <label for="paper-search">Search</label>
+    <input id="paper-search" type="search" placeholder="Search title, author, tag..." data-paper-search>
+  </div>
+  <div class="paper-filter-row" data-paper-filters>
+    {filters.map((filter, index) => (
+      <button
+        class="paper-filter"
+        type="button"
+        data-paper-filter={filter.query}
+        aria-pressed={index === 0 ? "true" : "false"}
+      >
+        {filter.label}
+      </button>
+    ))}
+  </div>
+</section>
+
 <section class="section paper-shelf">
   {papers.map((paper) => (
-    <article class="paper-card">
+    <article
+      class="paper-card"
+      data-paper-card
+      data-paper-text={`${paper.status} ${paper.title} ${paper.authors} ${paper.summary} ${paper.tags.join(" ")}`.toLowerCase()}
+    >
       <div class="paper-status">{paper.status}</div>
       <h2>{paper.title}</h2>
       <p class="muted">{paper.authors}</p>

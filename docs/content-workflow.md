@@ -2,6 +2,8 @@
 
 This site should treat structured research entries as the primary source of truth. Pages should be derived from entries, not hand-maintained as separate copies of the same status.
 
+The user can send rough notes, images, paper citations, or meeting summaries. Codex is responsible for turning that material into structured entries and editing the website files.
+
 ## Primary Rule
 
 One research memo should become one or more structured Mission Log entries. Each entry can fan out to:
@@ -13,6 +15,8 @@ One research memo should become one or more structured Mission Log entries. Each
 - homepage Current Focus snippets
 - figure captions and alt text
 - tags and next-step notes
+
+The user does not need to provide all fields below. Missing fields should be inferred conservatively from the supplied material, or Codex should ask a focused follow-up question if the entry would otherwise be scientifically misleading.
 
 ## Entry Split Rule
 
@@ -47,6 +51,8 @@ Split into multiple entries when the process phase changes. For example, cutting
   "figures": []
 }
 ```
+
+Current implementation target: `src/data/missionLog.ts`. The layout is rendered by `src/components/MissionLog.astro`.
 
 ## Fan-Out Mapping
 

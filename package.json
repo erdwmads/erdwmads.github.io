@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "astro dev --host 127.0.0.1",
     "build": "astro build",
-    "preview": "astro preview --host 127.0.0.1"
+    "preview": "astro preview --host 127.0.0.1",
+    "check": "npm run build && npm run export:ppt-data && npm run check:site",
+    "check:site": "node scripts/check-site.mjs",
+    "audit:images": "node scripts/audit-images.mjs",
+    "export:ppt-data": "node scripts/export-ppt-data.mjs"
   },
   "devDependencies": {
     "astro": "^5.0.0"

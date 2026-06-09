@@ -1,14 +1,19 @@
-﻿---import { brand, footerItems, navItems } from "../data/site";
+---
+import { brand, footerItems, navItems, siteMetadata } from "../data/site";
 
 interface Props {
   title: string;
   description: string;
   current: string;
   mainClass?: string;
+  path?: string;
   scriptHtml: string;
 }
 
-const { title, description, current, mainClass = "main", scriptHtml } = Astro.props;
+const { title, description, current, mainClass = "main", path, scriptHtml } = Astro.props;
+const canonicalPath = path || "index.html";
+const canonicalUrl = new URL(canonicalPath, `${siteMetadata.url}/`).toString();
+const imageUrl = new URL(siteMetadata.image, `${siteMetadata.url}/`).toString();
 ---
 
 <!doctype html>
@@ -18,6 +23,20 @@ const { title, description, current, mainClass = "main", scriptHtml } = Astro.pr
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{title}</title>
   <meta name="description" content={description}>
+  <link rel="canonical" href={canonicalUrl}>
+  <meta name="theme-color" content="#040910" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#edf3f7" media="(prefers-color-scheme: light)">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content={siteMetadata.title}>
+  <meta property="og:locale" content={siteMetadata.locale}>
+  <meta property="og:title" content={title}>
+  <meta property="og:description" content={description}>
+  <meta property="og:url" content={canonicalUrl}>
+  <meta property="og:image" content={imageUrl}>
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content={title}>
+  <meta name="twitter:description" content={description}>
+  <meta name="twitter:image" content={imageUrl}>
   <script is:inline>
     (function () {
       try {

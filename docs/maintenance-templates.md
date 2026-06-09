@@ -1,170 +1,98 @@
 # Website Maintenance Templates
 
-Use these templates when asking Codex to update `erdwmads.github.io`. They keep routine edits scoped and reduce accidental changes to unrelated pages.
+These templates are for sending material to Codex. The user does not need to edit website files manually.
 
-## Add a Paper
+## Add A Mission Log Entry
 
-Target file: `paper-shelf.html`
+Send whatever material is available. Codex will decide the final structure, log number, fields, figure layout, alt text, captions, and data insertion in `src/data/missionLog.ts`.
 
-Insert a new card inside:
-
-```html
-<section class="section paper-shelf">
-```
-
-Template:
-
-```html
-<article class="paper-card">
-  <div class="paper-status">SHORT CATEGORY</div>
-  <h2>PAPER TITLE</h2>
-  <p class="muted">AUTHOR ET AL. (YEAR)</p>
-  <p>ONE-SENTENCE RELEVANCE TO MY RESEARCH.</p>
-  <div class="project-tags"><span>TAG 1</span><span>TAG 2</span><span>TAG 3</span></div>
-</article>
-```
-
-Prompt to use:
+Useful material:
 
 ```text
-Add this paper to paper-shelf.html. Put it near related papers, keep the existing paper-card style, and do not change unrelated cards.
+Date:
+What happened:
+Why it matters:
+Current stage:
+Current question:
+Next step:
+People / lab / instrument:
+Images:
+Image captions or rough notes:
+Any wording that must be preserved:
+```
 
-Category:
+Codex must:
+
+- Convert the material into one coherent Mission Log entry, or split it into multiple entries if the process clearly contains separate phases.
+- Update `src/data/missionLog.ts`.
+- Keep the page rendered through `src/components/MissionLog.astro`.
+- Keep latest-first Mission Log order and chronological Mission Index order.
+- Verify image filenames exist under `public/assets/img/`.
+- Use CDN-sized display URLs for Mission Log images while preserving `data-full-src` to the original local image.
+- Run `npm run check` before committing.
+
+## Add Papers
+
+Send bibliographic material in any form: DOI, title, copied citation, summary, or notes. Codex will normalize it into `src/data/papers.ts`.
+
+Useful material:
+
+```text
 Title:
 Authors/year:
-Relevance:
+Why it is relevant:
+Topic/category:
 Tags:
-Optional link:
+Priority or reading status:
 ```
 
-Checks:
+Codex must:
 
-- `paper-shelf.html` still has balanced `<article>` tags.
-- Tags stay short enough for mobile.
-- If a link is added, verify the URL and use descriptive link text.
+- Add or update entries in `src/data/papers.ts`.
+- Keep tags short enough for mobile.
+- Use existing Paper Shelf filters when possible.
+- Run `npm run check`.
 
-## Add a Graduation Research Log Entry
+## Replace Or Add Images
 
-Target file: `research-graduation.html`
+Send the image files and describe their role. Codex will place/rename/reference them.
 
-Add the newest entry near the top of:
-
-```html
-<div class="research-note-list mission-log-list" data-mission-log-list>
-```
-
-Also update:
-
-- the status cards near the top of `research-graduation.html`
-- the Mission Index quick-jump list
-- `research-log.html` project progress fields if the new entry becomes the latest public update
-
-Template:
-
-```html
-<article id="log-007" class="research-note-card mission-log-entry"
-      data-log-date="YYYY/MM/DD"
-      data-log-stage="CURRENT STAGE"
-      data-log-question="CURRENT QUESTION"
-      data-log-next-step="NEXT STEP"
-      data-log-latest-note="ONE-SENTENCE LATEST NOTE."
-      data-log-stage-note="ONE-SENTENCE STAGE NOTE."
-      data-log-question-note="ONE-SENTENCE QUESTION NOTE."
-      data-log-next-note="ONE-SENTENCE NEXT-STEP NOTE.">
-  <div class="research-note-date">LOG 007</div>
-  <div class="research-note-body">
-    <p class="mission-entry-kicker">SOL XXX / YYYY-MM-DD</p>
-    <h3>Mission Log 007 - SHORT TITLE</h3>
-    <p>FIRST PARAGRAPH.</p>
-    <p>SECOND PARAGRAPH.</p>
-    <div class="mission-photo-grid single-photo">
-      <figure>
-        <img src="https://images.weserv.nl/?url=erdwmads.github.io%2Fassets%2Fimg%2FIMAGE_FILE.jpg&w=720&output=webp&q=70"
-             data-full-src="assets/img/IMAGE_FILE.jpg"
-             data-mobile-full-src="https://images.weserv.nl/?url=erdwmads.github.io%2Fassets%2Fimg%2FIMAGE_FILE.jpg&w=1280&output=webp&q=78"
-             alt="DESCRIPTIVE ALT TEXT"
-             loading="lazy"
-             decoding="async"
-             fetchpriority="low">
-        <figcaption>Fig. 1 - CAPTION.</figcaption>
-      </figure>
-    </div>
-  </div>
-</article>
-```
-
-Prompt to use:
+Useful material:
 
 ```text
-Add a new graduation research Mission Log entry. Keep the current latest-first layout, update status cards and the Mission Index, and verify all referenced images exist.
-
-Date:
-Log number:
-SOL:
-Title:
-Stage:
-Question:
-Next step:
-Main notes:
-Images and captions:
-```
-
-Checks:
-
-- `id="log-XXX"` is unique.
-- Mission Index links to the new `#log-XXX`.
-- `data-log-*` fields match the status cards.
-- New images are stored in `assets/img/` and referenced with exact case-sensitive names.
-
-## Replace Images
-
-Target files:
-
-- homepage portrait: `assets/img/profile.jpg`
-- CV image: `assets/img/CV.jpg`
-- photography gallery: `photography.html` plus `assets/img/photo (N).jpg`
-- mission log images: `research-graduation.html` plus `assets/img/grad-log-YYYYMMDD-NN.jpg`
-
-Prompt to use:
-
-```text
-Replace the website image below. Preserve existing layout dimensions and update all references if the filename changes.
-
 Image role:
-Old filename:
-New filename:
-Alt text:
-Caption, if any:
+Which page or entry:
+Preferred caption:
+Important visual details:
+Can the file be resized/compressed for web display? yes/no
 ```
 
-Checks:
+Codex must:
 
-- Prefer replacing an existing file with the same name when the page structure should not change.
-- If using a new filename, update every `src`, `data-full-src`, thumbnail, and marquee reference.
-- Keep large web images compressed; avoid multi-megabyte images unless detail inspection requires them.
-- Run the local resource check before committing.
+- Keep original research/photography images unless destructive replacement is explicitly approved.
+- Add thumbnails or CDN display URLs when useful.
+- Keep `loading="lazy"` and `decoding="async"` for Mission Log images.
+- Run `npm run audit:images` after larger image changes.
+- Run `npm run check`.
 
-## Local Resource Check
+## Create A Presentation From Website Content
 
-Run this from the repository root after changing HTML paths:
+Send the target audience and presentation goal. Codex can use `dist/ppt-data.json`, generated by `npm run export:ppt-data`, as a structured source.
 
-```powershell
-$missing = @()
-Get-ChildItem -Filter *.html | ForEach-Object {
-  $file = $_.Name
-  $content = Get-Content -Raw -LiteralPath $_.FullName
-  [regex]::Matches($content, '(?:href|src|data-full-src|data-mobile-full-src)="([^"]+)"') | ForEach-Object {
-    $raw = $_.Groups[1].Value
-    if ($raw -match '^(https?:|mailto:|tel:|#|javascript:)' -or $raw -eq '') { return }
-    $pathPart = ($raw -split '#')[0]
-    $pathPart = ($pathPart -split '\?')[0]
-    try { $decoded = [uri]::UnescapeDataString($pathPart) } catch { $decoded = $pathPart }
-    if ($decoded -eq '' -or $decoded -match '^https?:') { return }
-    $target = Join-Path (Get-Location) $decoded
-    if (-not (Test-Path -LiteralPath $target)) {
-      $missing += [pscustomobject]@{ File = $file; Ref = $raw; Decoded = $decoded }
-    }
-  }
-}
-$missing | Format-Table -AutoSize
+Useful material:
+
+```text
+Audience:
+Duration:
+Language:
+Main claim:
+Required figures:
+Required papers:
+Strict slide count:
 ```
+
+Codex must:
+
+- Build the deck from the current Mission Log and Paper Shelf data.
+- Keep research claims aligned with the website source data.
+- Ask for missing scientific details only when needed.

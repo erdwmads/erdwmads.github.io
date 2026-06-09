@@ -4,6 +4,14 @@ export const brand = {
   homeHref: "index.html"
 } as const;
 
+export const siteMetadata = {
+  url: "https://erdwmads.github.io",
+  title: "Mads LIU YONG Academic Website",
+  description: "Academic website of Mads LIU YONG, focused on cosmic mineralogy, planetary sciences, meteoritics, and primitive Solar System materials.",
+  image: "assets/img/Solar_System_true_color.jpg",
+  locale: "en_US"
+} as const;
+
 export const navItems = [
   { href: "index.html", label: "Home", key: "home" },
   { href: "research.html", label: "Research", key: "research" },
@@ -12,6 +20,18 @@ export const navItems = [
   { href: "cv.html", label: "CV", key: "cv" },
   { href: "photography.html", label: "Photography", key: "photography" },
   { href: "contact.html", label: "Contact", key: "contact" }
+] as const;
+
+export const contentPages = [
+  { href: "index.html", title: "Home", key: "home" },
+  { href: "research.html", title: "Research", key: "research" },
+  { href: "research-log.html", title: "Research Log", key: "research-log" },
+  { href: "research-graduation.html", title: "Graduation Research", key: "research-graduation" },
+  { href: "paper-shelf.html", title: "Paper Shelf", key: "paper-shelf" },
+  { href: "cv.html", title: "CV", key: "cv" },
+  { href: "photography.html", title: "Photography", key: "photography" },
+  { href: "contact.html", title: "Contact", key: "contact" },
+  { href: "sample-cabinet.html", title: "Sample Cabinet", key: "sample-cabinet" }
 ] as const;
 
 export const footerItems = ["(c) 2026 Mads LIU YONG", "Built for GitHub Pages"] as const;
@@ -33,7 +53,7 @@ const pageScripts: Record<string, ScriptSpec[]> = {
   contact: [...commonScripts, interfaceScript],
   cv: [...commonScripts, interfaceScript],
   home: [...commonScripts, interfaceScript],
-  "paper-shelf": [...commonScripts, interfaceScript],
+  "paper-shelf": [...commonScripts, { src: "assets/js/paper-shelf.js", defer: true }, interfaceScript],
   photography: [{ src: "assets/js/photography.js" }, ...commonScripts, interfaceScript],
   research: [...commonScripts, interfaceScript],
   "research-log": [...commonScripts, { src: "assets/js/research-log-sync.js", defer: true }, interfaceScript],

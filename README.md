@@ -1,63 +1,98 @@
 # Mads LIU YONG Academic Website
 
-Static GitHub Pages website for `erdwmads.github.io`.
+Astro-based GitHub Pages site for `erdwmads.github.io`.
 
-This branch uses an Astro compatibility shell. Shared page chrome now lives in
-`src/components/LegacyShell.astro`, while page bodies and page-specific scripts
-remain as raw legacy partials under `src/legacy/`. This reduces repeated
-head/header/footer code without changing the current visual effects or
-interactions.
+The current version preserves the original visual effects and interactions, while moving repeated content into small data files so future updates are easier to make safely.
 
-## Structure
-
-- `src/pages/` - Astro routes that generate the public pages
-- `src/components/LegacyShell.astro` - shared head, navigation, footer, and shell
-- `src/legacy/` - raw legacy page bodies and page-specific scripts
-- `public/assets/css/style.css` - site styling
-- `public/assets/js/` - theme, ambient effects, photography, and mission log scripts
-- `public/assets/img/` - portraits, gallery photos, research log images, and backgrounds
-- `public/assets/files/` - downloadable PDFs
-
-## Deployment
-
-Install dependencies and build:
+## Local Use
 
 ```powershell
 npm install
-npm run build
+npm run dev
 ```
 
-The deployable site is written to `dist/`. GitHub Pages should use GitHub Actions
-deployment for this branch.
+Open:
 
-Keep `public/.nojekyll` in the repository so GitHub Pages serves all static
-assets as-is.
+```text
+http://127.0.0.1:4321/
+```
 
-## Common Updates
+Build and run all checks:
 
-- Replace the homepage portrait: `public/assets/img/profile.jpg`
-- Replace the CV image: `public/assets/img/CV.jpg`
-- Add photography images by updating `public/photography.html` and adding files under `public/assets/img/`
-- Add papers by copying a `paper-card` block in `public/paper-shelf.html`
-- Add graduation research log entries in `public/research-graduation.html`
+```powershell
+npm run check
+```
 
-For copy-ready update templates, see `docs/maintenance-templates.md`.
+Generate the image inventory:
 
-Long-term maintenance references:
+```powershell
+npm run audit:images
+```
 
-- `docs/handoff-report.md` - full imported handoff report
-- `docs/content-workflow.md` - structured Mission Log fan-out rules
-- `docs/writing-style.md` - public website prose rules
-- `docs/ui-invariants.md` - design and behavior rules to preserve
-- `docs/perf-browser-watchlist.md` - performance and Edge-specific risk notes
+Generate structured data for PPT work:
+
+```powershell
+npm run export:ppt-data
+```
+
+## Structure
+
+- `src/pages/` - Astro routes that generate public pages.
+- `src/components/LegacyShell.astro` - shared head, SEO metadata, navigation, footer, and script shell.
+- `src/components/PaperShelf.astro` - Paper Shelf rendering and filter controls.
+- `src/components/MissionLog.astro` - Graduation Research Mission Log rendering.
+- `src/data/site.ts` - site metadata, navigation, footer, script registry, sitemap page list.
+- `src/data/papers.ts` - Paper Shelf source data.
+- `src/data/missionLog.ts` - Mission Log source data.
+- `src/legacy/` - preserved page body fragments that have not yet been data-modeled.
+- `public/assets/css/style.css` - visual system, effects, responsive rules.
+- `public/assets/js/` - theme, ambient effects, soft navigation, Paper Shelf filters, Mission Log scripts.
+- `public/assets/img/` - portraits, gallery photos, research log images, and backgrounds.
+- `public/assets/files/` - downloadable PDFs.
+
+## Routine Updates
+
+Codex should do the website edits. The user can send rough content.
+
+- Add papers: update `src/data/papers.ts`.
+- Add Mission Log entries: update `src/data/missionLog.ts`.
+- Change navigation, page scripts, sitemap list, or global metadata: update `src/data/site.ts`.
+- Replace normal images: add files under `public/assets/img/`, then update the relevant data or legacy fragment.
+- Build PPTs from website content: run `npm run export:ppt-data` and use `dist/ppt-data.json`.
+
+See:
+
+- `docs/codex-update-contract.md`
+- `docs/maintenance-templates.md`
+- `docs/content-workflow.md`
+- `docs/ui-invariants.md`
+- `docs/perf-browser-watchlist.md`
+
+## Deployment
+
+Pushes to `main` trigger GitHub Actions:
+
+1. install dependencies with `npm ci`
+2. run `npm run check`
+3. upload `dist/`
+4. deploy to GitHub Pages
+
+Keep `public/.nojekyll` in the repository so GitHub Pages serves all static assets as-is.
+
+## Rollback
+
+If a deployment breaks the live site, revert the latest merge or content commit on `main`, then push `main` again.
+
+For the Astro compatibility merge, the pre-merge recovery point was:
+
+```text
+b27650d36470015bc138fae1b022ce1068efeb97
+```
 
 ## CSS Maintenance
 
-`public/assets/css/style.css` is intentionally kept as the single stylesheet for
-the compatibility phase. It has accumulated several design iterations, so
-changes should be made in small, reviewable passes:
+`public/assets/css/style.css` is intentionally kept as a single compatibility stylesheet. Rule order matters.
 
-- keep base layout and shared components near the top
-- keep page-specific rules under their existing section comments
-- prefer editing the latest matching rule instead of adding another late override
-- run a local link/resource check after changing image paths, scripts, or downloads
+- Edit the latest matching section instead of appending another late override.
+- Do not move Space Mode, Interface 2046, Mission Log lightbox, or Entry Gate rules unless changing cascade order intentionally.
+- After changing styles, run `npm run check` and compare the local site visually.
