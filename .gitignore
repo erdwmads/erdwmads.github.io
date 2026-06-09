@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.astro/
+_local/
+npm-debug.log*
+.DS_Store
+desktop.ini
