@@ -1,0 +1,11 @@
+---
+import LegacyShell from "../components/LegacyShell.astro";
+import { getPageScripts } from "../data/site";
+import mainHtml from "../legacy/index-main.html?raw";
+
+const scriptHtml = getPageScripts("home");
+---
+
+<LegacyShell title='Home | Mads LIU YONG' description='Personal academic website of Mads LIU YONG.' current='home' mainClass='main' scriptHtml={scriptHtml}>
+  <Fragment set:html={mainHtml} />
+</LegacyShell>

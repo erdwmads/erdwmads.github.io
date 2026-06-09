@@ -1,0 +1,12 @@
+---
+import LegacyShell from "../components/LegacyShell.astro";
+import MissionLog from "../components/MissionLog.astro";
+import { getPageScripts } from "../data/site";
+import inlineScriptHtml from "../legacy/research-graduation-inline-scripts.html?raw";
+
+const scriptHtml = getPageScripts("research-graduation", inlineScriptHtml);
+---
+
+<LegacyShell title='Graduation Research | Mads LIU YONG' description='Chronological graduation research log of Mads LIU YONG.' current='research-log' mainClass='main' scriptHtml={scriptHtml}>
+  <MissionLog />
+</LegacyShell>

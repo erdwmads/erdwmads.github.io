@@ -2,35 +2,44 @@
 
 Static GitHub Pages website for `erdwmads.github.io`.
 
+This branch uses an Astro compatibility shell. Shared page chrome now lives in
+`src/components/LegacyShell.astro`, while page bodies and page-specific scripts
+remain as raw legacy partials under `src/legacy/`. This reduces repeated
+head/header/footer code without changing the current visual effects or
+interactions.
+
 ## Structure
 
-- `index.html` - home page
-- `research.html` - research overview
-- `research-log.html` - research project index
-- `research-graduation.html` - graduation research mission log
-- `paper-shelf.html` - curated paper list
-- `cv.html` - CV page
-- `photography.html` - photography page
-- `contact.html` - contact page
-- `sample-cabinet.html` - sample cabinet page
-- `assets/css/style.css` - site styling
-- `assets/js/` - theme, ambient effects, photography, and mission log scripts
-- `assets/img/` - portraits, gallery photos, research log images, and backgrounds
-- `assets/files/` - downloadable PDFs
+- `src/pages/` - Astro routes that generate the public pages
+- `src/components/LegacyShell.astro` - shared head, navigation, footer, and shell
+- `src/legacy/` - raw legacy page bodies and page-specific scripts
+- `public/assets/css/style.css` - site styling
+- `public/assets/js/` - theme, ambient effects, photography, and mission log scripts
+- `public/assets/img/` - portraits, gallery photos, research log images, and backgrounds
+- `public/assets/files/` - downloadable PDFs
 
 ## Deployment
 
-This site has no build step. Upload or push the files in this folder to the root of the `erdwmads.github.io` repository. GitHub Pages serves `index.html` directly.
+Install dependencies and build:
 
-Keep `.nojekyll` in the repository root so GitHub Pages serves all static assets as-is.
+```powershell
+npm install
+npm run build
+```
+
+The deployable site is written to `dist/`. GitHub Pages should use GitHub Actions
+deployment for this branch.
+
+Keep `public/.nojekyll` in the repository so GitHub Pages serves all static
+assets as-is.
 
 ## Common Updates
 
-- Replace the homepage portrait: `assets/img/profile.jpg`
-- Replace the CV image: `assets/img/CV.jpg`
-- Add photography images by updating `photography.html` and adding files under `assets/img/`
-- Add papers by copying a `paper-card` block in `paper-shelf.html`
-- Add graduation research log entries in `research-graduation.html`
+- Replace the homepage portrait: `public/assets/img/profile.jpg`
+- Replace the CV image: `public/assets/img/CV.jpg`
+- Add photography images by updating `public/photography.html` and adding files under `public/assets/img/`
+- Add papers by copying a `paper-card` block in `public/paper-shelf.html`
+- Add graduation research log entries in `public/research-graduation.html`
 
 For copy-ready update templates, see `docs/maintenance-templates.md`.
 
@@ -44,7 +53,9 @@ Long-term maintenance references:
 
 ## CSS Maintenance
 
-`assets/css/style.css` is intentionally kept as the single stylesheet for GitHub Pages. It has accumulated several design iterations, so changes should be made in small, reviewable passes:
+`public/assets/css/style.css` is intentionally kept as the single stylesheet for
+the compatibility phase. It has accumulated several design iterations, so
+changes should be made in small, reviewable passes:
 
 - keep base layout and shared components near the top
 - keep page-specific rules under their existing section comments

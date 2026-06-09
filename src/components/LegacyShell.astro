@@ -1,11 +1,24 @@
+﻿---import { brand, footerItems, navItems } from "../data/site";
+
+interface Props {
+  title: string;
+  description: string;
+  current: string;
+  mainClass?: string;
+  scriptHtml: string;
+}
+
+const { title, description, current, mainClass = "main", scriptHtml } = Astro.props;
+---
+
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Contact | Mads LIU YONG</title>
-  <meta name="description" content="Personal academic website of Mads LIU YONG.">
-  <script>
+  <title>{title}</title>
+  <meta name="description" content={description}>
+  <script is:inline>
     (function () {
       try {
         var savedTheme = localStorage.getItem("mads-theme");
@@ -24,7 +37,7 @@
       }
     })();
   </script>
-  <style>
+  <style is:inline>
     html { background: #edf3f7; color-scheme: light dark; }
     html[data-theme="space"],
     html[data-theme-space] {
@@ -45,65 +58,27 @@
 <body>
 <header class="site-header">
   <div class="header-inner">
-    <a class="brand" href="index.html">
-      <strong>Mads LIU YONG</strong>
-      <span>Cosmic Mineralogy · Planetary Sciences · Meteoritics</span>
+    <a class="brand" href={brand.homeHref}>
+      <strong>{brand.name}</strong>
+      <span set:html={brand.tagline} />
     </a>
-            <nav class="nav" aria-label="Main navigation">
-      <a href="index.html">Home</a>
-      <a href="research.html">Research</a>
-      <a href="research-log.html">Research Log</a>
-      <a href="paper-shelf.html">Paper Shelf</a>
-      <a href="cv.html">CV</a>
-      <a href="photography.html">Photography</a>
-      <a href="contact.html" aria-current="page">Contact</a>
+    <nav class="nav" aria-label="Main navigation">
+      {navItems.map((item) => <a href={item.href} aria-current={current === item.key ? "page" : undefined}>{item.label}</a>)}
       <button class="theme-toggle" type="button" aria-label="Toggle light and space mode">Space Mode</button>
     </nav>
   </div>
 </header>
-<main class="main">
-
-<section>
-  <p class="eyebrow">Contact</p>
-  <h1>Contact</h1>
-  <p class="lead">
-    For academic communication, please contact me by email.
-  </p>
-</section>
-
-<section class="section two-col">
-  <div class="section-label">Affiliation</div>
-  <div class="card">
-    <h3>Mads LIU YONG</h3>
-    <p>
-      <a href="https://min-lab.w.waseda.jp/en/index.html" target="_blank" rel="noopener noreferrer">Mineralogy Laboratory</a><br>
-      Department of Earth Sciences<br>
-      School of Education<br>
-      Faculty of Education and Integrated Arts and Sciences<br>
-      Waseda University
-    </p>
-  </div>
-</section>
-
-<section class="section two-col">
-  <div class="section-label">Email</div>
-  <div class="callout">
-    <p>
-      Email: <code>rivieraliuyong[at]fuji.waseda.jp</code>
-    </p>
-  </div>
-</section>
-
+<main class={mainClass}>
+  <slot />
 </main>
 <footer class="site-footer">
   <div class="footer-inner">
-    <span>© 2026 Mads LIU YONG</span>
-    <span>Built for GitHub Pages</span>
+    {footerItems.map((item) => <span>{item}</span>)}
   </div>
 </footer>
-  <script defer src="assets/js/theme.js"></script>
-  <script defer src="assets/js/ambient-space.js"></script>
-  <script defer src="assets/js/research-coordinates.js"></script>
-  <script src="assets/js/interface-2046.js" defer></script>
+<script is:inline src="assets/js/power-manager.js"></script>
+<Fragment set:html={scriptHtml} />
+<script src="assets/js/legacy-navigation.js" defer></script>
 </body>
 </html>
+
