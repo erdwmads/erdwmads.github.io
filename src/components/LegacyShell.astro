@@ -68,7 +68,7 @@ const navItems = [
   <div class="header-inner">
     <a class="brand" href="index.html">
       <strong>Mads LIU YONG</strong>
-      <span>Cosmic Mineralogy ?? Planetary Sciences ?? Meteoritics</span>
+      <span>Cosmic Mineralogy | Planetary Sciences | Meteoritics</span>
     </a>
     <nav class="nav" aria-label="Main navigation">
       {navItems.map((item) => <a href={item.href} aria-current={current === item.key ? "page" : undefined}>{item.label}</a>)}
@@ -81,10 +81,11 @@ const navItems = [
 </main>
 <footer class="site-footer">
   <div class="footer-inner">
-    <span>?? 2026 Mads LIU YONG</span>
+    <span>(c) 2026 Mads LIU YONG</span>
     <span>Built for GitHub Pages</span>
   </div>
 </footer>
 <Fragment set:html={scriptHtml} />
+<script src="assets/js/legacy-navigation.js" defer></script>
 </body>
 </html>
