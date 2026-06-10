@@ -15301,6 +15301,62 @@ html:not([data-theme="space"]) body.ui-page-research-graduation .mission-jump-ca
     inset 0 -1px 0 rgba(198,171,117,.08) !important;
 }
 
+/* mobile-mission-log-static-tap:
+   Touch browsers can keep :hover / :focus-within on long Mission Log cards.
+   Keep desktop hover, but make mobile card taps visually static and cheaper. */
+@media (max-width: 760px), (pointer: coarse) {
+  body.ui-page-research-graduation .mission-log-entry,
+  body.ui-page-research-graduation .mission-log-entry * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body.ui-page-research-graduation .mission-log-entry,
+  body.ui-page-research-graduation .mission-log-entry:hover,
+  body.ui-page-research-graduation .mission-log-entry:focus,
+  body.ui-page-research-graduation .mission-log-entry:focus-within,
+  body.ui-page-research-graduation .mission-log-entry:active {
+    transform: none !important;
+    transition: none !important;
+    outline-color: transparent !important;
+    outline-offset: 0 !important;
+    touch-action: manipulation;
+  }
+
+  html[data-theme="space"] body.ui-page-research-graduation .mission-log-entry:hover,
+  html[data-theme="space"] body.ui-page-research-graduation .mission-log-entry:focus,
+  html[data-theme="space"] body.ui-page-research-graduation .mission-log-entry:focus-within,
+  html[data-theme="space"] body.ui-page-research-graduation .mission-log-entry:active,
+  html[data-theme-space] body.ui-page-research-graduation .mission-log-entry:hover,
+  html[data-theme-space] body.ui-page-research-graduation .mission-log-entry:focus,
+  html[data-theme-space] body.ui-page-research-graduation .mission-log-entry:focus-within,
+  html[data-theme-space] body.ui-page-research-graduation .mission-log-entry:active,
+  body.space-mode.ui-page-research-graduation .mission-log-entry:hover,
+  body.space-mode.ui-page-research-graduation .mission-log-entry:focus,
+  body.space-mode.ui-page-research-graduation .mission-log-entry:focus-within,
+  body.space-mode.ui-page-research-graduation .mission-log-entry:active {
+    border-color: rgba(244,217,152,.24) !important;
+    outline: 1px solid transparent !important;
+    box-shadow:
+      0 22px 50px rgba(0,0,0,.29),
+      0 0 30px rgba(244,217,152,.070),
+      0 0 22px rgba(143,208,255,.035),
+      inset 0 1px 0 rgba(255,255,255,.13),
+      inset 0 -1px 0 rgba(244,217,152,.065) !important;
+  }
+
+  html:not([data-theme="space"]) body.ui-page-research-graduation .mission-log-entry:hover,
+  html:not([data-theme="space"]) body.ui-page-research-graduation .mission-log-entry:focus,
+  html:not([data-theme="space"]) body.ui-page-research-graduation .mission-log-entry:focus-within,
+  html:not([data-theme="space"]) body.ui-page-research-graduation .mission-log-entry:active {
+    border-color: rgba(255,255,255,.30) !important;
+    outline: 1px solid transparent !important;
+    box-shadow:
+      0 20px 38px rgba(18,45,75,.10),
+      inset 0 1px 0 rgba(255,255,255,.52),
+      inset 0 -1px 0 rgba(255,255,255,.10) !important;
+  }
+}
+
 
 /* ============================================================
    Mobile Entry Gate Animation Off

@@ -180,6 +180,9 @@ const styleCss = fs.readFileSync(path.join(assetsDir, "css", "style.css"), "utf8
 if (!styleCss.includes("mads-soft-nav-active")) {
   fail("style.css: missing soft navigation stability styles");
 }
+if (!styleCss.includes("mobile-mission-log-static-tap") || !styleCss.includes("-webkit-tap-highlight-color: transparent")) {
+  fail("style.css: missing mobile Mission Log tap highlight suppression");
+}
 
 const powerManager = fs.readFileSync(path.join(assetsDir, "js", "power-manager.js"), "utf8");
 const lowPowerBlock = powerManager.match(/const LOW_POWER_MEDIA = \[([\s\S]*?)\];/)?.[1] || "";
