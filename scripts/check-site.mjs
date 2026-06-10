@@ -119,6 +119,22 @@ if ((mission.match(/class="research-note-card mission-log-entry"/g) || []).lengt
 if ((mission.match(/class="mission-jump-card compact-jump-card"/g) || []).length !== 6) {
   fail("research-graduation.html: expected 6 mission jump cards");
 }
+const missionIds = new Set([...mission.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]));
+const missionJumpTargets = [...mission.matchAll(/<a\b[^>]*class="[^"]*\bmission-jump-card\b[^"]*"[^>]*href="#([^"]*)"/g)];
+for (const [index, match] of missionJumpTargets.entries()) {
+  const targetId = match[1];
+  if (!targetId) {
+    fail(`research-graduation.html: mission jump card ${index + 1} has an empty anchor target`);
+    continue;
+  }
+  if (!missionIds.has(targetId)) {
+    fail(`research-graduation.html: mission jump card ${index + 1} points to missing target ${targetId}`);
+  }
+}
+const missionIndexScript = fs.readFileSync(path.join(assetsDir, "js", "mission-index.js"), "utf8");
+if (!missionIndexScript.includes("scrollIntoView") || !missionIndexScript.includes("history.pushState")) {
+  fail("mission-index.js: missing explicit Mission Log navigator scroll handling");
+}
 
 for (const required of ["robots.txt", "sitemap.xml"]) {
   if (!fs.existsSync(path.join(distDir, required)) && !fs.existsSync(path.join(publicDir, required))) {
