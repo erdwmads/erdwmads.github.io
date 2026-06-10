@@ -20,7 +20,7 @@
     return img?.dataset?.fullSrc || img?.currentSrc || img?.src || '';
   }
 
-  const items = figures.map((figure, index) => {
+  function itemFromFigure(figure, index) {
     const img = figure.querySelector('img');
     const captionEl = figure.querySelector('figcaption');
     const entry = figure.closest('.mission-log-entry');
@@ -35,19 +35,17 @@
       img.loading = 'lazy';
       img.decoding = 'async';
       try { img.fetchPriority = 'low'; } catch (error) {}
-
-      // Desktop should continue showing original images. Mobile keeps thumbnails.
-      if (!isTouch && full && img.src !== full) {
-        img.src = full;
-      }
     }
 
+    return { figure, img, src: full, thumb, alt: img?.alt || caption, caption, title, kicker };
+  }
+
+  figures.forEach((figure, index) => {
+    const item = itemFromFigure(figure, index);
     figure.setAttribute('tabindex', '0');
     figure.setAttribute('role', 'button');
-    figure.setAttribute('aria-label', `Open large image: ${caption}`);
-
-    return { figure, img, src: full, thumb, alt: img?.alt || caption, caption, title, kicker };
-  }).filter(item => item.src);
+    figure.setAttribute('aria-label', `Open large image: ${item.caption}`);
+  });
 
   const overlay = document.createElement('div');
   overlay.className = 'mission-lightbox';
@@ -99,23 +97,29 @@
   let touchStartY = 0;
   let token = 0;
 
-  const thumbs = items.map((item, idx) => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'mission-lightbox__thumb';
-    btn.setAttribute('aria-label', `Open image ${idx + 1}`);
+  let items = [];
+  let thumbs = [];
 
-    const thumbImg = document.createElement('img');
-    thumbImg.alt = '';
-    thumbImg.loading = 'lazy';
-    thumbImg.decoding = 'async';
-    thumbImg.dataset.src = item.thumb || item.src;
+  function buildThumbs(nextItems) {
+    thumbsEl.replaceChildren();
+    thumbs = nextItems.map((item, idx) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'mission-lightbox__thumb';
+      btn.setAttribute('aria-label', `Open image ${idx + 1}`);
 
-    btn.appendChild(thumbImg);
-    btn.addEventListener('click', () => show(idx));
-    thumbsEl.appendChild(btn);
-    return btn;
-  });
+      const thumbImg = document.createElement('img');
+      thumbImg.alt = '';
+      thumbImg.loading = 'lazy';
+      thumbImg.decoding = 'async';
+      thumbImg.dataset.src = item.thumb || item.src;
+
+      btn.appendChild(thumbImg);
+      btn.addEventListener('click', () => show(idx));
+      thumbsEl.appendChild(btn);
+      return btn;
+    });
+  }
 
   function hydrateThumb(index) {
     const img = thumbs[index]?.querySelector('img');
@@ -180,7 +184,9 @@
     thumbs[current]?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: isTouch ? 'auto' : 'smooth' });
   }
 
-  function open(index) {
+  function open(index, nextItems) {
+    items = nextItems;
+    buildThumbs(items);
     lastFocus = document.activeElement;
     show(index);
     overlay.classList.add('is-open');
@@ -203,12 +209,21 @@
   function next() { show(current + 1); }
   function prev() { show(current - 1); }
 
-  items.forEach((item, idx) => {
-    item.figure.addEventListener('click', () => open(idx));
-    item.figure.addEventListener('keydown', (event) => {
+  figures.forEach((figure) => {
+    const openFromFigure = () => {
+      const scope = figure.closest('.mission-log-entry') || document;
+      const scopedFigures = Array.from(scope.querySelectorAll('.mission-photo-grid figure'));
+      const scopedItems = scopedFigures.map((scopedFigure, idx) => itemFromFigure(scopedFigure, idx)).filter(item => item.src);
+      const initialIndex = scopedItems.findIndex(item => item.figure === figure);
+      if (!scopedItems.length || initialIndex < 0) return;
+      open(initialIndex, scopedItems);
+    };
+
+    figure.addEventListener('click', openFromFigure);
+    figure.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
-        open(idx);
+        openFromFigure();
       }
     });
   });

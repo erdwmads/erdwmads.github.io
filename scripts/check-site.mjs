@@ -135,6 +135,13 @@ const missionIndexScript = fs.readFileSync(path.join(assetsDir, "js", "mission-i
 if (!missionIndexScript.includes("scrollIntoView") || !missionIndexScript.includes("history.pushState")) {
   fail("mission-index.js: missing explicit Mission Log navigator scroll handling");
 }
+const missionLightboxScript = fs.readFileSync(path.join(assetsDir, "js", "mission-lightbox.js"), "utf8");
+if (missionLightboxScript.includes("const items = figures.map")) {
+  fail("mission-lightbox.js: must not build one global image set across all Mission Logs");
+}
+if (!missionLightboxScript.includes("figure.closest('.mission-log-entry')") || !missionLightboxScript.includes("thumbsEl.replaceChildren")) {
+  fail("mission-lightbox.js: missing per-log image grouping for the lightbox");
+}
 if (!mission.includes('id="log-007"')) {
   fail("research-graduation.html: missing Mission Log 007");
 }
