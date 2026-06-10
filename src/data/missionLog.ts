@@ -1,25 +1,3 @@
-const missionLogImage = (index: number, alt: string, caption: string) => {
-  const name = `grad-log-20260610-${String(index).padStart(2, "0")}.jpg`;
-  const encoded = `erdwmads.github.io%2Fassets%2Fimg%2F${name}`;
-  return `<figure><img class="mission-thumb-img" src="https://images.weserv.nl/?url=${encoded}&w=720&output=webp&q=70" alt="${alt}" data-full-src="assets/img/${name}" data-thumb-src="https://images.weserv.nl/?url=${encoded}&w=720&output=webp&q=70" loading="lazy" decoding="async" fetchpriority="low" data-mobile-full-src="https://images.weserv.nl/?url=${encoded}&w=1280&output=webp&q=78"><figcaption>Fig. ${index} - ${caption}</figcaption></figure>`;
-};
-
-const log007Figures = [
-  missionLogImage(1, "Sketch of the cutting and polishing workflow discussed with Associate Professor Taiga Okumura and Academic Specialist Taro Taro'ura", "Sketch of the cutting and polishing workflow decided with Associate Professor Taiga Okumura and Academic Specialist Taro Taro'ura."),
-  missionLogImage(2, "Heating plate and wax used for sample mounting", "Heating plate and wax used for mounting the resin-embedded sample."),
-  missionLogImage(3, "Resin-embedded sample attached to the sample disk with a ballpoint reference mark", "Resin-embedded sample attached to the sample disk; the ballpoint mark indicates the reference position for the first cut."),
-  missionLogImage(4, "Hitachi CS-203 diamond wire saw used for the cutting work", "Hitachi CS-203 diamond wire saw used for this cutting operation."),
-  missionLogImage(5, "Internal view during the first diamond wire saw cut", "Internal view during the first cut."),
-  missionLogImage(6, "Side view during the first diamond wire saw cut", "Side view during the first cut."),
-  missionLogImage(7, "Sample condition after completion of the first cut", "Sample condition after the first cut was completed."),
-  missionLogImage(8, "Side view during the second diamond wire saw cut", "Side view during the second cut."),
-  missionLogImage(9, "Sample condition after completion of the second cut", "Sample condition after the second cut was completed."),
-  missionLogImage(10, "One half of the cut sample mounted on an ion-milling sample holder", "One half of the cut sample mounted on an ion-milling sample holder."),
-  missionLogImage(11, "Prepared sample and previous sample stored in the vacuum chamber", "This prepared sample and the previously prepared sample stored in the vacuum chamber."),
-  missionLogImage(12, "Optical microscope cross-section view of the prepared sample", "Cross-section view of the prepared sample observed with an optical microscope."),
-  missionLogImage(13, "Optical microscope front view of the prepared sample", "Front view of the prepared sample observed with an optical microscope.")
-].join("\n              ");
-
 export const missionEntries = [
   {
     "id": "log-007",
@@ -32,41 +10,10 @@ export const missionEntries = [
     "question": "Dolomite in Orgueil CI1",
     "nextStep": "Ion milling on 12 June",
     "latestNote": "The resin-embedded Orgueil sample was dry-cut with a Hitachi CS-203 diamond wire saw and mounted on an ion-milling sample holder.",
-    "stageNote": "The cutting and polishing workflow was decided with Associate Professor Taiga Okumura and Academic Specialist Taro Taro'ura, then carried out with low wire speed and without water cooling.",
+    "stageNote": "The cutting and polishing workflow was decided with Associate Professor Taiga Okumura and Academic Specialist Waka Taroura, then carried out with low wire speed and without water cooling.",
     "questionNote": "How can fragile, hydrous CI chondrite material be sectioned while minimising water exposure and thermal effects before ion milling?",
     "nextNote": "Because liquid nitrogen arrived today, ion milling is scheduled for 12 June.",
-    "bodyHtml": `<p class="mission-entry-kicker">SOL 061 / 2026-06-10</p>
-            <h3>Mission Log 007 - Diamond wire saw dry cutting and ion-milling mount preparation</h3>
-            <p>
-              This morning, I discussed and finalised the cutting and polishing workflow with Associate Professor
-              Taiga Okumura and Academic Specialist Taro Taro'ura. The planned workflow is summarised in Fig. 1,
-              and the resin-embedded Orgueil CI1 chondrite sample was then prepared for cutting as shown below.
-            </p>
-            <p>
-              The sample was mounted with wax and cut using a Hitachi CS-203 diamond wire saw. During cutting,
-              I used as low a wire speed as practical and did not use water cooling, keeping the operation as a
-              dry cutting process. For the steps that required heating wax for adhesion, air blowing and blower
-              cooling were used as needed to reduce thermal effects on the temperature-sensitive meteorite material.
-            </p>
-            <p>
-              After two cuts, one half of the processed sample was attached to an ion-milling sample holder. The
-              prepared material, together with the previously prepared sample, was then stored in a vacuum chamber.
-              Because liquid nitrogen was delivered today, ion milling is scheduled for 12 June.
-            </p>
-            <div class="mission-photo-grid four">
-              ${log007Figures}
-            </div>
-            <div class="log-tags">
-              <span>Diamond wire saw</span>
-              <span>Hitachi CS-203</span>
-              <span>Dry cutting</span>
-              <span>Low wire speed</span>
-              <span>Wax mounting</span>
-              <span>Ion milling holder</span>
-              <span>Vacuum storage</span>
-              <span>Liquid nitrogen</span>
-            </div>
-            <a class="mission-back-to-index" href="#mission-index">Back to Mission Index</a>`
+    "bodyHtml": "<p class=\"mission-entry-kicker\">SOL 061 / 2026-06-10</p>\n            <h3>Mission Log 007 - Diamond wire saw dry cutting and ion-milling mount preparation</h3>\n            <p>\n              This morning, I discussed and finalised the cutting and polishing workflow with Associate Professor\n              Taiga Okumura and Academic Specialist Waka Taroura. The planned workflow is summarised in Fig. 1,\n              and the resin-embedded Orgueil CI1 chondrite sample was then prepared for cutting as shown below.\n            </p>\n            <p>\n              The sample was mounted with wax and cut using a Hitachi CS-203 diamond wire saw. During cutting,\n              I used as low a wire speed as practical and did not use water cooling, keeping the operation as a\n              dry cutting process. For the steps that required heating wax for adhesion, air blowing and blower\n              cooling were used as needed to reduce thermal effects on the temperature-sensitive meteorite material.\n            </p>\n            <p>\n              After two cuts, one half of the processed sample was attached to an ion-milling sample holder. The\n              prepared material, together with the previously prepared sample, was then stored in a vacuum chamber.\n              Because liquid nitrogen was delivered today, ion milling is scheduled for 12 June.\n            </p>\n            <div class=\"mission-photo-grid four\">\n              <figure><img class=\"mission-thumb-img\" src=\"assets/img/grad-log-20260610-01.jpg\" data-full-src=\"assets/img/grad-log-20260610-01.jpg\" alt=\"Sketch of the cutting and polishing workflow discussed with Associate Professor Taiga Okumura and Academic Specialist Waka Taroura\" loading=\"lazy\" decoding=\"async\" fetchpriority=\"low\"><figcaption>Fig. 1 - Sketch of the cutting and polishing workflow decided with Associate Professor Taiga Okumura and Academic Specialist Waka Taroura.</figcaption></figure>\n              <figure><img class=\"mission-thumb-img\" src=\"assets/img/grad-log-20260610-02.jpg\" data-full-src=\"assets/img/grad-log-20260610-02.jpg\" alt=\"Heating plate and wax used for sample mounting\" loading=\"lazy\" decoding=\"async\" fetchpriority=\"low\"><figcaption>Fig. 2 - Heating plate and wax used for mounting the resin-embedded sample.</figcaption></figure>\n              <figure><img class=\"mission-thumb-img\" src=\"assets/img/grad-log-20260610-03.jpg\" data-full-src=\"assets/img/grad-log-20260610-03.jpg\" alt=\"Resin-embedded sample attached to the sample disk with a ballpoint reference mark\" loading=\"lazy\" decoding=\"async\" fetchpriority=\"low\"><figcaption>Fig. 3 - Resin-embedded sample attached to the sample disk; the ballpoint mark indicates the reference position for the first cut.</figcaption></figure>\n              <figure><img class=\"mission-thumb-img\" src=\"assets/img/grad-log-20260610-04.jpg\" data-full-src=\"assets/img/grad-log-20260610-04.jpg\" alt=\"Hitachi CS-203 diamond wire saw used for the cutting work\" loading=\"lazy\" decoding=\"async\" fetchpriority=\"low\"><figcaption>Fig. 4 - Hitachi CS-203 diamond wire saw used for this cutting operation.</figcaption></figure>\n              <figure><img class=\"mission-thumb-img\" src=\"assets/img/grad-log-20260610-05.jpg\" data-full-src=\"assets/img/grad-log-20260610-05.jpg\" alt=\"Internal view during the first diamond wire saw cut\" loading=\"lazy\" decoding=\"async\" fetchpriority=\"low\"><figcaption>Fig. 5 - Internal view during the first cut.</figcaption></figure>\n              <figure><img class=\"mission-thumb-img\" src=\"assets/img/grad-log-20260610-06.jpg\" data-full-src=\"assets/img/grad-log-20260610-06.jpg\" alt=\"Side view during the first diamond wire saw cut\" loading=\"lazy\" decoding=\"async\" fetchpriority=\"low\"><figcaption>Fig. 6 - Side view during the first cut.</figcaption></figure>\n              <figure><img class=\"mission-thumb-img\" src=\"assets/img/grad-log-20260610-07.jpg\" data-full-src=\"assets/img/grad-log-20260610-07.jpg\" alt=\"Sample condition after completion of the first cut\" loading=\"lazy\" decoding=\"async\" fetchpriority=\"low\"><figcaption>Fig. 7 - Sample condition after the first cut was completed.</figcaption></figure>\n              <figure><img class=\"mission-thumb-img\" src=\"assets/img/grad-log-20260610-08.jpg\" data-full-src=\"assets/img/grad-log-20260610-08.jpg\" alt=\"Side view during the second diamond wire saw cut\" loading=\"lazy\" decoding=\"async\" fetchpriority=\"low\"><figcaption>Fig. 8 - Side view during the second cut.</figcaption></figure>\n              <figure><img class=\"mission-thumb-img\" src=\"assets/img/grad-log-20260610-09.jpg\" data-full-src=\"assets/img/grad-log-20260610-09.jpg\" alt=\"Sample condition after completion of the second cut\" loading=\"lazy\" decoding=\"async\" fetchpriority=\"low\"><figcaption>Fig. 9 - Sample condition after the second cut was completed.</figcaption></figure>\n              <figure><img class=\"mission-thumb-img\" src=\"assets/img/grad-log-20260610-10.jpg\" data-full-src=\"assets/img/grad-log-20260610-10.jpg\" alt=\"One half of the cut sample mounted on an ion-milling sample holder\" loading=\"lazy\" decoding=\"async\" fetchpriority=\"low\"><figcaption>Fig. 10 - One half of the cut sample mounted on an ion-milling sample holder.</figcaption></figure>\n              <figure><img class=\"mission-thumb-img\" src=\"assets/img/grad-log-20260610-11.jpg\" data-full-src=\"assets/img/grad-log-20260610-11.jpg\" alt=\"Prepared sample and previous sample stored in the vacuum chamber\" loading=\"lazy\" decoding=\"async\" fetchpriority=\"low\"><figcaption>Fig. 11 - This prepared sample and the previously prepared sample stored in the vacuum chamber.</figcaption></figure>\n              <figure><img class=\"mission-thumb-img\" src=\"assets/img/grad-log-20260610-12.jpg\" data-full-src=\"assets/img/grad-log-20260610-12.jpg\" alt=\"Optical microscope cross-section view of the prepared sample\" loading=\"lazy\" decoding=\"async\" fetchpriority=\"low\"><figcaption>Fig. 12 - Cross-section view of the prepared sample observed with an optical microscope.</figcaption></figure>\n              <figure><img class=\"mission-thumb-img\" src=\"assets/img/grad-log-20260610-13.jpg\" data-full-src=\"assets/img/grad-log-20260610-13.jpg\" alt=\"Optical microscope front view of the prepared sample\" loading=\"lazy\" decoding=\"async\" fetchpriority=\"low\"><figcaption>Fig. 13 - Front view of the prepared sample observed with an optical microscope.</figcaption></figure>\n            </div>\n            <div class=\"log-tags\">\n              <span>Diamond wire saw</span>\n              <span>Hitachi CS-203</span>\n              <span>Dry cutting</span>\n              <span>Low wire speed</span>\n              <span>Wax mounting</span>\n              <span>Ion milling holder</span>\n              <span>Vacuum storage</span>\n              <span>Liquid nitrogen</span>\n            </div>\n            <a class=\"mission-back-to-index\" href=\"#mission-index\">Back to Mission Index</a>"
   },
   {
     "id": "log-006",
