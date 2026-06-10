@@ -183,6 +183,9 @@ if (!styleCss.includes("mads-soft-nav-active")) {
 if (!styleCss.includes("mobile-mission-log-static-tap") || !styleCss.includes("-webkit-tap-highlight-color: transparent")) {
   fail("style.css: missing mobile Mission Log tap highlight suppression");
 }
+if (!styleCss.includes("mobile-research-title-no-overflow") || !styleCss.includes("body.ui-page-research-graduation main > section h1") || !styleCss.includes("overflow-wrap: anywhere")) {
+  fail("style.css: missing mobile research title overflow protection");
+}
 
 const powerManager = fs.readFileSync(path.join(assetsDir, "js", "power-manager.js"), "utf8");
 const lowPowerBlock = powerManager.match(/const LOW_POWER_MEDIA = \[([\s\S]*?)\];/)?.[1] || "";

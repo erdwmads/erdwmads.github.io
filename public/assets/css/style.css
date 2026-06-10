@@ -16044,3 +16044,19 @@ body.space-mode .paper-filter {
   background: rgba(8, 18, 32, .62);
   color: #edf7ff;
 }
+
+/* mobile-research-title-no-overflow:
+   Keep the long graduation-research title inside the phone viewport. */
+@media (max-width: 560px) {
+  body.ui-page-research-graduation main > section h1 {
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    font-size: 2rem !important;
+    line-height: 1.08 !important;
+    letter-spacing: 0 !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+    hyphens: auto !important;
+  }
+}
