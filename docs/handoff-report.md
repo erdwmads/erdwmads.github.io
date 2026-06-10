@@ -104,7 +104,7 @@ CSS 側でも `.mobile-mission-lightbox-disabled` が付いた状態では、lig
 {
   "project": {
     "id": "orgueil-ci1-dolomite",
-    "title": "Mineralogical Study of Dolomite in the Orgueil CI1 Chondrite: Constraining the Formation Conditions of Primitive Chondritic Constituents",
+    "title": "Cosmomineralogical Study of Dolomite in the Orgueil CI1 Chondrite: Aqueous Alteration Processes and Material Evolution in a Primitive Asteroidal Parent Body",
     "themeLabels": {
       "archive": "Mission Log",
       "index": "Mission Index",

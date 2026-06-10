@@ -30,7 +30,7 @@ const missionEntries = readConstArray("src/data/missionLog.ts", "missionEntries"
 const payload = {
   generatedAt: new Date().toISOString(),
   site: "https://erdwmads.github.io",
-  researchTheme: "Mineralogical Study of Dolomite in the Orgueil CI1 Chondrite",
+  researchTheme: "Cosmomineralogical Study of Dolomite in the Orgueil CI1 Chondrite: Aqueous Alteration Processes and Material Evolution in a Primitive Asteroidal Parent Body",
   papers: papers.map((paper) => ({
     status: paper.status,
     title: paper.title,
