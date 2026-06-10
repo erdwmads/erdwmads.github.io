@@ -113,11 +113,11 @@ for (const filter of expectedPaperFilters) {
 }
 
 const mission = readDistPage("research-graduation.html");
-if ((mission.match(/class="research-note-card mission-log-entry"/g) || []).length !== 6) {
-  fail("research-graduation.html: expected 6 mission log entries");
+if ((mission.match(/class="research-note-card mission-log-entry"/g) || []).length !== 7) {
+  fail("research-graduation.html: expected 7 mission log entries");
 }
-if ((mission.match(/class="mission-jump-card compact-jump-card"/g) || []).length !== 6) {
-  fail("research-graduation.html: expected 6 mission jump cards");
+if ((mission.match(/class="mission-jump-card compact-jump-card"/g) || []).length !== 7) {
+  fail("research-graduation.html: expected 7 mission jump cards");
 }
 const missionIds = new Set([...mission.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]));
 const missionJumpTargets = [...mission.matchAll(/<a\b[^>]*class="[^"]*\bmission-jump-card\b[^"]*"[^>]*href="#([^"]*)"/g)];
@@ -134,6 +134,23 @@ for (const [index, match] of missionJumpTargets.entries()) {
 const missionIndexScript = fs.readFileSync(path.join(assetsDir, "js", "mission-index.js"), "utf8");
 if (!missionIndexScript.includes("scrollIntoView") || !missionIndexScript.includes("history.pushState")) {
   fail("mission-index.js: missing explicit Mission Log navigator scroll handling");
+}
+if (!mission.includes('id="log-007"')) {
+  fail("research-graduation.html: missing Mission Log 007");
+}
+const log007Match = mission.match(/<article\b[^>]*id="log-007"[\s\S]*?<\/article>/);
+const log007Html = log007Match?.[0] || "";
+if ((log007Html.match(/<figure>/g) || []).length !== 13) {
+  fail("research-graduation.html: Mission Log 007 should contain 13 figures");
+}
+for (let index = 1; index <= 13; index += 1) {
+  const imageName = `grad-log-20260610-${String(index).padStart(2, "0")}.jpg`;
+  if (!fs.existsSync(path.join(publicDir, "assets", "img", imageName))) {
+    fail(`research-graduation.html: missing Mission Log 007 image ${imageName}`);
+  }
+  if (!log007Html.includes(`Fig. ${index}`)) {
+    fail(`research-graduation.html: Mission Log 007 missing Fig. ${index} caption`);
+  }
 }
 
 for (const required of ["robots.txt", "sitemap.xml"]) {
