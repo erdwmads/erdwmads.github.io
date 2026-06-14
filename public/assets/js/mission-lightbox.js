@@ -1,6 +1,8 @@
 (() => {
-  const figures = Array.from(document.querySelectorAll('.mission-photo-grid figure'));
-  if (!figures.length) return;
+  if (window.MadsMissionLightbox?.prepare) {
+    window.MadsMissionLightbox.prepare();
+    return;
+  }
 
   const isTouch = window.matchMedia('(hover: none), (pointer: coarse), (max-width: 760px)').matches;
   const idle = window.requestIdleCallback || ((callback) => window.setTimeout(callback, 180));
@@ -16,10 +18,6 @@
     return img?.dataset?.fullSrc || img?.currentSrc || img?.src || '';
   }
 
-  function originalFullSrc(img) {
-    return img?.dataset?.fullSrc || img?.currentSrc || img?.src || '';
-  }
-
   function itemFromFigure(figure, index) {
     const img = figure.querySelector('img');
     const captionEl = figure.querySelector('figcaption');
@@ -28,8 +26,7 @@
     const kicker = entry?.querySelector('.mission-entry-kicker')?.textContent?.trim() || 'Mission Image Viewer';
     const caption = captionEl?.textContent?.trim() || img?.alt || `Image ${index + 1}`;
     const thumb = gridSrc(img);
-    const full = fullSrc(img);
-    const original = originalFullSrc(img);
+    const src = fullSrc(img);
 
     if (img) {
       img.loading = 'lazy';
@@ -37,15 +34,8 @@
       try { img.fetchPriority = 'low'; } catch (error) {}
     }
 
-    return { figure, img, src: full, thumb, alt: img?.alt || caption, caption, title, kicker };
+    return { figure, img, src, thumb, alt: img?.alt || caption, caption, title, kicker };
   }
-
-  figures.forEach((figure, index) => {
-    const item = itemFromFigure(figure, index);
-    figure.setAttribute('tabindex', '0');
-    figure.setAttribute('role', 'button');
-    figure.setAttribute('aria-label', `Open large image: ${item.caption}`);
-  });
 
   const overlay = document.createElement('div');
   overlay.className = 'mission-lightbox';
@@ -60,13 +50,13 @@
           <p class="mission-lightbox__kicker"></p>
           <h2 class="mission-lightbox__title"></h2>
         </div>
-        <button class="mission-lightbox__btn mission-lightbox__close" type="button" aria-label="Close image viewer">×</button>
+        <button class="mission-lightbox__btn mission-lightbox__close" type="button" aria-label="Close image viewer">x</button>
       </div>
 
       <div class="mission-lightbox__stage">
-        <button class="mission-lightbox__btn mission-lightbox__nav mission-lightbox__prev" type="button" aria-label="Previous image">‹</button>
+        <button class="mission-lightbox__btn mission-lightbox__nav mission-lightbox__prev" type="button" aria-label="Previous image">&lt;</button>
         <img class="mission-lightbox__img" alt="" decoding="async">
-        <button class="mission-lightbox__btn mission-lightbox__nav mission-lightbox__next" type="button" aria-label="Next image">›</button>
+        <button class="mission-lightbox__btn mission-lightbox__nav mission-lightbox__next" type="button" aria-label="Next image">&gt;</button>
       </div>
 
       <div class="mission-lightbox__captionbar">
@@ -96,9 +86,17 @@
   let touchStartX = 0;
   let touchStartY = 0;
   let token = 0;
-
   let items = [];
   let thumbs = [];
+
+  function prepare(scope = document) {
+    scope.querySelectorAll('.mission-photo-grid figure').forEach((figure) => {
+      const item = itemFromFigure(figure, 0);
+      figure.setAttribute('tabindex', '0');
+      figure.setAttribute('role', 'button');
+      figure.setAttribute('aria-label', `Open large image: ${item.caption}`);
+    });
+  }
 
   function buildThumbs(nextItems) {
     thumbsEl.replaceChildren();
@@ -139,6 +137,7 @@
   }
 
   function show(index) {
+    if (!items.length) return;
     current = (index + items.length) % items.length;
     const item = items[current];
     const myToken = ++token;
@@ -159,7 +158,6 @@
     imgEl.classList.remove('is-ready');
     imgEl.classList.add('is-decoding');
 
-    // Immediate lightweight preview. Then decode the original before swapping.
     if (item.thumb && imgEl.src !== item.thumb) imgEl.src = item.thumb;
 
     const full = new Image();
@@ -185,6 +183,7 @@
   }
 
   function open(index, nextItems) {
+    if (!nextItems.length) return;
     items = nextItems;
     buildThumbs(items);
     lastFocus = document.activeElement;
@@ -209,23 +208,34 @@
   function next() { show(current + 1); }
   function prev() { show(current - 1); }
 
-  figures.forEach((figure) => {
-    const openFromFigure = () => {
-      const scope = figure.closest('.mission-log-entry') || document;
-      const scopedFigures = Array.from(scope.querySelectorAll('.mission-photo-grid figure'));
-      const scopedItems = scopedFigures.map((scopedFigure, idx) => itemFromFigure(scopedFigure, idx)).filter(item => item.src);
-      const initialIndex = scopedItems.findIndex(item => item.figure === figure);
-      if (!scopedItems.length || initialIndex < 0) return;
-      open(initialIndex, scopedItems);
-    };
+  function openFromFigure(figure) {
+    const scope = figure.closest('.mission-log-entry') || document;
+    const scopedFigures = Array.from(scope.querySelectorAll('.mission-photo-grid figure'));
+    const scopedItems = scopedFigures.map((scopedFigure, idx) => itemFromFigure(scopedFigure, idx)).filter((item) => item.src);
+    const initialIndex = scopedItems.findIndex((item) => item.figure === figure);
+    if (!scopedItems.length || initialIndex < 0) return;
+    open(initialIndex, scopedItems);
+  }
 
-    figure.addEventListener('click', openFromFigure);
-    figure.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        openFromFigure();
-      }
-    });
+  document.addEventListener('click', (event) => {
+    const figure = event.target.closest?.('.mission-photo-grid figure');
+    if (!figure) return;
+    openFromFigure(figure);
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (overlay.classList.contains('is-open')) {
+      if (event.key === 'Escape') close();
+      if (event.key === 'ArrowRight') next();
+      if (event.key === 'ArrowLeft') prev();
+      return;
+    }
+
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    const figure = event.target.closest?.('.mission-photo-grid figure');
+    if (!figure) return;
+    event.preventDefault();
+    openFromFigure(figure);
   });
 
   closeBtn.addEventListener('click', close);
@@ -239,13 +249,6 @@
     if (!overlay.classList.contains('is-open')) return;
     event.preventDefault();
   }, { passive: false });
-
-  document.addEventListener('keydown', (event) => {
-    if (!overlay.classList.contains('is-open')) return;
-    if (event.key === 'Escape') close();
-    if (event.key === 'ArrowRight') next();
-    if (event.key === 'ArrowLeft') prev();
-  });
 
   overlay.addEventListener('touchstart', (event) => {
     if (!overlay.classList.contains('is-open')) return;
@@ -264,4 +267,7 @@
       else prev();
     }
   }, { passive: true });
+
+  window.MadsMissionLightbox = { prepare };
+  prepare();
 })();

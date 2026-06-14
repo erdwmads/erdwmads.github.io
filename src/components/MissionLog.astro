@@ -5,6 +5,7 @@ import afterLogHtml from "../legacy/research-graduation-after-log.html?raw";
 import { latestMissionEntry, missionEntries } from "../data/missionLog";
 
 const navigatorEntries = [...missionEntries].sort((a, b) => a.number - b.number);
+const missionDataJson = JSON.stringify(missionEntries);
 const statusCards = [
   {
     key: "latest",
@@ -76,26 +77,26 @@ const statusCards = [
   </div>
 </section>
 
+<script id="mission-log-data" type="application/json" set:html={missionDataJson}></script>
+
 <section class="section two-col research-notes-section" id="mission-log">
   <div class="section-label">Mission Log<span class="section-label-note">Latest first</span></div>
-  <div class="research-note-list mission-log-list" data-mission-log-list>
-    {missionEntries.map((entry) => (
-      <article
-        id={entry.id}
-        class="research-note-card mission-log-entry"
-        data-log-date={entry.date}
-        data-log-stage={entry.stage}
-        data-log-question={entry.question}
-        data-log-next-step={entry.nextStep}
-        data-log-latest-note={entry.latestNote}
-        data-log-stage-note={entry.stageNote}
-        data-log-question-note={entry.questionNote}
-        data-log-next-note={entry.nextNote}
-      >
-        <div class="research-note-date">{entry.label}</div>
-        <div class="research-note-body" set:html={entry.bodyHtml} />
-      </article>
-    ))}
+  <div class="research-note-list mission-log-list" data-mission-log-list data-mission-log-lazy data-initial-log-id={latestMissionEntry.id}>
+    <article
+      id={latestMissionEntry.id}
+      class="research-note-card mission-log-entry"
+      data-log-date={latestMissionEntry.date}
+      data-log-stage={latestMissionEntry.stage}
+      data-log-question={latestMissionEntry.question}
+      data-log-next-step={latestMissionEntry.nextStep}
+      data-log-latest-note={latestMissionEntry.latestNote}
+      data-log-stage-note={latestMissionEntry.stageNote}
+      data-log-question-note={latestMissionEntry.questionNote}
+      data-log-next-note={latestMissionEntry.nextNote}
+    >
+      <div class="research-note-date">{latestMissionEntry.label}</div>
+      <div class="research-note-body" set:html={latestMissionEntry.bodyHtml} />
+    </article>
   </div>
 </section>
 

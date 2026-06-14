@@ -113,13 +113,33 @@ for (const filter of expectedPaperFilters) {
 }
 
 const mission = readDistPage("research-graduation.html");
-if ((mission.match(/class="research-note-card mission-log-entry"/g) || []).length !== 8) {
-  fail("research-graduation.html: expected 8 mission log entries");
+const researchLog = readDistPage("research-log.html");
+for (const [pageName, html] of [["research-log.html", researchLog], ["research-graduation.html", mission]]) {
+  if (!html.includes("assets/js/research-lock.js") || !html.includes("data-research-lock-content")) {
+    fail(`${pageName}: missing Research Log password gate`);
+  }
+}
+if ((mission.match(/class="research-note-card mission-log-entry"/g) || []).length !== 1) {
+  fail("research-graduation.html: expected exactly 1 initial mission log entry for lazy rendering");
 }
 if ((mission.match(/class="mission-jump-card compact-jump-card"/g) || []).length !== 8) {
   fail("research-graduation.html: expected 8 mission jump cards");
 }
-const missionIds = new Set([...mission.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]));
+const missionDataMatch = mission.match(/<script\b[^>]*id="mission-log-data"[^>]*>([\s\S]*?)<\/script>/);
+let missionData = [];
+if (!missionDataMatch) {
+  fail("research-graduation.html: missing Mission Log JSON data");
+} else {
+  try {
+    missionData = JSON.parse(missionDataMatch[1]);
+  } catch (error) {
+    fail(`research-graduation.html: Mission Log JSON data is not parseable: ${error.message}`);
+  }
+}
+if (missionData.length !== 8) {
+  fail("research-graduation.html: expected 8 Mission Log data entries");
+}
+const missionIds = new Set(missionData.map((entry) => entry.id));
 const missionJumpTargets = [...mission.matchAll(/<a\b[^>]*class="[^"]*\bmission-jump-card\b[^"]*"[^>]*href="#([^"]*)"/g)];
 for (const [index, match] of missionJumpTargets.entries()) {
   const targetId = match[1];
@@ -135,21 +155,19 @@ const missionIndexScript = fs.readFileSync(path.join(assetsDir, "js", "mission-i
 if (!missionIndexScript.includes("scrollIntoView") || !missionIndexScript.includes("history.pushState")) {
   fail("mission-index.js: missing explicit Mission Log navigator scroll handling");
 }
+if (!missionIndexScript.includes("mission-log-data") || !missionIndexScript.includes("renderMissionEntry")) {
+  fail("mission-index.js: missing lazy Mission Log rendering from JSON data");
+}
 const missionLightboxScript = fs.readFileSync(path.join(assetsDir, "js", "mission-lightbox.js"), "utf8");
 if (missionLightboxScript.includes("const items = figures.map")) {
   fail("mission-lightbox.js: must not build one global image set across all Mission Logs");
 }
-if (!missionLightboxScript.includes("figure.closest('.mission-log-entry')") || !missionLightboxScript.includes("thumbsEl.replaceChildren")) {
-  fail("mission-lightbox.js: missing per-log image grouping for the lightbox");
+if (!missionLightboxScript.includes("figure.closest('.mission-log-entry')") || !missionLightboxScript.includes("thumbsEl.replaceChildren") || !missionLightboxScript.includes("MadsMissionLightbox")) {
+  fail("mission-lightbox.js: missing dynamic per-log image grouping for the lightbox");
 }
-if (!mission.includes('id="log-007"')) {
-  fail("research-graduation.html: missing Mission Log 007");
-}
-if (!mission.includes('id="log-008"')) {
-  fail("research-graduation.html: missing Mission Log 008");
-}
-const log008Match = mission.match(/<article\b[^>]*id="log-008"[\s\S]*?<\/article>/);
-const log008Html = log008Match?.[0] || "";
+const log008Data = missionData.find((entry) => entry.id === "log-008");
+if (!log008Data) fail("research-graduation.html: missing Mission Log 008 data");
+const log008Html = log008Data?.bodyHtml || "";
 if ((log008Html.match(/<figure>/g) || []).length !== 9) {
   fail("research-graduation.html: Mission Log 008 should contain 9 figures");
 }
@@ -162,8 +180,9 @@ for (let index = 1; index <= 9; index += 1) {
     fail(`research-graduation.html: Mission Log 008 missing Fig. ${index} caption`);
   }
 }
-const log007Match = mission.match(/<article\b[^>]*id="log-007"[\s\S]*?<\/article>/);
-const log007Html = log007Match?.[0] || "";
+const log007Data = missionData.find((entry) => entry.id === "log-007");
+if (!log007Data) fail("research-graduation.html: missing Mission Log 007 data");
+const log007Html = log007Data?.bodyHtml || "";
 if ((log007Html.match(/<figure>/g) || []).length !== 13) {
   fail("research-graduation.html: Mission Log 007 should contain 13 figures");
 }
@@ -196,6 +215,16 @@ if (!interface2046.includes("data-ui2046-route") || !interface2046.includes("mad
 const styleCss = fs.readFileSync(path.join(assetsDir, "css", "style.css"), "utf8");
 if (!styleCss.includes("mads-soft-nav-active")) {
   fail("style.css: missing soft navigation stability styles");
+}
+if (!styleCss.includes("research-lock-gate") || !styleCss.includes("mission-log-lazy-render")) {
+  fail("style.css: missing Research Log gate or Mission Log lazy render styles");
+}
+const researchLockPath = path.join(assetsDir, "js", "research-lock.js");
+const researchLock = fs.existsSync(researchLockPath) ? fs.readFileSync(researchLockPath, "utf8") : "";
+if (!researchLock) {
+  fail("research-lock.js: missing Research Log password gate script");
+} else if (!researchLock.includes("crypto.subtle.digest") || !researchLock.includes("sessionStorage") || !researchLock.includes("data-research-lock-content")) {
+  fail("research-lock.js: missing password hashing, session unlock, or content gate handling");
 }
 if (!styleCss.includes("mobile-mission-log-static-tap") || !styleCss.includes("-webkit-tap-highlight-color: transparent")) {
   fail("style.css: missing mobile Mission Log tap highlight suppression");

@@ -1,7 +1,18 @@
 (() => {
   const list = document.querySelector('[data-mission-log-list]');
   const indexList = document.querySelector('[data-mission-index-list]');
-  if (!list || !indexList) return;
+  const dataEl = document.getElementById('mission-log-data');
+  if (!list || !indexList || !dataEl) return;
+
+  let started = false;
+
+  const escapeHtml = (value) => String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+
+  const escapeAttr = (value) => escapeHtml(value).replace(/'/g, '&#39;');
 
   const normaliseDate = (value) => {
     const match = String(value || '').match(/(\d{4})[-/](\d{2})[-/](\d{2})/);
@@ -12,62 +23,6 @@
     const normalised = normaliseDate(value);
     return normalised ? Number(normalised.replaceAll('/', '')) : 0;
   };
-
-  const logNumber = (entry) => {
-    const text = entry.querySelector('.research-note-date')?.textContent || '';
-    const match = text.match(/LOG\s*(\d+)/i);
-    return match ? Number(match[1]) : 0;
-  };
-
-  const getSol = (entry) => {
-    const text = entry.querySelector('.mission-entry-kicker')?.textContent || '';
-    const match = text.match(/SOL\s*(\d+)/i);
-    return match ? `SOL ${match[1]}` : '';
-  };
-
-  const entries = Array.from(list.querySelectorAll('.mission-log-entry')).map((entry) => {
-    const no = logNumber(entry);
-    const id = entry.id || `log-${String(no).padStart(3, '0')}`;
-    entry.id = id;
-
-    const rawDate = entry.dataset.logDate || entry.querySelector('.mission-entry-kicker')?.textContent || '';
-
-    return {
-      entry,
-      id,
-      no,
-      date: normaliseDate(rawDate),
-      score: dateScore(rawDate),
-      sol: getSol(entry)
-    };
-  });
-
-  // Keep the actual Mission Log content list newest-first.
-  const logEntries = [...entries].sort((a, b) => {
-    if (a.score !== b.score) return b.score - a.score;
-    return b.no - a.no;
-  });
-
-  const fragment = document.createDocumentFragment();
-  logEntries.forEach(({ entry }) => fragment.appendChild(entry));
-  list.appendChild(fragment);
-
-  // But keep the Navigator chronological: LOG001 -> LOG006.
-  const navigatorEntries = [...entries].sort((a, b) => {
-    if (a.no !== b.no) return a.no - b.no;
-    return a.score - b.score;
-  });
-
-  indexList.innerHTML = navigatorEntries.map((item) => {
-    const logLabel = `LOG ${String(item.no).padStart(3, '0')}`;
-    const meta = [item.sol, item.date].filter(Boolean).join(' · ');
-    return `
-      <a class="mission-jump-card compact-jump-card" href="#${item.id}">
-        <span class="mission-jump-log">${logLabel}</span>
-        <span class="mission-jump-meta">${meta}</span>
-      </a>
-    `;
-  }).join('');
 
   const decodeTargetId = (value) => {
     try {
@@ -81,51 +36,133 @@
     return window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
   };
 
-  const scrollToMissionEntry = (id, options = {}) => {
-    const targetId = String(id || '').replace(/^#/, '');
-    if (!targetId) return false;
+  const missionEntries = (() => {
+    try {
+      const parsed = JSON.parse(dataEl.textContent || '[]');
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      return [];
+    }
+  })();
 
-    const target = document.getElementById(targetId);
-    if (!target) return false;
+  if (!missionEntries.length) return;
 
-    target.scrollIntoView({
-      block: 'start',
-      inline: 'nearest',
-      behavior: shouldReduceMotion() ? 'auto' : 'smooth'
+  const byId = new Map(missionEntries.map((entry) => [entry.id, entry]));
+  const latestEntry = [...missionEntries].sort((a, b) => {
+    const scoreDiff = dateScore(b.date || b.isoDate) - dateScore(a.date || a.isoDate);
+    return scoreDiff || Number(b.number || 0) - Number(a.number || 0);
+  })[0];
+
+  const renderNavigator = () => {
+    const navigatorEntries = [...missionEntries].sort((a, b) => {
+      const numberDiff = Number(a.number || 0) - Number(b.number || 0);
+      return numberDiff || dateScore(a.date || a.isoDate) - dateScore(b.date || b.isoDate);
     });
 
+    indexList.innerHTML = navigatorEntries.map((item) => {
+      const id = escapeAttr(item.id);
+      const logLabel = escapeHtml(item.label || `LOG ${String(item.number || 0).padStart(3, '0')}`);
+      const sol = item.sol ? `SOL ${String(item.sol).padStart(3, '0')}` : '';
+      const meta = [sol, normaliseDate(item.date || item.isoDate)].filter(Boolean).join(' &middot; ');
+      return `
+        <a class="mission-jump-card compact-jump-card" href="#${id}" data-mission-target="${id}">
+          <span class="mission-jump-log">${logLabel}</span>
+          <span class="mission-jump-meta">${meta}</span>
+        </a>
+      `;
+    }).join('');
+  };
+
+  const setActiveLink = (id) => {
+    indexList.querySelectorAll('.mission-jump-card').forEach((link) => {
+      const active = link.getAttribute('href') === `#${id}`;
+      link.classList.toggle('is-active', active);
+      link.setAttribute('aria-current', active ? 'true' : 'false');
+    });
+  };
+
+  function renderMissionEntry(id, options = {}) {
+    const entry = byId.get(id) || latestEntry;
+    if (!entry) return false;
+
+    const article = `
+      <article
+        id="${escapeAttr(entry.id)}"
+        class="research-note-card mission-log-entry"
+        data-log-date="${escapeAttr(entry.date)}"
+        data-log-stage="${escapeAttr(entry.stage)}"
+        data-log-question="${escapeAttr(entry.question)}"
+        data-log-next-step="${escapeAttr(entry.nextStep)}"
+        data-log-latest-note="${escapeAttr(entry.latestNote)}"
+        data-log-stage-note="${escapeAttr(entry.stageNote)}"
+        data-log-question-note="${escapeAttr(entry.questionNote)}"
+        data-log-next-note="${escapeAttr(entry.nextNote)}"
+      >
+        <div class="research-note-date">${escapeHtml(entry.label)}</div>
+        <div class="research-note-body">${entry.bodyHtml || ''}</div>
+      </article>
+    `;
+
+    list.innerHTML = article;
+    setActiveLink(entry.id);
+    window.MadsMissionLightbox?.prepare?.(list);
+    document.dispatchEvent(new CustomEvent('mads:mission-log-rendered', { detail: { id: entry.id } }));
+
     if (options.updateHash !== false && window.history?.pushState) {
-      window.history.pushState(null, '', `#${encodeURIComponent(targetId)}`);
+      window.history.pushState(null, '', `#${encodeURIComponent(entry.id)}`);
+    }
+
+    if (options.scroll) {
+      window.requestAnimationFrame(() => {
+        document.getElementById(entry.id)?.scrollIntoView({
+          block: 'start',
+          inline: 'nearest',
+          behavior: shouldReduceMotion() ? 'auto' : 'smooth'
+        });
+      });
     }
 
     return true;
-  };
-
-  indexList.addEventListener('click', (event) => {
-    const link = event.target.closest('a[href^="#"]');
-    if (!link || !indexList.contains(link)) return;
-
-    const href = link.getAttribute('href') || '';
-    const targetId = decodeTargetId(href.slice(1));
-    if (!targetId) {
-      event.preventDefault();
-      return;
-    }
-
-    if (scrollToMissionEntry(targetId)) {
-      event.preventDefault();
-    }
-  });
-
-  const initialTargetId = window.location.hash ? decodeTargetId(window.location.hash.slice(1)) : '';
-  if (initialTargetId) {
-    window.requestAnimationFrame(() => {
-      scrollToMissionEntry(initialTargetId, { updateHash: false });
-    });
   }
 
-  const mode = document.querySelector('.mission-index-mode');
-  if (mode) mode.textContent = 'Earliest first';
+  const start = () => {
+    if (started) return;
+    started = true;
 
-  document.documentElement.classList.add('mission-index-ready');
+    renderNavigator();
+
+    indexList.addEventListener('click', (event) => {
+      const link = event.target.closest('a[href^="#"]');
+      if (!link || !indexList.contains(link)) return;
+
+      const href = link.getAttribute('href') || '';
+      const targetId = decodeTargetId(href.slice(1));
+      if (!targetId) {
+        event.preventDefault();
+        return;
+      }
+
+      if (renderMissionEntry(targetId, { scroll: true })) {
+        event.preventDefault();
+      }
+    });
+
+    const initialTargetId = window.location.hash ? decodeTargetId(window.location.hash.slice(1)) : '';
+    const initialId = byId.has(initialTargetId) ? initialTargetId : list.dataset.initialLogId || latestEntry.id;
+    renderMissionEntry(initialId, { updateHash: false, scroll: Boolean(initialTargetId) });
+
+    const mode = document.querySelector('.mission-index-mode');
+    if (mode) mode.textContent = 'Earliest first';
+
+    document.documentElement.classList.add('mission-index-ready');
+    document.documentElement.classList.add('mission-log-lazy-render');
+  };
+
+  const lockContent = document.querySelector('[data-research-lock-content]');
+  const gate = document.querySelector('[data-research-lock-gate]');
+  if (gate && lockContent?.hidden && !document.documentElement.classList.contains('research-log-unlocked')) {
+    document.addEventListener('mads:research-log-unlocked', start, { once: true });
+  } else {
+    start();
+  }
 })();
