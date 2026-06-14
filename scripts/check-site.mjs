@@ -113,11 +113,11 @@ for (const filter of expectedPaperFilters) {
 }
 
 const mission = readDistPage("research-graduation.html");
-if ((mission.match(/class="research-note-card mission-log-entry"/g) || []).length !== 7) {
-  fail("research-graduation.html: expected 7 mission log entries");
+if ((mission.match(/class="research-note-card mission-log-entry"/g) || []).length !== 8) {
+  fail("research-graduation.html: expected 8 mission log entries");
 }
-if ((mission.match(/class="mission-jump-card compact-jump-card"/g) || []).length !== 7) {
-  fail("research-graduation.html: expected 7 mission jump cards");
+if ((mission.match(/class="mission-jump-card compact-jump-card"/g) || []).length !== 8) {
+  fail("research-graduation.html: expected 8 mission jump cards");
 }
 const missionIds = new Set([...mission.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]));
 const missionJumpTargets = [...mission.matchAll(/<a\b[^>]*class="[^"]*\bmission-jump-card\b[^"]*"[^>]*href="#([^"]*)"/g)];
@@ -144,6 +144,23 @@ if (!missionLightboxScript.includes("figure.closest('.mission-log-entry')") || !
 }
 if (!mission.includes('id="log-007"')) {
   fail("research-graduation.html: missing Mission Log 007");
+}
+if (!mission.includes('id="log-008"')) {
+  fail("research-graduation.html: missing Mission Log 008");
+}
+const log008Match = mission.match(/<article\b[^>]*id="log-008"[\s\S]*?<\/article>/);
+const log008Html = log008Match?.[0] || "";
+if ((log008Html.match(/<figure>/g) || []).length !== 9) {
+  fail("research-graduation.html: Mission Log 008 should contain 9 figures");
+}
+for (let index = 1; index <= 9; index += 1) {
+  const imageName = `grad-log-20260615-${String(index).padStart(2, "0")}.jpg`;
+  if (!fs.existsSync(path.join(publicDir, "assets", "img", imageName))) {
+    fail(`research-graduation.html: missing Mission Log 008 image ${imageName}`);
+  }
+  if (!log008Html.includes(`Fig. ${index}`)) {
+    fail(`research-graduation.html: Mission Log 008 missing Fig. ${index} caption`);
+  }
 }
 const log007Match = mission.match(/<article\b[^>]*id="log-007"[\s\S]*?<\/article>/);
 const log007Html = log007Match?.[0] || "";
