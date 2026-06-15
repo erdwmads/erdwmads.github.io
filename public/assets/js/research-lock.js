@@ -1,5 +1,5 @@
 (() => {
-  const HASH = 'eb76e3ad8d3d50abc9035601b1387e5c426d6b22534fa7691647d1e0bfacd053';
+  const HASH = 'c70de696ba32206485f4f0d2b3ceba1ba1fec7328e9ebca874ae29b7c3b295b5';
   const STORAGE_KEY = 'mads-research-log-unlocked';
 
   const gate = document.querySelector('[data-research-lock-gate]');

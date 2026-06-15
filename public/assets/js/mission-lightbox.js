@@ -50,7 +50,9 @@
           <p class="mission-lightbox__kicker"></p>
           <h2 class="mission-lightbox__title"></h2>
         </div>
-        <button class="mission-lightbox__btn mission-lightbox__close" type="button" aria-label="Close image viewer">x</button>
+        <button class="mission-lightbox__btn mission-lightbox__close" type="button" aria-label="Close image viewer">
+          <span class="mission-lightbox__close-icon" aria-hidden="true"></span>
+        </button>
       </div>
 
       <div class="mission-lightbox__stage">

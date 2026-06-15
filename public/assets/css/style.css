@@ -6337,8 +6337,37 @@ body.space-mode .action-row a[href="cv.html"] {
 .mission-lightbox__close {
   width: 38px !important;
   height: 38px !important;
-  font-size: 22px !important;
+  position: relative !important;
+  font-size: 0 !important;
   line-height: 1 !important;
+}
+
+.mission-lightbox__close-icon {
+  position: relative !important;
+  width: 15px !important;
+  height: 15px !important;
+  display: block !important;
+}
+
+.mission-lightbox__close-icon::before,
+.mission-lightbox__close-icon::after {
+  content: "" !important;
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  width: 17px !important;
+  height: 2px !important;
+  border-radius: 999px !important;
+  background: currentColor !important;
+  transform-origin: center !important;
+}
+
+.mission-lightbox__close-icon::before {
+  transform: translate(-50%, -50%) rotate(45deg) !important;
+}
+
+.mission-lightbox__close-icon::after {
+  transform: translate(-50%, -50%) rotate(-45deg) !important;
 }
 
 .mission-lightbox__nav {

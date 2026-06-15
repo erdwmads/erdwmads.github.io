@@ -165,6 +165,9 @@ if (missionLightboxScript.includes("const items = figures.map")) {
 if (!missionLightboxScript.includes("figure.closest('.mission-log-entry')") || !missionLightboxScript.includes("thumbsEl.replaceChildren") || !missionLightboxScript.includes("MadsMissionLightbox")) {
   fail("mission-lightbox.js: missing dynamic per-log image grouping for the lightbox");
 }
+if (missionLightboxScript.includes('>x</button>') || !missionLightboxScript.includes('mission-lightbox__close-icon')) {
+  fail("mission-lightbox.js: close button must use a styled icon, not a raw x character");
+}
 const log008Data = missionData.find((entry) => entry.id === "log-008");
 if (!log008Data) fail("research-graduation.html: missing Mission Log 008 data");
 const log008Html = log008Data?.bodyHtml || "";
@@ -225,6 +228,8 @@ if (!researchLock) {
   fail("research-lock.js: missing Research Log password gate script");
 } else if (!researchLock.includes("crypto.subtle.digest") || !researchLock.includes("sessionStorage") || !researchLock.includes("data-research-lock-content")) {
   fail("research-lock.js: missing password hashing, session unlock, or content gate handling");
+} else if (!researchLock.includes("c70de696ba32206485f4f0d2b3ceba1ba1fec7328e9ebca874ae29b7c3b295b5") || researchLock.includes("eb76e3ad8d3d50abc9035601b1387e5c426d6b22534fa7691647d1e0bfacd053")) {
+  fail("research-lock.js: password hash was not updated to the new Research Log password");
 }
 if (!styleCss.includes("mobile-mission-log-static-tap") || !styleCss.includes("-webkit-tap-highlight-color: transparent")) {
   fail("style.css: missing mobile Mission Log tap highlight suppression");
