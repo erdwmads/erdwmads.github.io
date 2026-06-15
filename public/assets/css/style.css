@@ -15512,6 +15512,13 @@ html:not([data-theme="space"]) body.ui-page-research-graduation .mission-jump-ca
   outline: none;
 }
 
+/* research-lock-password-high-contrast */
+.research-lock-field input[type="password"] {
+  color: rgba(246, 250, 255, .96);
+  -webkit-text-fill-color: rgba(246, 250, 255, .96);
+  caret-color: rgba(244, 217, 152, .95);
+}
+
 .research-lock-field input:focus {
   border-color: rgba(244, 217, 152, .72);
   box-shadow: 0 0 0 3px rgba(244, 217, 152, .16);
@@ -15545,6 +15552,12 @@ html:not([data-theme="space"]) .research-lock-field input {
   color: var(--ink);
   background: rgba(255, 255, 255, .76);
   border-color: rgba(73, 101, 132, .24);
+}
+
+html:not([data-theme="space"]) .research-lock-field input[type="password"] {
+  color: rgba(22, 33, 46, .96);
+  -webkit-text-fill-color: rgba(22, 33, 46, .96);
+  caret-color: rgba(55, 78, 104, .95);
 }
 
 

@@ -225,6 +225,9 @@ if (!styleCss.includes("mads-soft-nav-active")) {
 if (!styleCss.includes("research-lock-gate") || !styleCss.includes("mission-log-lazy-render")) {
   fail("style.css: missing Research Log gate or Mission Log lazy render styles");
 }
+if (!styleCss.includes("research-lock-password-high-contrast") || !styleCss.includes("-webkit-text-fill-color: rgba(246, 250, 255, .96)")) {
+  fail("style.css: missing high-contrast password dot color for the Research Log gate");
+}
 if (!styleCss.includes("mission-lightbox-unified-theme") || !styleCss.includes("html:not([data-theme=\"space\"]) .mission-lightbox__thumbs")) {
   fail("style.css: missing unified Mission Log lightbox theme styles");
 }
