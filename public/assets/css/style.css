@@ -15696,6 +15696,67 @@ body.space-mode .ambient-space-layer .ambient-dust.is-gold-dust::after {
   background-position: center;
 }
 
+/* ============================================================
+   mission-lightbox-unified-theme
+   Keep the viewer chrome in one colour system; the thumbnail rail should
+   never remain dark when the viewer itself is in light mode.
+   ============================================================ */
+
+.mission-lightbox__panel {
+  background: rgba(7, 16, 28, .96) !important;
+}
+
+.mission-lightbox__topbar,
+.mission-lightbox__stage,
+.mission-lightbox__captionbar,
+.mission-lightbox__thumbs {
+  background: rgba(7, 16, 28, .74) !important;
+}
+
+.mission-lightbox__thumbs {
+  border-top: 1px solid rgba(225, 242, 255, .10) !important;
+  padding-top: 10px !important;
+}
+
+.mission-lightbox__thumb {
+  background-color: rgba(20, 34, 50, .88) !important;
+}
+
+html:not([data-theme="space"]) .mission-lightbox {
+  background: rgba(216, 226, 235, .88) !important;
+}
+
+html:not([data-theme="space"]) .mission-lightbox__panel {
+  border-color: rgba(96, 118, 140, .20) !important;
+  background: rgba(238, 244, 249, .96) !important;
+  box-shadow:
+    0 18px 48px rgba(58, 78, 98, .18),
+    inset 0 1px 0 rgba(255,255,255,.78) !important;
+}
+
+html:not([data-theme="space"]) .mission-lightbox__topbar,
+html:not([data-theme="space"]) .mission-lightbox__stage,
+html:not([data-theme="space"]) .mission-lightbox__captionbar,
+html:not([data-theme="space"]) .mission-lightbox__thumbs {
+  background: rgba(238, 244, 249, .86) !important;
+}
+
+html:not([data-theme="space"]) .mission-lightbox__topbar,
+html:not([data-theme="space"]) .mission-lightbox__captionbar,
+html:not([data-theme="space"]) .mission-lightbox__thumbs {
+  border-color: rgba(96, 118, 140, .16) !important;
+}
+
+html:not([data-theme="space"]) .mission-lightbox__thumb,
+html:not([data-theme="space"]) .mission-lightbox [class*="thumb"] {
+  background-color: rgba(210, 222, 232, .78) !important;
+}
+
+html:not([data-theme="space"]) .mission-lightbox__thumb.is-active {
+  border-color: rgba(60, 94, 126, .46) !important;
+  box-shadow: 0 0 0 2px rgba(60, 94, 126, .12) !important;
+}
+
 
 /* ============================================================
    Mobile Mission Log: Disable Large Image Lightbox
@@ -16180,4 +16241,85 @@ body.space-mode .paper-filter {
     word-break: normal !important;
     hyphens: auto !important;
   }
+}
+
+/* ============================================================
+   mads-human-finish
+   Site-wide low-gloss pass: keep the existing identity, but reduce the
+   generated-template feeling from heavy glow, deep glass, and strong gradients.
+   ============================================================ */
+
+:root {
+  --shadow: 0 10px 28px rgba(29, 84, 130, .08);
+}
+
+html:not([data-theme="space"]) body {
+  background: #f4f7fa !important;
+}
+
+html:not([data-theme="space"]) .site-header {
+  background: rgba(250, 252, 254, .94) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+.brand strong,
+.nav a,
+.theme-toggle,
+.button,
+.paper-filter,
+.status-badge,
+.mission-jump-card,
+.research-note-date {
+  text-shadow: none !important;
+}
+
+.status-card,
+.project-link-card,
+.paper-card,
+.research-note-card,
+.mission-index-panel,
+.research-lock-panel,
+.paper-shelf-search input,
+.sample-card,
+.contact-card {
+  box-shadow: 0 8px 24px rgba(28, 58, 92, .08) !important;
+}
+
+html:not([data-theme="space"]) .status-card,
+html:not([data-theme="space"]) .project-link-card,
+html:not([data-theme="space"]) .paper-card,
+html:not([data-theme="space"]) .research-note-card,
+html:not([data-theme="space"]) .mission-index-panel,
+html:not([data-theme="space"]) .research-lock-panel,
+html:not([data-theme="space"]) .paper-shelf-search input,
+html:not([data-theme="space"]) .sample-card,
+html:not([data-theme="space"]) .contact-card {
+  background-image: none !important;
+  border-color: rgba(72, 101, 132, .14) !important;
+}
+
+html[data-theme="space"] .status-card,
+html[data-theme-space] .status-card,
+body.space-mode .status-card,
+html[data-theme="space"] .project-link-card,
+html[data-theme-space] .project-link-card,
+body.space-mode .project-link-card,
+html[data-theme="space"] .paper-card,
+html[data-theme-space] .paper-card,
+body.space-mode .paper-card,
+html[data-theme="space"] .research-note-card,
+html[data-theme-space] .research-note-card,
+body.space-mode .research-note-card,
+html[data-theme="space"] .mission-index-panel,
+html[data-theme-space] .mission-index-panel,
+body.space-mode .mission-index-panel {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .24) !important;
+}
+
+.project-link-card:hover,
+.mission-jump-card:hover,
+.paper-card:hover,
+.research-note-card:hover {
+  transform: translateY(-1px) !important;
 }

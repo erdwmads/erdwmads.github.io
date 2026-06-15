@@ -110,9 +110,12 @@
 
       const thumbImg = document.createElement('img');
       thumbImg.alt = '';
-      thumbImg.loading = 'lazy';
+      thumbImg.loading = 'eager';
       thumbImg.decoding = 'async';
-      thumbImg.dataset.src = item.thumb || item.src;
+      try { thumbImg.fetchPriority = 'low'; } catch (error) {}
+      thumbImg.src = item.thumb || item.src;
+      thumbImg.dataset.src = thumbImg.src;
+      thumbImg.dataset.missionThumbHydrated = '1';
 
       btn.appendChild(thumbImg);
       btn.addEventListener('click', () => show(idx));

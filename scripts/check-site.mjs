@@ -168,6 +168,9 @@ if (!missionLightboxScript.includes("figure.closest('.mission-log-entry')") || !
 if (missionLightboxScript.includes('>x</button>') || !missionLightboxScript.includes('mission-lightbox__close-icon')) {
   fail("mission-lightbox.js: close button must use a styled icon, not a raw x character");
 }
+if (!missionLightboxScript.includes("thumbImg.loading = 'eager'") || !missionLightboxScript.includes("thumbImg.src = item.thumb || item.src")) {
+  fail("mission-lightbox.js: thumbnail strip must eagerly assign real src values on open");
+}
 const log008Data = missionData.find((entry) => entry.id === "log-008");
 if (!log008Data) fail("research-graduation.html: missing Mission Log 008 data");
 const log008Html = log008Data?.bodyHtml || "";
@@ -221,6 +224,12 @@ if (!styleCss.includes("mads-soft-nav-active")) {
 }
 if (!styleCss.includes("research-lock-gate") || !styleCss.includes("mission-log-lazy-render")) {
   fail("style.css: missing Research Log gate or Mission Log lazy render styles");
+}
+if (!styleCss.includes("mission-lightbox-unified-theme") || !styleCss.includes("html:not([data-theme=\"space\"]) .mission-lightbox__thumbs")) {
+  fail("style.css: missing unified Mission Log lightbox theme styles");
+}
+if (!styleCss.includes("mads-human-finish") || !styleCss.includes("--shadow: 0 10px 28px")) {
+  fail("style.css: missing site-wide low-gloss human finish");
 }
 const researchLockPath = path.join(assetsDir, "js", "research-lock.js");
 const researchLock = fs.existsSync(researchLockPath) ? fs.readFileSync(researchLockPath, "utf8") : "";
