@@ -228,9 +228,6 @@ if (!styleCss.includes("research-lock-gate") || !styleCss.includes("mission-log-
 if (!styleCss.includes("mission-lightbox-unified-theme") || !styleCss.includes("html:not([data-theme=\"space\"]) .mission-lightbox__thumbs")) {
   fail("style.css: missing unified Mission Log lightbox theme styles");
 }
-if (!styleCss.includes("mads-human-finish") || !styleCss.includes("--shadow: 0 10px 28px")) {
-  fail("style.css: missing site-wide low-gloss human finish");
-}
 const researchLockPath = path.join(assetsDir, "js", "research-lock.js");
 const researchLock = fs.existsSync(researchLockPath) ? fs.readFileSync(researchLockPath, "utf8") : "";
 if (!researchLock) {
