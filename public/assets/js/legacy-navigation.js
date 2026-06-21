@@ -7,7 +7,6 @@
     "": "ui-page-home",
     "research.html": "ui-page-research",
     "research-log.html": "ui-page-research-log",
-    "research-graduation.html": "ui-page-research-graduation",
     "paper-shelf.html": "ui-page-paper-shelf",
     "cv.html": "ui-page-cv",
     "photography.html": "ui-page-photography",

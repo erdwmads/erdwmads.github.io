@@ -8,7 +8,11 @@
     "build": "astro build",
     "preview": "astro preview --host 127.0.0.1",
     "check": "npm run build && npm run export:ppt-data && npm run check:site",
+    "check:all": "npm run check && npm run check:local",
     "check:site": "node scripts/check-site.mjs",
+    "check:local": "npm run build:mission-log-local && npm run check:local-mission-log",
+    "check:local-mission-log": "node scripts/check-local-mission-log.mjs",
+    "build:mission-log-local": "node scripts/build-local-mission-log.mjs",
     "audit:images": "node scripts/audit-images.mjs",
     "export:ppt-data": "node scripts/export-ppt-data.mjs"
   },

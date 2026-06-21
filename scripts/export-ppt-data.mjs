@@ -25,7 +25,10 @@ function readConstArray(relativePath, exportName) {
 }
 
 const papers = readConstArray("src/data/papers.ts", "papers");
-const missionEntries = readConstArray("src/data/missionLog.ts", "missionEntries");
+const localMissionSource = "_local/mission-source/missionLog.ts";
+const missionEntries = fs.existsSync(path.join(root, localMissionSource))
+  ? readConstArray(localMissionSource, "missionEntries")
+  : [];
 
 const payload = {
   generatedAt: new Date().toISOString(),

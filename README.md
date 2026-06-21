@@ -17,7 +17,7 @@ Open:
 http://127.0.0.1:4321/
 ```
 
-Build and run all checks:
+Build and check the public website:
 
 ```powershell
 npm run check
@@ -35,19 +35,34 @@ Generate structured data for PPT work:
 npm run export:ppt-data
 ```
 
+Generate the local-only Mission Log for presentation:
+
+```powershell
+npm run check:local
+```
+
+Open:
+
+```text
+_local/mission-log/research-graduation.html
+```
+
 ## Structure
 
 - `src/pages/` - Astro routes that generate public pages.
+- `src-local/pages/` - local-only Astro routes that are not published to GitHub Pages.
 - `src/components/LegacyShell.astro` - shared head, SEO metadata, navigation, footer, and script shell.
 - `src/components/PaperShelf.astro` - Paper Shelf rendering and filter controls.
-- `src/components/MissionLog.astro` - Graduation Research Mission Log rendering.
+- `src/components/MissionLog.astro` - local-only Graduation Research Mission Log rendering.
 - `src/data/site.ts` - site metadata, navigation, footer, script registry, sitemap page list.
 - `src/data/papers.ts` - Paper Shelf source data.
-- `src/data/missionLog.ts` - Mission Log source data.
+- `_local/mission-source/missionLog.ts` - private Mission Log source data, not committed or published.
 - `src/legacy/` - preserved page body fragments that have not yet been data-modeled.
 - `public/assets/css/style.css` - visual system, effects, responsive rules.
-- `public/assets/js/` - theme, ambient effects, soft navigation, Paper Shelf filters, Mission Log scripts.
-- `public/assets/img/` - portraits, gallery photos, research log images, and backgrounds.
+- `public/assets/js/` - theme, ambient effects, soft navigation, Paper Shelf filters, and local Mission Log scripts.
+- `public/assets/img/` - portraits, gallery photos, public research images, and backgrounds.
+- `_local/mission-assets/img/` - private Mission Log image originals, not published by the public site.
+- `_local/mission-log/` - generated local Mission Log output, rebuilt on demand.
 - `public/assets/files/` - downloadable PDFs.
 
 ## Routine Updates
@@ -56,7 +71,7 @@ Codex should do the website edits. The user can send rough content.
 
 - Add papers: update `src/data/papers.ts`.
   Each paper needs reader-facing `tags` and Paper Shelf `filters` (`dolomite`, `ci-orgueil`, `ryugu-bennu`, `methods`, `chronology`).
-- Add Mission Log entries: update `src/data/missionLog.ts`.
+- Add Mission Log entries: update `_local/mission-source/missionLog.ts`, place log photos under `_local/mission-assets/img/`, then run `npm run check:local`.
 - Change navigation, page scripts, sitemap list, or global metadata: update `src/data/site.ts`.
 - Replace normal images: add files under `public/assets/img/`, then update the relevant data or legacy fragment.
 - Build PPTs from website content: run `npm run export:ppt-data` and use `dist/ppt-data.json`.
@@ -96,4 +111,4 @@ b27650d36470015bc138fae1b022ce1068efeb97
 
 - Edit the latest matching section instead of appending another late override.
 - Do not move Space Mode, Interface 2046, Mission Log lightbox, or Entry Gate rules unless changing cascade order intentionally.
-- After changing styles, run `npm run check` and compare the local site visually.
+- After changing styles, run `npm run check` and compare the public site and local Mission Log visually.

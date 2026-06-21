@@ -52,7 +52,8 @@ Split into multiple entries when the process phase changes. For example, cutting
 }
 ```
 
-Current implementation target: `src/data/missionLog.ts`. The layout is rendered by `src/components/MissionLog.astro`.
+Current implementation target: `_local/mission-source/missionLog.ts`. The layout is rendered by `src/components/MissionLog.astro`.
+The Mission Log page is local-only. The public website may show a project summary, but it must not publish the full log page or private log photos.
 
 ## Fan-Out Mapping
 
@@ -81,16 +82,18 @@ Recommended project fields:
 
 ## Image Data
 
-Keep the current three-layer image model:
+Keep Mission Log image paths local:
 
 ```json
 {
-  "thumbSrc": "https://images.weserv.nl/?url=erdwmads.github.io%2Fassets%2Fimg%2FIMAGE.jpg&w=720&output=webp&q=70",
+  "thumbSrc": "assets/img/IMAGE.jpg",
   "fullSrc": "assets/img/IMAGE.jpg",
-  "mobileFullSrc": "https://images.weserv.nl/?url=erdwmads.github.io%2Fassets%2Fimg%2FIMAGE.jpg&w=1280&output=webp&q=78",
+  "mobileFullSrc": "assets/img/IMAGE.jpg",
   "alt": "Visual description for accessibility",
   "caption": "Fig. 1 - Archive caption."
 }
 ```
+
+Store the originals under `_local/mission-assets/img/`. `npm run build:mission-log-local` copies them into the generated local output.
 
 Desktop can use the lightbox. Mobile Mission Log images should remain inline figures with visible captions.

@@ -26,7 +26,6 @@ export const contentPages = [
   { href: "index.html", title: "Home", key: "home" },
   { href: "research.html", title: "Research", key: "research" },
   { href: "research-log.html", title: "Research Log", key: "research-log" },
-  { href: "research-graduation.html", title: "Graduation Research", key: "research-graduation" },
   { href: "paper-shelf.html", title: "Paper Shelf", key: "paper-shelf" },
   { href: "cv.html", title: "CV", key: "cv" },
   { href: "photography.html", title: "Photography", key: "photography" },
@@ -57,7 +56,8 @@ const pageScripts: Record<string, ScriptSpec[]> = {
   "paper-shelf": [...commonScripts, { src: "assets/js/paper-shelf.js", defer: true }, interfaceScript],
   photography: [{ src: "assets/js/photography.js" }, ...commonScripts, interfaceScript],
   research: [...commonScripts, interfaceScript],
-  "research-log": [researchLockScript, ...commonScripts, { src: "assets/js/research-log-sync.js", defer: true }, interfaceScript],
+  "research-log": [researchLockScript, ...commonScripts, interfaceScript],
+  // Used only by the local Mission Log build. Keep this page out of contentPages.
   "research-graduation": [
     researchLockScript,
     ...commonScripts,

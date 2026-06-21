@@ -50,8 +50,9 @@ const lines = [
   "",
   "- Keep original research/photography files in `public/assets/img/` unless the user explicitly approves destructive replacement.",
   "- Prefer adding generated thumbnails or CDN-sized URLs for page display instead of overwriting originals.",
-  "- Mission Log images should keep `loading=\"lazy\"`, `decoding=\"async\"`, and mobile-friendly display URLs.",
-  "- Before replacing images, run `npm run check` and compare the local site visually.",
+  "- Keep private Mission Log images under `_local/mission-assets/img/`, not `public/assets/img/`.",
+  "- Mission Log images should keep `loading=\"lazy\"` and `decoding=\"async\"`.",
+  "- Before replacing public images, run `npm run check`; before replacing Mission Log images, run `npm run check:local`.",
   ""
 ];
 

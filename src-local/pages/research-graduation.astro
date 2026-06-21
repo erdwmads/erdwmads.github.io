@@ -1,0 +1,19 @@
+---
+import LegacyShell from "../../src/components/LegacyShell.astro";
+import MissionLog from "../../src/components/MissionLog.astro";
+import { getPageScripts } from "../../src/data/site";
+import inlineScriptHtml from "../../src/legacy/research-graduation-inline-scripts.html?raw";
+
+const scriptHtml = getPageScripts("research-graduation", inlineScriptHtml);
+---
+
+<LegacyShell
+  title="Graduation Research Local Mission Log | Mads LIU YONG"
+  description="Local-only chronological graduation research Mission Log."
+  current="research-log"
+  mainClass="main"
+  path="research-graduation.html"
+  scriptHtml={scriptHtml}
+>
+  <MissionLog />
+</LegacyShell>

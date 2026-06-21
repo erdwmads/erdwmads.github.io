@@ -16,6 +16,8 @@ This site is not a generic academic homepage. Its identity is a cosmic mineralog
 
 Do not remove these concepts during refactors unless the owner explicitly changes the site direction.
 
+Mission Log is currently local-only. Preserve its language and visual system in the generated local page, while keeping the public website limited to project summaries.
+
 ## Theme Behavior
 
 The initial theme is applied before the CSS finishes loading. Keep that early theme preload behavior to avoid flashing.

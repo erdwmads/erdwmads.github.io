@@ -2,7 +2,7 @@
 import heroHtml from "../legacy/research-graduation-hero.html?raw";
 import projectInfoHtml from "../legacy/research-graduation-project-info.html?raw";
 import afterLogHtml from "../legacy/research-graduation-after-log.html?raw";
-import { latestMissionEntry, missionEntries } from "../data/missionLog";
+import { latestMissionEntry, missionEntries } from "../../_local/mission-source/missionLog";
 
 const navigatorEntries = [...missionEntries].sort((a, b) => a.number - b.number);
 const missionDataJson = JSON.stringify(missionEntries);

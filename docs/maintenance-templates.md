@@ -4,7 +4,7 @@ These templates are for sending material to Codex. The user does not need to edi
 
 ## Add A Mission Log Entry
 
-Send whatever material is available. Codex will decide the final structure, log number, fields, figure layout, alt text, captions, and data insertion in `src/data/missionLog.ts`.
+Send whatever material is available. Codex will decide the final structure, log number, fields, figure layout, alt text, captions, and data insertion in `_local/mission-source/missionLog.ts`.
 
 Useful material:
 
@@ -24,12 +24,13 @@ Any wording that must be preserved:
 Codex must:
 
 - Convert the material into one coherent Mission Log entry, or split it into multiple entries if the process clearly contains separate phases.
-- Update `src/data/missionLog.ts`.
+- Update `_local/mission-source/missionLog.ts`.
 - Keep the page rendered through `src/components/MissionLog.astro`.
 - Keep latest-first Mission Log order and chronological Mission Index order.
-- Verify image filenames exist under `public/assets/img/`.
-- Use CDN-sized display URLs for Mission Log images while preserving `data-full-src` to the original local image.
-- Run `npm run check` before committing.
+- Verify image filenames exist under `_local/mission-assets/img/`.
+- Use local `assets/img/...` paths for Mission Log images. Do not place Mission Log photos in `public/assets/img/`.
+- Run `npm run check:local` and verify `_local/mission-log/research-graduation.html`.
+- Run `npm run check` before committing public website changes.
 
 ## Add Papers
 
@@ -73,6 +74,7 @@ Codex must:
 
 - Keep original research/photography images unless destructive replacement is explicitly approved.
 - Add thumbnails or CDN display URLs when useful.
+- Keep Mission Log images private under `_local/mission-assets/img/`.
 - Keep `loading="lazy"` and `decoding="async"` for Mission Log images.
 - Run `npm run audit:images` after larger image changes.
 - Run `npm run check`.
