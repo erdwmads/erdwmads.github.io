@@ -1,60 +1,9 @@
 ---
-import heroHtml from "../legacy/research-graduation-hero.html?raw";
-import projectInfoHtml from "../legacy/research-graduation-project-info.html?raw";
-import afterLogHtml from "../legacy/research-graduation-after-log.html?raw";
 import { latestMissionEntry, missionEntries } from "../../_local/mission-source/missionLog";
 
 const navigatorEntries = [...missionEntries].sort((a, b) => a.number - b.number);
 const missionDataJson = JSON.stringify(missionEntries);
-const statusCards = [
-  {
-    key: "latest",
-    label: "Latest update",
-    strongField: "latest-date",
-    strong: latestMissionEntry.date,
-    noteField: "latest-note",
-    note: latestMissionEntry.latestNote
-  },
-  {
-    key: "stage",
-    label: "Current stage",
-    strongField: "current-stage",
-    strong: latestMissionEntry.stage,
-    noteField: "stage-note",
-    note: latestMissionEntry.stageNote
-  },
-  {
-    key: "question",
-    label: "Current question",
-    strongField: "current-question",
-    strong: latestMissionEntry.question,
-    noteField: "question-note",
-    note: latestMissionEntry.questionNote
-  },
-  {
-    key: "next",
-    label: "Next step",
-    strongField: "next-step",
-    strong: latestMissionEntry.nextStep,
-    noteField: "next-note",
-    note: latestMissionEntry.nextNote
-  }
-];
 ---
-
-<Fragment set:html={heroHtml} />
-
-<section class="section research-status-grid" data-mission-status-grid>
-  {statusCards.map((card) => (
-    <article class="status-card" data-status-card={card.key}>
-      <span>{card.label}</span>
-      <strong data-status-field={card.strongField}>{card.strong}</strong>
-      <p data-status-field={card.noteField}>{card.note}</p>
-    </article>
-  ))}
-</section>
-
-<Fragment set:html={projectInfoHtml} />
 
 <section id="mission-index" class="section mission-index-section compact-mission-index">
   <div class="section-label">Mission Index</div>
@@ -99,5 +48,3 @@ const statusCards = [
     </article>
   </div>
 </section>
-
-<Fragment set:html={afterLogHtml} />

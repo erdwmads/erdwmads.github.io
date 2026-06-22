@@ -158,11 +158,5 @@
     document.documentElement.classList.add('mission-log-lazy-render');
   };
 
-  const lockContent = document.querySelector('[data-research-lock-content]');
-  const gate = document.querySelector('[data-research-lock-gate]');
-  if (gate && lockContent?.hidden && !document.documentElement.classList.contains('research-log-unlocked')) {
-    document.addEventListener('mads:research-log-unlocked', start, { once: true });
-  } else {
-    start();
-  }
+  start();
 })();

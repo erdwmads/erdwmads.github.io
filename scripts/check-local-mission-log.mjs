@@ -33,11 +33,20 @@ if (html && !html.includes("assets/js/mission-index.js")) {
 if (html && !html.includes("assets/js/mission-lightbox.js")) {
   fail("local Mission Log page: missing Mission Log lightbox script");
 }
+if (html && !html.includes("local-mission-only")) {
+  fail("local Mission Log page: missing standalone local Mission Log shell");
+}
+if (html && !html.includes("Local Mission Log")) {
+  fail("local Mission Log page: missing local-only title");
+}
 if (html && html.includes("https://images.weserv.nl/")) {
   fail("local Mission Log page: must not depend on remote image proxy URLs");
 }
 if (html && html.includes("data-research-lock-gate")) {
   fail("local Mission Log page: should open directly without the public password gate");
+}
+if (html && (html.includes("site-header") || html.includes("class=\"nav\"") || html.includes("Download research proposal") || html.includes("Project Info") || html.includes("Back to projects"))) {
+  fail("local Mission Log page: should be a standalone Mission Log view without public site chrome or project-info sections");
 }
 
 const dataMatch = html.match(/<script\b[^>]*id="mission-log-data"[^>]*>([\s\S]*?)<\/script>/);

@@ -8,10 +8,9 @@ interface Props {
   mainClass?: string;
   path?: string;
   scriptHtml: string;
-  locked?: boolean;
 }
 
-const { title, description, current, mainClass = "main", path, scriptHtml, locked = false } = Astro.props;
+const { title, description, current, mainClass = "main", path, scriptHtml } = Astro.props;
 const canonicalPath = path || "index.html";
 const canonicalUrl = new URL(canonicalPath, `${siteMetadata.url}/`).toString();
 const imageUrl = new URL(siteMetadata.image, `${siteMetadata.url}/`).toString();
@@ -89,28 +88,7 @@ const imageUrl = new URL(siteMetadata.image, `${siteMetadata.url}/`).toString();
   </div>
 </header>
 <main class={mainClass}>
-  {locked && (
-    <section class="research-lock-gate" data-research-lock-gate>
-      <form class="research-lock-panel" data-research-lock-form>
-        <p class="eyebrow">Access Required</p>
-        <h1>Research Log Locked</h1>
-        <p>Enter the research log password to open this page.</p>
-        <label class="research-lock-field">
-          <span>Password</span>
-          <input type="password" name="password" autocomplete="current-password" required>
-        </label>
-        <button class="button" type="submit">Unlock</button>
-        <p class="research-lock-message" data-research-lock-message aria-live="polite"></p>
-      </form>
-    </section>
-  )}
-  {locked ? (
-    <div data-research-lock-content hidden>
-      <slot />
-    </div>
-  ) : (
-    <slot />
-  )}
+  <slot />
 </main>
 <footer class="site-footer">
   <div class="footer-inner">

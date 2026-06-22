@@ -47,7 +47,6 @@ const commonScripts: ScriptSpec[] = [
 ];
 
 const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js", defer: true };
-const researchLockScript: ScriptSpec = { src: "assets/js/research-lock.js", defer: true };
 
 const pageScripts: Record<string, ScriptSpec[]> = {
   contact: [...commonScripts, interfaceScript],
@@ -56,15 +55,12 @@ const pageScripts: Record<string, ScriptSpec[]> = {
   "paper-shelf": [...commonScripts, { src: "assets/js/paper-shelf.js", defer: true }, interfaceScript],
   photography: [{ src: "assets/js/photography.js" }, ...commonScripts, interfaceScript],
   research: [...commonScripts, interfaceScript],
-  "research-log": [researchLockScript, ...commonScripts, interfaceScript],
+  "research-log": [...commonScripts, interfaceScript],
   // Used only by the local Mission Log build. Keep this page out of contentPages.
   "research-graduation": [
-    researchLockScript,
-    ...commonScripts,
     { src: "assets/js/mission-index.js", defer: true },
     { src: "assets/js/mission-lightbox.js", defer: true },
-    { src: "assets/js/mission-status-sync.js", defer: true },
-    interfaceScript
+    { src: "assets/js/mission-status-sync.js", defer: true }
   ],
   "sample-cabinet": commonScripts
 };

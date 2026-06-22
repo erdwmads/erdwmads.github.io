@@ -129,8 +129,11 @@ for (const filter of expectedPaperFilters) {
 }
 
 const researchLog = readDistPage("research-log.html");
-if (!researchLog.includes("assets/js/research-lock.js") || !researchLog.includes("data-research-lock-content")) {
-  fail("research-log.html: missing Research Log password gate");
+if (researchLog.includes("assets/js/research-lock.js") || researchLog.includes("data-research-lock-content") || researchLog.includes("data-research-lock-gate") || researchLog.includes("Research Log Locked")) {
+  fail("research-log.html: password gate must be removed from the public Research Log");
+}
+if (!researchLog.includes("Download research proposal") || !researchLog.includes("assets/files/Bachelors_Thesis_Research_Proposal_Mads_LIU_YONG.pdf")) {
+  fail("research-log.html: must keep the research proposal download before the private Mission Log boundary");
 }
 if (/<a\b[^>]*class="[^"]*\bproject-link-card\b/i.test(researchLog)) {
   fail("research-log.html: project cards must not be clickable links");
@@ -156,23 +159,12 @@ const styleCss = fs.readFileSync(path.join(assetsDir, "css", "style.css"), "utf8
 if (!styleCss.includes("mads-soft-nav-active")) {
   fail("style.css: missing soft navigation stability styles");
 }
-if (!styleCss.includes("research-lock-gate")) {
-  fail("style.css: missing Research Log gate styles");
-}
-if (!styleCss.includes("research-lock-password-high-contrast") || !styleCss.includes("-webkit-text-fill-color: rgba(246, 250, 255, .96)")) {
-  fail("style.css: missing high-contrast password dot color for the Research Log gate");
-}
 if (!styleCss.includes("mission-lightbox-unified-theme") || !styleCss.includes("html:not([data-theme=\"space\"]) .mission-lightbox__thumbs")) {
   fail("style.css: missing unified Mission Log lightbox theme styles");
 }
 const researchLockPath = path.join(assetsDir, "js", "research-lock.js");
-const researchLock = fs.existsSync(researchLockPath) ? fs.readFileSync(researchLockPath, "utf8") : "";
-if (!researchLock) {
-  fail("research-lock.js: missing Research Log password gate script");
-} else if (!researchLock.includes("crypto.subtle.digest") || !researchLock.includes("sessionStorage") || !researchLock.includes("data-research-lock-content")) {
-  fail("research-lock.js: missing password hashing, session unlock, or content gate handling");
-} else if (!researchLock.includes("c70de696ba32206485f4f0d2b3ceba1ba1fec7328e9ebca874ae29b7c3b295b5") || researchLock.includes("eb76e3ad8d3d50abc9035601b1387e5c426d6b22534fa7691647d1e0bfacd053")) {
-  fail("research-lock.js: password hash was not updated to the new Research Log password");
+if (fs.existsSync(researchLockPath)) {
+  fail("research-lock.js: public password gate script should be removed");
 }
 const powerManager = fs.readFileSync(path.join(assetsDir, "js", "power-manager.js"), "utf8");
 const lowPowerBlock = powerManager.match(/const LOW_POWER_MEDIA = \[([\s\S]*?)\];/)?.[1] || "";

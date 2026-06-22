@@ -1,19 +1,120 @@
 ---
-import LegacyShell from "../../src/components/LegacyShell.astro";
 import MissionLog from "../../src/components/MissionLog.astro";
-import { getPageScripts } from "../../src/data/site";
 import inlineScriptHtml from "../../src/legacy/research-graduation-inline-scripts.html?raw";
-
-const scriptHtml = getPageScripts("research-graduation", inlineScriptHtml);
 ---
 
-<LegacyShell
-  title="Graduation Research Local Mission Log | Mads LIU YONG"
-  description="Local-only chronological graduation research Mission Log."
-  current="research-log"
-  mainClass="main"
-  path="research-graduation.html"
-  scriptHtml={scriptHtml}
->
-  <MissionLog />
-</LegacyShell>
+<!doctype html>
+<html lang="en" data-theme="space" data-theme-space>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Local Mission Log | Mads LIU YONG</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#040910">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style is:inline>
+    html,
+    body {
+      background: #040910;
+      color: #edf7ff;
+    }
+
+    body.local-mission-only {
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .local-mission-shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 34px 0 64px;
+    }
+
+    .local-mission-hero {
+      margin: 0 0 22px;
+      padding: 24px;
+      border: 1px solid rgba(142, 180, 218, .24);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(10, 20, 34, .92), rgba(18, 32, 50, .72)),
+        rgba(6, 12, 22, .9);
+      box-shadow: 0 22px 70px rgba(0, 0, 0, .34);
+    }
+
+    .local-mission-hero h1 {
+      max-width: 860px;
+      margin: 8px 0 12px;
+      font-size: clamp(2.2rem, 6vw, 5.2rem);
+      line-height: .98;
+    }
+
+    .local-mission-hero p {
+      max-width: 780px;
+      margin: 0;
+      color: rgba(229, 239, 252, .76);
+      font-size: clamp(1rem, 2vw, 1.18rem);
+    }
+
+    .local-mission-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .local-mission-meta span {
+      border: 1px solid rgba(244, 217, 152, .28);
+      border-radius: 999px;
+      padding: 7px 11px;
+      color: rgba(244, 217, 152, .88);
+      background: rgba(244, 217, 152, .08);
+      font-size: .82rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .local-mission-only .section {
+      margin-top: 22px;
+    }
+
+    .local-mission-only .mission-index-section,
+    .local-mission-only .research-notes-section {
+      border-radius: 8px;
+    }
+
+    @media (max-width: 760px) {
+      .local-mission-shell {
+        width: min(100% - 20px, 1180px);
+        padding-top: 18px;
+      }
+
+      .local-mission-hero {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body class="local-mission-only ui-page-research-graduation">
+  <main class="local-mission-shell">
+    <section class="local-mission-hero">
+      <p class="eyebrow">Local Mission Log</p>
+      <h1>Mission Log Archive</h1>
+      <p>
+        Local-only chronological lab record for checking, presentation, and maintenance. This page is generated
+        from private files under <code>_local</code> and is not published to GitHub Pages.
+      </p>
+      <div class="local-mission-meta">
+        <span>Local only</span>
+        <span>No password gate</span>
+        <span>Mission Log only</span>
+      </div>
+    </section>
+
+    <MissionLog />
+  </main>
+  <script src="assets/js/mission-index.js" defer></script>
+  <script src="assets/js/mission-lightbox.js" defer></script>
+  <Fragment set:html={inlineScriptHtml} />
+</body>
+</html>

@@ -15456,110 +15456,13 @@ html:not([data-theme="space"]) body.ui-page-research-graduation .mission-jump-ca
 }
 
 /* ============================================================
-   Research Log Gate + Mission Log Lazy Render
+   Mission Log Lazy Render
    ============================================================ */
-
-.research-lock-gate {
-  min-height: calc(100vh - 180px);
-  display: grid;
-  place-items: center;
-  padding: 150px 20px 80px;
-}
-
-.research-lock-gate[hidden],
-[data-research-lock-content][hidden] {
-  display: none !important;
-}
-
-.research-lock-panel {
-  width: min(520px, 100%);
-  padding: 28px;
-  border: 1px solid rgba(142, 180, 218, .26);
-  border-radius: 8px;
-  background:
-    linear-gradient(135deg, rgba(12, 24, 38, .88), rgba(20, 34, 52, .78)),
-    rgba(8, 16, 27, .82);
-  box-shadow: 0 20px 70px rgba(0, 0, 0, .34);
-  color: var(--paper);
-}
-
-.research-lock-panel h1 {
-  margin: 6px 0 10px;
-  font-size: clamp(2rem, 5vw, 3.2rem);
-  line-height: 1.05;
-}
-
-.research-lock-panel p {
-  color: rgba(229, 239, 252, .78);
-}
-
-.research-lock-field {
-  display: grid;
-  gap: 8px;
-  margin: 22px 0 16px;
-  color: rgba(229, 239, 252, .86);
-  font-weight: 800;
-}
-
-.research-lock-field input {
-  width: 100%;
-  min-height: 48px;
-  border: 1px solid rgba(142, 180, 218, .34);
-  border-radius: 8px;
-  padding: 0 14px;
-  color: var(--paper);
-  background: rgba(0, 0, 0, .28);
-  outline: none;
-}
-
-/* research-lock-password-high-contrast */
-.research-lock-field input[type="password"] {
-  color: rgba(246, 250, 255, .96);
-  -webkit-text-fill-color: rgba(246, 250, 255, .96);
-  caret-color: rgba(244, 217, 152, .95);
-}
-
-.research-lock-field input:focus {
-  border-color: rgba(244, 217, 152, .72);
-  box-shadow: 0 0 0 3px rgba(244, 217, 152, .16);
-}
-
-.research-lock-message {
-  min-height: 1.4em;
-  margin-top: 12px;
-  color: rgba(244, 217, 152, .92) !important;
-}
 
 .mission-log-lazy-render .mission-jump-card.is-active {
   border-color: rgba(244, 217, 152, .68) !important;
   box-shadow: 0 0 0 1px rgba(244, 217, 152, .24), 0 14px 42px rgba(0, 0, 0, .24);
 }
-
-html:not([data-theme="space"]) .research-lock-panel {
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, .94), rgba(237, 243, 247, .9)),
-    rgba(255, 255, 255, .88);
-  color: var(--ink);
-  box-shadow: 0 20px 58px rgba(72, 91, 116, .18);
-}
-
-html:not([data-theme="space"]) .research-lock-panel p,
-html:not([data-theme="space"]) .research-lock-field {
-  color: rgba(35, 52, 70, .78);
-}
-
-html:not([data-theme="space"]) .research-lock-field input {
-  color: var(--ink);
-  background: rgba(255, 255, 255, .76);
-  border-color: rgba(73, 101, 132, .24);
-}
-
-html:not([data-theme="space"]) .research-lock-field input[type="password"] {
-  color: rgba(22, 33, 46, .96);
-  -webkit-text-fill-color: rgba(22, 33, 46, .96);
-  caret-color: rgba(55, 78, 104, .95);
-}
-
 
 /* ============================================================
    Gold Stardust Visibility Boost
