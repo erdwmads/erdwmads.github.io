@@ -135,6 +135,9 @@ if (researchLog.includes("assets/js/research-lock.js") || researchLog.includes("
 if (!researchLog.includes("Download research proposal") || !researchLog.includes("assets/files/Bachelors_Thesis_Research_Proposal_Mads_LIU_YONG.pdf")) {
   fail("research-log.html: must keep the research proposal download before the private Mission Log boundary");
 }
+if (!researchLog.includes('class="project-grid"') || !researchLog.includes("Future Research Project") || !researchLog.includes("Local archive only")) {
+  fail("research-log.html: must keep the Ongoing/Future project card interface");
+}
 if (/<a\b[^>]*class="[^"]*\bproject-link-card\b/i.test(researchLog)) {
   fail("research-log.html: project cards must not be clickable links");
 }
