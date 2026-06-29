@@ -52,8 +52,8 @@ Split into multiple entries when the process phase changes. For example, cutting
 }
 ```
 
-Current implementation target: `_local/mission-source/missionLog.ts`. The layout is rendered by `src/components/MissionLog.astro`.
-The Mission Log page is local-only. The public website may show a project summary, but it must not publish the full log page or private log photos.
+Current implementation target: `src/data/missionLog.ts`. The page shell is rendered by `src/components/MissionLogShell.astro`, and entries are loaded after the Graduation Research password gate.
+The public Research Log page may show a project summary; the detailed Mission Log should load only on the password-gated Graduation Research page.
 
 ## Fan-Out Mapping
 
@@ -94,6 +94,6 @@ Keep Mission Log image paths local:
 }
 ```
 
-Store the originals under `_local/mission-assets/img/`. `npm run build:mission-log-local` copies them into the generated local output.
+Store Mission Log images under `public/assets/img/mission-log/`.
 
 Desktop can use the lightbox. Mobile Mission Log images should remain inline figures with visible captions.

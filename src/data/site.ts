@@ -56,11 +56,14 @@ const pageScripts: Record<string, ScriptSpec[]> = {
   photography: [{ src: "assets/js/photography.js" }, ...commonScripts, interfaceScript],
   research: [...commonScripts, interfaceScript],
   "research-log": [...commonScripts, interfaceScript],
-  // Used only by the local Mission Log build. Keep this page out of contentPages.
+  // Password-gated public page; keep it out of sitemap contentPages.
   "research-graduation": [
+    ...commonScripts,
+    { src: "assets/js/research-lock.js", defer: true },
     { src: "assets/js/mission-index.js", defer: true },
     { src: "assets/js/mission-lightbox.js", defer: true },
-    { src: "assets/js/mission-status-sync.js", defer: true }
+    { src: "assets/js/mission-status-sync.js", defer: true },
+    interfaceScript
   ],
   "sample-cabinet": commonScripts
 };

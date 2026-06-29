@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap");
+﻿@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap");
 
 /* ============================================================
    Maintenance map
@@ -786,6 +786,13 @@ body::before {
 .project-link-card h2 {
   margin-top: 10px;
   margin-bottom: 12px;
+}
+
+body.ui-page-research-log .protected-project h2 {
+  font-size: 1.65rem;
+  line-height: 1.18;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 .project-topline {
@@ -2135,7 +2142,7 @@ body.space-mode .ambient-pebble {
 
 /* ============================================================
    Overall compact scale
-   Approximate visual size: 80–85% of the previous layout.
+   Approximate visual size: 80鬯ｯ・ｯ繝ｻ・ｯ郢晢ｽｻ繝ｻ・ｩ鬮ｯ蜈ｷ・ｽ・ｹ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｯ鬯ｩ蟷｢・ｽ・｢髫ｴ雜｣・ｽ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｻ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｶ鬯ｯ・ｯ繝ｻ・ｩ髯晢ｽｷ繝ｻ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬯ｮ・ｫ繝ｻ・ｴ鬮ｮ諛ｶ・ｽ・｣郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻ5% of the previous layout.
    This avoids browser zoom/transform and keeps responsive layout stable.
    ============================================================ */
 
@@ -5681,7 +5688,7 @@ html:not([data-theme="space"]) .mission-photo-grid figure {
 .hero-actions a[href="research.html"]::after,
 .cta-row a[href="research.html"]::after,
 .action-row a[href="research.html"]::after {
-  content: "↗" !important;
+  content: "鬯ｯ・ｯ繝ｻ・ｯ郢晢ｽｻ繝ｻ・ｩ鬮ｯ蜈ｷ・ｽ・ｹ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｶ鬯ｯ・ｯ繝ｻ・ｩ髫ｲ・､隲橸ｽｺ隨ｳ蜀暦ｽｹ譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｫ鬯ｯ・ｩ陝ｷ・｢繝ｻ・ｽ繝ｻ・｢鬮ｫ・ｴ髮懶ｽ｣繝ｻ・ｽ繝ｻ・｢驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻ !important;
   font-size: 12px !important;
   line-height: 1 !important;
   opacity: .78 !important;
@@ -6576,7 +6583,7 @@ html:not([data-theme="space"]) .mission-lightbox__btn {
 }
 
 .project-progress[data-mission-project="graduation"].is-synced + .project-sync-note::before {
-  content: "SYNCED · " !important;
+  content: "SYNCED 鬯ｯ・ｩ陝ｷ・｢繝ｻ・ｽ繝ｻ・｢鬮ｫ・ｴ髮懶ｽ｣繝ｻ・ｽ繝ｻ・｢驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻ鬯ｯ・ｩ陝ｷ・｢繝ｻ・ｽ繝ｻ・｢驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｧ鬯ｮ・ｫ繝ｻ・ｰ驛｢譎｢・ｽ・ｻ驕ｶ荵暦ｽｧ・ｭ郢晢ｽｻ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ鬯ｩ蟷｢・ｽ・｢髫ｴ雜｣・ｽ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｻ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｷ " !important;
   color: var(--blue) !important;
   font-weight: 850 !important;
   letter-spacing: .09em !important;
@@ -6606,7 +6613,7 @@ html:not([data-theme="space"]) .project-progress[data-mission-project="graduatio
 }
 
 .research-status-grid[data-mission-status-grid].is-status-synced .status-card:first-child span::after {
-  content: " · synced";
+  content: " 鬯ｯ・ｩ陝ｷ・｢繝ｻ・ｽ繝ｻ・｢鬮ｫ・ｴ髮懶ｽ｣繝ｻ・ｽ繝ｻ・｢驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻ鬯ｯ・ｩ陝ｷ・｢繝ｻ・ｽ繝ｻ・｢驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｧ鬯ｮ・ｫ繝ｻ・ｰ驛｢譎｢・ｽ・ｻ驕ｶ荵暦ｽｧ・ｭ郢晢ｽｻ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ鬯ｩ蟷｢・ｽ・｢髫ｴ雜｣・ｽ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｻ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｷ synced";
   color: var(--blue);
   font-size: .78em;
   letter-spacing: .08em;
@@ -7736,7 +7743,7 @@ html:not([data-theme="space"]) body main .mission-jump-card.compact-jump-card .m
 
 
 /* ============================================================
-   Interface 2046 — Astromaterials Command Surface
+   Interface 2046 鬯ｯ・ｯ繝ｻ・ｯ郢晢ｽｻ繝ｻ・ｩ鬮ｯ蜈ｷ・ｽ・ｹ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｯ鬯ｩ蟷｢・ｽ・｢髫ｴ雜｣・ｽ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｻ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｶ鬯ｯ・ｯ繝ｻ・ｩ髯晢ｽｷ繝ｻ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬯ｮ・ｫ繝ｻ・ｴ鬮ｮ諛ｶ・ｽ・｣郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻAstromaterials Command Surface
    A design-forward layer: orbital HUD, edge rails, command-deck
    navigation, wider spatial layout, and disciplined academic cards.
    ============================================================ */
@@ -8032,7 +8039,7 @@ html:not([data-theme="space"]) body::after {
 }
 
 .section-label::before {
-  content: "◆ ";
+  content: "鬯ｯ・ｯ繝ｻ・ｯ郢晢ｽｻ繝ｻ・ｮ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｫ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｨ鬯ｩ蟷｢・ｽ・｢髫ｴ雜｣・ｽ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｻ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｳ鬯ｯ・ｯ繝ｻ・ｩ髯晢ｽｷ繝ｻ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬯ｮ・ｫ繝ｻ・ｴ鬮ｮ諛ｶ・ｽ・｣郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻ";
   opacity: .64;
 }
 
@@ -8213,7 +8220,7 @@ html:not([data-theme="space"]) .feature-card::after {
 
 
 /* ============================================================
-   Interface 2046 Refined — quieter, more architectural
+   Interface 2046 Refined 鬯ｯ・ｯ繝ｻ・ｯ郢晢ｽｻ繝ｻ・ｩ鬮ｯ蜈ｷ・ｽ・ｹ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｯ鬯ｩ蟷｢・ｽ・｢髫ｴ雜｣・ｽ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｻ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｶ鬯ｯ・ｯ繝ｻ・ｩ髯晢ｽｷ繝ｻ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬯ｮ・ｫ繝ｻ・ｴ鬮ｮ諛ｶ・ｽ・｣郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻquieter, more architectural
    Removes the left ASTROMATERIALS rail, card corner marks,
    camera-frame corner reticles, and replaces the old orbital ring
    with a subtle Solar System / Kuiper Belt diagram.
@@ -8537,11 +8544,11 @@ html:not([data-theme="space"]) .feature-card::after {
 }
 
 .mission-lightbox__prev::before {
-  content: "‹" !important;
+  content: "" !important;
 }
 
 .mission-lightbox__next::before {
-  content: "›" !important;
+  content: "" !important;
 }
 
 .mission-lightbox__close {
@@ -8633,11 +8640,11 @@ body.space-mode .mission-lightbox__counter {
 }
 
 .slide-control.prev::before {
-  content: "‹" !important;
+  content: "鬯ｯ・ｯ繝ｻ・ｯ郢晢ｽｻ繝ｻ・ｩ鬮ｯ蜈ｷ・ｽ・ｹ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｯ鬯ｩ蟷｢・ｽ・｢髫ｴ雜｣・ｽ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｻ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｶ鬯ｯ・ｩ陝ｷ・｢繝ｻ・ｽ繝ｻ・｢鬮ｫ・ｴ髮懶ｽ｣繝ｻ・ｽ繝ｻ・｢驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻ鬯ｩ蟷｢・ｽ・｢髫ｴ雜｣・ｽ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｻ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｹ" !important;
 }
 
 .slide-control.next::before {
-  content: "›" !important;
+  content: "鬯ｯ・ｯ繝ｻ・ｯ郢晢ｽｻ繝ｻ・ｩ鬮ｯ蜈ｷ・ｽ・ｹ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｯ鬯ｩ蟷｢・ｽ・｢髫ｴ雜｣・ｽ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｻ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｶ鬯ｯ・ｩ陝ｷ・｢繝ｻ・ｽ繝ｻ・｢鬮ｫ・ｴ髮懶ｽ｣繝ｻ・ｽ繝ｻ・｢驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻ鬯ｩ蟷｢・ｽ・｢髫ｴ雜｣・ｽ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｻ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｺ" !important;
 }
 
 /* Space Mode: darker, quieter, less generic grey. */
@@ -9030,7 +9037,7 @@ html:not([data-theme="space"]) .ui2046-system-label {
 
 
 /* ============================================================
-   Interface 2046 v3 — Lunar Archive + page-specific dossiers
+   Interface 2046 v3 鬯ｯ・ｯ繝ｻ・ｯ郢晢ｽｻ繝ｻ・ｩ鬮ｯ蜈ｷ・ｽ・ｹ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｯ鬯ｩ蟷｢・ｽ・｢髫ｴ雜｣・ｽ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｻ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｶ鬯ｯ・ｯ繝ｻ・ｩ髯晢ｽｷ繝ｻ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬯ｮ・ｫ繝ｻ・ｴ鬮ｮ諛ｶ・ｽ・｣郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻLunar Archive + page-specific dossiers
    1. Light Mode becomes a deliberate lunar archive, not a faded Space Mode.
    2. Research / Paper Shelf / CV receive distinct but compatible card systems.
    3. Solar System receives strict micro-labels in Space Mode / hover.
@@ -9176,7 +9183,7 @@ body.ui-page-paper-shelf .paper-card {
 }
 
 body.ui-page-paper-shelf .paper-card h3::before {
-  content: "○ ";
+  content: "鬯ｯ・ｯ繝ｻ・ｯ郢晢ｽｻ繝ｻ・ｮ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｫ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｨ鬯ｩ蟷｢・ｽ・｢髫ｴ雜｣・ｽ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｻ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｳ鬯ｯ・ｯ繝ｻ・ｩ髯晢ｽｷ繝ｻ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬯ｮ・ｫ繝ｻ・ｴ鬮ｮ諛ｶ・ｽ・｣郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻ";
   color: rgba(255,217,154,.72);
   font-weight: 500;
 }
@@ -9303,7 +9310,7 @@ body.space-mode .ui2046-solar-system:hover .ui2046-planet-label.is-minor {
 
 
 /* ============================================================
-   Interface 2046 v4 — route labels, scrolling labels, links, CTAs
+   Interface 2046 v4 鬯ｯ・ｯ繝ｻ・ｯ郢晢ｽｻ繝ｻ・ｩ鬮ｯ蜈ｷ・ｽ・ｹ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｯ鬯ｩ蟷｢・ｽ・｢髫ｴ雜｣・ｽ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｻ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｶ鬯ｯ・ｯ繝ｻ・ｩ髯晢ｽｷ繝ｻ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬯ｮ・ｫ繝ｻ・ｴ鬮ｮ諛ｶ・ｽ・｣郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻroute labels, scrolling labels, links, CTAs
    ============================================================ */
 
 /* Section labels should scroll naturally, not pin to the viewport. */
@@ -9361,7 +9368,7 @@ html:not([data-theme="space"]) body main a[href*="min-lab.w.waseda.jp"]:not(.but
   text-decoration-thickness: 1.75px !important;
 }
 
-/* Home Research / CV — trajectory command tabs. */
+/* Home Research / CV 鬯ｯ・ｯ繝ｻ・ｯ郢晢ｽｻ繝ｻ・ｩ鬮ｯ蜈ｷ・ｽ・ｹ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｯ鬯ｩ蟷｢・ｽ・｢髫ｴ雜｣・ｽ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｻ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｶ鬯ｯ・ｯ繝ｻ・ｩ髯晢ｽｷ繝ｻ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬯ｮ・ｫ繝ｻ・ｴ鬮ｮ諛ｶ・ｽ・｣郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻtrajectory command tabs. */
 body.ui-page-home .hero-actions,
 body.ui-page-home .cta-row,
 body.ui-page-home .action-row,
@@ -9430,7 +9437,7 @@ body.ui-page-home .hero a[href="research.html"]::after,
 body.ui-page-home .hero-actions a[href="research.html"]::after,
 body.ui-page-home .cta-row a[href="research.html"]::after,
 body.ui-page-home .action-row a[href="research.html"]::after {
-  content: "↗" !important;
+  content: "鬯ｯ・ｯ繝ｻ・ｯ郢晢ｽｻ繝ｻ・ｩ鬮ｯ蜈ｷ・ｽ・ｹ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｶ鬯ｯ・ｯ繝ｻ・ｩ髫ｲ・､隲橸ｽｺ隨ｳ蜀暦ｽｹ譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｫ鬯ｯ・ｩ陝ｷ・｢繝ｻ・ｽ繝ｻ・｢鬮ｫ・ｴ髮懶ｽ｣繝ｻ・ｽ繝ｻ・｢驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻ !important;
   width: 24px !important;
   height: 24px !important;
   flex: 0 0 24px !important;
@@ -11134,7 +11141,7 @@ body.ui-page-research-graduation #mission-index > .mission-index-panel {
 
 /* ============================================================
    Mission Navigator Chronological Order Guard
-   Navigator order is chronological: LOG001 → LOG006.
+   Navigator order is chronological: LOG001 鬯ｯ・ｯ繝ｻ・ｯ郢晢ｽｻ繝ｻ・ｩ鬮ｯ蜈ｷ・ｽ・ｹ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｶ鬯ｯ・ｯ繝ｻ・ｩ髫ｲ・､隲橸ｽｺ隨ｳ蜀暦ｽｹ譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｫ鬯ｯ・ｩ陝ｷ・｢繝ｻ・ｽ繝ｻ・｢鬮ｫ・ｴ髮懶ｽ｣繝ｻ・ｽ繝ｻ・｢驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻLOG006.
    Desktop keeps five items in the first row and centers the sixth below.
    ============================================================ */
 
@@ -12456,7 +12463,7 @@ html.is-edge-page-exiting .mission-lightbox * {
 }
 
 .entry-gate__mode::before {
-  content: "◆";
+  content: "鬯ｯ・ｯ繝ｻ・ｯ郢晢ｽｻ繝ｻ・ｮ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｫ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｨ鬯ｩ蟷｢・ｽ・｢髫ｴ雜｣・ｽ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｻ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｳ鬯ｯ・ｯ繝ｻ・ｩ髯晢ｽｷ繝ｻ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬯ｮ・ｫ繝ｻ・ｴ鬮ｮ諛ｶ・ｽ・｣郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻ;
   color: rgba(255,211,128,.80);
   margin-right: .75em;
   text-shadow: 0 0 12px rgba(255,211,128,.24);
@@ -13124,7 +13131,7 @@ body.ui-page-research-graduation #mission-index > .section-label::before {
 
 
 /* ============================================================
-   Status Card Stripe Minimal Fix — Effects Preserved
+   Status Card Stripe Minimal Fix 鬯ｯ・ｯ繝ｻ・ｯ郢晢ｽｻ繝ｻ・ｩ鬮ｯ蜈ｷ・ｽ・ｹ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｯ鬯ｩ蟷｢・ｽ・｢髫ｴ雜｣・ｽ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｻ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｶ鬯ｯ・ｯ繝ｻ・ｩ髯晢ｽｷ繝ｻ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬯ｮ・ｫ繝ｻ・ｴ鬮ｮ諛ｶ・ｽ・｣郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻEffects Preserved
    Scope:
    - Only fixes repaint seams on status cards.
    - Keeps backdrop-filter / glass / highlight effects.
@@ -14707,7 +14714,7 @@ html:not([data-theme="space"]) body.ui-page-cv .panel {
 
 
 /* ============================================================
-   Direction B — richer meteoritic archive
+   Direction B 鬯ｯ・ｯ繝ｻ・ｯ郢晢ｽｻ繝ｻ・ｩ鬮ｯ蜈ｷ・ｽ・ｹ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｯ鬯ｩ蟷｢・ｽ・｢髫ｴ雜｣・ｽ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｻ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｶ鬯ｯ・ｯ繝ｻ・ｩ髯晢ｽｷ繝ｻ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬯ｮ・ｫ繝ｻ・ｴ鬮ｮ諛ｶ・ｽ・｣郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻricher meteoritic archive
    More gold than A: stronger hover edge, warmer tags, more luminous archive metal.
    ============================================================ */
 
@@ -16156,5 +16163,775 @@ body.space-mode .paper-filter {
     overflow-wrap: anywhere !important;
     word-break: normal !important;
     hyphens: auto !important;
+  }
+}
+
+
+.mission-index-tools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.mission-language-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid rgba(142, 180, 218, .24);
+  border-radius: 999px;
+  background: rgba(3, 9, 18, .52);
+}
+
+.mission-language-button {
+  min-width: 54px;
+  min-height: 34px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 12px;
+  color: rgba(229, 239, 252, .72);
+  background: transparent;
+  font: inherit;
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  cursor: pointer;
+}
+
+.mission-language-button.is-active {
+  color: #f6fbff;
+  background: rgba(74, 112, 145, .74);
+  box-shadow: inset 0 0 0 1px rgba(244, 217, 152, .26);
+}
+
+.mission-language-button:focus-visible {
+  outline: 2px solid rgba(244, 217, 152, .76);
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  .mission-index-head {
+    align-items: flex-start;
+  }
+
+  .mission-index-tools {
+    justify-content: flex-start;
+    width: 100%;
+  }
+}
+
+/* research-graduation-public-gate */
+.research-lock-section {
+  display: grid;
+  place-items: center;
+  min-height: min(68vh, 680px);
+}
+
+.research-lock-card {
+  width: min(720px, 100%);
+  border: 1px solid rgba(143, 184, 220, .26);
+  border-radius: 8px;
+  padding: clamp(24px, 4vw, 42px);
+  background:
+    linear-gradient(135deg, rgba(9, 18, 31, .92), rgba(18, 34, 52, .78)),
+    rgba(7, 13, 23, .94);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, .36);
+}
+
+.research-lock-card h2 {
+  margin: 8px 0 12px;
+  font-size: clamp(2.2rem, 6vw, 5rem);
+  line-height: 1;
+}
+
+.research-lock-card p {
+  max-width: 620px;
+}
+
+.research-lock-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.research-lock-form label {
+  font-weight: 800;
+}
+
+.research-lock-form input {
+  width: 100%;
+  min-height: 54px;
+  border: 1px solid rgba(244, 217, 152, .52);
+  border-radius: 8px;
+  padding: 0 16px;
+  color: #edf7ff;
+  background: rgba(2, 9, 17, .58);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .04);
+}
+
+.research-lock-form input:focus {
+  outline: 2px solid rgba(244, 217, 152, .68);
+  outline-offset: 3px;
+}
+
+.research-lock-error {
+  margin-top: 12px;
+  color: #ffd6d6;
+  font-weight: 800;
+}
+
+html:not([data-theme="space"]) .research-lock-card {
+  border-color: rgba(78, 112, 142, .22);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, .94), rgba(235, 244, 250, .88)),
+    rgba(255, 255, 255, .92);
+  box-shadow: 0 22px 60px rgba(78, 106, 132, .18);
+}
+
+html:not([data-theme="space"]) .research-lock-form input {
+  color: #162335;
+  background: rgba(255, 255, 255, .82);
+}
+
+html:not([data-theme="space"]) .research-lock-error {
+  color: #9f2432;
+}
+
+/* mission-lightbox-fullscreen-focus */
+body.mission-lightbox-open {
+  overflow: hidden !important;
+}
+
+.mission-lightbox {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2000 !important;
+  display: none !important;
+  place-items: center !important;
+  padding: clamp(12px, 2.4vw, 28px) !important;
+  background: rgba(1, 5, 11, .82) !important;
+  backdrop-filter: blur(14px) brightness(.68) !important;
+  -webkit-backdrop-filter: blur(14px) brightness(.68) !important;
+}
+
+.mission-lightbox.is-open {
+  display: grid !important;
+}
+
+.mission-lightbox__panel {
+  position: relative !important;
+  width: min(1640px, 100%) !important;
+  height: min(900px, calc(100dvh - 32px)) !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 390px) !important;
+  gap: clamp(18px, 3vw, 34px) !important;
+  align-items: stretch !important;
+  border: 1px solid rgba(143, 184, 220, .28) !important;
+  border-radius: 10px !important;
+  padding: clamp(18px, 3vw, 34px) !important;
+  background:
+    linear-gradient(135deg, rgba(5, 13, 24, .96), rgba(12, 26, 43, .92)),
+    rgba(2, 8, 15, .95) !important;
+  box-shadow: 0 30px 110px rgba(0, 0, 0, .62) !important;
+  overflow: hidden !important;
+}
+
+.mission-lightbox__stage {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: clamp(34px, 4vw, 64px) !important;
+  overflow: hidden !important;
+}
+
+.mission-lightbox__img {
+  max-width: 100% !important;
+  max-height: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
+  border-radius: 8px !important;
+  box-shadow:
+    0 22px 80px rgba(0, 0, 0, .42),
+    0 0 0 1px rgba(255, 255, 255, .08) !important;
+}
+
+.mission-lightbox__img.is-decoding {
+  opacity: .72 !important;
+  filter: saturate(.9) contrast(.94) !important;
+}
+
+.mission-lightbox__img.is-ready {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+.mission-lightbox__info {
+  align-self: end !important;
+  min-width: 0 !important;
+  border-left: 1px solid rgba(143, 184, 220, .18) !important;
+  padding: clamp(18px, 3vw, 30px) 4px clamp(18px, 3vw, 30px) clamp(18px, 3vw, 30px) !important;
+}
+
+.mission-lightbox__kicker {
+  margin: 0 0 10px !important;
+  color: rgba(244, 217, 152, .86) !important;
+  font-size: .78rem !important;
+  font-weight: 900 !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+}
+
+.mission-lightbox__title {
+  margin: 0 0 18px !important;
+  color: #edf7ff !important;
+  font-size: clamp(1.25rem, 2vw, 2rem) !important;
+  line-height: 1.15 !important;
+}
+
+.mission-lightbox__caption {
+  margin: 0 0 18px !important;
+  color: rgba(225, 238, 252, .78) !important;
+  font-size: clamp(.95rem, 1.3vw, 1.08rem) !important;
+  line-height: 1.7 !important;
+}
+
+.mission-lightbox__counter {
+  display: inline-flex !important;
+  align-items: center !important;
+  min-height: 38px !important;
+  border: 1px solid rgba(143, 184, 220, .22) !important;
+  border-radius: 999px !important;
+  padding: 0 14px !important;
+  color: rgba(225, 238, 252, .9) !important;
+  background: rgba(143, 184, 220, .08) !important;
+  font-weight: 900 !important;
+}
+
+.mission-lightbox__btn {
+  appearance: none !important;
+  border: 1px solid rgba(225, 242, 255, .2) !important;
+  border-radius: 999px !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  padding: 0 !important;
+  color: rgba(245, 250, 255, .94) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .14), rgba(255, 255, 255, .05)) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .24) !important;
+  cursor: pointer !important;
+}
+
+.mission-lightbox__btn:hover,
+.mission-lightbox__btn:focus-visible {
+  border-color: rgba(143, 208, 255, .42) !important;
+  outline: none !important;
+  background: linear-gradient(180deg, rgba(143, 208, 255, .22), rgba(255, 255, 255, .07)) !important;
+}
+
+.mission-lightbox__close {
+  position: absolute !important;
+  top: 18px !important;
+  right: 18px !important;
+  z-index: 3 !important;
+  width: 44px !important;
+  height: 44px !important;
+}
+
+.mission-lightbox__close-icon {
+  position: relative !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.mission-lightbox__close-icon::before,
+.mission-lightbox__close-icon::after {
+  content: "" !important;
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  width: 18px !important;
+  height: 2px !important;
+  border-radius: 999px !important;
+  background: currentColor !important;
+  transform-origin: center !important;
+}
+
+.mission-lightbox__close-icon::before {
+  transform: translate(-50%, -50%) rotate(45deg) !important;
+}
+
+.mission-lightbox__close-icon::after {
+  transform: translate(-50%, -50%) rotate(-45deg) !important;
+}
+
+.mission-lightbox__nav {
+  position: absolute !important;
+  top: 50% !important;
+  z-index: 2 !important;
+  width: 46px !important;
+  height: 46px !important;
+  transform: translateY(-50%) !important;
+  font-size: 0 !important;
+  overflow: hidden !important;
+}
+
+.mission-lightbox__prev {
+  left: 18px !important;
+}
+
+.mission-lightbox__next {
+  right: 18px !important;
+}
+
+.mission-lightbox__prev::before,
+.mission-lightbox__next::before {
+  content: "" !important;
+  width: 12px !important;
+  height: 12px !important;
+  display: block !important;
+  border: solid currentColor !important;
+  border-width: 0 3px 3px 0 !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+}
+
+.mission-lightbox__prev::before {
+  margin-left: 4px !important;
+  transform: rotate(135deg) !important;
+}
+
+.mission-lightbox__next::before {
+  margin-right: 4px !important;
+  transform: rotate(-45deg) !important;
+}
+
+/* mission-lightbox-minimal-image-viewer */
+.mission-lightbox {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  display: none !important;
+  place-items: center !important;
+  padding: clamp(14px, 2.2vw, 34px) !important;
+  background: rgba(3, 5, 8, .78) !important;
+}
+
+.mission-lightbox.is-open {
+  display: grid !important;
+}
+
+.mission-lightbox__viewer {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: grid !important;
+  place-items: center !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+
+.mission-lightbox__figure {
+  margin: 0 !important;
+  width: min(100%, 1720px) !important;
+  height: min(100%, 960px) !important;
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  justify-items: center !important;
+  gap: 10px !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.mission-lightbox__stage {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.mission-lightbox__img {
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: calc(100vw - 164px) !important;
+  max-height: calc(100dvh - 108px) !important;
+  object-fit: contain !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.mission-lightbox__captionbar {
+  width: min(100%, calc(100vw - 164px)) !important;
+  min-height: 0 !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 18px !important;
+  padding: 2px 0 0 !important;
+  color: rgba(238, 246, 255, .82) !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.mission-lightbox__caption {
+  margin: 0 !important;
+  max-width: 920px !important;
+  color: inherit !important;
+  font-size: clamp(.82rem, 1.05vw, .98rem) !important;
+  line-height: 1.45 !important;
+  font-weight: 600 !important;
+  letter-spacing: .01em !important;
+  overflow-wrap: anywhere !important;
+}
+
+.mission-lightbox__counter {
+  flex: 0 0 auto !important;
+  color: rgba(238, 246, 255, .68) !important;
+  font-size: .78rem !important;
+  line-height: 1.35 !important;
+  font-weight: 800 !important;
+  letter-spacing: .08em !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.mission-lightbox__close {
+  position: fixed !important;
+  top: clamp(14px, 2.2vw, 28px) !important;
+  right: clamp(14px, 2.2vw, 28px) !important;
+  z-index: 3 !important;
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(235, 246, 255, .24) !important;
+  background: rgba(8, 13, 20, .32) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.mission-lightbox__nav {
+  position: fixed !important;
+  top: 50% !important;
+  z-index: 3 !important;
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(235, 246, 255, .22) !important;
+  background: rgba(8, 13, 20, .28) !important;
+  box-shadow: none !important;
+  transform: translateY(-50%) !important;
+}
+
+.mission-lightbox__prev {
+  left: clamp(16px, 2.4vw, 38px) !important;
+}
+
+.mission-lightbox__next {
+  right: clamp(16px, 2.4vw, 38px) !important;
+}
+
+.mission-lightbox__nav:hover {
+  transform: translateY(-50%) !important;
+  background: rgba(16, 24, 34, .46) !important;
+}
+
+@media (max-width: 760px) {
+  .mission-lightbox {
+    padding: 10px !important;
+  }
+
+  .mission-lightbox__figure {
+    width: 100% !important;
+    height: 100% !important;
+    gap: 8px !important;
+  }
+
+  .mission-lightbox__img {
+    max-width: calc(100vw - 24px) !important;
+    max-height: calc(100dvh - 118px) !important;
+  }
+
+  .mission-lightbox__captionbar {
+    width: calc(100vw - 24px) !important;
+    gap: 10px !important;
+    padding: 0 2px !important;
+  }
+
+  .mission-lightbox__caption {
+    font-size: .78rem !important;
+    line-height: 1.4 !important;
+  }
+
+  .mission-lightbox__close,
+  .mission-lightbox__nav {
+    width: 38px !important;
+    height: 38px !important;
+  }
+}
+
+.mission-lightbox__thumbs,
+.mission-lightbox__thumb {
+  display: none !important;
+}
+
+@media (max-width: 860px), (hover: none), (pointer: coarse) {
+  .mission-lightbox {
+    padding: 0 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(1, 5, 11, .9) !important;
+  }
+
+  .mission-lightbox__panel {
+    width: 100% !important;
+    height: 100dvh !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: minmax(0, 1fr) auto !important;
+    gap: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+  }
+
+  .mission-lightbox__stage {
+    padding: 58px 56px 18px !important;
+  }
+
+  .mission-lightbox__info {
+    align-self: stretch !important;
+    max-height: 34dvh !important;
+    overflow-y: auto !important;
+    border-left: 0 !important;
+    border-top: 1px solid rgba(143, 184, 220, .18) !important;
+    padding: 18px 20px 22px !important;
+    background: rgba(3, 10, 18, .9) !important;
+  }
+
+  .mission-lightbox__title {
+    font-size: 1.1rem !important;
+  }
+
+  .mission-lightbox__caption {
+    font-size: .92rem !important;
+  }
+
+  .mission-lightbox__prev {
+    left: 10px !important;
+  }
+
+  .mission-lightbox__next {
+    right: 10px !important;
+  }
+}
+
+/* mission-lightbox-arrow-fix */
+.mission-lightbox__nav {
+  font-size: 0 !important;
+  overflow: hidden !important;
+  text-indent: 0 !important;
+}
+
+.mission-lightbox__prev::before,
+.mission-lightbox__next::before {
+  content: "" !important;
+  width: 12px !important;
+  height: 12px !important;
+  display: block !important;
+  border: solid currentColor !important;
+  border-width: 0 3px 3px 0 !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+}
+
+.mission-lightbox__prev::before {
+  margin-left: 4px !important;
+  transform: rotate(135deg) !important;
+}
+
+.mission-lightbox__next::before {
+  margin-right: 4px !important;
+  transform: rotate(-45deg) !important;
+}
+
+/* mission-lightbox-rationalized-viewer */
+html[data-theme="space"] .mission-lightbox,
+html[data-theme-space] .mission-lightbox,
+body.space-mode .mission-lightbox {
+  background: rgba(0, 0, 0, .82) !important;
+  backdrop-filter: blur(5px) brightness(.64) !important;
+  -webkit-backdrop-filter: blur(5px) brightness(.64) !important;
+}
+
+html:not([data-theme="space"]):not([data-theme-space]) body:not(.space-mode) .mission-lightbox {
+  background: rgba(226, 234, 241, .94) !important;
+  backdrop-filter: blur(4px) brightness(1.02) !important;
+  -webkit-backdrop-filter: blur(4px) brightness(1.02) !important;
+}
+
+.mission-lightbox__viewer,
+.mission-lightbox__figure,
+.mission-lightbox__stage {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.mission-lightbox__viewer {
+  overflow: hidden !important;
+}
+
+.mission-lightbox__figure {
+  width: 100% !important;
+  height: 100% !important;
+  grid-template-rows: minmax(0, 1fr) !important;
+  gap: 0 !important;
+}
+
+.mission-lightbox__stage {
+  padding: 0 !important;
+}
+
+.mission-lightbox__img {
+  max-width: calc(100vw - 132px) !important;
+  max-height: calc(100dvh - 112px) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.mission-lightbox__captionbar {
+  position: fixed !important;
+  left: clamp(72px, 7vw, 150px) !important;
+  right: clamp(72px, 7vw, 150px) !important;
+  bottom: clamp(18px, 2.6vw, 34px) !important;
+  z-index: 4 !important;
+  width: auto !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: space-between !important;
+  gap: 18px !important;
+  padding: 0 !important;
+  color: rgba(245, 249, 252, .9) !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.mission-lightbox__caption {
+  margin: 0 !important;
+  max-width: min(980px, calc(100vw - 230px)) !important;
+  color: inherit !important;
+  font-size: .94rem !important;
+  line-height: 1.45 !important;
+  font-weight: 700 !important;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, .7) !important;
+  overflow-wrap: anywhere !important;
+}
+
+.mission-lightbox__counter {
+  min-height: 30px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  border: 1px solid rgba(245, 249, 252, .2) !important;
+  border-radius: 999px !important;
+  padding: 0 12px !important;
+  color: rgba(245, 249, 252, .82) !important;
+  background: rgba(0, 0, 0, .24) !important;
+  box-shadow: none !important;
+}
+
+.mission-lightbox__close,
+.mission-lightbox__nav {
+  color: rgba(245, 249, 252, .9) !important;
+  border-color: rgba(245, 249, 252, .22) !important;
+  background: rgba(0, 0, 0, .22) !important;
+  box-shadow: none !important;
+}
+
+.mission-lightbox__close:hover,
+.mission-lightbox__close:focus-visible,
+.mission-lightbox__nav:hover,
+.mission-lightbox__nav:focus-visible {
+  border-color: rgba(245, 249, 252, .36) !important;
+  background: rgba(0, 0, 0, .34) !important;
+}
+
+html:not([data-theme="space"]):not([data-theme-space]) body:not(.space-mode) .mission-lightbox__viewer,
+html:not([data-theme="space"]):not([data-theme-space]) body:not(.space-mode) .mission-lightbox__figure,
+html:not([data-theme="space"]):not([data-theme-space]) body:not(.space-mode) .mission-lightbox__stage,
+html:not([data-theme="space"]):not([data-theme-space]) body:not(.space-mode) .mission-lightbox__captionbar {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+html:not([data-theme="space"]):not([data-theme-space]) body:not(.space-mode) .mission-lightbox__caption {
+  color: rgba(28, 42, 56, .92) !important;
+  text-shadow: none !important;
+}
+
+html:not([data-theme="space"]):not([data-theme-space]) body:not(.space-mode) .mission-lightbox__counter {
+  color: rgba(28, 42, 56, .82) !important;
+  border-color: rgba(55, 76, 96, .18) !important;
+  background: rgba(255, 255, 255, .48) !important;
+}
+
+html:not([data-theme="space"]):not([data-theme-space]) body:not(.space-mode) .mission-lightbox__close,
+html:not([data-theme="space"]):not([data-theme-space]) body:not(.space-mode) .mission-lightbox__nav {
+  color: rgba(28, 42, 56, .9) !important;
+  border-color: rgba(55, 76, 96, .16) !important;
+  background: rgba(255, 255, 255, .56) !important;
+}
+
+html:not([data-theme="space"]):not([data-theme-space]) body:not(.space-mode) .mission-lightbox__close:hover,
+html:not([data-theme="space"]):not([data-theme-space]) body:not(.space-mode) .mission-lightbox__close:focus-visible,
+html:not([data-theme="space"]):not([data-theme-space]) body:not(.space-mode) .mission-lightbox__nav:hover,
+html:not([data-theme="space"]):not([data-theme-space]) body:not(.space-mode) .mission-lightbox__nav:focus-visible {
+  border-color: rgba(45, 70, 94, .28) !important;
+  background: rgba(255, 255, 255, .78) !important;
+}
+
+@media (max-width: 760px) {
+  .mission-lightbox__img {
+    max-width: 100vw !important;
+    max-height: calc(100dvh - 92px) !important;
+  }
+
+  .mission-lightbox__captionbar {
+    left: 14px !important;
+    right: 14px !important;
+    bottom: 12px !important;
+    gap: 10px !important;
+  }
+
+  .mission-lightbox__caption {
+    max-width: calc(100vw - 100px) !important;
+    font-size: .8rem !important;
+    line-height: 1.35 !important;
+  }
+
+  .mission-lightbox__prev {
+    left: 8px !important;
+  }
+
+  .mission-lightbox__next {
+    right: 8px !important;
   }
 }

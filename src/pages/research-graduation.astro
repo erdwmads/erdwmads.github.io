@@ -1,0 +1,51 @@
+---
+import LegacyShell from "../components/LegacyShell.astro";
+import MissionLogShell from "../components/MissionLogShell.astro";
+import { getPageScripts } from "../data/site";
+import afterLogHtml from "../legacy/research-graduation-after-log.html?raw";
+import heroHtml from "../legacy/research-graduation-hero.html?raw";
+import projectInfoHtml from "../legacy/research-graduation-project-info.html?raw";
+
+const scriptHtml = getPageScripts("research-graduation");
+---
+
+<LegacyShell
+  title="Graduation Research | Mads LIU YONG"
+  description="Password-protected graduation research Mission Log for the Orgueil CI1 dolomite project."
+  current="research-log"
+  mainClass="main research-graduation-page"
+  path="research-graduation.html"
+  scriptHtml={scriptHtml}
+>
+  <Fragment set:html={heroHtml} />
+
+  <section class="section research-lock-section" data-research-lock-gate>
+    <div class="research-lock-card">
+      <p class="eyebrow">Access Required</p>
+      <h2>Graduation Research Log Locked</h2>
+      <p>
+        Enter the graduation research password to open the project notes, Mission Log navigator,
+        and image viewer.
+      </p>
+      <form class="research-lock-form" data-research-lock-form>
+        <label for="research-lock-password">Password</label>
+        <input
+          id="research-lock-password"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          data-research-lock-input
+          required
+        >
+        <button class="button" type="submit">Unlock</button>
+      </form>
+      <p class="research-lock-error" data-research-lock-error hidden>Incorrect password.</p>
+    </div>
+  </section>
+
+  <div data-research-lock-content hidden>
+    <Fragment set:html={projectInfoHtml} />
+    <MissionLogShell />
+    <Fragment set:html={afterLogHtml} />
+  </div>
+</LegacyShell>

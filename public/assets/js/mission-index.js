@@ -1,10 +1,26 @@
 (() => {
   const list = document.querySelector('[data-mission-log-list]');
   const indexList = document.querySelector('[data-mission-index-list]');
+  if (!list || !indexList) return;
+
   const dataEl = document.getElementById('mission-log-data');
-  if (!list || !indexList || !dataEl) return;
+  const dataUrl = list.dataset.missionDataUrl || '';
+  const autoStart = list.dataset.missionAutoStart !== 'false';
 
   let started = false;
+  let currentId = '';
+  let missionEntries = [];
+  let byId = new Map();
+  let latestEntry = null;
+
+  const labels = {
+    missionIndexLabel: 'Mission Index',
+    quickJump: 'Quick Jump',
+    navigatorTitle: 'Mission Log Navigator',
+    earliestFirst: 'Earliest first',
+    missionLogLabel: 'Mission Log',
+    latestFirst: 'Latest first'
+  };
 
   const escapeHtml = (value) => String(value ?? '')
     .replace(/&/g, '&amp;')
@@ -32,26 +48,39 @@
     }
   };
 
-  const shouldReduceMotion = () => {
-    return window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+  const shouldReduceMotion = () =>
+    window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+
+  const applyStaticLabels = () => {
+    document.querySelectorAll('[data-i18n-key]').forEach((node) => {
+      const key = node.dataset.i18nKey;
+      if (!key || !(key in labels)) return;
+      node.textContent = labels[key];
+    });
   };
 
-  const missionEntries = (() => {
-    try {
-      const parsed = JSON.parse(dataEl.textContent || '[]');
-      return Array.isArray(parsed) ? parsed : [];
-    } catch (error) {
-      return [];
+  const loadMissionEntries = async () => {
+    if (missionEntries.length) return missionEntries;
+
+    if (dataEl) {
+      missionEntries = JSON.parse(dataEl.textContent || '[]');
+    } else if (dataUrl) {
+      const response = await fetch(dataUrl, { cache: 'no-store' });
+      if (!response.ok) {
+        throw new Error(`Mission Log data request failed: ${response.status}`);
+      }
+      missionEntries = await response.json();
     }
-  })();
 
-  if (!missionEntries.length) return;
+    if (!Array.isArray(missionEntries)) missionEntries = [];
+    byId = new Map(missionEntries.map((entry) => [entry.id, entry]));
+    latestEntry = [...missionEntries].sort((a, b) => {
+      const scoreDiff = dateScore(b.date || b.isoDate) - dateScore(a.date || a.isoDate);
+      return scoreDiff || Number(b.number || 0) - Number(a.number || 0);
+    })[0] || null;
 
-  const byId = new Map(missionEntries.map((entry) => [entry.id, entry]));
-  const latestEntry = [...missionEntries].sort((a, b) => {
-    const scoreDiff = dateScore(b.date || b.isoDate) - dateScore(a.date || a.isoDate);
-    return scoreDiff || Number(b.number || 0) - Number(a.number || 0);
-  })[0];
+    return missionEntries;
+  };
 
   const renderNavigator = () => {
     const navigatorEntries = [...missionEntries].sort((a, b) => {
@@ -81,14 +110,16 @@
     });
   };
 
-  function renderMissionEntry(id, options = {}) {
+  const renderMissionEntry = (id, options = {}) => {
     const entry = byId.get(id) || latestEntry;
     if (!entry) return false;
+    currentId = entry.id;
 
-    const article = `
+    list.innerHTML = `
       <article
         id="${escapeAttr(entry.id)}"
         class="research-note-card mission-log-entry"
+        lang="en"
         data-log-date="${escapeAttr(entry.date)}"
         data-log-stage="${escapeAttr(entry.stage)}"
         data-log-question="${escapeAttr(entry.question)}"
@@ -103,7 +134,6 @@
       </article>
     `;
 
-    list.innerHTML = article;
     setActiveLink(entry.id);
     window.MadsMissionLightbox?.prepare?.(list);
     document.dispatchEvent(new CustomEvent('mads:mission-log-rendered', { detail: { id: entry.id } }));
@@ -123,40 +153,58 @@
     }
 
     return true;
-  }
+  };
 
-  const start = () => {
+  const start = async () => {
     if (started) return;
     started = true;
 
-    renderNavigator();
-
-    indexList.addEventListener('click', (event) => {
-      const link = event.target.closest('a[href^="#"]');
-      if (!link || !indexList.contains(link)) return;
-
-      const href = link.getAttribute('href') || '';
-      const targetId = decodeTargetId(href.slice(1));
-      if (!targetId) {
-        event.preventDefault();
-        return;
+    try {
+      list.classList.add('is-loading');
+      await loadMissionEntries();
+      if (!missionEntries.length || !latestEntry) {
+        throw new Error('Mission Log data is empty');
       }
 
-      if (renderMissionEntry(targetId, { scroll: true })) {
-        event.preventDefault();
-      }
-    });
+      applyStaticLabels();
+      renderNavigator();
 
-    const initialTargetId = window.location.hash ? decodeTargetId(window.location.hash.slice(1)) : '';
-    const initialId = byId.has(initialTargetId) ? initialTargetId : list.dataset.initialLogId || latestEntry.id;
-    renderMissionEntry(initialId, { updateHash: false, scroll: Boolean(initialTargetId) });
+      indexList.addEventListener('click', (event) => {
+        const link = event.target.closest('a[href^="#"]');
+        if (!link || !indexList.contains(link)) return;
 
-    const mode = document.querySelector('.mission-index-mode');
-    if (mode) mode.textContent = 'Earliest first';
+        const targetId = decodeTargetId((link.getAttribute('href') || '').slice(1));
+        if (!targetId) return;
 
-    document.documentElement.classList.add('mission-index-ready');
-    document.documentElement.classList.add('mission-log-lazy-render');
+        if (renderMissionEntry(targetId, { scroll: true })) {
+          event.preventDefault();
+        }
+      });
+
+      const initialTargetId = window.location.hash ? decodeTargetId(window.location.hash.slice(1)) : '';
+      const initialId = byId.has(initialTargetId) ? initialTargetId : list.dataset.initialLogId || latestEntry.id;
+      renderMissionEntry(initialId, { updateHash: false, scroll: Boolean(initialTargetId) });
+
+      document.documentElement.classList.add('mission-index-ready');
+      document.documentElement.classList.add('mission-log-lazy-render');
+    } catch (error) {
+      started = false;
+      list.innerHTML = `
+        <article class="research-note-card mission-log-entry mission-log-entry-placeholder">
+          <div class="research-note-date">ERROR</div>
+          <div class="research-note-body">
+            <p>Mission Log data could not be loaded. Please refresh the page and unlock again.</p>
+          </div>
+        </article>
+      `;
+    } finally {
+      list.classList.remove('is-loading');
+    }
   };
 
-  start();
+  document.addEventListener('mads:research-unlocked', start);
+
+  if (autoStart || document.documentElement.classList.contains('research-unlocked')) {
+    start();
+  }
 })();

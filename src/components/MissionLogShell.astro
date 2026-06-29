@@ -1,0 +1,37 @@
+<section id="mission-index" class="section mission-index-section compact-mission-index">
+  <div class="section-label" data-i18n-key="missionIndexLabel">Mission Index</div>
+  <div class="mission-index-panel">
+    <div class="mission-index-head">
+      <div>
+        <p class="eyebrow" data-i18n-key="quickJump">Quick Jump</p>
+        <h2 data-i18n-key="navigatorTitle">Mission Log Navigator</h2>
+      </div>
+      <div class="mission-index-tools">
+        <span class="mission-index-mode" data-i18n-key="earliestFirst">Earliest first</span>
+      </div>
+    </div>
+    <div class="mission-jump-grid compact-mission-jump-grid" data-mission-index-list aria-live="polite"></div>
+  </div>
+</section>
+
+<section class="section two-col research-notes-section" id="mission-log">
+  <div class="section-label">
+    <span data-i18n-key="missionLogLabel">Mission Log</span>
+    <span class="section-label-note" data-i18n-key="latestFirst">Latest first</span>
+  </div>
+  <div
+    class="research-note-list mission-log-list"
+    data-mission-log-list
+    data-mission-log-lazy
+    data-mission-auto-start="false"
+    data-mission-data-url="assets/data/mission-log.json"
+    data-initial-log-id="log-009"
+  >
+    <article class="research-note-card mission-log-entry mission-log-entry-placeholder">
+      <div class="research-note-date">LOCKED</div>
+      <div class="research-note-body">
+        <p>Enter the graduation research password to load the Mission Log.</p>
+      </div>
+    </article>
+  </div>
+</section>

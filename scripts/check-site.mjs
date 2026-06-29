@@ -7,10 +7,12 @@ const distDir = path.join(root, "dist");
 const publicDir = path.join(root, "public");
 const assetsDir = path.join(publicDir, "assets");
 const publicMissionSource = path.join(root, "src", "data", "missionLog.ts");
+const missionDataPath = path.join(distDir, "assets", "data", "mission-log.json");
 
 const pages = [
   "index.html",
   "research.html",
+  "research-graduation.html",
   "research-log.html",
   "paper-shelf.html",
   "cv.html",
@@ -34,8 +36,55 @@ function readDistPage(file) {
   return fs.readFileSync(pagePath, "utf8");
 }
 
-if (fs.existsSync(publicMissionSource)) {
-  fail("src/data/missionLog.ts must stay local-only under _local/mission-source/");
+function collectFiles(targetPath) {
+  if (!fs.existsSync(targetPath)) return [];
+  const stat = fs.statSync(targetPath);
+  if (stat.isFile()) return [targetPath];
+  if (!stat.isDirectory()) return [];
+  return fs.readdirSync(targetPath, { withFileTypes: true }).flatMap((entry) => {
+    const childPath = path.join(targetPath, entry.name);
+    return entry.isDirectory() ? collectFiles(childPath) : [childPath];
+  });
+}
+
+if (!fs.existsSync(publicMissionSource)) {
+  fail("src/data/missionLog.ts: missing public Mission Log data source");
+}
+
+const removedLocalMissionPaths = [
+  "_local",
+  "src-local",
+  "astro.local-mission.config.mjs",
+  "scripts/build-local-mission-log.mjs",
+  "scripts/check-local-mission-log.mjs",
+  "src/components/MissionLog.astro"
+];
+
+for (const relativePath of removedLocalMissionPaths) {
+  if (fs.existsSync(path.join(root, relativePath))) {
+    fail(`${relativePath}: local Mission Log files should not exist`);
+  }
+}
+
+const staleLocalMissionNeedles = [
+  "_local/",
+  "src-local",
+  "check:local",
+  "build:mission-log-local",
+  "check-local-mission",
+  "local-mission"
+];
+
+for (const relativePath of ["README.md", "package.json", "docs", "src"]) {
+  const targetPath = path.join(root, relativePath);
+  for (const filePath of collectFiles(targetPath)) {
+    const text = fs.readFileSync(filePath, "utf8");
+    for (const needle of staleLocalMissionNeedles) {
+      if (text.includes(needle)) {
+        fail(`${path.relative(root, filePath)}: stale local Mission Log reference ${needle}`);
+      }
+    }
+  }
 }
 
 function isLocalAsset(value) {
@@ -66,7 +115,6 @@ for (const page of pages) {
   if (html.includes("Planetary Sciences ??") || html.includes("Mineralogy ??")) fail(`${page}: header contains mojibake question marks`);
   if (!html.includes('rel="canonical"')) fail(`${page}: missing canonical link`);
   if (!html.includes('property="og:title"')) fail(`${page}: missing Open Graph metadata`);
-  if (html.includes('research-graduation.html')) fail(`${page}: public page must not link to the local-only Mission Log`);
   if (html.includes('mission-log-data')) fail(`${page}: public page must not embed Mission Log data`);
 
   const attrPattern = /\b(?:src|href)="([^"]+)"/g;
@@ -80,14 +128,23 @@ for (const page of pages) {
   }
 }
 
-if (fs.existsSync(path.join(distDir, "research-graduation.html"))) {
-  fail("dist: research-graduation.html must not be generated for the public website");
-}
-const publicMissionImages = fs.existsSync(path.join(distDir, "assets", "img"))
-  ? fs.readdirSync(path.join(distDir, "assets", "img")).filter((name) => /^grad-log-.*\.jpg$/i.test(name))
+const publicMissionImageDir = path.join(distDir, "assets", "img", "mission-log");
+const publicMissionImages = fs.existsSync(publicMissionImageDir)
+  ? fs.readdirSync(publicMissionImageDir).filter((name) => /^grad-log-.*\.jpg$/i.test(name))
   : [];
-if (publicMissionImages.length) {
-  fail(`dist: Mission Log images must not be published (${publicMissionImages.length} grad-log files found)`);
+if (publicMissionImages.length !== 46) {
+  fail(`dist: expected 46 published Mission Log images, found ${publicMissionImages.length}`);
+}
+if (!fs.existsSync(missionDataPath)) {
+  fail("dist: missing assets/data/mission-log.json");
+} else {
+  const missionData = JSON.parse(fs.readFileSync(missionDataPath, "utf8"));
+  if (!Array.isArray(missionData) || missionData.length !== 9) {
+    fail(`assets/data/mission-log.json: expected 9 entries, found ${Array.isArray(missionData) ? missionData.length : "non-array"}`);
+  }
+  if (JSON.stringify(missionData).includes("assets/img/grad-log-")) {
+    fail("assets/data/mission-log.json: image paths must use assets/img/mission-log/");
+  }
 }
 
 const paperShelf = readDistPage("paper-shelf.html");
@@ -135,11 +192,31 @@ if (researchLog.includes("assets/js/research-lock.js") || researchLog.includes("
 if (!researchLog.includes("Download research proposal") || !researchLog.includes("assets/files/Bachelors_Thesis_Research_Proposal_Mads_LIU_YONG.pdf")) {
   fail("research-log.html: must keep the research proposal download before the private Mission Log boundary");
 }
-if (!researchLog.includes('class="project-grid"') || !researchLog.includes("Future Research Project") || !researchLog.includes("Local archive only")) {
+if (!researchLog.includes('class="project-grid"') || !researchLog.includes("Future Research Project") || !researchLog.includes("Open protected log")) {
   fail("research-log.html: must keep the Ongoing/Future project card interface");
 }
-if (/<a\b[^>]*class="[^"]*\bproject-link-card\b/i.test(researchLog)) {
-  fail("research-log.html: project cards must not be clickable links");
+if (researchLog.includes("<h2>Graduation Research</h2>")) {
+  fail("research-log.html: graduation project card must use the research title, not the generic label");
+}
+if (!/<a\b(?=[^>]*href="research-graduation\.html")(?=[^>]*class="[^"]*\bproject-link-card\b)[^>]*>/i.test(researchLog)) {
+  fail("research-log.html: graduation project card must link to research-graduation.html");
+}
+if (/<a\b[^>]*class="[^"]*\bproject-link-card\b[^"]*\bdisabled-project\b/i.test(researchLog)) {
+  fail("research-log.html: disabled future project must not be clickable");
+}
+
+const graduationPage = readDistPage("research-graduation.html");
+if (!graduationPage.includes("assets/js/research-lock.js") || !graduationPage.includes("data-research-lock-gate") || !graduationPage.includes("data-research-lock-content")) {
+  fail("research-graduation.html: missing password gate");
+}
+if (!graduationPage.includes('data-mission-data-url="assets/data/mission-log.json"')) {
+  fail("research-graduation.html: missing lazy Mission Log data URL");
+}
+if (!graduationPage.includes("assets/js/mission-index.js") || !graduationPage.includes("assets/js/mission-lightbox.js")) {
+  fail("research-graduation.html: missing Mission Log scripts");
+}
+if (graduationPage.includes("Mission Log 009")) {
+  fail("research-graduation.html: Mission Log entries must load after unlock, not in initial HTML");
 }
 
 for (const required of ["robots.txt", "sitemap.xml"]) {
@@ -162,12 +239,35 @@ const styleCss = fs.readFileSync(path.join(assetsDir, "css", "style.css"), "utf8
 if (!styleCss.includes("mads-soft-nav-active")) {
   fail("style.css: missing soft navigation stability styles");
 }
-if (!styleCss.includes("mission-lightbox-unified-theme") || !styleCss.includes("html:not([data-theme=\"space\"]) .mission-lightbox__thumbs")) {
+if (!styleCss.includes("mission-lightbox-unified-theme") || !styleCss.includes("mission-lightbox-fullscreen-focus") || !styleCss.includes("mission-lightbox-minimal-image-viewer")) {
   fail("style.css: missing unified Mission Log lightbox theme styles");
 }
+if (!/mission-lightbox-rationalized-viewer[\s\S]*html:not\(\[data-theme="space"\]\):not\(\[data-theme-space\]\) body:not\(\.space-mode\) \.mission-lightbox[\s\S]*background: rgba\(226, 234, 241, \.94\) !important/.test(styleCss)) {
+  fail("style.css: Mission Log image viewer must use a dedicated light image-viewer surface in light mode");
+}
 const researchLockPath = path.join(assetsDir, "js", "research-lock.js");
-if (fs.existsSync(researchLockPath)) {
-  fail("research-lock.js: public password gate script should be removed");
+if (!fs.existsSync(researchLockPath)) {
+  fail("research-lock.js: missing graduation password gate script");
+} else {
+  const researchLock = fs.readFileSync(researchLockPath, "utf8");
+  if (researchLock.includes("1029384756Y")) {
+    fail("research-lock.js: must not contain the plain password");
+  }
+  if (/\b(sessionStorage|localStorage)\b/.test(researchLock)) {
+    fail("research-lock.js: must request the password on each page entry, without browser storage unlock caching");
+  }
+}
+const missionLightbox = fs.readFileSync(path.join(assetsDir, "js", "mission-lightbox.js"), "utf8");
+if (missionLightbox.includes("mission-lightbox__thumbs") || missionLightbox.includes("buildThumbs")) {
+  fail("mission-lightbox.js: full-screen viewer must not render thumbnail strip");
+}
+if (
+  missionLightbox.includes("mission-lightbox__panel") ||
+  missionLightbox.includes("mission-lightbox__info") ||
+  missionLightbox.includes("mission-lightbox__title") ||
+  missionLightbox.includes("mission-lightbox__kicker")
+) {
+  fail("mission-lightbox.js: image viewer must use minimal image-first layout without side information panel");
 }
 const powerManager = fs.readFileSync(path.join(assetsDir, "js", "power-manager.js"), "utf8");
 const lowPowerBlock = powerManager.match(/const LOW_POWER_MEDIA = \[([\s\S]*?)\];/)?.[1] || "";
@@ -184,4 +284,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`Site check passed: ${pages.length} public pages, local assets, SEO metadata, Paper Shelf, and private Mission Log separation.`);
+console.log(`Site check passed: ${pages.length} public pages, protected Mission Log, local assets, SEO metadata, and Paper Shelf.`);

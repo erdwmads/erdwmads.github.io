@@ -35,7 +35,6 @@ Images over 1 MB: 1
 
 - Keep original research/photography files in `public/assets/img/` unless the user explicitly approves destructive replacement.
 - Prefer adding generated thumbnails or CDN-sized URLs for page display instead of overwriting originals.
-- Keep private Mission Log images under `_local/mission-assets/img/`, not `public/assets/img/`.
+- Keep Mission Log images under `public/assets/img/mission-log/`.
 - Mission Log images should keep `loading="lazy"` and `decoding="async"`.
-- Before replacing public images, run `npm run check`; before replacing Mission Log images, run `npm run check:local`.
-
+- Before replacing public or Mission Log images, run `npm run check`.
