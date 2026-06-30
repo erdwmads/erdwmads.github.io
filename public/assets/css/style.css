@@ -16935,3 +16935,105 @@ html:not([data-theme="space"]):not([data-theme-space]) body:not(.space-mode) .mi
     right: 8px !important;
   }
 }
+
+/* mobile-lightweight-mode */
+@media (max-width: 760px), (pointer: coarse) {
+  html.mads-mobile-lite,
+  body.mads-mobile-lite {
+    scroll-behavior: auto !important;
+  }
+
+  html.mads-mobile-lite .ui2046-layer,
+  html.mads-mobile-lite .ui2046-progress,
+  html.mads-mobile-lite .ambient-space-layer,
+  html.mads-mobile-lite .entry-gate,
+  body.mads-mobile-lite .ui2046-layer,
+  body.mads-mobile-lite .ui2046-progress,
+  body.mads-mobile-lite .ambient-space-layer,
+  body.mads-mobile-lite .entry-gate {
+    display: none !important;
+    visibility: hidden !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  body.mads-mobile-lite::before,
+  body.mads-mobile-lite::after,
+  body.mads-mobile-lite main::before,
+  body.mads-mobile-lite main::after {
+    animation: none !important;
+    filter: none !important;
+    transform: none !important;
+  }
+
+  body.mads-mobile-lite .site-header,
+  body.mads-mobile-lite .nav,
+  body.mads-mobile-lite .card,
+  body.mads-mobile-lite .hero-card,
+  body.mads-mobile-lite .callout,
+  body.mads-mobile-lite .focus-card,
+  body.mads-mobile-lite .status-card,
+  body.mads-mobile-lite .project-link-card,
+  body.mads-mobile-lite .paper-card,
+  body.mads-mobile-lite .cv-edu-card,
+  body.mads-mobile-lite .research-note-card,
+  body.mads-mobile-lite .mission-log-entry,
+  body.mads-mobile-lite .mission-log-panel,
+  body.mads-mobile-lite .mission-index-panel,
+  body.mads-mobile-lite .mission-jump-card,
+  body.mads-mobile-lite .photo-stage,
+  body.mads-mobile-lite .contact-card,
+  body.mads-mobile-lite .profile-card,
+  body.mads-mobile-lite .info-card,
+  body.mads-mobile-lite .research-lock-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    filter: none !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  body.mads-mobile-lite .card,
+  body.mads-mobile-lite .hero-card,
+  body.mads-mobile-lite .callout,
+  body.mads-mobile-lite .focus-card,
+  body.mads-mobile-lite .status-card,
+  body.mads-mobile-lite .project-link-card,
+  body.mads-mobile-lite .paper-card,
+  body.mads-mobile-lite .cv-edu-card,
+  body.mads-mobile-lite .research-note-card,
+  body.mads-mobile-lite .mission-log-entry,
+  body.mads-mobile-lite .mission-log-panel,
+  body.mads-mobile-lite .mission-index-panel,
+  body.mads-mobile-lite .mission-jump-card,
+  body.mads-mobile-lite .contact-card,
+  body.mads-mobile-lite .profile-card,
+  body.mads-mobile-lite .info-card,
+  body.mads-mobile-lite .research-lock-card {
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .06) inset !important;
+  }
+
+  body.mads-mobile-lite .paper-card,
+  body.mads-mobile-lite .cv-edu-card,
+  body.mads-mobile-lite .research-note-card,
+  body.mads-mobile-lite .mission-log-entry,
+  body.mads-mobile-lite .mission-log-panel,
+  body.mads-mobile-lite .mission-index-panel,
+  body.mads-mobile-lite .project-link-card,
+  body.mads-mobile-lite .status-card {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 520px;
+  }
+
+  body.mads-mobile-lite .mission-photo-grid,
+  body.mads-mobile-lite .mission-photo-grid figure,
+  body.mads-mobile-lite .mission-photo-grid img {
+    filter: none !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  body.mads-mobile-lite .ambient-fx-toggle {
+    display: none !important;
+  }
+}

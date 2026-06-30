@@ -234,10 +234,16 @@ const interface2046 = fs.readFileSync(path.join(assetsDir, "js", "interface-2046
 if (!interface2046.includes("data-ui2046-route") || !interface2046.includes("mads:soft-nav-ready")) {
   fail("interface-2046.js: missing soft navigation route refresh");
 }
+if (!interface2046.includes("MOBILE_INTERFACE_MEDIA") || !interface2046.includes("mads-mobile-lite") || !interface2046.includes("removeInterfaceLayers")) {
+  fail("interface-2046.js: mobile lightweight mode must skip the solar-system/interface layer");
+}
 
 const styleCss = fs.readFileSync(path.join(assetsDir, "css", "style.css"), "utf8");
 if (!styleCss.includes("mads-soft-nav-active")) {
   fail("style.css: missing soft navigation stability styles");
+}
+if (!styleCss.includes("mobile-lightweight-mode")) {
+  fail("style.css: missing mobile lightweight rendering overrides");
 }
 if (!styleCss.includes("mission-lightbox-unified-theme") || !styleCss.includes("mission-lightbox-fullscreen-focus") || !styleCss.includes("mission-lightbox-minimal-image-viewer")) {
   fail("style.css: missing unified Mission Log lightbox theme styles");
@@ -268,6 +274,10 @@ if (
   missionLightbox.includes("mission-lightbox__kicker")
 ) {
   fail("mission-lightbox.js: image viewer must use minimal image-first layout without side information panel");
+}
+const ambientSpace = fs.readFileSync(path.join(assetsDir, "js", "ambient-space.js"), "utf8");
+if (!ambientSpace.includes("MOBILE_AMBIENT_MEDIA") || !ambientSpace.includes("isMobileAmbientView") || !ambientSpace.includes("mobile ambient disabled")) {
+  fail("ambient-space.js: mobile lightweight mode must prevent ambient particle creation");
 }
 const powerManager = fs.readFileSync(path.join(assetsDir, "js", "power-manager.js"), "utf8");
 const lowPowerBlock = powerManager.match(/const LOW_POWER_MEDIA = \[([\s\S]*?)\];/)?.[1] || "";

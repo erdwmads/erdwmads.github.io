@@ -1,13 +1,20 @@
 
 (function () {
   const AMBIENT_STORAGE_KEY = "madsAmbientFxEnabled";
+  const MOBILE_AMBIENT_MEDIA = "(max-width: 760px), (pointer: coarse)";
+  const mobileAmbientQuery = window.matchMedia ? window.matchMedia(MOBILE_AMBIENT_MEDIA) : null;
 
   function prefersReducedMotion() {
     return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   }
 
+  function isMobileAmbientView() {
+    return !!mobileAmbientQuery?.matches;
+  }
+
   function isAmbientEnabled() {
     if (prefersReducedMotion()) return false;
+    if (isMobileAmbientView()) return false;
     return window.localStorage.getItem(AMBIENT_STORAGE_KEY) === "1";
   }
 
@@ -76,6 +83,13 @@
   function initAmbientSpace() {
     const existing = document.querySelector(".ambient-space-layer");
     if (existing) existing.remove();
+
+    if (isMobileAmbientView()) {
+      // mobile ambient disabled: the mobile lightweight interface should not
+      // create particle nodes even when the desktop FX preference is on.
+      removeAmbientLayer();
+      return;
+    }
 
     if (!isAmbientEnabled()) {
       removeAmbientLayer();
@@ -312,6 +326,23 @@
     } else {
       removeAmbientLayer();
     }
+  }
+
+  function syncMobileAmbientState() {
+    const button = document.querySelector(".ambient-fx-toggle");
+    if (button) updateAmbientToggle(button);
+
+    if (isMobileAmbientView()) {
+      removeAmbientLayer();
+    } else if (isAmbientEnabled()) {
+      initAmbientSpace();
+    }
+  }
+
+  if (mobileAmbientQuery?.addEventListener) {
+    mobileAmbientQuery.addEventListener("change", syncMobileAmbientState);
+  } else if (mobileAmbientQuery?.addListener) {
+    mobileAmbientQuery.addListener(syncMobileAmbientState);
   }
 
   if (document.readyState === "loading") {

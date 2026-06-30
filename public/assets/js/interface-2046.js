@@ -4,12 +4,37 @@
   const body = document.body;
   const ua = navigator.userAgent || "";
   const isEdge = /\bEdgA?\/|\bEdgiOS\/|\bEdg\//.test(ua);
+  const MOBILE_INTERFACE_MEDIA = "(max-width: 760px), (pointer: coarse)";
+  const mobileInterfaceQuery = window.matchMedia ? window.matchMedia(MOBILE_INTERFACE_MEDIA) : null;
 
   if (body.dataset.interface2046 === 'ready') return;
   body.dataset.interface2046 = 'ready';
 
   if (isEdge) {
     root.classList.add("is-edge-browser");
+  }
+
+  const isMobileInterfaceView = () => !!mobileInterfaceQuery?.matches;
+
+  function removeInterfaceLayers() {
+    document
+      .querySelectorAll(".ui2046-layer, .ui2046-progress, .entry-gate")
+      .forEach((node) => node.remove());
+    body.classList.remove("entry-gate-active");
+  }
+
+  function syncMobileLiteState() {
+    const mobileLite = isMobileInterfaceView();
+    root.classList.toggle("mads-mobile-lite", mobileLite);
+    body.classList.toggle("mads-mobile-lite", mobileLite);
+    if (mobileLite) removeInterfaceLayers();
+  }
+
+  syncMobileLiteState();
+  if (mobileInterfaceQuery?.addEventListener) {
+    mobileInterfaceQuery.addEventListener("change", syncMobileLiteState);
+  } else if (mobileInterfaceQuery?.addListener) {
+    mobileInterfaceQuery.addListener(syncMobileLiteState);
   }
 
   function beginEdgeTeardown() {
@@ -94,6 +119,11 @@
   const initialPage = pageKeyFromLocation();
   body.classList.add(pageClassForKey(initialPage));
   const route = routeForPage(initialPage);
+
+  if (isMobileInterfaceView()) {
+    removeInterfaceLayers();
+    return;
+  }
 
   const orbitData = [
     { name: 'Mercury', label: 'Mercury', years: 0.241, w: 18, h: 11, angle: 26,  size: 2.0, color: 'rgba(180,190,196,.72)', cls: 'inner', alpha: .10, labelMode: 'minor' },
