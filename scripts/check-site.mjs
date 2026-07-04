@@ -1,4 +1,4 @@
-import fs from "node:fs";
+﻿import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -132,15 +132,15 @@ const publicMissionImageDir = path.join(distDir, "assets", "img", "mission-log")
 const publicMissionImages = fs.existsSync(publicMissionImageDir)
   ? fs.readdirSync(publicMissionImageDir).filter((name) => /^grad-log-.*\.jpg$/i.test(name))
   : [];
-if (publicMissionImages.length !== 46) {
-  fail(`dist: expected 46 published Mission Log images, found ${publicMissionImages.length}`);
+if (publicMissionImages.length !== 50) {
+  fail(`dist: expected 50 published Mission Log images, found ${publicMissionImages.length}`);
 }
 if (!fs.existsSync(missionDataPath)) {
   fail("dist: missing assets/data/mission-log.json");
 } else {
   const missionData = JSON.parse(fs.readFileSync(missionDataPath, "utf8"));
-  if (!Array.isArray(missionData) || missionData.length !== 9) {
-    fail(`assets/data/mission-log.json: expected 9 entries, found ${Array.isArray(missionData) ? missionData.length : "non-array"}`);
+  if (!Array.isArray(missionData) || missionData.length !== 10) {
+    fail(`assets/data/mission-log.json: expected 10 entries, found ${Array.isArray(missionData) ? missionData.length : "non-array"}`);
   }
   if (JSON.stringify(missionData).includes("assets/img/grad-log-")) {
     fail("assets/data/mission-log.json: image paths must use assets/img/mission-log/");
@@ -295,3 +295,4 @@ if (failures.length) {
 }
 
 console.log(`Site check passed: ${pages.length} public pages, protected Mission Log, local assets, SEO metadata, and Paper Shelf.`);
+
