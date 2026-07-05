@@ -1,5 +1,5 @@
 ---
-import { brand, footerItems, navItems, siteMetadata } from "../data/site";
+import { brand, footerItems, navItems, researchLogGate, siteMetadata } from "../data/site";
 
 interface Props {
   title: string;
@@ -14,6 +14,7 @@ const { title, description, current, mainClass = "main", path, scriptHtml } = As
 const canonicalPath = path || "index.html";
 const canonicalUrl = new URL(canonicalPath, `${siteMetadata.url}/`).toString();
 const imageUrl = new URL(siteMetadata.image, `${siteMetadata.url}/`).toString();
+const bodyClass = `ui-page-${current}`;
 ---
 
 <!doctype html>
@@ -74,7 +75,7 @@ const imageUrl = new URL(siteMetadata.image, `${siteMetadata.url}/`).toString();
   <link rel="icon" type="image/png" href="assets/img/favicon.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 </head>
-<body>
+<body class={bodyClass}>
 <header class="site-header">
   <div class="header-inner">
     <a class="brand" href={brand.homeHref}>
@@ -82,7 +83,16 @@ const imageUrl = new URL(siteMetadata.image, `${siteMetadata.url}/`).toString();
       <span set:html={brand.tagline} />
     </a>
     <nav class="nav" aria-label="Main navigation">
-      {navItems.map((item) => <a href={item.href} aria-current={current === item.key ? "page" : undefined}>{item.label}</a>)}
+      <div class="nav__links">
+        {navItems.map((item) => <a href={item.href} aria-current={current === item.key ? "page" : undefined}>{item.label}</a>)}
+      </div>
+      <a class="nav-log-gate" href={researchLogGate.href} aria-current={current === researchLogGate.key ? "page" : undefined}>
+        <span class="nav-log-gate__signal" aria-hidden="true"></span>
+        <span class="nav-log-gate__copy">
+          <strong>{researchLogGate.label}</strong>
+          <small>{researchLogGate.status}</small>
+        </span>
+      </a>
       <button class="theme-toggle" type="button" aria-label="Toggle light and space mode">Space Mode</button>
     </nav>
   </div>

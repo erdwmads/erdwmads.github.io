@@ -15,12 +15,18 @@ export const siteMetadata = {
 export const navItems = [
   { href: "index.html", label: "Home", key: "home" },
   { href: "research.html", label: "Research", key: "research" },
-  { href: "research-log.html", label: "Research Log", key: "research-log" },
   { href: "paper-shelf.html", label: "Paper Shelf", key: "paper-shelf" },
   { href: "cv.html", label: "CV", key: "cv" },
   { href: "photography.html", label: "Photography", key: "photography" },
   { href: "contact.html", label: "Contact", key: "contact" }
 ] as const;
+
+export const researchLogGate = {
+  href: "research-log.html",
+  label: "Research Log",
+  status: "Active Archive",
+  key: "research-log"
+} as const;
 
 export const contentPages = [
   { href: "index.html", title: "Home", key: "home" },

@@ -17094,3 +17094,314 @@ html:not([data-theme="space"]):not([data-theme-space]) body:not(.space-mode) .mi
     display: none !important;
   }
 }
+
+
+/* ============================================================
+   Research Log Gate navigation
+   Separates Research Log from the ordinary page links while keeping
+   the existing header system and mobile-lightweight mode stable.
+   ============================================================ */
+
+.nav__links {
+  display: contents !important;
+}
+
+.nav-log-gate {
+  isolation: isolate !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 9px !important;
+  min-width: clamp(154px, 10.5vw, 190px) !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  margin-left: clamp(4px, .5vw, 10px) !important;
+  padding: 0 14px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(214, 181, 104, .34) !important;
+  background:
+    linear-gradient(135deg, rgba(214, 181, 104, .18), rgba(91, 155, 209, .10)),
+    rgba(8, 19, 34, .38) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .10),
+    0 10px 24px rgba(0, 0, 0, .16),
+    0 0 20px rgba(214, 181, 104, .08) !important;
+}
+
+.nav-log-gate::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 1px !important;
+  z-index: -1 !important;
+  border-radius: inherit !important;
+  background: linear-gradient(100deg, transparent 0%, rgba(255, 236, 183, .28) 48%, transparent 100%) !important;
+  opacity: 0 !important;
+  transform: translateX(-105%) !important;
+  transition: opacity .18s ease, transform .58s ease !important;
+}
+
+.nav-log-gate::after {
+  left: 18px !important;
+  right: 18px !important;
+  bottom: 4px !important;
+  background: linear-gradient(90deg, rgba(214,181,104,0), rgba(214,181,104,.95), rgba(139,199,255,.72), rgba(214,181,104,0)) !important;
+}
+
+.nav-log-gate:hover::before,
+.nav-log-gate:focus-visible::before {
+  opacity: 1 !important;
+  transform: translateX(105%) !important;
+}
+
+.nav-log-gate__signal {
+  flex: 0 0 auto !important;
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 999px !important;
+  background: #d6b568 !important;
+  box-shadow:
+    0 0 0 4px rgba(214, 181, 104, .12),
+    0 0 16px rgba(214, 181, 104, .72) !important;
+}
+
+.nav-log-gate__copy {
+  display: grid !important;
+  gap: 2px !important;
+  min-width: 0 !important;
+  line-height: 1 !important;
+}
+
+.nav-log-gate__copy strong,
+.nav-log-gate__copy small {
+  display: block !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.nav-log-gate__copy strong {
+  color: inherit !important;
+  font-size: 12.5px !important;
+  font-weight: 850 !important;
+  letter-spacing: .035em !important;
+}
+
+.nav-log-gate__copy small {
+  color: rgba(214, 181, 104, .86) !important;
+  font-size: 8.5px !important;
+  font-weight: 850 !important;
+  letter-spacing: .17em !important;
+  text-transform: uppercase !important;
+}
+
+.nav-log-gate[aria-current="page"] {
+  border-color: rgba(214, 181, 104, .58) !important;
+  background:
+    linear-gradient(135deg, rgba(214, 181, 104, .24), rgba(91, 155, 209, .14)),
+    rgba(12, 28, 46, .56) !important;
+  color: #fff !important;
+}
+
+html:not([data-theme="space"]) .nav-log-gate {
+  color: rgba(9, 25, 44, .90) !important;
+  border-color: rgba(172, 137, 62, .30) !important;
+  background:
+    linear-gradient(135deg, rgba(214, 181, 104, .20), rgba(255, 255, 255, .58)),
+    rgba(246, 250, 253, .68) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .52),
+    0 10px 24px rgba(32, 55, 78, .10) !important;
+}
+
+html:not([data-theme="space"]) .nav-log-gate[aria-current="page"],
+html:not([data-theme="space"]) .nav-log-gate:hover {
+  color: #07182c !important;
+  background:
+    linear-gradient(135deg, rgba(214, 181, 104, .25), rgba(255, 255, 255, .75)),
+    rgba(248, 251, 254, .84) !important;
+}
+
+html:not([data-theme="space"]) .nav-log-gate__copy small {
+  color: rgba(133, 97, 33, .86) !important;
+}
+
+@media (max-width: 760px) {
+  .nav-log-gate {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin-left: 0 !important;
+    justify-content: center !important;
+    height: 40px !important;
+  }
+
+  .nav-log-gate__copy {
+    text-align: left !important;
+  }
+}
+
+body.mads-mobile-lite .nav-log-gate,
+body.mads-mobile-lite .nav-log-gate::before {
+  transition: none !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+/* ============================================================
+   Research Log page atmosphere
+   Static archive-field treatment: distinct from other pages without
+   adding JavaScript, loops, or mobile-heavy effects.
+   ============================================================ */
+
+body.ui-page-research-log .research-log-main {
+  position: relative !important;
+  isolation: isolate !important;
+  overflow: hidden !important;
+  background:
+    radial-gradient(circle at 82% 9%, rgba(214, 181, 104, .12), transparent 30rem),
+    radial-gradient(circle at 14% 30%, rgba(103, 169, 221, .10), transparent 24rem),
+    linear-gradient(180deg, rgba(5, 13, 24, .26), rgba(5, 13, 24, 0) 42%) !important;
+}
+
+body.ui-page-research-log .research-log-main::before,
+body.ui-page-research-log .research-log-main::after {
+  content: "" !important;
+  position: absolute !important;
+  pointer-events: none !important;
+  z-index: -1 !important;
+}
+
+body.ui-page-research-log .research-log-main::before {
+  inset: 0 !important;
+  background-image:
+    linear-gradient(rgba(139, 199, 255, .055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 199, 255, .045) 1px, transparent 1px),
+    linear-gradient(115deg, transparent 45%, rgba(214, 181, 104, .10) 50%, transparent 56%) !important;
+  background-size: 64px 64px, 64px 64px, 100% 100% !important;
+  opacity: .48 !important;
+  mask-image: linear-gradient(180deg, rgba(0,0,0,.9), rgba(0,0,0,.2) 72%, transparent) !important;
+}
+
+body.ui-page-research-log .research-log-main::after {
+  top: clamp(22px, 4vw, 72px) !important;
+  right: max(-12vw, -160px) !important;
+  width: min(58vw, 760px) !important;
+  aspect-ratio: 1 !important;
+  border-radius: 999px !important;
+  background:
+    linear-gradient(90deg, rgba(5, 13, 24, .55), rgba(5, 13, 24, .04)),
+    url("../img/asteroid-bennu.jpg") center / cover no-repeat !important;
+  opacity: .19 !important;
+  filter: contrast(1.05) saturate(.76) !important;
+  mask-image: radial-gradient(circle, rgba(0,0,0,.95) 0 54%, rgba(0,0,0,.45) 68%, transparent 76%) !important;
+}
+
+body.ui-page-research-log .research-log-main > * {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+body.ui-page-research-log .research-status-grid,
+body.ui-page-research-log .project-grid {
+  position: relative !important;
+}
+
+body.ui-page-research-log .research-status-grid::before,
+body.ui-page-research-log .project-grid::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: -18px !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, transparent, rgba(214, 181, 104, .36), rgba(139, 199, 255, .16), transparent) !important;
+  pointer-events: none !important;
+}
+
+html:not([data-theme="space"]) body.ui-page-research-log .research-log-main {
+  background:
+    radial-gradient(circle at 82% 10%, rgba(214, 181, 104, .14), transparent 29rem),
+    radial-gradient(circle at 12% 28%, rgba(61, 116, 159, .08), transparent 22rem),
+    linear-gradient(180deg, rgba(224, 235, 243, .42), rgba(224, 235, 243, 0) 46%) !important;
+}
+
+html:not([data-theme="space"]) body.ui-page-research-log .research-log-main::before {
+  background-image:
+    linear-gradient(rgba(52, 86, 116, .055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(52, 86, 116, .045) 1px, transparent 1px),
+    linear-gradient(115deg, transparent 45%, rgba(172, 137, 62, .11) 50%, transparent 56%) !important;
+  opacity: .54 !important;
+}
+
+html:not([data-theme="space"]) body.ui-page-research-log .research-log-main::after {
+  opacity: .105 !important;
+  mix-blend-mode: multiply !important;
+  filter: grayscale(.08) contrast(1.04) saturate(.72) !important;
+}
+
+@media (max-width: 760px) {
+  body.ui-page-research-log .research-log-main::after,
+  body.mads-mobile-lite.ui-page-research-log .research-log-main::after {
+    display: none !important;
+  }
+
+  body.ui-page-research-log .research-log-main::before {
+    background-size: 48px 48px, 48px 48px, 100% 100% !important;
+    opacity: .28 !important;
+  }
+}
+
+
+/* Research Log Gate specificity guard */
+.nav a.nav-log-gate {
+  flex: 0 0 clamp(164px, 11.5vw, 196px) !important;
+  width: clamp(164px, 11.5vw, 196px) !important;
+  min-width: clamp(164px, 11.5vw, 196px) !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0 14px !important;
+  display: inline-flex !important;
+  justify-content: flex-start !important;
+  text-align: left !important;
+}
+
+.nav a.nav-log-gate[aria-current="page"] {
+  border-color: rgba(214, 181, 104, .58) !important;
+}
+
+@media (max-width: 1040px) {
+  .nav a.nav-log-gate {
+    flex-basis: auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    justify-content: center !important;
+  }
+}
+
+
+/* Research Log Gate mobile width guard */
+@media (max-width: 760px) {
+  body .nav a.nav-log-gate,
+  body.mads-mobile-lite .nav a.nav-log-gate {
+    flex: 1 0 100% !important;
+    flex-basis: 100% !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    grid-column: 1 / -1 !important;
+    justify-content: center !important;
+  }
+}
+
+
+/* Research Log mobile title guard */
+@media (max-width: 760px) {
+  body.ui-page-research-log .research-log-main h1 {
+    max-width: 100% !important;
+    font-size: 2.55rem !important;
+    line-height: 1.04 !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    hyphens: auto !important;
+  }
+}

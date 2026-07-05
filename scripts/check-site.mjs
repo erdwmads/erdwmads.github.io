@@ -128,6 +128,32 @@ for (const page of pages) {
   }
 }
 
+
+const homePage = readDistPage("index.html");
+const homeNavMatch = homePage.match(/<nav\b[^>]*class="[^"]*\bnav\b[^"]*"[^>]*>[\s\S]*?<\/nav>/i);
+if (!homeNavMatch) {
+  fail("index.html: missing main navigation");
+} else {
+  const homeNavHtml = homeNavMatch[0];
+  const ordinaryLinksMatch = homeNavHtml.match(/<div\b[^>]*class="[^"]*\bnav__links\b[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
+  if (!ordinaryLinksMatch) {
+    fail("index.html: ordinary navigation links must be grouped inside nav__links");
+  } else if (/href="research-log\.html"[\s\S]*?>\s*Research Log\s*</i.test(ordinaryLinksMatch[1])) {
+    fail("index.html: Research Log must be separated from ordinary navigation links");
+  }
+  if (!/<a\b(?=[^>]*href="research-log\.html")(?=[^>]*class="[^"]*\bnav-log-gate\b)[^>]*>[\s\S]*?Research Log[\s\S]*?Active Archive[\s\S]*?<\/a>/i.test(homeNavHtml)) {
+    fail("index.html: missing independent Research Log gate in the header");
+  }
+}
+
+const researchLogHeader = readDistPage("research-log.html");
+if (!/<body\b[^>]*class="[^"]*\bui-page-research-log\b/i.test(researchLogHeader)) {
+  fail("research-log.html: body must expose ui-page-research-log for page-specific design");
+}
+if (!/<a\b(?=[^>]*href="research-log\.html")(?=[^>]*class="[^"]*\bnav-log-gate\b)(?=[^>]*aria-current="page")[^>]*>/i.test(researchLogHeader)) {
+  fail("research-log.html: independent Research Log gate must show the active state");
+}
+
 const publicMissionImageDir = path.join(distDir, "assets", "img", "mission-log");
 const publicMissionImages = fs.existsSync(publicMissionImageDir)
   ? fs.readdirSync(publicMissionImageDir).filter((name) => /^grad-log-.*\.jpg$/i.test(name))
