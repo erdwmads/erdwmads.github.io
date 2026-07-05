@@ -55,7 +55,7 @@
   }
 
   function setCurrentNav(pageName) {
-    document.querySelectorAll(".nav a").forEach((link) => {
+    document.querySelectorAll(".nav a, .nav-log-gate").forEach((link) => {
       const linkPage = pageNameFromUrl(link.getAttribute("href") || "index.html");
       if (linkPage === pageName) {
         link.setAttribute("aria-current", "page");

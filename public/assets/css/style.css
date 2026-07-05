@@ -17352,48 +17352,6 @@ html:not([data-theme="space"]) body.ui-page-research-log .research-log-main::aft
 }
 
 
-/* Research Log Gate specificity guard */
-.nav a.nav-log-gate {
-  flex: 0 0 clamp(164px, 11.5vw, 196px) !important;
-  width: clamp(164px, 11.5vw, 196px) !important;
-  min-width: clamp(164px, 11.5vw, 196px) !important;
-  height: 38px !important;
-  min-height: 38px !important;
-  padding: 0 14px !important;
-  display: inline-flex !important;
-  justify-content: flex-start !important;
-  text-align: left !important;
-}
-
-.nav a.nav-log-gate[aria-current="page"] {
-  border-color: rgba(214, 181, 104, .58) !important;
-}
-
-@media (max-width: 1040px) {
-  .nav a.nav-log-gate {
-    flex-basis: auto !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    justify-content: center !important;
-  }
-}
-
-
-/* Research Log Gate mobile width guard */
-@media (max-width: 760px) {
-  body .nav a.nav-log-gate,
-  body.mads-mobile-lite .nav a.nav-log-gate {
-    flex: 1 0 100% !important;
-    flex-basis: 100% !important;
-    width: 100% !important;
-    min-width: 100% !important;
-    max-width: 100% !important;
-    grid-column: 1 / -1 !important;
-    justify-content: center !important;
-  }
-}
-
-
 /* Research Log mobile title guard */
 @media (max-width: 760px) {
   body.ui-page-research-log .research-log-main h1 {
@@ -17403,5 +17361,77 @@ html:not([data-theme="space"]) body.ui-page-research-log .research-log-main::aft
     overflow-wrap: break-word !important;
     word-break: normal !important;
     hyphens: auto !important;
+  }
+}
+
+
+/* Header action rail repair */
+.header-actions {
+  justify-self: end !important;
+  align-self: center !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: clamp(8px, .8vw, 14px) !important;
+  min-width: 0 !important;
+}
+
+.header-actions .nav {
+  justify-self: auto !important;
+  flex: 0 1 auto !important;
+  width: auto !important;
+  margin: 0 !important;
+}
+
+.header-actions > .nav-log-gate {
+  flex: 0 0 clamp(154px, 10.4vw, 182px) !important;
+  min-width: clamp(154px, 10.4vw, 182px) !important;
+  margin-left: 0 !important;
+}
+
+.header-actions > .theme-toggle {
+  flex: 0 0 auto !important;
+  margin-left: 0 !important;
+}
+
+@media (min-width: 761px) and (max-width: 1040px) {
+  .header-actions {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+
+  .header-actions .nav {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+  }
+
+  .header-actions > .nav-log-gate,
+  .header-actions > .theme-toggle {
+    flex: 0 1 220px !important;
+    min-width: 0 !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .header-actions {
+    width: 100% !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+  }
+
+  .header-actions .nav,
+  .header-actions > .nav-log-gate {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .header-actions > .nav-log-gate {
+    justify-content: center !important;
+  }
+
+  .header-actions > .theme-toggle {
+    flex: 0 1 190px !important;
   }
 }

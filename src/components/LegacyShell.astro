@@ -82,10 +82,12 @@ const bodyClass = `ui-page-${current}`;
       <strong>{brand.name}</strong>
       <span set:html={brand.tagline} />
     </a>
-    <nav class="nav" aria-label="Main navigation">
-      <div class="nav__links">
-        {navItems.map((item) => <a href={item.href} aria-current={current === item.key ? "page" : undefined}>{item.label}</a>)}
-      </div>
+    <div class="header-actions">
+      <nav class="nav" aria-label="Main navigation">
+        <div class="nav__links">
+          {navItems.map((item) => <a href={item.href} aria-current={current === item.key ? "page" : undefined}>{item.label}</a>)}
+        </div>
+      </nav>
       <a class="nav-log-gate" href={researchLogGate.href} aria-current={current === researchLogGate.key ? "page" : undefined}>
         <span class="nav-log-gate__signal" aria-hidden="true"></span>
         <span class="nav-log-gate__copy">
@@ -94,7 +96,7 @@ const bodyClass = `ui-page-${current}`;
         </span>
       </a>
       <button class="theme-toggle" type="button" aria-label="Toggle light and space mode">Space Mode</button>
-    </nav>
+    </div>
   </div>
 </header>
 <main class={mainClass}>

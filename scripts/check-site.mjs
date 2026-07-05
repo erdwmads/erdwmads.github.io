@@ -130,19 +130,39 @@ for (const page of pages) {
 
 
 const homePage = readDistPage("index.html");
-const homeNavMatch = homePage.match(/<nav\b[^>]*class="[^"]*\bnav\b[^"]*"[^>]*>[\s\S]*?<\/nav>/i);
-if (!homeNavMatch) {
-  fail("index.html: missing main navigation");
+const homeHeaderMatch = homePage.match(/<header\b[^>]*class="[^"]*\bsite-header\b[^"]*"[^>]*>[\s\S]*?<\/header>/i);
+if (!homeHeaderMatch) {
+  fail("index.html: missing site header");
 } else {
-  const homeNavHtml = homeNavMatch[0];
-  const ordinaryLinksMatch = homeNavHtml.match(/<div\b[^>]*class="[^"]*\bnav__links\b[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
-  if (!ordinaryLinksMatch) {
-    fail("index.html: ordinary navigation links must be grouped inside nav__links");
-  } else if (/href="research-log\.html"[\s\S]*?>\s*Research Log\s*</i.test(ordinaryLinksMatch[1])) {
-    fail("index.html: Research Log must be separated from ordinary navigation links");
+  const homeHeaderHtml = homeHeaderMatch[0];
+  const homeNavMatch = homeHeaderHtml.match(/<nav\b[^>]*class="[^"]*\bnav\b[^"]*"[^>]*>[\s\S]*?<\/nav>/i);
+  const headerActionsMatch = homeHeaderHtml.match(/<div\b[^>]*class="[^"]*\bheader-actions\b[^"]*"[^>]*>([\s\S]*?)<\/div>\s*<\/div>\s*<\/header>/i);
+  if (!homeNavMatch) {
+    fail("index.html: missing main navigation");
   }
-  if (!/<a\b(?=[^>]*href="research-log\.html")(?=[^>]*class="[^"]*\bnav-log-gate\b)[^>]*>[\s\S]*?Research Log[\s\S]*?Active Archive[\s\S]*?<\/a>/i.test(homeNavHtml)) {
+  if (!headerActionsMatch) {
+    fail("index.html: missing header-actions wrapper");
+  }
+  if (homeNavMatch) {
+    const homeNavHtml = homeNavMatch[0];
+    const ordinaryLinksMatch = homeNavHtml.match(/<div\b[^>]*class="[^"]*\bnav__links\b[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
+    if (!ordinaryLinksMatch) {
+      fail("index.html: ordinary navigation links must be grouped inside nav__links");
+    } else if (/href="research-log\.html"[\s\S]*?>\s*Research Log\s*</i.test(ordinaryLinksMatch[1])) {
+      fail("index.html: Research Log must be separated from ordinary navigation links");
+    }
+    if (/\bnav-log-gate\b/i.test(homeNavHtml)) {
+      fail("index.html: Research Log gate must be outside the ordinary nav dock");
+    }
+    if (/\btheme-toggle\b/i.test(homeNavHtml)) {
+      fail("index.html: theme toggle must be outside the ordinary nav dock");
+    }
+  }
+  if (!/<a\b(?=[^>]*href="research-log\.html")(?=[^>]*class="[^"]*\bnav-log-gate\b)[^>]*>[\s\S]*?Research Log[\s\S]*?Active Archive[\s\S]*?<\/a>/i.test(homeHeaderHtml)) {
     fail("index.html: missing independent Research Log gate in the header");
+  }
+  if (!/<button\b(?=[^>]*class="[^"]*\btheme-toggle\b)[^>]*>/i.test(homeHeaderHtml)) {
+    fail("index.html: missing theme toggle in the header actions");
   }
 }
 
@@ -152,6 +172,11 @@ if (!/<body\b[^>]*class="[^"]*\bui-page-research-log\b/i.test(researchLogHeader)
 }
 if (!/<a\b(?=[^>]*href="research-log\.html")(?=[^>]*class="[^"]*\bnav-log-gate\b)(?=[^>]*aria-current="page")[^>]*>/i.test(researchLogHeader)) {
   fail("research-log.html: independent Research Log gate must show the active state");
+}
+
+const legacyNavigationSource = fs.readFileSync(path.join(root, "public", "assets", "js", "legacy-navigation.js"), "utf8");
+if (!legacyNavigationSource.includes('document.querySelectorAll(".nav a, .nav-log-gate")')) {
+  fail("legacy-navigation.js: soft navigation must update the independent Research Log gate");
 }
 
 const publicMissionImageDir = path.join(distDir, "assets", "img", "mission-log");
