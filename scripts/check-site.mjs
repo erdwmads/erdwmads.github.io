@@ -22,6 +22,15 @@ const pages = [
 ];
 
 const failures = [];
+const expectedDisplayName = "Mads LIU Yong";
+const staleNameNeedles = [
+  ["Mads", "LIU", "YONG"].join(" "),
+  ["MADS", "LIU", "YONG"].join(" "),
+  ["LIU", "YONG"].join(" "),
+  ["Mads", "LIU", "YONG"].join("_"),
+  ["LIU", "YONG"].join("_")
+];
+const textFilePattern = /\.(?:astro|css|html|js|json|md|mjs|svg|ts|txt|xml)$/i;
 
 function fail(message) {
   failures.push(message);
@@ -106,9 +115,39 @@ function localAssetPath(value) {
   return path.join(distDir, clean);
 }
 
+for (const targetPath of [
+  "README.md",
+  "docs",
+  "src",
+  "public/assets/css",
+  "public/assets/js",
+  "public/assets/img/profile-placeholder.svg"
+]) {
+  for (const filePath of collectFiles(path.join(root, targetPath))) {
+    const relativePath = path.relative(root, filePath).replace(/\\/g, "/");
+    for (const staleName of staleNameNeedles) {
+      if (relativePath.includes(staleName)) {
+        fail(`${relativePath}: stale display-name spelling in file path`);
+      }
+    }
+    if (!textFilePattern.test(filePath)) continue;
+    const text = fs.readFileSync(filePath, "utf8");
+    for (const staleName of staleNameNeedles) {
+      if (text.includes(staleName)) {
+        fail(`${relativePath}: stale display-name spelling ${staleName}`);
+      }
+    }
+  }
+}
+
 for (const page of pages) {
   const html = readDistPage(page);
   if (!html) continue;
+
+  if (!html.includes(expectedDisplayName)) fail(`${page}: must use the canonical display name ${expectedDisplayName}`);
+  for (const staleName of staleNameNeedles) {
+    if (html.includes(staleName)) fail(`${page}: stale display-name spelling ${staleName}`);
+  }
 
   if (!html.includes("assets/js/power-manager.js")) fail(`${page}: missing power-manager.js`);
   if (!html.includes("assets/js/legacy-navigation.js")) fail(`${page}: missing legacy-navigation.js`);
@@ -240,7 +279,7 @@ const researchLog = readDistPage("research-log.html");
 if (researchLog.includes("assets/js/research-lock.js") || researchLog.includes("data-research-lock-content") || researchLog.includes("data-research-lock-gate") || researchLog.includes("Research Log Locked")) {
   fail("research-log.html: password gate must be removed from the public Research Log");
 }
-if (!researchLog.includes("Download research proposal") || !researchLog.includes("assets/files/Bachelors_Thesis_Research_Proposal_Mads_LIU_YONG.pdf")) {
+if (!researchLog.includes("Download research proposal") || !researchLog.includes("assets/files/Bachelors_Thesis_Research_Proposal_Mads_LIU_Yong.pdf")) {
   fail("research-log.html: must keep the research proposal download before the private Mission Log boundary");
 }
 if (!researchLog.includes('class="project-grid"') || !researchLog.includes("Future Research Project") || !researchLog.includes("Open protected log")) {
@@ -292,6 +331,12 @@ if (!interface2046.includes("MOBILE_INTERFACE_MEDIA") || !interface2046.includes
 const styleCss = fs.readFileSync(path.join(assetsDir, "css", "style.css"), "utf8");
 if (!styleCss.includes("mads-soft-nav-active")) {
   fail("style.css: missing soft navigation stability styles");
+}
+if (!/\.header-actions\s+\.nav\s*\{[\s\S]*?flex-wrap:\s*nowrap\s*!important[\s\S]*?\}/.test(styleCss)) {
+  fail("style.css: header action rail must keep ordinary navigation on one desktop row");
+}
+if (/body\.ui-page-research-log\s+\.research-log-main::after\s*\{[\s\S]*?url\(\"\.\.\/img\/asteroid-bennu\.jpg\"\)[\s\S]*?\}/.test(styleCss)) {
+  fail("style.css: Research Log page must not add a second asteroid background layer");
 }
 if (!styleCss.includes("mobile-lightweight-mode")) {
   fail("style.css: missing mobile lightweight rendering overrides");

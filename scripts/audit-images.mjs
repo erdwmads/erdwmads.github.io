@@ -52,8 +52,7 @@ const lines = [
   "- Prefer adding generated thumbnails or CDN-sized URLs for page display instead of overwriting originals.",
   "- Keep Mission Log images under `public/assets/img/mission-log/`.",
   "- Mission Log images should keep `loading=\"lazy\"` and `decoding=\"async\"`.",
-  "- Before replacing public or Mission Log images, run `npm run check`.",
-  ""
+  "- Before replacing public or Mission Log images, run `npm run check`."
 ];
 
 fs.mkdirSync(docsDir, { recursive: true });

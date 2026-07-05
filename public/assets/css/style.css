@@ -12207,7 +12207,7 @@ body.entry-gate-active > .ui2046-progress {
    Problem:
    - V2 hid the split-name spans at opacity:0 and relied on animation.
    - On some browsers / timing states this leaves a large empty area where
-     MADS LIU YONG should appear.
+     Mads LIU Yong should appear.
    Fix:
    - The identity line is visible by default.
    - Animation becomes a subtle visible movement, not a hidden-to-visible risk.
@@ -13656,7 +13656,7 @@ html.is-edge-browser body.space-mode .project-progress > div::after {
    Entry Gate More Gold / Light Name Refinement
    Scope:
    - Entry screen only.
-   - Keeps MADS LIU YONG as stable light text.
+   - Keeps Mads LIU Yong as stable light text.
    - Increases gold presence through archive labels, code, pills, borders,
      and scanner accents.
    - Does not touch page layout, Mission Log, Navigator, Paper Shelf, cards,
@@ -17265,35 +17265,9 @@ body.ui-page-research-log .research-log-main {
 
 body.ui-page-research-log .research-log-main::before,
 body.ui-page-research-log .research-log-main::after {
-  content: "" !important;
-  position: absolute !important;
-  pointer-events: none !important;
-  z-index: -1 !important;
-}
-
-body.ui-page-research-log .research-log-main::before {
-  inset: 0 !important;
-  background-image:
-    linear-gradient(rgba(139, 199, 255, .055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(139, 199, 255, .045) 1px, transparent 1px),
-    linear-gradient(115deg, transparent 45%, rgba(214, 181, 104, .10) 50%, transparent 56%) !important;
-  background-size: 64px 64px, 64px 64px, 100% 100% !important;
-  opacity: .48 !important;
-  mask-image: linear-gradient(180deg, rgba(0,0,0,.9), rgba(0,0,0,.2) 72%, transparent) !important;
-}
-
-body.ui-page-research-log .research-log-main::after {
-  top: clamp(22px, 4vw, 72px) !important;
-  right: max(-12vw, -160px) !important;
-  width: min(58vw, 760px) !important;
-  aspect-ratio: 1 !important;
-  border-radius: 999px !important;
-  background:
-    linear-gradient(90deg, rgba(5, 13, 24, .55), rgba(5, 13, 24, .04)),
-    url("../img/asteroid-bennu.jpg") center / cover no-repeat !important;
-  opacity: .19 !important;
-  filter: contrast(1.05) saturate(.76) !important;
-  mask-image: radial-gradient(circle, rgba(0,0,0,.95) 0 54%, rgba(0,0,0,.45) 68%, transparent 76%) !important;
+  display: none !important;
+  content: none !important;
+  background: none !important;
 }
 
 body.ui-page-research-log .research-log-main > * {
@@ -17365,73 +17339,200 @@ html:not([data-theme="space"]) body.ui-page-research-log .research-log-main::aft
 }
 
 
-/* Header action rail repair */
+/* Header integrated action rail */
+.header-inner {
+  display: grid !important;
+  grid-template-columns: minmax(250px, .78fr) minmax(0, auto) !important;
+  align-items: center !important;
+  gap: clamp(16px, 2vw, 32px) !important;
+}
+
+.brand {
+  max-width: min(34vw, 390px) !important;
+}
+
 .header-actions {
   justify-self: end !important;
   align-self: center !important;
-  display: flex !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, auto) max-content max-content !important;
   align-items: center !important;
-  justify-content: flex-end !important;
-  gap: clamp(8px, .8vw, 14px) !important;
+  justify-content: end !important;
+  gap: clamp(8px, .75vw, 12px) !important;
+  width: auto !important;
+  max-width: 100% !important;
   min-width: 0 !important;
 }
 
 .header-actions .nav {
-  justify-self: auto !important;
-  flex: 0 1 auto !important;
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: center !important;
   width: auto !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
   margin: 0 !important;
+  gap: clamp(6px, .62vw, 12px) !important;
+  padding: clamp(8px, .72vw, 12px) clamp(10px, 1vw, 18px) !important;
+  border-radius: 999px !important;
+}
+
+.header-actions .nav a {
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+  padding: 7px clamp(9px, .75vw, 13px) !important;
+  font-size: clamp(12px, .82vw, 13.5px) !important;
+}
+
+.header-actions > .nav-log-gate,
+.header-actions > .theme-toggle {
+  flex: 0 0 auto !important;
+  align-self: center !important;
+  height: 42px !important;
+  min-height: 42px !important;
+  border-radius: 999px !important;
+  margin-left: 0 !important;
 }
 
 .header-actions > .nav-log-gate {
-  flex: 0 0 clamp(154px, 10.4vw, 182px) !important;
-  min-width: clamp(154px, 10.4vw, 182px) !important;
-  margin-left: 0 !important;
+  width: clamp(152px, 9.2vw, 176px) !important;
+  min-width: clamp(152px, 9.2vw, 176px) !important;
+  justify-content: flex-start !important;
+  padding: 0 14px !important;
+  background:
+    linear-gradient(135deg, rgba(214, 181, 104, .16), rgba(91, 155, 209, .12)),
+    rgba(8, 19, 34, .50) !important;
 }
 
 .header-actions > .theme-toggle {
-  flex: 0 0 auto !important;
-  margin-left: 0 !important;
+  min-width: clamp(112px, 7.4vw, 138px) !important;
+  padding-inline: clamp(14px, 1vw, 20px) !important;
+}
+
+html:not([data-theme="space"]) .header-actions > .nav-log-gate {
+  color: rgba(9, 25, 44, .92) !important;
+  border-color: rgba(172, 137, 62, .28) !important;
+  background:
+    linear-gradient(135deg, rgba(214, 181, 104, .16), rgba(116, 157, 190, .10)),
+    rgba(239, 246, 251, .72) !important;
+}
+
+html:not([data-theme="space"]) .header-actions > .nav-log-gate[aria-current="page"],
+html:not([data-theme="space"]) .header-actions > .nav-log-gate:hover {
+  background:
+    linear-gradient(135deg, rgba(214, 181, 104, .22), rgba(116, 157, 190, .12)),
+    rgba(246, 250, 253, .86) !important;
+}
+
+@media (min-width: 761px) and (max-width: 1420px) {
+  .header-inner {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: center !important;
+    gap: 14px !important;
+  }
+
+  .brand {
+    align-self: flex-start !important;
+    max-width: min(620px, 100%) !important;
+  }
+
+  .header-actions {
+    width: 100% !important;
+    grid-template-columns: minmax(0, 1fr) max-content max-content !important;
+  }
+
+  .header-actions .nav {
+    width: 100% !important;
+  }
 }
 
 @media (min-width: 761px) and (max-width: 1040px) {
   .header-actions {
-    flex-wrap: wrap !important;
-    justify-content: center !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    gap: 8px !important;
   }
 
   .header-actions .nav {
-    flex: 1 1 100% !important;
+    grid-column: 1 / -1 !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+  }
+
+  .header-actions .nav a {
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  .header-actions > .nav-log-gate,
+  .header-actions > .theme-toggle {
+    width: 100% !important;
+    min-width: 0 !important;
+    justify-content: center !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .header-inner {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .header-actions {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    justify-content: stretch !important;
+    gap: 8px !important;
+  }
+
+  .header-actions .nav {
     width: 100% !important;
   }
 
   .header-actions > .nav-log-gate,
   .header-actions > .theme-toggle {
-    flex: 0 1 220px !important;
+    width: 100% !important;
     min-width: 0 !important;
+    justify-content: center !important;
   }
 }
 
+
+/* Mobile header final guard */
 @media (max-width: 760px) {
-  .header-actions {
+  body .header-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
     width: 100% !important;
-    flex-wrap: wrap !important;
-    justify-content: flex-start !important;
-    gap: 8px !important;
+    justify-content: stretch !important;
+    align-items: stretch !important;
   }
 
-  .header-actions .nav,
-  .header-actions > .nav-log-gate {
-    flex: 1 1 100% !important;
+  body .header-actions .nav {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    width: 100% !important;
+    gap: 7px !important;
+    overflow: visible !important;
+  }
+
+  body .header-actions .nav a {
     width: 100% !important;
     min-width: 0 !important;
+    transform: none !important;
+    text-align: center !important;
   }
 
-  .header-actions > .nav-log-gate {
+  body .header-actions > .nav-log-gate,
+  body .header-actions > .theme-toggle {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    grid-column: 1 / -1 !important;
     justify-content: center !important;
-  }
-
-  .header-actions > .theme-toggle {
-    flex: 0 1 190px !important;
   }
 }

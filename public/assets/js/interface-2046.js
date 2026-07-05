@@ -111,7 +111,7 @@
 
   const routeForPage = (key) => {
     if (shortRouteMap[key]) return shortRouteMap[key];
-    const pageTitle = (document.title || 'Mads LIU YONG').split('|')[0].trim() || 'Mission File';
+    const pageTitle = (document.title || 'Mads LIU Yong').split('|')[0].trim() || 'Mission File';
     const h1 = document.querySelector('main h1, .hero h1, .page-title');
     return shortenRoute(h1?.textContent || pageTitle);
   };
@@ -363,7 +363,7 @@
           </div>
           <h2 class="entry-gate__name">
             <span>MADS</span>
-            <span>LIU YONG</span>
+            <span>LIU Yong</span>
           </h2>
           <p class="entry-gate__archive">Cosmic mineralogy / primitive Solar System materials</p>
           <div class="entry-gate__meta">

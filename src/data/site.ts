@@ -1,13 +1,13 @@
 export const brand = {
-  name: "Mads LIU YONG",
+  name: "Mads LIU Yong",
   tagline: "Cosmic Mineralogy &bull; Planetary Sciences &bull; Meteoritics",
   homeHref: "index.html"
 } as const;
 
 export const siteMetadata = {
   url: "https://erdwmads.github.io",
-  title: "Mads LIU YONG Academic Website",
-  description: "Academic website of Mads LIU YONG, focused on cosmic mineralogy, planetary sciences, meteoritics, and primitive Solar System materials.",
+  title: "Mads LIU Yong Academic Website",
+  description: "Academic website of Mads LIU Yong, focused on cosmic mineralogy, planetary sciences, meteoritics, and primitive Solar System materials.",
   image: "assets/img/Solar_System_true_color.jpg",
   locale: "en_US"
 } as const;
@@ -39,7 +39,7 @@ export const contentPages = [
   { href: "sample-cabinet.html", title: "Sample Cabinet", key: "sample-cabinet" }
 ] as const;
 
-export const footerItems = ["(c) 2026 Mads LIU YONG", "Built for GitHub Pages"] as const;
+export const footerItems = ["(c) 2026 Mads LIU Yong", "Built for GitHub Pages"] as const;
 
 type ScriptSpec = {
   src: string;
