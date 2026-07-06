@@ -381,6 +381,11 @@ if (/backdrop-filter:\s*blur/.test(finalLightboxBlock) || /-webkit-backdrop-filt
 if (!/mission-lightbox-open[\s\S]*ambient-space-layer[\s\S]*animation:\s*none/.test(styleCss)) {
   fail("style.css: Mission Log lightbox must pause ambient layers while open");
 }
+const rationalizedLightboxBlock = styleCss.slice(styleCss.lastIndexOf("/* mission-lightbox-rationalized-viewer */"));
+const rationalizedCaptionMatch = rationalizedLightboxBlock.match(/\.mission-lightbox__captionbar\s*\{[\s\S]*?\}/);
+if (!rationalizedCaptionMatch || /position:\s*fixed/.test(rationalizedCaptionMatch[0])) {
+  fail("style.css: Mission Log lightbox caption must reserve layout space instead of overlaying the image");
+}
 
 const researchLockPath = path.join(assetsDir, "js", "research-lock.js");
 if (!fs.existsSync(researchLockPath)) {
