@@ -222,8 +222,8 @@ const publicMissionImageDir = path.join(distDir, "assets", "img", "mission-log")
 const publicMissionImages = fs.existsSync(publicMissionImageDir)
   ? fs.readdirSync(publicMissionImageDir).filter((name) => /^grad-log-.*\.jpg$/i.test(name))
   : [];
-if (publicMissionImages.length !== 50) {
-  fail(`dist: expected 50 published Mission Log images, found ${publicMissionImages.length}`);
+if (publicMissionImages.length !== 54) {
+  fail(`dist: expected 54 published Mission Log images, found ${publicMissionImages.length}`);
 }
 if (!fs.existsSync(missionDataPath)) {
   fail("dist: missing assets/data/mission-log.json");
@@ -315,6 +315,30 @@ for (const required of ["robots.txt", "sitemap.xml"]) {
   }
 }
 
+if (!fs.existsSync(missionDataPath)) {
+  fail("mission-log.json: missing generated Mission Log data");
+} else {
+  const missionData = JSON.parse(fs.readFileSync(missionDataPath, "utf8"));
+  const log010 = Array.isArray(missionData) ? missionData.find((entry) => entry.id === "log-010") : null;
+  const log010Html = log010?.bodyHtml || "";
+  const log010ImageCount = (log010Html.match(/mission-thumb-img/g) || []).length;
+  if (!log010) {
+    fail("mission-log.json: missing log-010 entry");
+  } else {
+    for (const phrase of ["EDS reconnaissance evidence", "Ca-rich EDS map", "Fe-S EDS map", "matrix-like altered material"]) {
+      if (!log010Html.includes(phrase)) {
+        fail(`log-010: missing EDS evidence phrase: ${phrase}`);
+      }
+    }
+    if (log010ImageCount < 8) {
+      fail(`log-010: expected at least 8 evidence figures, found ${log010ImageCount}`);
+    }
+    if (/\b(is|are|was|were)\s+(pyrrhotite|magnetite|dolomite)\b/i.test(log010Html)) {
+      fail("log-010: EDS interpretation must remain candidate/preliminary, not definitive");
+    }
+  }
+}
+
 const legacyNavigation = fs.readFileSync(path.join(assetsDir, "js", "legacy-navigation.js"), "utf8");
 if (!legacyNavigation.includes("mads-soft-nav-active") || !legacyNavigation.includes("mads:soft-nav-ready")) {
   fail("legacy-navigation.js: missing soft navigation stability lifecycle");
@@ -391,4 +415,3 @@ if (failures.length) {
 }
 
 console.log(`Site check passed: ${pages.length} public pages, protected Mission Log, local assets, SEO metadata, and Paper Shelf.`);
-
