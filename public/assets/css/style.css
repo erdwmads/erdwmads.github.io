@@ -17536,3 +17536,58 @@ html:not([data-theme="space"]) .header-actions > .nav-log-gate:hover {
     justify-content: center !important;
   }
 }
+
+
+/* mission-lightbox-stable-viewport */
+html.mission-lightbox-open,
+body.mission-lightbox-open {
+  overflow: hidden !important;
+}
+
+html.mission-lightbox-open .ambient-space-layer,
+body.mission-lightbox-open .ambient-space-layer,
+html.mission-lightbox-open .ui2046-layer,
+body.mission-lightbox-open .ui2046-layer,
+html.mission-lightbox-open .ui2046-progress,
+body.mission-lightbox-open .ui2046-progress {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  animation: none !important;
+  transition: none !important;
+  pointer-events: none !important;
+}
+
+html.mission-lightbox-open .ambient-space-layer *,
+body.mission-lightbox-open .ambient-space-layer *,
+html.mission-lightbox-open .ui2046-layer *,
+body.mission-lightbox-open .ui2046-layer * {
+  animation: none !important;
+  transition: none !important;
+}
+
+.mission-lightbox {
+  background: rgba(3, 5, 8, .88) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  contain: layout paint style !important;
+  isolation: isolate !important;
+  overscroll-behavior: contain !important;
+  touch-action: none !important;
+}
+
+html:not([data-theme="space"]):not([data-theme-space]) body:not(.space-mode) .mission-lightbox {
+  background: rgba(216, 225, 233, .96) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.mission-lightbox__viewer,
+.mission-lightbox__figure,
+.mission-lightbox__stage {
+  contain: layout paint style !important;
+}
+
+.mission-lightbox__img {
+  backface-visibility: hidden !important;
+  transform: translateZ(0) !important;
+}

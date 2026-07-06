@@ -371,6 +371,17 @@ if (!styleCss.includes("mission-lightbox-unified-theme") || !styleCss.includes("
 if (!/mission-lightbox-rationalized-viewer[\s\S]*html:not\(\[data-theme="space"\]\):not\(\[data-theme-space\]\) body:not\(\.space-mode\) \.mission-lightbox[\s\S]*background: rgba\(226, 234, 241, \.94\) !important/.test(styleCss)) {
   fail("style.css: Mission Log image viewer must use a dedicated light image-viewer surface in light mode");
 }
+if (!styleCss.includes("mission-lightbox-stable-viewport")) {
+  fail("style.css: missing stable Mission Log lightbox viewport rules");
+}
+const finalLightboxBlock = styleCss.slice(styleCss.lastIndexOf("/* mission-lightbox-stable-viewport */"));
+if (/backdrop-filter:\s*blur/.test(finalLightboxBlock) || /-webkit-backdrop-filter:\s*blur/.test(finalLightboxBlock)) {
+  fail("style.css: final Mission Log lightbox viewport must not use live backdrop blur during image viewing");
+}
+if (!/mission-lightbox-open[\s\S]*ambient-space-layer[\s\S]*animation:\s*none/.test(styleCss)) {
+  fail("style.css: Mission Log lightbox must pause ambient layers while open");
+}
+
 const researchLockPath = path.join(assetsDir, "js", "research-lock.js");
 if (!fs.existsSync(researchLockPath)) {
   fail("research-lock.js: missing graduation password gate script");
@@ -387,6 +398,9 @@ const missionLightbox = fs.readFileSync(path.join(assetsDir, "js", "mission-ligh
 if (missionLightbox.includes("mission-lightbox__thumbs") || missionLightbox.includes("buildThumbs")) {
   fail("mission-lightbox.js: full-screen viewer must not render thumbnail strip");
 }
+if (!missionLightbox.includes("emitLightboxPowerState") || !missionLightbox.includes("document.documentElement.classList.add('mission-lightbox-open')")) {
+  fail("mission-lightbox.js: opening the viewer must pause background rendering through the shared lightbox state");
+}
 if (
   missionLightbox.includes("mission-lightbox__panel") ||
   missionLightbox.includes("mission-lightbox__info") ||
@@ -396,6 +410,9 @@ if (
   fail("mission-lightbox.js: image viewer must use minimal image-first layout without side information panel");
 }
 const ambientSpace = fs.readFileSync(path.join(assetsDir, "js", "ambient-space.js"), "utf8");
+if (!ambientSpace.includes("mission-lightbox-open") || !fs.readFileSync(path.join(assetsDir, "js", "interface-2046.js"), "utf8").includes("mission-lightbox-open")) {
+  fail("ambient/interface scripts: Mission Log lightbox must pause background animation loops while open");
+}
 if (!ambientSpace.includes("MOBILE_AMBIENT_MEDIA") || !ambientSpace.includes("isMobileAmbientView") || !ambientSpace.includes("mobile ambient disabled")) {
   fail("ambient-space.js: mobile lightweight mode must prevent ambient particle creation");
 }

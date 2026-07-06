@@ -73,6 +73,12 @@
   let token = 0;
   let items = [];
 
+  function emitLightboxPowerState() {
+    window.dispatchEvent(new CustomEvent('mads:power-state', {
+      detail: window.__madsPowerState || {}
+    }));
+  }
+
   function prepare(scope = document) {
     scope.querySelectorAll('.mission-photo-grid figure').forEach((figure, index) => {
       const item = itemFromFigure(figure, index);
@@ -121,13 +127,17 @@
     lastFocus = document.activeElement;
     show(index);
     overlay.classList.add('is-open');
+    document.documentElement.classList.add('mission-lightbox-open');
     document.body.classList.add('mission-lightbox-open');
+    emitLightboxPowerState();
     closeBtn.focus({ preventScroll: true });
   }
 
   function close() {
     overlay.classList.remove('is-open');
+    document.documentElement.classList.remove('mission-lightbox-open');
     document.body.classList.remove('mission-lightbox-open');
+    emitLightboxPowerState();
     if (lastFocus && typeof lastFocus.focus === 'function') {
       lastFocus.focus({ preventScroll: true });
     }

@@ -254,7 +254,7 @@
 
   const shouldPausePlanetMotion = () => {
     const state = window.__madsPowerState || {};
-    return document.hidden || state.hidden || state.idle || state.lowPower;
+    return document.hidden || state.hidden || state.idle || state.lowPower || document.body.classList.contains("mission-lightbox-open") || document.documentElement.classList.contains("mission-lightbox-open");
   };
 
   let planetAnimationRunning = false;
