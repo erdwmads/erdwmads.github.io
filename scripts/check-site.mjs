@@ -222,8 +222,8 @@ const publicMissionImageDir = path.join(distDir, "assets", "img", "mission-log")
 const publicMissionImages = fs.existsSync(publicMissionImageDir)
   ? fs.readdirSync(publicMissionImageDir).filter((name) => /^grad-log-.*\.jpg$/i.test(name))
   : [];
-if (publicMissionImages.length !== 54) {
-  fail(`dist: expected 54 published Mission Log images, found ${publicMissionImages.length}`);
+if (publicMissionImages.length !== 55) {
+  fail(`dist: expected 55 published Mission Log images, found ${publicMissionImages.length}`);
 }
 if (!fs.existsSync(missionDataPath)) {
   fail("dist: missing assets/data/mission-log.json");
@@ -307,6 +307,10 @@ if (!graduationPage.includes("assets/js/mission-index.js") || !graduationPage.in
 }
 if (graduationPage.includes("Mission Log 009")) {
   fail("research-graduation.html: Mission Log entries must load after unlock, not in initial HTML");
+}
+const missionLogJson = fs.readFileSync(path.join(distDir, "assets", "data", "mission-log.json"), "utf8");
+if (!missionLogJson.includes("grad-log-20260701-09.jpg") || !missionLogJson.includes("Ca-Mg-C-O carbonate candidate")) {
+  fail("mission-log.json: LOG010 must include the Ca-Mg-C-O dolomite candidate evidence figure");
 }
 
 for (const required of ["robots.txt", "sitemap.xml"]) {
