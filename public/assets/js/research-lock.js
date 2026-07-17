@@ -7,19 +7,31 @@
 
   if (!gate || !content || !form || !input) return;
 
+  const archiveIterations = 600000;
   const archiveUrl = gate.dataset.protectedArchiveUrl;
   let isDecrypting = false;
+  let attemptToken = 0;
+  let archiveController = null;
 
   const setError = (message) => {
     if (!error) return;
     error.textContent = message;
     error.hidden = false;
+    input.setAttribute('aria-invalid', 'true');
   };
 
   const clearError = () => {
     if (!error) return;
     error.hidden = true;
     error.textContent = '';
+    input.removeAttribute('aria-invalid');
+  };
+
+  const setBusy = (isBusy) => {
+    const button = form.querySelector('button[type="submit"]');
+    if (isBusy) form.setAttribute('aria-busy', 'true');
+    else form.removeAttribute('aria-busy');
+    if (button) button.disabled = isBusy;
   };
 
   const fromBase64 = (value) => {
@@ -40,8 +52,7 @@
       payload.version !== 1 ||
       payload.kdf !== 'PBKDF2-SHA-256' ||
       payload.cipher !== 'AES-256-GCM' ||
-      !Number.isSafeInteger(payload.iterations) ||
-      payload.iterations <= 0
+      payload.iterations !== archiveIterations
     ) {
       throw new Error('invalid-archive');
     }
@@ -56,12 +67,15 @@
     return { salt, iv, ciphertext };
   };
 
-  const decryptArchive = async (password) => {
-    if (!archiveUrl || !window.crypto?.subtle) {
+  const decryptArchive = async (password, signal) => {
+    if (!window.crypto?.subtle) {
+      throw new Error('unsupported-crypto');
+    }
+    if (!archiveUrl) {
       throw new Error('archive-unavailable');
     }
 
-    const response = await fetch(archiveUrl, { cache: 'no-store' });
+    const response = await fetch(archiveUrl, { cache: 'no-store', signal });
     if (!response.ok) throw new Error('archive-unavailable');
 
     const payload = await response.json();
@@ -107,36 +121,52 @@
     document.dispatchEvent(new CustomEvent('mads:research-unlocked'));
   };
 
+  const invalidateAccess = () => {
+    attemptToken += 1;
+    isDecrypting = false;
+    archiveController?.abort();
+    archiveController = null;
+    setBusy(false);
+    delete window.MadsProtectedArchive;
+    document.documentElement.classList.remove('research-unlocked');
+  };
+
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (isDecrypting) return;
 
     isDecrypting = true;
+    const currentAttempt = ++attemptToken;
+    const currentController = typeof AbortController === 'function' ? new AbortController() : null;
+    archiveController = currentController;
     clearError();
 
     const password = String(input.value || '');
-    const button = form.querySelector('button[type="submit"]');
-    form.setAttribute('aria-busy', 'true');
-    if (button) button.disabled = true;
+    setBusy(true);
 
     try {
-      const entries = await decryptArchive(password);
+      const entries = await decryptArchive(password, currentController?.signal);
+      if (currentAttempt !== attemptToken) return;
       unlock(entries);
     } catch (caughtError) {
+      if (currentAttempt !== attemptToken) return;
       if (caughtError?.name === 'OperationError') {
         setError('Incorrect password.');
+      } else if (caughtError?.message === 'unsupported-crypto') {
+        setError('Your browser cannot unlock this archive.');
       } else {
-        setError('This browser cannot verify the password here. Try a current browser.');
+        setError('Archive unavailable. Please try again.');
       }
       input.select?.();
     } finally {
-      isDecrypting = false;
-      form.removeAttribute('aria-busy');
-      if (button) button.disabled = false;
+      if (currentAttempt === attemptToken) {
+        isDecrypting = false;
+        if (archiveController === currentController) archiveController = null;
+        setBusy(false);
+      }
     }
   });
 
-  window.addEventListener('pagehide', () => {
-    delete window.MadsProtectedArchive;
-  });
+  window.addEventListener('mads:soft-nav-start', invalidateAccess);
+  window.addEventListener('pagehide', invalidateAccess);
 })();

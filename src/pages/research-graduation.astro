@@ -38,12 +38,13 @@ const scriptHtml = getPageScripts("research-graduation");
           name="password"
           type="password"
           autocomplete="current-password"
+          aria-describedby="research-lock-error"
           data-research-lock-input
           required
         >
         <button class="button" type="submit">Unlock</button>
       </form>
-      <p class="research-lock-error" data-research-lock-error hidden>Incorrect password.</p>
+      <p id="research-lock-error" class="research-lock-error" data-research-lock-error role="alert" hidden>Incorrect password.</p>
     </div>
   </section>
 
