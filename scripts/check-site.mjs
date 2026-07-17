@@ -365,17 +365,25 @@ if (researchLog.includes("assets/js/research-lock.js") || researchLog.includes("
 if (!researchLog.includes("Download research proposal") || !researchLog.includes("assets/files/Bachelors_Thesis_Research_Proposal_Mads_LIU_Yong.pdf")) {
   fail("research-log.html: must keep the research proposal download before the private Mission Log boundary");
 }
-if (!researchLog.includes('class="project-grid"') || !researchLog.includes("Future Research Project") || !researchLog.includes("Open protected log")) {
-  fail("research-log.html: must keep the Ongoing/Future project card interface");
+if (!researchLog.includes("Dolomite in the Orgueil CI1 Chondrite")) {
+  fail("research-log.html: missing concise display title");
+}
+if (researchLog.includes("Future Research Project")) {
+  fail("research-log.html: empty future-project placeholder must be hidden");
+}
+if (!researchLog.includes('class="research-dashboard"') || !researchLog.includes("Open protected archive")) {
+  fail("research-log.html: missing unified research dashboard");
 }
 if (researchLog.includes("<h2>Graduation Research</h2>")) {
   fail("research-log.html: graduation project card must use the research title, not the generic label");
 }
-if (!/<a\b(?=[^>]*href="research-graduation\.html")(?=[^>]*class="[^"]*\bproject-link-card\b)[^>]*>/i.test(researchLog)) {
-  fail("research-log.html: graduation project card must link to research-graduation.html");
+if (!/<a\b(?=[^>]*href="research-graduation\.html")[^>]*>\s*Open protected archive\s*<\/a>/i.test(researchLog)) {
+  fail("research-log.html: dashboard must link to the protected archive");
 }
-if (/<a\b[^>]*class="[^"]*\bproject-link-card\b[^"]*\bdisabled-project\b/i.test(researchLog)) {
-  fail("research-log.html: disabled future project must not be clickable");
+
+const shellSource = fs.readFileSync(path.join(root, "src", "components", "LegacyShell.astro"), "utf8");
+if (!shellSource.includes("data-nav-toggle") || !shellSource.includes("data-mobile-nav")) {
+  fail("LegacyShell: missing compact mobile navigation contract");
 }
 
 const graduationPage = readDistPage("research-graduation.html");
