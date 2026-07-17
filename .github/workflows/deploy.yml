@@ -37,6 +37,8 @@ jobs:
         run: npm run test:research-lock
       - name: Test protected Mission Log renderer lifecycle
         run: npm run test:mission-index
+      - name: Test protected Mission Log lightbox purge
+        run: npm run test:mission-lightbox
       - name: Build site
         run: npm run build
       - name: Export PPT data

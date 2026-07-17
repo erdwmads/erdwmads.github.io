@@ -72,6 +72,7 @@
   let touchStartY = 0;
   let token = 0;
   let items = [];
+  let locked = false;
 
   function emitLightboxPowerState() {
     window.dispatchEvent(new CustomEvent('mads:power-state', {
@@ -80,7 +81,9 @@
   }
 
   function prepare(scope = document) {
-    scope.querySelectorAll('.mission-photo-grid figure').forEach((figure, index) => {
+    const figures = scope.querySelectorAll('.mission-photo-grid figure');
+    if (figures.length) locked = false;
+    figures.forEach((figure, index) => {
       const item = itemFromFigure(figure, index);
       figure.setAttribute('tabindex', '0');
       figure.setAttribute('role', 'button');
@@ -89,7 +92,7 @@
   }
 
   function show(index) {
-    if (!items.length) return;
+    if (locked || !items.length) return;
     current = (index + items.length) % items.length;
     const item = items[current];
     const myToken = ++token;
@@ -122,7 +125,7 @@
   }
 
   function open(index, nextItems) {
-    if (!nextItems.length) return;
+    if (locked || !nextItems.length) return;
     items = nextItems;
     lastFocus = document.activeElement;
     show(index);
@@ -143,6 +146,29 @@
     }
   }
 
+  function purge() {
+    locked = true;
+    token += 1;
+    current = 0;
+    items = [];
+    lastFocus = null;
+    touchStartX = 0;
+    touchStartY = 0;
+    overlay.classList.remove('is-open');
+    document.documentElement.classList.remove('mission-lightbox-open');
+    document.body.classList.remove('mission-lightbox-open');
+    imgEl.onload = null;
+    imgEl.onerror = null;
+    imgEl.src = '';
+    imgEl.removeAttribute('src');
+    imgEl.alt = '';
+    imgEl.classList.remove('is-decoding');
+    imgEl.classList.remove('is-ready');
+    captionEl.textContent = '';
+    counterEl.textContent = '';
+    emitLightboxPowerState();
+  }
+
   function next() { show(current + 1); }
   function prev() { show(current - 1); }
 
@@ -156,12 +182,14 @@
   }
 
   document.addEventListener('click', (event) => {
+    if (locked) return;
     const figure = event.target.closest?.('.mission-photo-grid figure');
     if (!figure) return;
     openFromFigure(figure);
   });
 
   document.addEventListener('keydown', (event) => {
+    if (locked) return;
     if (overlay.classList.contains('is-open')) {
       if (event.key === 'Escape') close();
       if (event.key === 'ArrowRight') next();
@@ -184,6 +212,8 @@
     if (event.target === overlay) close();
   });
   viewer.addEventListener('click', (event) => event.stopPropagation());
+
+  document.addEventListener('mads:research-locked', purge);
 
   overlay.addEventListener('touchmove', (event) => {
     if (!overlay.classList.contains('is-open')) return;

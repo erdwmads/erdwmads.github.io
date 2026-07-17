@@ -177,6 +177,12 @@ const bootPage = (payloads) => {
       listeners.push(listener);
       documentListeners.set(type, listeners);
     },
+    removeEventListener(type, listener) {
+      documentListeners.set(type, (documentListeners.get(type) || []).filter((item) => item !== listener));
+    },
+    listenerCount(type) {
+      return (documentListeners.get(type) || []).length;
+    },
     dispatchEvent(event) {
       documentEvents.push(event.type);
       for (const listener of documentListeners.get(event.type) || []) listener(event);
@@ -225,8 +231,9 @@ const bootPage = (payloads) => {
     window
   };
 
+  const runMissionIndex = () => vm.runInNewContext(missionIndex, context, { filename: "mission-index.js" });
   vm.runInNewContext(researchLock, context, { filename: "research-lock.js" });
-  vm.runInNewContext(missionIndex, context, { filename: "mission-index.js" });
+  runMissionIndex();
 
   return {
     content,
@@ -239,6 +246,7 @@ const bootPage = (payloads) => {
     },
     input,
     lockedMarkup,
+    rerunMissionIndex: runMissionIndex,
     window
   };
 };
@@ -277,4 +285,20 @@ test("BFCache relock purges the renderer and a second unlock renders the current
   assert.match(secondNodes.list.innerHTML, /id="log-003"/);
   assert.equal(secondNodes.indexList.listenerCount("click"), 1);
   assert.equal(firstNodes.indexList.listenerCount("click"), 0);
+});
+
+test("soft re-entry leaves one Mission Index renderer active before unlock", async () => {
+  const page = bootPage([createPayload(firstEntries)]);
+  page.rerunMissionIndex();
+
+  assert.equal(page.document.listenerCount("mads:research-unlocked"), 1);
+  assert.equal(page.document.listenerCount("mads:research-locked"), 1);
+
+  page.input.value = password;
+  await page.form.emit("submit");
+  await flush();
+
+  assert.equal(page.missionNodes.indexList.listenerCount("click"), 1);
+  assert.equal(page.documentEvents.filter((type) => type === "mads:mission-log-rendered").length, 1);
+  assert.match(page.missionNodes.list.innerHTML, /id="log-002"/);
 });

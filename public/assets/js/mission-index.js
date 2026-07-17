@@ -1,7 +1,11 @@
 (() => {
+  const cleanupKey = 'MadsMissionIndexCleanup';
+  window[cleanupKey]?.();
+
   let list = null;
   let indexList = null;
   let started = false;
+  let active = true;
   let currentId = '';
   let missionEntries = [];
   let byId = new Map();
@@ -150,6 +154,7 @@
   };
 
   const onIndexClick = (event) => {
+    if (!active) return;
     const link = event.target.closest('a[href^="#"]');
     if (!link || !indexList.contains(link)) return;
 
@@ -176,12 +181,13 @@
   };
 
   const start = async () => {
-    if (started || !bindCurrentNodes()) return;
+    if (!active || started || !bindCurrentNodes()) return;
     started = true;
 
     try {
       list.classList.add('is-loading');
       await loadMissionEntries();
+      if (!active || !list || !indexList) return;
       if (!missionEntries.length || !latestEntry) {
         throw new Error('Mission Log data is empty');
       }
@@ -198,7 +204,7 @@
       document.documentElement.classList.add('mission-log-lazy-render');
     } catch (error) {
       started = false;
-      list.innerHTML = `
+      if (active && list) list.innerHTML = `
         <article class="research-note-card mission-log-entry mission-log-entry-placeholder">
           <div class="research-note-date">ERROR</div>
           <div class="research-note-body">
@@ -211,8 +217,18 @@
     }
   };
 
+  const cleanup = () => {
+    if (!active) return;
+    active = false;
+    resetRenderer();
+    document.removeEventListener('mads:research-unlocked', start);
+    document.removeEventListener('mads:research-locked', resetRenderer);
+    if (window[cleanupKey] === cleanup) delete window[cleanupKey];
+  };
+
   document.addEventListener('mads:research-unlocked', start);
   document.addEventListener('mads:research-locked', resetRenderer);
+  window[cleanupKey] = cleanup;
 
   const autoStart = document.querySelector('[data-mission-log-list]')?.dataset.missionAutoStart !== 'false';
   if (autoStart || document.documentElement.classList.contains('research-unlocked')) {
