@@ -35,6 +35,8 @@ jobs:
         run: npm run test:mission-publisher
       - name: Test protected Mission Log unlock
         run: npm run test:research-lock
+      - name: Test protected Mission Log renderer lifecycle
+        run: npm run test:mission-index
       - name: Build site
         run: npm run build
       - name: Export PPT data
