@@ -1,5 +1,7 @@
 
 (function () {
+  const PHOTO_AUTOPLAY_MEDIA = window.matchMedia('(min-width: 761px)');
+  const REDUCED_MOTION_MEDIA = window.matchMedia('(prefers-reduced-motion: reduce)');
   const shell = document.querySelector(".slideshow-shell");
   if (!shell) return;
 
@@ -55,6 +57,7 @@
 
   function start() {
     stop();
+    if (window.innerWidth <= 760 || !PHOTO_AUTOPLAY_MEDIA.matches || REDUCED_MOTION_MEDIA.matches) return;
     timer = window.setInterval(() => show(current + 1), interval);
   }
 
@@ -90,6 +93,11 @@
     else start();
   });
 
+  window.addEventListener("resize", () => {
+    if (window.innerWidth <= 760 || REDUCED_MOTION_MEDIA.matches) stop();
+    else if (shell.dataset.autoplay === "true") start();
+  });
+
   show(0);
-  if (shell.dataset.autoplay === "true") start();
+  if (shell.dataset.autoplay === "true") window.requestAnimationFrame(start);
 })();
