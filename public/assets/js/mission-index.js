@@ -1,12 +1,6 @@
 (() => {
-  const list = document.querySelector('[data-mission-log-list]');
-  const indexList = document.querySelector('[data-mission-index-list]');
-  if (!list || !indexList) return;
-
-  const dataEl = document.getElementById('mission-log-data');
-  const dataUrl = list.dataset.missionDataUrl || '';
-  const autoStart = list.dataset.missionAutoStart !== 'false';
-
+  let list = null;
+  let indexList = null;
   let started = false;
   let currentId = '';
   let missionEntries = [];
@@ -40,6 +34,11 @@
     return normalised ? Number(normalised.replaceAll('/', '')) : 0;
   };
 
+  const compareEntries = (a, b) => {
+    const scoreDiff = dateScore(b.date || b.isoDate) - dateScore(a.date || a.isoDate);
+    return scoreDiff || Number(b.number || 0) - Number(a.number || 0);
+  };
+
   const decodeTargetId = (value) => {
     try {
       return decodeURIComponent(value);
@@ -51,6 +50,12 @@
   const shouldReduceMotion = () =>
     window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
 
+  const bindCurrentNodes = () => {
+    list = document.querySelector('[data-mission-log-list]');
+    indexList = document.querySelector('[data-mission-index-list]');
+    return Boolean(list && indexList);
+  };
+
   const applyStaticLabels = () => {
     document.querySelectorAll('[data-i18n-key]').forEach((node) => {
       const key = node.dataset.i18nKey;
@@ -60,25 +65,14 @@
   };
 
   const loadMissionEntries = async () => {
-    if (missionEntries.length) return missionEntries;
-
-    if (dataEl) {
-      missionEntries = JSON.parse(dataEl.textContent || '[]');
-    } else if (dataUrl) {
-      const response = await fetch(dataUrl, { cache: 'no-store' });
-      if (!response.ok) {
-        throw new Error(`Mission Log data request failed: ${response.status}`);
-      }
-      missionEntries = await response.json();
+    const protectedEntries = window.MadsProtectedArchive?.entries;
+    if (!Array.isArray(protectedEntries)) {
+      throw new Error('Protected Mission Log is locked');
     }
 
-    if (!Array.isArray(missionEntries)) missionEntries = [];
+    missionEntries = protectedEntries;
     byId = new Map(missionEntries.map((entry) => [entry.id, entry]));
-    latestEntry = [...missionEntries].sort((a, b) => {
-      const scoreDiff = dateScore(b.date || b.isoDate) - dateScore(a.date || a.isoDate);
-      return scoreDiff || Number(b.number || 0) - Number(a.number || 0);
-    })[0] || null;
-
+    latestEntry = [...missionEntries].sort(compareEntries)[0] || null;
     return missionEntries;
   };
 
@@ -155,8 +149,34 @@
     return true;
   };
 
+  const onIndexClick = (event) => {
+    const link = event.target.closest('a[href^="#"]');
+    if (!link || !indexList.contains(link)) return;
+
+    const targetId = decodeTargetId((link.getAttribute('href') || '').slice(1));
+    if (!targetId) return;
+
+    if (renderMissionEntry(targetId, { scroll: true })) {
+      event.preventDefault();
+    }
+  };
+
+  const resetRenderer = () => {
+    indexList?.removeEventListener('click', onIndexClick);
+    list?.classList.remove('is-loading');
+    started = false;
+    currentId = '';
+    missionEntries = [];
+    byId = new Map();
+    latestEntry = null;
+    document.documentElement.classList.remove('mission-index-ready');
+    document.documentElement.classList.remove('mission-log-lazy-render');
+    list = null;
+    indexList = null;
+  };
+
   const start = async () => {
-    if (started) return;
+    if (started || !bindCurrentNodes()) return;
     started = true;
 
     try {
@@ -168,18 +188,7 @@
 
       applyStaticLabels();
       renderNavigator();
-
-      indexList.addEventListener('click', (event) => {
-        const link = event.target.closest('a[href^="#"]');
-        if (!link || !indexList.contains(link)) return;
-
-        const targetId = decodeTargetId((link.getAttribute('href') || '').slice(1));
-        if (!targetId) return;
-
-        if (renderMissionEntry(targetId, { scroll: true })) {
-          event.preventDefault();
-        }
-      });
+      indexList.addEventListener('click', onIndexClick);
 
       const initialTargetId = window.location.hash ? decodeTargetId(window.location.hash.slice(1)) : '';
       const initialId = byId.has(initialTargetId) ? initialTargetId : list.dataset.initialLogId || latestEntry.id;
@@ -198,12 +207,14 @@
         </article>
       `;
     } finally {
-      list.classList.remove('is-loading');
+      list?.classList.remove('is-loading');
     }
   };
 
   document.addEventListener('mads:research-unlocked', start);
+  document.addEventListener('mads:research-locked', resetRenderer);
 
+  const autoStart = document.querySelector('[data-mission-log-list]')?.dataset.missionAutoStart !== 'false';
   if (autoStart || document.documentElement.classList.contains('research-unlocked')) {
     start();
   }

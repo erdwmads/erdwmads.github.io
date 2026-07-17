@@ -337,8 +337,11 @@ if (!graduationPage.includes('aria-describedby="research-lock-error"') || !gradu
 if (!/<form\b(?=[^>]*data-research-lock-form)(?=[^>]*method="post")/i.test(graduationPage)) {
   fail("research-graduation.html: password form must use POST");
 }
-if (!graduationPage.includes('data-mission-data-url="assets/data/mission-log.json"')) {
-  fail("research-graduation.html: missing lazy Mission Log data URL");
+if (graduationPage.includes("assets/data/mission-log.json") || graduationPage.includes("data-mission-data-url")) {
+  fail("research-graduation.html: Mission Log must not declare a plaintext data source");
+}
+if (!graduationPage.includes('data-mission-auto-start="false"')) {
+  fail("research-graduation.html: Mission Log must wait for protected archive unlock");
 }
 if (!graduationPage.includes("assets/js/mission-index.js") || !graduationPage.includes("assets/js/mission-lightbox.js")) {
   fail("research-graduation.html: missing Mission Log scripts");
@@ -449,6 +452,18 @@ if (!fs.existsSync(researchLockPath)) {
   if (/\b(sessionStorage|localStorage)\b/.test(researchLock)) {
     fail("research-lock.js: must request the password on each page entry, without browser storage unlock caching");
   }
+}
+const missionIndexPath = path.join(assetsDir, "js", "mission-index.js");
+const missionIndex = fs.readFileSync(missionIndexPath, "utf8");
+if (missionIndex.includes("assets/data/mission-log.json")) {
+  fail("mission-index.js: Mission Log UI must not request a plaintext archive");
+}
+if (/\bfetch\s*\(/.test(missionIndex) || missionIndex.includes("dataEl") || missionIndex.includes("mission-log-data")) {
+  fail("mission-index.js: Mission Log entries must only come from the protected in-memory archive");
+}
+const missionLogShell = fs.readFileSync(path.join(root, "src", "components", "MissionLogShell.astro"), "utf8");
+if (missionLogShell.includes("assets/data/mission-log.json") || missionLogShell.includes("data-mission-data-url")) {
+  fail("MissionLogShell.astro: Mission Log must not declare a plaintext data source");
 }
 const missionLightbox = fs.readFileSync(path.join(assetsDir, "js", "mission-lightbox.js"), "utf8");
 if (missionLightbox.includes("mission-lightbox__thumbs") || missionLightbox.includes("buildThumbs")) {

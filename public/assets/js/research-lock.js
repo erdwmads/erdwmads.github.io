@@ -139,6 +139,7 @@
     gate.hidden = false;
     content.hidden = lockedContentHidden;
     content.innerHTML = lockedContentMarkup;
+    document.dispatchEvent(new CustomEvent('mads:research-locked'));
   };
 
   const onSubmit = async (event) => {
