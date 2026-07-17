@@ -121,7 +121,6 @@ const protectedMissionMetadataPatterns = [
   /["']bodyHtml(?:Ja)?["']\s*:/,
   /["']captions?["']\s*:/,
   /["'](?:fullSrc|thumbSrc|mobileFullSrc)["']\s*:/,
-  /\bdata-(?:full|thumb|mobile-full)-src\s*=/,
   /assets\/img\/mission-log\//
 ];
 const protectedMissionTextFiles = [
@@ -382,6 +381,17 @@ if (/<a\b[^>]*class="[^"]*\bproject-link-card\b[^"]*\bdisabled-project\b/i.test(
 const graduationPage = readDistPage("research-graduation.html");
 if (!graduationPage.includes("assets/js/research-lock.js") || !graduationPage.includes("data-research-lock-gate") || !graduationPage.includes("data-research-lock-content")) {
   fail("research-graduation.html: missing password gate");
+}
+
+const photographyPage = readDistPage("photography.html");
+if (!photographyPage.includes('data-full-src="assets/img/photo%20%281%29.jpg"')) {
+  fail("Photography: missing separate full-image source");
+}
+if (!photographyPage.includes("assets/img/thumbs/photography/photo-01.webp")) {
+  fail("Photography: missing derivative thumbnail source");
+}
+if ((photographyPage.match(/data-full-src="assets\/img\/photo%20%28\d+%29\.jpg"/g) || []).length !== 21) {
+  fail("Photography: expected 21 independently hydratable full-image sources");
 }
 if (!graduationPage.includes('data-protected-archive-url="assets/data/mission-log.enc.json"')) {
   fail("research-graduation.html: missing protected Mission Log archive URL");

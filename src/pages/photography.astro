@@ -1,11 +1,11 @@
 ---
 import LegacyShell from "../components/LegacyShell.astro";
+import PhotographyGallery from "../components/PhotographyGallery.astro";
 import { getPageScripts } from "../data/site";
-import mainHtml from "../legacy/photography-main.html?raw";
 
 const scriptHtml = getPageScripts("photography");
 ---
 
 <LegacyShell title='Photography | Mads LIU Yong' description='Personal academic website of Mads LIU Yong.' current='photography' mainClass='main' path="photography.html" scriptHtml={scriptHtml}>
-  <Fragment set:html={mainHtml} />
+  <PhotographyGallery />
 </LegacyShell>

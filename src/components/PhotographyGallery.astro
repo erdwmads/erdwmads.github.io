@@ -1,0 +1,69 @@
+---
+import { photographs } from "../data/photography";
+
+const marqueePhotographs = [...photographs, ...photographs];
+---
+
+<section>
+  <p class="eyebrow">Photography</p>
+  <h1>Photography</h1>
+  <p class="lead">
+    I use <span class="del">Hasselblad X2D</span> Pentax 6x7 for film-inspired
+    photographs, environmental portraits, and visual notes.
+  </p>
+</section>
+
+<section class="section photo-experience" aria-label="Photography slideshow">
+  <div class="slideshow-shell" data-autoplay="true">
+    <div class="slideshow-stage">
+      {photographs.map((photo, index) => (
+        <img
+          class:list={["photo-slide", { "is-active": index === 0 }]}
+          src={index === 0 ? photo.full : photo.thumb}
+          data-full-src={photo.full}
+          data-full-hydrated={index === 0 ? "true" : undefined}
+          alt={photo.alt}
+          loading={index === 0 ? "eager" : "lazy"}
+          decoding="async"
+          fetchpriority={index === 0 ? "high" : "auto"}
+        />
+      ))}
+
+      <button class="slide-control prev" type="button" aria-label="Previous photograph"></button>
+      <button class="slide-control next" type="button" aria-label="Next photograph"></button>
+
+      <div class="slide-status">
+        <span class="slide-number">01</span>
+        <span class="slide-divider">/</span>
+        <span class="slide-total">21</span>
+      </div>
+    </div>
+
+    <div class="filmstrip" aria-label="Photography thumbnails">
+      {photographs.map((photo, index) => (
+        <button class:list={["film-thumb", { "is-active": index === 0 }]} type="button" data-slide={index}>
+          <img src={photo.thumb} alt={`${photo.alt} thumbnail`} loading="lazy" decoding="async" />
+        </button>
+      ))}
+    </div>
+
+    <div class="photo-marquee" aria-hidden="true">
+      <div class="photo-marquee-track">
+        {marqueePhotographs.map((photo) => (
+          <img src={photo.thumb} alt="" loading="lazy" decoding="async" />
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section two-col">
+  <div class="section-label">Camera</div>
+  <div class="card">
+    <h3>Current setup</h3>
+    <p>
+      <span class="del">Hasselblad X2D</span> Pentax 6x7, SMC Pentax 67 90mm F2.8 Lens,
+      and Samsung Galaxy series smartphones.
+    </p>
+  </div>
+</section>

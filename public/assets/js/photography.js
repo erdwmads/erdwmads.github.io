@@ -20,8 +20,20 @@
     return String(num).padStart(2, "0");
   }
 
+  function hydrate(index) {
+    const normalized = (index + slides.length) % slides.length;
+    const slide = slides[normalized];
+    const fullSrc = slide?.dataset.fullSrc;
+    if (!slide || !fullSrc || slide.dataset.fullHydrated === "true") return;
+    slide.src = fullSrc;
+    slide.dataset.fullHydrated = "true";
+  }
+
   function show(index) {
     current = (index + slides.length) % slides.length;
+    hydrate(current);
+    hydrate(current - 1);
+    hydrate(current + 1);
 
     const stage = shell.querySelector(".slideshow-stage");
     const currentSrc = slides[current]?.getAttribute("src");
