@@ -47,6 +47,7 @@ type ScriptSpec = {
 };
 
 const commonScripts: ScriptSpec[] = [
+  { src: "assets/js/site-header.js", defer: true },
   { src: "assets/js/theme.js", defer: true },
   { src: "assets/js/ambient-space.js", defer: true },
   { src: "assets/js/research-coordinates.js", defer: true }

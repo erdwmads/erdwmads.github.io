@@ -71,6 +71,8 @@ const bodyClass = `ui-page-${current}`;
     }
   </style>
   <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/shell-evolution.css">
+  <link rel="stylesheet" href="assets/css/research-log-evolution.css">
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="assets/img/favicon.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
@@ -82,7 +84,17 @@ const bodyClass = `ui-page-${current}`;
       <strong>{brand.name}</strong>
       <span set:html={brand.tagline} />
     </a>
-    <div class="header-actions">
+    <button
+      class="nav-toggle"
+      type="button"
+      aria-label="Open navigation"
+      aria-expanded="false"
+      aria-controls="mobile-navigation"
+      data-nav-toggle
+    >
+      <span aria-hidden="true"></span>
+    </button>
+    <div class="header-actions" id="mobile-navigation" data-mobile-nav>
       <nav class="nav" aria-label="Main navigation">
         <div class="nav__links">
           {navItems.map((item) => <a href={item.href} aria-current={current === item.key ? "page" : undefined}>{item.label}</a>)}
