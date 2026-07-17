@@ -6,3 +6,5 @@ _local/
 npm-debug.log*
 .DS_Store
 desktop.ini
+mission-log.private.json
+*.mission-log.private.json

@@ -11,7 +11,8 @@
     "check:all": "npm run check",
     "check:site": "node scripts/check-site.mjs",
     "audit:images": "node scripts/audit-images.mjs",
-    "export:ppt-data": "node scripts/export-ppt-data.mjs"
+    "export:ppt-data": "node scripts/export-ppt-data.mjs",
+    "publish:mission-log": "node scripts/publish-protected-mission-log.mjs"
   },
   "devDependencies": {
     "astro": "^5.0.0"
