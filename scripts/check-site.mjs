@@ -60,6 +60,24 @@ if (!fs.existsSync(publicMissionSource)) {
   fail("src/data/missionLog.ts: missing public Mission Log data source");
 }
 
+const forbiddenMissionPaths = [
+  path.join(root, "src", "data", "missionLog.ts"),
+  path.join(root, "src", "pages", "assets", "data", "mission-log.json.ts")
+];
+for (const forbiddenPath of forbiddenMissionPaths) {
+  if (fs.existsSync(forbiddenPath)) {
+    fail(`${path.relative(root, forbiddenPath)}: protected Mission Log plaintext must not be public source`);
+  }
+}
+
+const generatedText = collectFiles(distDir)
+  .filter((file) => textFilePattern.test(file))
+  .map((file) => fs.readFileSync(file, "utf8"))
+  .join("\n");
+if (generatedText.includes("Mission Log 010 - SEM training")) {
+  fail("dist: protected Mission Log plaintext leaked into the public build");
+}
+
 const removedLocalMissionPaths = [
   "_local",
   "src-local",
