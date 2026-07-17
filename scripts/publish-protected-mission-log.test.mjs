@@ -124,6 +124,25 @@ test("publishes complete payload atomically to an overridden output", () => {
   });
 });
 
+test("publishes thumbnail sources while preserving full-size Mission Log images", () => {
+  withTempOutput((output) => {
+    const original = "assets/img/mission-log/grad-log-20260701-09.jpg";
+    const thumb = "assets/img/thumbs/mission-log/grad-log-20260701-09.webp";
+    const image = `<img class="mission-thumb-img" src="${original}" data-full-src="${original}" alt="Test">`;
+    const result = runPublisher([
+      validEntry({ bodyHtml: `<figure>${image}</figure>`, bodyHtmlJa: `<figure>${image}</figure>` })
+    ], output);
+
+    assert.equal(result.status, 0, result.stderr);
+    const [entry] = decryptEntries(output);
+    for (const html of [entry.bodyHtml, entry.bodyHtmlJa]) {
+      assert.match(html, new RegExp(`src="${thumb}"`));
+      assert.match(html, new RegExp(`data-full-src="${original}"`));
+      assert.doesNotMatch(html, new RegExp(`(?:^|\\s)src="${original}"`));
+    }
+  });
+});
+
 test("keeps the previous output when atomic replacement fails", async () => {
   const originalRename = fs.renameSync;
   const originalEnv = {

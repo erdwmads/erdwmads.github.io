@@ -47,13 +47,29 @@ for (const [index, entry] of entries.entries()) {
   }
 }
 
+const addThumbnailSources = (html) => html
+  .replace(
+    /(\s)src="assets\/img\/mission-log\/(grad-log-[^"]+)\.jpg"/gi,
+    '$1src="assets/img/thumbs/mission-log/$2.webp"'
+  )
+  .replace(
+    /(\s)data-thumb-src="assets\/img\/mission-log\/(grad-log-[^"]+)\.jpg"/gi,
+    '$1data-thumb-src="assets/img/thumbs/mission-log/$2.webp"'
+  );
+
+const publishedEntries = entries.map((entry) => ({
+  ...entry,
+  bodyHtml: addThumbnailSources(entry.bodyHtml),
+  ...(isNonEmptyString(entry.bodyHtmlJa) ? { bodyHtmlJa: addThumbnailSources(entry.bodyHtmlJa) } : {})
+}));
+
 const salt = randomBytes(16);
 const iv = randomBytes(12);
 const iterations = 600000;
 const key = pbkdf2Sync(passphrase, salt, iterations, 32, "sha256");
 const cipher = createCipheriv("aes-256-gcm", key, iv);
 const ciphertext = Buffer.concat([
-  cipher.update(JSON.stringify(entries), "utf8"),
+  cipher.update(JSON.stringify(publishedEntries), "utf8"),
   cipher.final()
 ]);
 const tag = cipher.getAuthTag();
