@@ -328,6 +328,9 @@ const graduationPage = readDistPage("research-graduation.html");
 if (!graduationPage.includes("assets/js/research-lock.js") || !graduationPage.includes("data-research-lock-gate") || !graduationPage.includes("data-research-lock-content")) {
   fail("research-graduation.html: missing password gate");
 }
+if (!graduationPage.includes('data-protected-archive-url="assets/data/mission-log.enc.json"')) {
+  fail("research-graduation.html: missing protected Mission Log archive URL");
+}
 if (!graduationPage.includes('data-mission-data-url="assets/data/mission-log.json"')) {
   fail("research-graduation.html: missing lazy Mission Log data URL");
 }
@@ -428,6 +431,12 @@ if (!fs.existsSync(researchLockPath)) {
   fail("research-lock.js: missing graduation password gate script");
 } else {
   const researchLock = fs.readFileSync(researchLockPath, "utf8");
+  if (!researchLock.includes("AES-GCM") || !researchLock.includes("PBKDF2")) {
+    fail("research-lock.js: protected archive must use PBKDF2 and AES-GCM decryption");
+  }
+  if (researchLock.includes("expectedHash")) {
+    fail("research-lock.js: obsolete password hash gate must be removed");
+  }
   if (researchLock.includes("1029384756Y")) {
     fail("research-lock.js: must not contain the plain password");
   }

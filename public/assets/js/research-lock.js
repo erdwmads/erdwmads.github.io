@@ -7,7 +7,8 @@
 
   if (!gate || !content || !form || !input) return;
 
-  const expectedHash = 'c70de696ba32206485f4f0d2b3ceba1ba1fec7328e9ebca874ae29b7c3b295b5';
+  const archiveUrl = gate.dataset.protectedArchiveUrl;
+  let isDecrypting = false;
 
   const setError = (message) => {
     if (!error) return;
@@ -21,18 +22,85 @@
     error.textContent = '';
   };
 
-  const sha256 = async (value) => {
-    if (!window.crypto?.subtle) {
-      throw new Error('crypto-unavailable');
+  const fromBase64 = (value) => {
+    if (typeof value !== 'string' || !value) {
+      throw new Error('invalid-archive');
     }
-    const bytes = new TextEncoder().encode(value);
-    const digest = await window.crypto.subtle.digest('SHA-256', bytes);
-    return Array.from(new Uint8Array(digest))
-      .map((byte) => byte.toString(16).padStart(2, '0'))
-      .join('');
+
+    try {
+      return Uint8Array.from(atob(value), (character) => character.charCodeAt(0));
+    } catch {
+      throw new Error('invalid-archive');
+    }
   };
 
-  const unlock = () => {
+  const validateArchive = (payload) => {
+    if (
+      !payload ||
+      payload.version !== 1 ||
+      payload.kdf !== 'PBKDF2-SHA-256' ||
+      payload.cipher !== 'AES-256-GCM' ||
+      !Number.isSafeInteger(payload.iterations) ||
+      payload.iterations <= 0
+    ) {
+      throw new Error('invalid-archive');
+    }
+
+    const salt = fromBase64(payload.salt);
+    const iv = fromBase64(payload.iv);
+    const ciphertext = fromBase64(payload.ciphertext);
+    if (salt.length !== 16 || iv.length !== 12 || ciphertext.length <= 16) {
+      throw new Error('invalid-archive');
+    }
+
+    return { salt, iv, ciphertext };
+  };
+
+  const decryptArchive = async (password) => {
+    if (!archiveUrl || !window.crypto?.subtle) {
+      throw new Error('archive-unavailable');
+    }
+
+    const response = await fetch(archiveUrl, { cache: 'no-store' });
+    if (!response.ok) throw new Error('archive-unavailable');
+
+    const payload = await response.json();
+    const { salt, iv, ciphertext } = validateArchive(payload);
+    const material = await window.crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(password),
+      'PBKDF2',
+      false,
+      ['deriveKey']
+    );
+    const key = await window.crypto.subtle.deriveKey(
+      {
+        name: 'PBKDF2',
+        hash: 'SHA-256',
+        salt,
+        iterations: payload.iterations
+      },
+      material,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['decrypt']
+    );
+    const clear = await window.crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv },
+      key,
+      ciphertext
+    );
+    const entries = JSON.parse(new TextDecoder().decode(clear));
+    if (!Array.isArray(entries) || !entries.length) {
+      throw new Error('invalid-archive');
+    }
+
+    return entries;
+  };
+
+  const unlock = (entries) => {
+    window.MadsProtectedArchive = { entries };
+    input.value = '';
     gate.hidden = true;
     content.hidden = false;
     document.documentElement.classList.add('research-unlocked');
@@ -41,25 +109,34 @@
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
+    if (isDecrypting) return;
+
+    isDecrypting = true;
     clearError();
 
     const password = String(input.value || '');
     const button = form.querySelector('button[type="submit"]');
+    form.setAttribute('aria-busy', 'true');
     if (button) button.disabled = true;
 
     try {
-      const hash = await sha256(password);
-      if (hash !== expectedHash) {
+      const entries = await decryptArchive(password);
+      unlock(entries);
+    } catch (caughtError) {
+      if (caughtError?.name === 'OperationError') {
         setError('Incorrect password.');
-        input.select?.();
-        return;
+      } else {
+        setError('This browser cannot verify the password here. Try a current browser.');
       }
-
-      unlock();
-    } catch (error) {
-      setError('This browser cannot verify the password here. Try a current browser.');
+      input.select?.();
     } finally {
+      isDecrypting = false;
+      form.removeAttribute('aria-busy');
       if (button) button.disabled = false;
     }
+  });
+
+  window.addEventListener('pagehide', () => {
+    delete window.MadsProtectedArchive;
   });
 })();

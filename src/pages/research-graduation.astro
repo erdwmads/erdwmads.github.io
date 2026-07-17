@@ -19,7 +19,11 @@ const scriptHtml = getPageScripts("research-graduation");
 >
   <Fragment set:html={heroHtml} />
 
-  <section class="section research-lock-section" data-research-lock-gate>
+  <section
+    class="section research-lock-section"
+    data-research-lock-gate
+    data-protected-archive-url="assets/data/mission-log.enc.json"
+  >
     <div class="research-lock-card">
       <p class="eyebrow">Access Required</p>
       <h2>Graduation Research Log Locked</h2>
