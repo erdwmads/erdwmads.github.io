@@ -6,6 +6,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const distDir = path.join(root, "dist");
 const publicDir = path.join(root, "public");
 const assetsDir = path.join(publicDir, "assets");
+const photoThumbDir = path.join(assetsDir, "img", "thumbs", "photography");
+const missionThumbDir = path.join(assetsDir, "img", "thumbs", "mission-log");
 const encryptedMissionPayloadPath = path.join(publicDir, "assets", "data", "mission-log.enc.json");
 const pptDataPath = path.join(distDir, "ppt-data.json");
 
@@ -66,6 +68,15 @@ for (const forbiddenPath of forbiddenPlaintextMissionPaths) {
   if (fs.existsSync(forbiddenPath)) {
     fail(`${path.relative(root, forbiddenPath)}: protected Mission Log plaintext route must not exist`);
   }
+}
+
+const photoThumbCount = collectFiles(photoThumbDir).filter((file) => file.endsWith(".webp")).length;
+const missionThumbCount = collectFiles(missionThumbDir).filter((file) => file.endsWith(".webp")).length;
+if (photoThumbCount !== 21) {
+  fail(`Photography: expected 21 WebP thumbnails, found ${photoThumbCount}`);
+}
+if (missionThumbCount !== 55) {
+  fail(`Mission Log: expected 55 WebP thumbnails, found ${missionThumbCount}`);
 }
 
 const requiredEncryptedMissionPayloadKeys = ["cipher", "ciphertext", "iterations", "iv", "kdf", "salt", "version"];

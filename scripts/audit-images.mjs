@@ -6,6 +6,10 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const imageDir = path.join(root, "public/assets/img");
 const docsDir = path.join(root, "docs");
 const outputPath = path.join(docsDir, "image-inventory.md");
+const derivativeTargets = [
+  { label: "Photography", dir: path.join(imageDir, "thumbs", "photography"), expected: 21 },
+  { label: "Mission Log", dir: path.join(imageDir, "thumbs", "mission-log"), expected: 55 }
+];
 
 function walk(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -17,6 +21,15 @@ function walk(dir) {
 function formatBytes(bytes) {
   if (bytes >= 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
   return `${Math.round(bytes / 1024)} KB`;
+}
+
+for (const target of derivativeTargets) {
+  const count = fs.existsSync(target.dir)
+    ? walk(target.dir).filter((file) => file.endsWith(".webp")).length
+    : 0;
+  if (count !== target.expected) {
+    throw new Error(`${target.label}: expected ${target.expected} WebP thumbnails, found ${count}`);
+  }
 }
 
 const imageFiles = walk(imageDir)
