@@ -29,12 +29,23 @@ for (const forbiddenPath of forbiddenMissionPaths) {
   }
 }
 
-const generatedText = collectFiles(distDir)
-  .filter((file) => textFilePattern.test(file))
-  .map((file) => fs.readFileSync(file, "utf8"))
-  .join("\n");
-if (generatedText.includes("Mission Log 010 - SEM training")) {
-  fail("dist: protected Mission Log plaintext leaked into the public build");
+const protectedMissionCanaries = [
+  "Mission Log 010 - SEM training",
+  "Ca-Mg-C-O carbonate candidate",
+  "Diamond wire saw dry cutting"
+];
+const protectedMissionTextFiles = [
+  ...collectFiles(path.join(root, "src")),
+  ...collectFiles(publicDir),
+  ...collectFiles(distDir)
+].filter((file) => textFilePattern.test(file));
+for (const filePath of protectedMissionTextFiles) {
+  const text = fs.readFileSync(filePath, "utf8");
+  const matchedCanaries = protectedMissionCanaries.filter((canary) => text.includes(canary));
+  if (matchedCanaries.length) {
+    const relativePath = path.relative(root, filePath).replace(/\\/g, "/");
+    fail(`${relativePath}: protected Mission Log plaintext leaked (${matchedCanaries.join(", ")})`);
+  }
 }
 ```
 
@@ -42,7 +53,7 @@ if (generatedText.includes("Mission Log 010 - SEM training")) {
 
 Run: `node scripts/check-site.mjs`
 
-Expected: FAIL for both current plaintext source files and the generated JSON.
+Expected: FAIL for both forbidden plaintext source paths and for each public text file under `src`, `public`, or `dist` containing one or more of the three LOG010/LOG007 canaries, with the leaking relative path reported.
 
 - [ ] **Step 3: Commit the failing guard**
 
@@ -403,7 +414,7 @@ At desktop and mobile widths, verify: wrong password leaves content hidden; corr
 Run:
 
 ```powershell
-rg -n "Mission Log 010 - SEM training|Diamond wire saw dry cutting" dist public src
+rg -n "Mission Log 010 - SEM training|Ca-Mg-C-O carbonate candidate|Diamond wire saw dry cutting" dist public src
 ```
 
 Expected: no hit in generated/public source. A hit in private Grad Research files is allowed.

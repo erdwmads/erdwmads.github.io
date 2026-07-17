@@ -72,10 +72,12 @@ for (const forbiddenPath of forbiddenMissionPaths) {
 
 const protectedMissionCanaries = [
   "Mission Log 010 - SEM training",
-  "Ca-Mg-C-O carbonate candidate"
+  "Ca-Mg-C-O carbonate candidate",
+  "Diamond wire saw dry cutting"
 ];
 const protectedMissionTextFiles = [
   ...collectFiles(path.join(root, "src")),
+  ...collectFiles(publicDir),
   ...collectFiles(distDir)
 ].filter((file) => textFilePattern.test(file));
 for (const filePath of protectedMissionTextFiles) {
