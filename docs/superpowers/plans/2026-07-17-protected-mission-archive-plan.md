@@ -304,6 +304,7 @@ git commit -m "refactor: render decrypted mission entries"
 **Files:**
 - Delete: `src/data/missionLog.ts`
 - Delete: `src/pages/assets/data/mission-log.json.ts`
+- Modify: `scripts/check-site.mjs`
 - Modify: `scripts/export-ppt-data.mjs`
 - Modify: `docs/ui-invariants.md`
 - Modify: `docs/content-workflow.md`
@@ -312,9 +313,9 @@ git commit -m "refactor: render decrypted mission entries"
 
 Keep paper/public project data only. Do not emit `missionEntries`, `bodyHtml`, captions, or protected image metadata into `dist/ppt-data.json`.
 
-- [ ] **Step 2: Delete both plaintext source routes**
+- [ ] **Step 2: Delete both plaintext source routes and retire their positive checks**
 
-Delete the two files only after the private JSON has been opened and checked for all 10 entries.
+Delete the two files only after the private JSON has been opened and checked for all 10 entries. In the same step, modify `scripts/check-site.mjs` to retire the positive assertions and unconditional reads/throws that require `src/data/missionLog.ts`, `src/pages/assets/data/mission-log.json.ts`, or the public `assets/data/mission-log.json` route. Keep the forbidden-path and generated-plaintext leak guards.
 
 - [ ] **Step 3: Update maintenance documentation**
 
@@ -339,6 +340,8 @@ node scripts\check-site.mjs
 ```
 
 Expected: 9 pages pass, no plaintext source paths exist, and no LOG010 body text exists under `dist`.
+
+Before running the commands, complete the `scripts/check-site.mjs` changes from Step 2 so the check no longer expects the removed plaintext publication paths or unconditionally reads their generated JSON.
 
 - [ ] **Step 5: Commit**
 

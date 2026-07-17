@@ -70,12 +70,21 @@ for (const forbiddenPath of forbiddenMissionPaths) {
   }
 }
 
-const generatedText = collectFiles(distDir)
-  .filter((file) => textFilePattern.test(file))
-  .map((file) => fs.readFileSync(file, "utf8"))
-  .join("\n");
-if (generatedText.includes("Mission Log 010 - SEM training")) {
-  fail("dist: protected Mission Log plaintext leaked into the public build");
+const protectedMissionCanaries = [
+  "Mission Log 010 - SEM training",
+  "Ca-Mg-C-O carbonate candidate"
+];
+const protectedMissionTextFiles = [
+  ...collectFiles(path.join(root, "src")),
+  ...collectFiles(distDir)
+].filter((file) => textFilePattern.test(file));
+for (const filePath of protectedMissionTextFiles) {
+  const text = fs.readFileSync(filePath, "utf8");
+  const matchedCanaries = protectedMissionCanaries.filter((canary) => text.includes(canary));
+  if (matchedCanaries.length) {
+    const relativePath = path.relative(root, filePath).replace(/\\/g, "/");
+    fail(`${relativePath}: protected Mission Log plaintext leaked (${matchedCanaries.join(", ")})`);
+  }
 }
 
 const removedLocalMissionPaths = [
