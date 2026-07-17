@@ -8,10 +8,11 @@
     "build": "astro build",
     "preview": "astro preview --host 127.0.0.1",
     "check": "npm run build && npm run export:ppt-data && npm run check:site",
-    "check:all": "npm run check",
+    "check:all": "npm run test:mission-publisher && npm run check",
     "check:site": "node scripts/check-site.mjs",
     "audit:images": "node scripts/audit-images.mjs",
     "export:ppt-data": "node scripts/export-ppt-data.mjs",
+    "test:mission-publisher": "node --test scripts/publish-protected-mission-log.test.mjs",
     "publish:mission-log": "node scripts/publish-protected-mission-log.mjs"
   },
   "devDependencies": {
