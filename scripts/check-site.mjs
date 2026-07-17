@@ -445,6 +445,25 @@ if (!interface2046.includes("data-ui2046-route") || !interface2046.includes("mad
 if (!interface2046.includes("MOBILE_INTERFACE_MEDIA") || !interface2046.includes("mads-mobile-lite") || !interface2046.includes("removeInterfaceLayers")) {
   fail("interface-2046.js: mobile lightweight mode must skip the solar-system/interface layer");
 }
+if (!interface2046.includes("mads:fx-state") || !interface2046.includes("syncOrbitalSystem")) {
+  fail("interface-2046.js: orbital system must mount only while ambient FX is enabled");
+}
+
+const researchCoordinates = fs.readFileSync(path.join(assetsDir, "js", "research-coordinates.js"), "utf8");
+if (!researchCoordinates.includes("MOBILE_COORDINATES_MEDIA") || !researchCoordinates.includes("removeCoordinates")) {
+  fail("research-coordinates.js: mobile views must not create the supporting coordinates panel");
+}
+if (researchCoordinates.includes("6ﾃ・")) {
+  fail("research-coordinates.js: photography camera label contains mojibake");
+}
+
+const shellEvolution = fs.readFileSync(path.join(assetsDir, "css", "shell-evolution.css"), "utf8");
+if (!shellEvolution.includes("body .research-coordinates") || !shellEvolution.includes("body .ui2046-progress")) {
+  fail("shell-evolution.css: mobile lightweight mode must hide supporting HUD elements");
+}
+if (!/body \.header-inner\s*\{[\s\S]*?min-height:\s*0\s*!important[\s\S]*?padding:\s*0\s*!important/.test(shellEvolution)) {
+  fail("shell-evolution.css: compact mobile header must clear legacy height and padding");
+}
 
 const styleCss = fs.readFileSync(path.join(assetsDir, "css", "style.css"), "utf8");
 if (!styleCss.includes('content: "\\2039" !important;') || !styleCss.includes('content: "\\203A" !important;')) {

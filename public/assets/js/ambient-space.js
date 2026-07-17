@@ -22,6 +22,12 @@
     window.localStorage.setItem(AMBIENT_STORAGE_KEY, enabled ? "1" : "0");
   }
 
+  function emitAmbientState() {
+    window.dispatchEvent(new CustomEvent("mads:fx-state", {
+      detail: { enabled: isAmbientEnabled() }
+    }));
+  }
+
   function updateAmbientToggle(button) {
     const enabled = isAmbientEnabled();
     button.classList.toggle("is-on", enabled);
@@ -60,6 +66,8 @@
       } else {
         removeAmbientLayer();
       }
+
+      emitAmbientState();
     });
 
     document.body.appendChild(button);
@@ -326,6 +334,8 @@
     } else {
       removeAmbientLayer();
     }
+
+    emitAmbientState();
   }
 
   function syncMobileAmbientState() {
@@ -337,6 +347,8 @@
     } else if (isAmbientEnabled()) {
       initAmbientSpace();
     }
+
+    emitAmbientState();
   }
 
   if (mobileAmbientQuery?.addEventListener) {

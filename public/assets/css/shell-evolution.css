@@ -69,6 +69,15 @@ html:not([data-theme="space"]):not([data-theme-space]) body :is(a, button, input
 }
 
 @media (max-width: 760px) {
+  body .research-coordinates,
+  body .ui2046-layer,
+  body .ui2046-progress,
+  body .ui2046-rail,
+  body .ui2046-planet-label,
+  body .ui2046-system-label {
+    display: none !important;
+  }
+
   body .site-header {
     min-height: 0 !important;
     padding: 12px 14px !important;
@@ -80,6 +89,8 @@ html:not([data-theme="space"]):not([data-theme-space]) body :is(a, button, input
     align-items: center !important;
     gap: 10px 14px !important;
     width: 100% !important;
+    min-height: 0 !important;
+    padding: 0 !important;
   }
 
   body .brand {

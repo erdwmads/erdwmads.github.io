@@ -1,6 +1,19 @@
-
 (function () {
+  const MOBILE_COORDINATES_MEDIA = "(max-width: 760px), (pointer: coarse)";
+  const mobileCoordinatesQuery = window.matchMedia
+    ? window.matchMedia(MOBILE_COORDINATES_MEDIA)
+    : null;
+
+  function removeCoordinates() {
+    document.querySelector(".research-coordinates")?.remove();
+  }
+
   function initCoordinates() {
+    if (mobileCoordinatesQuery?.matches) {
+      removeCoordinates();
+      return;
+    }
+
     if (document.querySelector(".research-coordinates")) return;
 
     const isPaper = location.pathname.includes("paper-shelf");
@@ -22,7 +35,7 @@
       phase = "Astromaterials";
       mode = "Specimen";
     } else if (isPhoto) {
-      target = "Pentax 6×7";
+      target = "Pentax 6x7";
       phase = "Photography";
       mode = "Gallery";
     } else if (isCV) {
@@ -45,6 +58,19 @@
     `;
     document.body.appendChild(panel);
   }
+
+  function syncCoordinates() {
+    removeCoordinates();
+    initCoordinates();
+  }
+
+  if (mobileCoordinatesQuery?.addEventListener) {
+    mobileCoordinatesQuery.addEventListener("change", syncCoordinates);
+  } else if (mobileCoordinatesQuery?.addListener) {
+    mobileCoordinatesQuery.addListener(syncCoordinates);
+  }
+
+  window.addEventListener("mads:soft-nav-ready", syncCoordinates);
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initCoordinates);

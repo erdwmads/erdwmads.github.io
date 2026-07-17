@@ -153,14 +153,16 @@
   layer.className = 'ui2046-layer';
   layer.setAttribute('aria-hidden', 'true');
 
-  layer.innerHTML = `
+  const orbitalSystemMarkup = `
     <div class="ui2046-solar-system">
       <span class="ui2046-kuiper-belt"></span>
       <span class="ui2046-planet sun-marker" style="--left:50%;--top:50%;--size:6px;--color:rgba(255,217,154,.74);"></span>
       ${orbitMarkup}
       <span class="ui2046-system-label" style="--label-left:84%;--label-top:22%;">Kuiper Belt</span>
     </div>
+  `;
 
+  layer.innerHTML = `
     <aside class="ui2046-rail ui2046-right">
       <strong data-ui2046-route>${route}</strong>
       <div class="ui2046-rail-line"></div>
@@ -223,9 +225,13 @@
     });
   };
 
-  const planets = Array.from(layer.querySelectorAll('.ui2046-system-orbit .ui2046-planet'));
-  const labels = Array.from(layer.querySelectorAll('.ui2046-planet-label'));
+  let planets = [];
+  let labels = [];
   const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const isOrbitalFxEnabled = () => (
+    !root.classList.contains('ambient-fx-disabled') && !isMobileInterfaceView()
+  );
 
   const placePlanets = (timeMs = 0) => {
     planets.forEach((planet) => {
@@ -254,7 +260,7 @@
 
   const shouldPausePlanetMotion = () => {
     const state = window.__madsPowerState || {};
-    return document.hidden || state.hidden || state.idle || state.lowPower || document.body.classList.contains("mission-lightbox-open") || document.documentElement.classList.contains("mission-lightbox-open");
+    return !isOrbitalFxEnabled() || document.hidden || state.hidden || state.idle || state.lowPower || document.body.classList.contains("mission-lightbox-open") || document.documentElement.classList.contains("mission-lightbox-open");
   };
 
   let planetAnimationRunning = false;
@@ -277,11 +283,36 @@
     requestAnimationFrame(animatePlanets);
   };
 
+  const syncOrbitalSystem = () => {
+    const existingSystem = layer.querySelector('.ui2046-solar-system');
+
+    if (!isOrbitalFxEnabled()) {
+      existingSystem?.remove();
+      planets = [];
+      labels = [];
+      planetAnimationRunning = false;
+      return;
+    }
+
+    if (!existingSystem) {
+      layer.insertAdjacentHTML('afterbegin', orbitalSystemMarkup);
+    }
+
+    planets = Array.from(layer.querySelectorAll('.ui2046-system-orbit .ui2046-planet'));
+    labels = Array.from(layer.querySelectorAll('.ui2046-planet-label'));
+    placePlanets(0);
+    startPlanetAnimation();
+  };
+
   updateProgress();
-  placePlanets(0);
-  startPlanetAnimation();
+  syncOrbitalSystem();
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', syncOrbitalSystem, { once: true });
+  }
 
   window.addEventListener('mads:power-state', startPlanetAnimation);
+  window.addEventListener('mads:fx-state', syncOrbitalSystem);
   window.addEventListener('mads:soft-nav-ready', (event) => {
     updateRouteLabel(event.detail?.pageName);
     updateProgress();
