@@ -10,6 +10,7 @@
     "check": "npm run build && npm run export:ppt-data && npm run check:site",
     "check:all": "npm run test:mission-publisher && npm run test:research-lock && npm run test:mission-index && npm run test:mission-lightbox && npm run check",
     "check:site": "node scripts/check-site.mjs",
+    "images:derive": "node scripts/generate-image-derivatives.mjs",
     "audit:images": "node scripts/audit-images.mjs",
     "export:ppt-data": "node scripts/export-ppt-data.mjs",
     "test:mission-publisher": "node --test scripts/publish-protected-mission-log.test.mjs",
