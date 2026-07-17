@@ -93,6 +93,13 @@ if (!fs.existsSync(encryptedMissionPayloadPath)) {
   }
 }
 
+for (const relativePath of ["docs/codex-update-contract.md", "docs/maintenance-templates.md"]) {
+  const documentPath = path.join(root, relativePath);
+  if (fs.readFileSync(documentPath, "utf8").includes("src/data/missionLog.ts")) {
+    fail(`${relativePath}: stale plaintext Mission Log maintenance path`);
+  }
+}
+
 const protectedMissionCanaries = [
   "Mission Log 010 - SEM training",
   "Ca-Mg-C-O carbonate candidate",
@@ -250,6 +257,10 @@ for (const page of pages) {
 
 
 const homePage = readDistPage("index.html");
+const researchPage = readDistPage("research.html");
+if (researchPage.includes("local-only archive")) {
+  fail("research.html: stale local-only Mission Log wording");
+}
 const homeHeaderMatch = homePage.match(/<header\b[^>]*class="[^"]*\bsite-header\b[^"]*"[^>]*>[\s\S]*?<\/header>/i);
 if (!homeHeaderMatch) {
   fail("index.html: missing site header");
