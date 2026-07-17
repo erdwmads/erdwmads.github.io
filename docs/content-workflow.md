@@ -52,8 +52,16 @@ Split into multiple entries when the process phase changes. For example, cutting
 }
 ```
 
-Current implementation target: `src/data/missionLog.ts`. The page shell is rendered by `src/components/MissionLogShell.astro`, and entries are loaded after the Graduation Research password gate.
+The private implementation source is `C:\Users\tsuku\Desktop\Grad Research\Orgueil Grad Data\Website Archive\mission-log.private.json`. The page shell is rendered by `src/components/MissionLogShell.astro`, and entries are loaded from the encrypted archive only after the Graduation Research password gate.
 The public Research Log page may show a project summary; the detailed Mission Log should load only on the password-gated Graduation Research page.
+
+## Protected Mission Log Maintenance
+
+1. Edit the private source at `C:\Users\tsuku\Desktop\Grad Research\Orgueil Grad Data\Website Archive\mission-log.private.json`.
+2. Back up new original images to `C:\Users\tsuku\Desktop\Grad Research\Orgueil Grad Data\事前準備`.
+3. Run `publish:mission-log` with the passphrase only in process memory or through a one-time local handoff.
+4. Run the protected tests, build, `export:ppt-data`, and `check:site`.
+5. Commit the encrypted payload and public image derivatives, never the private JSON or passphrase.
 
 ## Fan-Out Mapping
 
@@ -94,6 +102,6 @@ Keep Mission Log image paths local:
 }
 ```
 
-Store Mission Log images under `public/assets/img/mission-log/`.
+Store public Mission Log image derivatives under `public/assets/img/mission-log/`; keep new original images in the private archive backup flow above.
 
 Desktop can use the lightbox. Mobile Mission Log images should remain inline figures with visible captions.

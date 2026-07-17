@@ -16,7 +16,9 @@ This site is not a generic academic homepage. Its identity is a cosmic mineralog
 
 Do not remove these concepts during refactors unless the owner explicitly changes the site direction.
 
-Mission Log is currently local-only. Preserve its language and visual system in the generated local page, while keeping the public website limited to project summaries.
+Mission Log content is private. The public site may preserve its shell and visual language, but detailed entries are available only from the encrypted archive after the protected unlock flow.
+
+Maintain entries in `C:\Users\tsuku\Desktop\Grad Research\Orgueil Grad Data\Website Archive\mission-log.private.json`, publish only the encrypted archive, and never restore a plaintext source route under `src`, `public`, or `dist`.
 
 ## Theme Behavior
 

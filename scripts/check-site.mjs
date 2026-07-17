@@ -6,8 +6,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const distDir = path.join(root, "dist");
 const publicDir = path.join(root, "public");
 const assetsDir = path.join(publicDir, "assets");
-const publicMissionSource = path.join(root, "src", "data", "missionLog.ts");
-const missionDataPath = path.join(distDir, "assets", "data", "mission-log.json");
+const encryptedMissionPayloadPath = path.join(publicDir, "assets", "data", "mission-log.enc.json");
+const pptDataPath = path.join(distDir, "ppt-data.json");
 
 const pages = [
   "index.html",
@@ -56,17 +56,40 @@ function collectFiles(targetPath) {
   });
 }
 
-if (!fs.existsSync(publicMissionSource)) {
-  fail("src/data/missionLog.ts: missing public Mission Log data source");
+const forbiddenPlaintextMissionPaths = [
+  path.join(root, "src", "data", "missionLog.ts"),
+  path.join(root, "src", "pages", "assets", "data", "mission-log.json.ts"),
+  path.join(publicDir, "assets", "data", "mission-log.json"),
+  path.join(distDir, "assets", "data", "mission-log.json")
+];
+for (const forbiddenPath of forbiddenPlaintextMissionPaths) {
+  if (fs.existsSync(forbiddenPath)) {
+    fail(`${path.relative(root, forbiddenPath)}: protected Mission Log plaintext route must not exist`);
+  }
 }
 
-const forbiddenMissionPaths = [
-  path.join(root, "src", "data", "missionLog.ts"),
-  path.join(root, "src", "pages", "assets", "data", "mission-log.json.ts")
-];
-for (const forbiddenPath of forbiddenMissionPaths) {
-  if (fs.existsSync(forbiddenPath)) {
-    fail(`${path.relative(root, forbiddenPath)}: protected Mission Log plaintext must not be public source`);
+const requiredEncryptedMissionPayloadKeys = ["cipher", "ciphertext", "iterations", "iv", "kdf", "salt", "version"];
+if (!fs.existsSync(encryptedMissionPayloadPath)) {
+  fail("public/assets/data/mission-log.enc.json: missing encrypted Mission Log payload");
+} else {
+  try {
+    const encryptedPayload = JSON.parse(fs.readFileSync(encryptedMissionPayloadPath, "utf8"));
+    const payloadKeys = Object.keys(encryptedPayload).sort();
+    if (JSON.stringify(payloadKeys) !== JSON.stringify(requiredEncryptedMissionPayloadKeys)) {
+      fail("mission-log.enc.json: encrypted payload must use the exact supported envelope keys");
+    }
+    if (
+      encryptedPayload.version !== 1 ||
+      encryptedPayload.kdf !== "PBKDF2-SHA-256" ||
+      encryptedPayload.cipher !== "AES-256-GCM" ||
+      !Number.isInteger(encryptedPayload.iterations) ||
+      encryptedPayload.iterations <= 0 ||
+      !["salt", "iv", "ciphertext"].every((key) => typeof encryptedPayload[key] === "string" && encryptedPayload[key])
+    ) {
+      fail("mission-log.enc.json: encrypted payload envelope values are invalid");
+    }
+  } catch {
+    fail("mission-log.enc.json: encrypted payload must be valid JSON");
   }
 }
 
@@ -74,6 +97,14 @@ const protectedMissionCanaries = [
   "Mission Log 010 - SEM training",
   "Ca-Mg-C-O carbonate candidate",
   "Diamond wire saw dry cutting"
+];
+const protectedMissionMetadataPatterns = [
+  /["']missionEntries["']\s*:/,
+  /["']bodyHtml(?:Ja)?["']\s*:/,
+  /["']captions?["']\s*:/,
+  /["'](?:fullSrc|thumbSrc|mobileFullSrc)["']\s*:/,
+  /\bdata-(?:full|thumb|mobile-full)-src\s*=/,
+  /assets\/img\/mission-log\//
 ];
 const protectedMissionTextFiles = [
   ...collectFiles(path.join(root, "src")),
@@ -86,6 +117,27 @@ for (const filePath of protectedMissionTextFiles) {
   if (matchedCanaries.length) {
     const relativePath = path.relative(root, filePath).replace(/\\/g, "/");
     fail(`${relativePath}: protected Mission Log plaintext leaked (${matchedCanaries.join(", ")})`);
+  }
+  if (protectedMissionMetadataPatterns.some((pattern) => pattern.test(text))) {
+    const relativePath = path.relative(root, filePath).replace(/\\/g, "/");
+    fail(`${relativePath}: protected Mission Log metadata leaked into public source or build output`);
+  }
+}
+
+if (!fs.existsSync(pptDataPath)) {
+  fail("dist/ppt-data.json: missing PPT data export");
+} else {
+  try {
+    const pptData = JSON.parse(fs.readFileSync(pptDataPath, "utf8"));
+    if (Object.hasOwn(pptData, "missionLog")) {
+      fail("dist/ppt-data.json: public PPT data must not include Mission Log entries");
+    }
+    const pptText = JSON.stringify(pptData);
+    if (protectedMissionMetadataPatterns.some((pattern) => pattern.test(pptText))) {
+      fail("dist/ppt-data.json: public PPT data must not include Mission Log plaintext or protected image metadata");
+    }
+  } catch {
+    fail("dist/ppt-data.json: PPT data must be valid JSON");
   }
 }
 
@@ -247,25 +299,6 @@ if (!legacyNavigationSource.includes('document.querySelectorAll(".nav a, .nav-lo
   fail("legacy-navigation.js: soft navigation must update the independent Research Log gate");
 }
 
-const publicMissionImageDir = path.join(distDir, "assets", "img", "mission-log");
-const publicMissionImages = fs.existsSync(publicMissionImageDir)
-  ? fs.readdirSync(publicMissionImageDir).filter((name) => /^grad-log-.*\.jpg$/i.test(name))
-  : [];
-if (publicMissionImages.length !== 55) {
-  fail(`dist: expected 55 published Mission Log images, found ${publicMissionImages.length}`);
-}
-if (!fs.existsSync(missionDataPath)) {
-  fail("dist: missing assets/data/mission-log.json");
-} else {
-  const missionData = JSON.parse(fs.readFileSync(missionDataPath, "utf8"));
-  if (!Array.isArray(missionData) || missionData.length !== 10) {
-    fail(`assets/data/mission-log.json: expected 10 entries, found ${Array.isArray(missionData) ? missionData.length : "non-array"}`);
-  }
-  if (JSON.stringify(missionData).includes("assets/img/grad-log-")) {
-    fail("assets/data/mission-log.json: image paths must use assets/img/mission-log/");
-  }
-}
-
 const paperShelf = readDistPage("paper-shelf.html");
 if ((paperShelf.match(/class="paper-card"/g) || []).length !== 11) {
   fail("paper-shelf.html: expected 11 paper cards");
@@ -349,38 +382,10 @@ if (!graduationPage.includes("assets/js/mission-index.js") || !graduationPage.in
 if (graduationPage.includes("Mission Log 009")) {
   fail("research-graduation.html: Mission Log entries must load after unlock, not in initial HTML");
 }
-const missionLogJson = fs.readFileSync(path.join(distDir, "assets", "data", "mission-log.json"), "utf8");
-if (!missionLogJson.includes("grad-log-20260701-09.jpg") || !missionLogJson.includes("Ca-Mg-C-O carbonate candidate")) {
-  fail("mission-log.json: LOG010 must include the Ca-Mg-C-O dolomite candidate evidence figure");
-}
 
 for (const required of ["robots.txt", "sitemap.xml"]) {
   if (!fs.existsSync(path.join(distDir, required)) && !fs.existsSync(path.join(publicDir, required))) {
     fail(`Missing SEO file: ${required}`);
-  }
-}
-
-if (!fs.existsSync(missionDataPath)) {
-  fail("mission-log.json: missing generated Mission Log data");
-} else {
-  const missionData = JSON.parse(fs.readFileSync(missionDataPath, "utf8"));
-  const log010 = Array.isArray(missionData) ? missionData.find((entry) => entry.id === "log-010") : null;
-  const log010Html = log010?.bodyHtml || "";
-  const log010ImageCount = (log010Html.match(/mission-thumb-img/g) || []).length;
-  if (!log010) {
-    fail("mission-log.json: missing log-010 entry");
-  } else {
-    for (const phrase of ["EDS reconnaissance evidence", "Ca-rich EDS map", "Fe-S EDS map", "matrix-like altered material"]) {
-      if (!log010Html.includes(phrase)) {
-        fail(`log-010: missing EDS evidence phrase: ${phrase}`);
-      }
-    }
-    if (log010ImageCount < 8) {
-      fail(`log-010: expected at least 8 evidence figures, found ${log010ImageCount}`);
-    }
-    if (/\b(is|are|was|were)\s+(pyrrhotite|magnetite|dolomite)\b/i.test(log010Html)) {
-      fail("log-010: EDS interpretation must remain candidate/preliminary, not definitive");
-    }
   }
 }
 
@@ -460,6 +465,17 @@ if (missionIndex.includes("assets/data/mission-log.json")) {
 }
 if (/\bfetch\s*\(/.test(missionIndex) || missionIndex.includes("dataEl") || missionIndex.includes("mission-log-data")) {
   fail("mission-index.js: Mission Log entries must only come from the protected in-memory archive");
+}
+for (const protectedUiScript of ["research-lock.js", "mission-index.js", "mission-lightbox.js"]) {
+  const scriptPath = path.join(assetsDir, "js", protectedUiScript);
+  if (!fs.existsSync(scriptPath)) {
+    fail(`${protectedUiScript}: missing protected Mission Log UI script`);
+    continue;
+  }
+  const script = fs.readFileSync(scriptPath, "utf8");
+  if (script.includes("assets/data/mission-log.json") || script.includes("assets/img/mission-log/")) {
+    fail(`${protectedUiScript}: protected UI scripts must not contain a plaintext Mission Log URL`);
+  }
 }
 const missionLogShell = fs.readFileSync(path.join(root, "src", "components", "MissionLogShell.astro"), "utf8");
 if (missionLogShell.includes("assets/data/mission-log.json") || missionLogShell.includes("data-mission-data-url")) {
