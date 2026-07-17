@@ -1,4 +1,69 @@
 /* Responsive shell ownership lives here. */
+html:not([data-theme="space"]):not([data-theme-space]) {
+  --evo-surface: #edf3f6;
+  --evo-surface-strong: #f8fafb;
+  --evo-ink: #10243a;
+  --evo-muted: #5f7080;
+  --evo-line: rgba(16, 36, 58, .18);
+  --evo-gold: #a88232;
+  --evo-mineral: #7d5c58;
+}
+
+html[data-theme="space"],
+html[data-theme-space] {
+  --evo-surface: #07111d;
+  --evo-surface-strong: #0b1827;
+  --evo-ink: #edf7ff;
+  --evo-muted: #aab9c8;
+  --evo-line: rgba(151, 184, 210, .22);
+  --evo-gold: #d6b568;
+  --evo-mineral: #c69a91;
+}
+
+html:not([data-theme="space"]):not([data-theme-space]) body {
+  color: var(--evo-ink);
+}
+
+html:not([data-theme="space"]):not([data-theme-space]) body .site-header {
+  color: var(--evo-ink) !important;
+  border-color: var(--evo-line) !important;
+  background-color: rgba(237, 243, 246, .56) !important;
+}
+
+html:not([data-theme="space"]):not([data-theme-space]) body .site-header::before {
+  opacity: .78 !important;
+  filter: saturate(.82) brightness(1.08) contrast(.92) !important;
+}
+
+html:not([data-theme="space"]):not([data-theme-space]) body .brand,
+html:not([data-theme="space"]):not([data-theme-space]) body .brand strong,
+html:not([data-theme="space"]):not([data-theme-space]) body .nav a {
+  color: var(--evo-ink) !important;
+}
+
+html:not([data-theme="space"]):not([data-theme-space]) body .brand span,
+html:not([data-theme="space"]):not([data-theme-space]) body .lead,
+html:not([data-theme="space"]):not([data-theme-space]) body .muted,
+html:not([data-theme="space"]):not([data-theme-space]) body .site-footer {
+  color: var(--evo-muted) !important;
+}
+
+html:not([data-theme="space"]):not([data-theme-space]) body .header-actions .nav {
+  border-color: var(--evo-line) !important;
+  background: rgba(248, 250, 251, .88) !important;
+}
+
+html:not([data-theme="space"]):not([data-theme-space]) body .theme-toggle {
+  color: var(--evo-ink) !important;
+  border-color: var(--evo-line) !important;
+  background: rgba(248, 250, 251, .90) !important;
+}
+
+html:not([data-theme="space"]):not([data-theme-space]) body :is(a, button, input):focus-visible {
+  outline: 3px solid rgba(168, 130, 50, .66) !important;
+  outline-offset: 3px !important;
+}
+
 .nav-toggle {
   display: none;
 }
