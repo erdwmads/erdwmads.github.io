@@ -51,6 +51,15 @@ class FakeElement {
     this.listeners.set(type, listeners);
   }
 
+  removeEventListener(type, listener) {
+    const listeners = (this.listeners.get(type) || []).filter((item) => item !== listener);
+    this.listeners.set(type, listeners);
+  }
+
+  listenerCount(type) {
+    return (this.listeners.get(type) || []).length;
+  }
+
   async emit(type, event = {}) {
     for (const listener of this.listeners.get(type) || []) {
       await listener({ preventDefault() {}, ...event });
@@ -99,6 +108,8 @@ const bootLock = (fetchImpl, { crypto = webcrypto } = {}) => {
   gate.dataset.protectedArchiveUrl = "assets/data/mission-log.enc.json";
   const content = new FakeElement();
   content.hidden = true;
+  content.innerHTML = '<section data-locked-safe>Locked-safe content</section>';
+  const lockedMarkup = content.innerHTML;
   const form = new FakeElement();
   form.button = new FakeElement();
   const input = new FakeElement();
@@ -106,6 +117,7 @@ const bootLock = (fetchImpl, { crypto = webcrypto } = {}) => {
   const error = new FakeElement();
   error.hidden = true;
   const documentEvents = [];
+  const documentEventListeners = new Map();
   const windowEvents = new Map();
   const document = {
     documentElement: { classList: createClassList() },
@@ -120,8 +132,17 @@ const bootLock = (fetchImpl, { crypto = webcrypto } = {}) => {
     },
     dispatchEvent(event) {
       documentEvents.push(event.type);
+      for (const listener of documentEventListeners.get(event.type) || []) listener(event);
+    },
+    addEventListener(type, listener) {
+      const listeners = documentEventListeners.get(type) || [];
+      listeners.push(listener);
+      documentEventListeners.set(type, listeners);
     }
   };
+  document.addEventListener("mads:research-unlocked", () => {
+    content.innerHTML = '<article data-decrypted-entry>Decrypted entry</article>';
+  });
   const window = {
     crypto,
     addEventListener(type, listener) {
@@ -129,8 +150,15 @@ const bootLock = (fetchImpl, { crypto = webcrypto } = {}) => {
       listeners.push(listener);
       windowEvents.set(type, listeners);
     },
-    emit(type) {
-      for (const listener of windowEvents.get(type) || []) listener();
+    removeEventListener(type, listener) {
+      const listeners = (windowEvents.get(type) || []).filter((item) => item !== listener);
+      windowEvents.set(type, listeners);
+    },
+    listenerCount(type) {
+      return (windowEvents.get(type) || []).length;
+    },
+    emit(type, event = {}) {
+      for (const listener of windowEvents.get(type) || []) listener(event);
     }
   };
   class CustomEvent {
@@ -139,7 +167,7 @@ const bootLock = (fetchImpl, { crypto = webcrypto } = {}) => {
     }
   }
 
-  vm.runInNewContext(researchLock, {
+  const context = {
     AbortController,
     CustomEvent,
     Error,
@@ -152,9 +180,11 @@ const bootLock = (fetchImpl, { crypto = webcrypto } = {}) => {
     document,
     fetch: fetchImpl,
     window
-  }, { filename: "research-lock.js" });
+  };
+  const initialize = () => vm.runInNewContext(researchLock, context, { filename: "research-lock.js" });
+  initialize();
 
-  return { content, document, documentEvents, error, form, gate, input, window };
+  return { content, document, documentEvents, error, form, gate, initialize, input, lockedMarkup, window };
 };
 
 const responseFor = (payload) => ({
@@ -177,6 +207,27 @@ test("decrypts a valid archive and announces the unlock", async () => {
   assert.deepEqual(page.documentEvents, ["mads:research-unlocked"]);
   assert.equal(page.input.value, "");
   assert.equal(page.input.getAttribute("aria-invalid"), null);
+});
+
+test("pagehide fully relocks the archive and restores locked-safe markup", async () => {
+  const page = bootLock(async () => responseFor(validPayload));
+  page.input.value = password;
+
+  await page.form.emit("submit");
+  assert.equal(page.gate.hidden, true);
+  assert.equal(page.content.hidden, false);
+  assert.equal(page.content.innerHTML.includes("data-decrypted-entry"), true);
+  assert.deepEqual(archiveState(page), { entries });
+
+  page.window.emit("pagehide", { persisted: true });
+
+  assert.equal(page.gate.hidden, false);
+  assert.equal(page.content.hidden, true);
+  assert.equal(page.content.innerHTML, page.lockedMarkup);
+  assert.equal(page.input.value, "");
+  assert.equal(page.input.getAttribute("aria-invalid"), null);
+  assert.equal(page.window.MadsProtectedArchive, undefined);
+  assert.equal(page.document.documentElement.classList.contains("research-unlocked"), false);
 });
 
 test("wrong passwords and altered authentication tags keep the archive locked", async () => {
@@ -289,9 +340,38 @@ test("navigation lifecycle events clear data and prevent late decrypts from unlo
     assert.equal(page.document.documentElement.classList.contains("research-unlocked"), false);
     assert.equal(page.form.getAttribute("aria-busy"), null);
 
+    page.initialize();
     page.input.value = password;
     await page.form.emit("submit");
     assert.equal(fetchCount, 2);
     assert.deepEqual(archiveState(page), { entries });
   }
+});
+
+test("reinitialization replaces stale listeners and allows a fresh unlock", async () => {
+  let fetchCount = 0;
+  const page = bootLock(async () => {
+    fetchCount += 1;
+    return responseFor(validPayload);
+  });
+
+  page.initialize();
+  assert.equal(page.form.listenerCount("submit"), 1);
+  assert.equal(page.window.listenerCount("mads:soft-nav-start"), 1);
+  assert.equal(page.window.listenerCount("pagehide"), 1);
+
+  page.input.value = password;
+  await page.form.emit("submit");
+  assert.equal(fetchCount, 1);
+
+  page.window.emit("mads:soft-nav-start");
+  assert.equal(page.form.listenerCount("submit"), 0);
+  assert.equal(page.window.listenerCount("mads:soft-nav-start"), 0);
+  assert.equal(page.window.listenerCount("pagehide"), 0);
+
+  page.initialize();
+  page.input.value = password;
+  await page.form.emit("submit");
+  assert.equal(fetchCount, 2);
+  assert.deepEqual(archiveState(page), { entries });
 });

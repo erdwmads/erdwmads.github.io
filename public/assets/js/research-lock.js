@@ -1,4 +1,7 @@
 (() => {
+  const cleanupKey = '__madsResearchLockCleanup';
+  window[cleanupKey]?.();
+
   const gate = document.querySelector('[data-research-lock-gate]');
   const content = document.querySelector('[data-research-lock-content]');
   const form = document.querySelector('[data-research-lock-form]');
@@ -9,6 +12,8 @@
 
   const archiveIterations = 600000;
   const archiveUrl = gate.dataset.protectedArchiveUrl;
+  const lockedContentMarkup = content.innerHTML;
+  const lockedContentHidden = content.hidden;
   let isDecrypting = false;
   let attemptToken = 0;
   let archiveController = null;
@@ -129,9 +134,14 @@
     setBusy(false);
     delete window.MadsProtectedArchive;
     document.documentElement.classList.remove('research-unlocked');
+    input.value = '';
+    clearError();
+    gate.hidden = false;
+    content.hidden = lockedContentHidden;
+    content.innerHTML = lockedContentMarkup;
   };
 
-  form.addEventListener('submit', async (event) => {
+  const onSubmit = async (event) => {
     event.preventDefault();
     if (isDecrypting) return;
 
@@ -165,8 +175,20 @@
         setBusy(false);
       }
     }
-  });
+  };
 
-  window.addEventListener('mads:soft-nav-start', invalidateAccess);
-  window.addEventListener('pagehide', invalidateAccess);
+  const onNavigation = () => teardown();
+
+  const teardown = () => {
+    invalidateAccess();
+    form.removeEventListener('submit', onSubmit);
+    window.removeEventListener('mads:soft-nav-start', onNavigation);
+    window.removeEventListener('pagehide', onNavigation);
+    if (window[cleanupKey] === teardown) delete window[cleanupKey];
+  };
+
+  form.addEventListener('submit', onSubmit);
+  window.addEventListener('mads:soft-nav-start', onNavigation);
+  window.addEventListener('pagehide', onNavigation);
+  window[cleanupKey] = teardown;
 })();
