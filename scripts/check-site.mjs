@@ -357,6 +357,9 @@ if (!interface2046.includes("MOBILE_INTERFACE_MEDIA") || !interface2046.includes
 }
 
 const styleCss = fs.readFileSync(path.join(assetsDir, "css", "style.css"), "utf8");
+if (!styleCss.includes('content: "\\2039" !important;') || !styleCss.includes('content: "\\203A" !important;')) {
+  fail("style.css: photography controls must use encoding-safe previous/next arrows");
+}
 if (!styleCss.includes("mads-soft-nav-active")) {
   fail("style.css: missing soft navigation stability styles");
 }
