@@ -346,7 +346,7 @@ Before running the commands, complete the `scripts/check-site.mjs` changes from 
 - [ ] **Step 5: Commit**
 
 ```powershell
-git add -A src/data/missionLog.ts src/pages/assets/data/mission-log.json.ts scripts/export-ppt-data.mjs docs/ui-invariants.md docs/content-workflow.md
+git add -A src/data/missionLog.ts src/pages/assets/data/mission-log.json.ts scripts/check-site.mjs scripts/export-ppt-data.mjs docs/ui-invariants.md docs/content-workflow.md
 git commit -m "security: remove public mission plaintext"
 ```
 
