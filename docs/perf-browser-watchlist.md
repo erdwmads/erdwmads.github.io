@@ -22,6 +22,8 @@ and mobile Mission Log lightbox disabled
 - Pause timers when the document is hidden.
 - Keep dust and pebble positions re-seeded per animation cycle.
 - Meteors should enter from offscreen and exit offscreen.
+- The orbital solar-system layer is part of FX and must not exist in the DOM while FX is off.
+- Mobile/coarse-pointer views must not create the orbital layer, scroll HUD, or research coordinates panel.
 
 Current particle/cadence values:
 
@@ -66,3 +68,5 @@ Astro + TypeScript + Markdown/JSON content
 ```
 
 The goal is not a dynamic app. The goal is a cleaner static site that GitHub Pages can serve reliably.
+
+Run `npm run audit:css` when changing stylesheet ownership. Treat `docs/css-baseline.json` as a complexity ceiling: new work should not increase `style.css` size or repeated-selector count.

@@ -12,6 +12,7 @@
     "check:site": "node scripts/check-site.mjs",
     "images:derive": "node scripts/generate-image-derivatives.mjs",
     "audit:images": "node scripts/audit-images.mjs",
+    "audit:css": "node scripts/audit-css.mjs",
     "export:ppt-data": "node scripts/export-ppt-data.mjs",
     "test:mission-publisher": "node --test scripts/publish-protected-mission-log.test.mjs",
     "test:research-lock": "node --test scripts/research-lock.test.mjs",

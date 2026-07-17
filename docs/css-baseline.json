@@ -1,0 +1,26 @@
+[
+  {
+    "file": "research-log-evolution.css",
+    "bytes": 4267,
+    "lines": 178,
+    "repeatedSelectors": 5
+  },
+  {
+    "file": "shell-evolution.css",
+    "bytes": 5784,
+    "lines": 212,
+    "repeatedSelectors": 2
+  },
+  {
+    "file": "style.css",
+    "bytes": 542877,
+    "lines": 17592,
+    "repeatedSelectors": 270
+  },
+  {
+    "file": "tokens.css",
+    "bytes": 576,
+    "lines": 22,
+    "repeatedSelectors": 0
+  }
+]

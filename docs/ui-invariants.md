@@ -72,3 +72,12 @@ Avoid viewport-height floating placement for persistent controls. Use stable bot
 Light Mode is not just an inverted Space Mode. Some controls need a pale glass / champagne skin in Light Mode and a darker capsule in Space Mode.
 
 When changing a component, check both themes explicitly.
+
+## Stylesheet Ownership
+
+- `style.css`: legacy compatibility rules only; do not append new component work here.
+- `tokens.css`: current Light/Space theme tokens.
+- `shell-evolution.css`: header, navigation, theme controls, mobile shell, and supporting HUD visibility.
+- `research-log-evolution.css`: Research Log dashboard, protected gate, and graduation research surfaces.
+
+The evolved styles remain globally loaded because soft navigation replaces the page body without replacing the document head. A future page-specific split must first teach soft navigation to synchronise stylesheet links.

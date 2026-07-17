@@ -385,6 +385,9 @@ const shellSource = fs.readFileSync(path.join(root, "src", "components", "Legacy
 if (!shellSource.includes("data-nav-toggle") || !shellSource.includes("data-mobile-nav")) {
   fail("LegacyShell: missing compact mobile navigation contract");
 }
+if (!shellSource.includes('assets/css/tokens.css') || shellSource.indexOf('assets/css/tokens.css') > shellSource.indexOf('assets/css/shell-evolution.css')) {
+  fail("LegacyShell: evolution tokens must load before component styles");
+}
 
 const graduationPage = readDistPage("research-graduation.html");
 if (!graduationPage.includes("assets/js/research-lock.js") || !graduationPage.includes("data-research-lock-gate") || !graduationPage.includes("data-research-lock-content")) {

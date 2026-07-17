@@ -1,0 +1,21 @@
+/* Current theme tokens shared by the evolved shell and research surfaces. */
+html:not([data-theme="space"]):not([data-theme-space]) {
+  --evo-surface: #edf3f6;
+  --evo-surface-strong: #f8fafb;
+  --evo-ink: #10243a;
+  --evo-muted: #5f7080;
+  --evo-line: rgba(16, 36, 58, .18);
+  --evo-gold: #a88232;
+  --evo-mineral: #7d5c58;
+}
+
+html[data-theme="space"],
+html[data-theme-space] {
+  --evo-surface: #07111d;
+  --evo-surface-strong: #0b1827;
+  --evo-ink: #edf7ff;
+  --evo-muted: #aab9c8;
+  --evo-line: rgba(151, 184, 210, .22);
+  --evo-gold: #d6b568;
+  --evo-mineral: #c69a91;
+}

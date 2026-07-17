@@ -10,7 +10,11 @@ The user supplies research content, notes, papers, images, or presentation goals
 - Mission Log shell and lazy loading: `src/components/MissionLogShell.astro`
 - Mission Log images: `public/assets/img/mission-log/`
 - Paper Shelf layout and filters: `src/components/PaperShelf.astro`
-- Visual system and effects: `public/assets/css/style.css` and `public/assets/js/`
+- Theme tokens: `public/assets/css/tokens.css`
+- Header, navigation, mobile shell, and HUD: `public/assets/css/shell-evolution.css`
+- Research Log dashboard and protected research surfaces: `public/assets/css/research-log-evolution.css`
+- Legacy visual compatibility: `public/assets/css/style.css` (do not append new component rules)
+- Effects and interaction: `public/assets/js/`
 
 ## Mission Log Rule
 
@@ -56,3 +60,4 @@ Before pushing to `main`, Codex should:
 3. Commit with a clear message.
 4. Push `main`.
 5. Keep the previous main commit available for rollback.
+6. Run `npm run audit:css` after CSS ownership changes and keep the baseline from regressing.
