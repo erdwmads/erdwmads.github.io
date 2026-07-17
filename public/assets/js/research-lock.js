@@ -177,18 +177,23 @@
     }
   };
 
-  const onNavigation = () => teardown();
+  const onSoftNavigation = () => teardown();
+
+  const onPageHide = (event) => {
+    if (event.persisted) invalidateAccess();
+    else teardown();
+  };
 
   const teardown = () => {
     invalidateAccess();
     form.removeEventListener('submit', onSubmit);
-    window.removeEventListener('mads:soft-nav-start', onNavigation);
-    window.removeEventListener('pagehide', onNavigation);
+    window.removeEventListener('mads:soft-nav-start', onSoftNavigation);
+    window.removeEventListener('pagehide', onPageHide);
     if (window[cleanupKey] === teardown) delete window[cleanupKey];
   };
 
   form.addEventListener('submit', onSubmit);
-  window.addEventListener('mads:soft-nav-start', onNavigation);
-  window.addEventListener('pagehide', onNavigation);
+  window.addEventListener('mads:soft-nav-start', onSoftNavigation);
+  window.addEventListener('pagehide', onPageHide);
   window[cleanupKey] = teardown;
 })();

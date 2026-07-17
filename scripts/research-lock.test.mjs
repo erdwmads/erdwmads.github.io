@@ -230,6 +230,31 @@ test("pagehide fully relocks the archive and restores locked-safe markup", async
   assert.equal(page.document.documentElement.classList.contains("research-unlocked"), false);
 });
 
+test("persisted pagehide relocks but keeps the visible gate ready for BFCache unlock", async () => {
+  let fetchCount = 0;
+  const page = bootLock(async () => {
+    fetchCount += 1;
+    return responseFor(validPayload);
+  });
+  page.input.value = password;
+
+  await page.form.emit("submit");
+  page.window.emit("pagehide", { persisted: true });
+  assert.equal(page.gate.hidden, false);
+  assert.equal(page.content.hidden, true);
+  assert.equal(page.content.innerHTML, page.lockedMarkup);
+  assert.equal(page.window.MadsProtectedArchive, undefined);
+
+  page.window.emit("pageshow", { persisted: true });
+  page.input.value = password;
+  await page.form.emit("submit");
+
+  assert.equal(fetchCount, 2);
+  assert.deepEqual(archiveState(page), { entries });
+  assert.equal(page.gate.hidden, true);
+  assert.equal(page.content.hidden, false);
+});
+
 test("wrong passwords and altered authentication tags keep the archive locked", async () => {
   const wrongPasswordPage = bootLock(async () => responseFor(validPayload));
   wrongPasswordPage.input.value = "wrong password";

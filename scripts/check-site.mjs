@@ -334,6 +334,9 @@ if (!graduationPage.includes('data-protected-archive-url="assets/data/mission-lo
 if (!graduationPage.includes('aria-describedby="research-lock-error"') || !graduationPage.includes('id="research-lock-error"') || !graduationPage.includes('role="alert"')) {
   fail("research-graduation.html: password errors must be announced to assistive technology");
 }
+if (!/<form\b(?=[^>]*data-research-lock-form)(?=[^>]*method="post")/i.test(graduationPage)) {
+  fail("research-graduation.html: password form must use POST");
+}
 if (!graduationPage.includes('data-mission-data-url="assets/data/mission-log.json"')) {
   fail("research-graduation.html: missing lazy Mission Log data URL");
 }
