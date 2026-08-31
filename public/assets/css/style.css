@@ -5688,7 +5688,7 @@ html:not([data-theme="space"]) .mission-photo-grid figure {
 .hero-actions a[href="research.html"]::after,
 .cta-row a[href="research.html"]::after,
 .action-row a[href="research.html"]::after {
-  content: "鬯ｯ・ｯ繝ｻ・ｯ郢晢ｽｻ繝ｻ・ｩ鬮ｯ蜈ｷ・ｽ・ｹ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｶ鬯ｯ・ｯ繝ｻ・ｩ髫ｲ・､隲橸ｽｺ隨ｳ蜀暦ｽｹ譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｫ鬯ｯ・ｩ陝ｷ・｢繝ｻ・ｽ繝ｻ・｢鬮ｫ・ｴ髮懶ｽ｣繝ｻ・ｽ繝ｻ・｢驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻ !important;
+  content: "\2192" !important;
   font-size: 12px !important;
   line-height: 1 !important;
   opacity: .78 !important;
@@ -6583,7 +6583,7 @@ html:not([data-theme="space"]) .mission-lightbox__btn {
 }
 
 .project-progress[data-mission-project="graduation"].is-synced + .project-sync-note::before {
-  content: "SYNCED 鬯ｯ・ｩ陝ｷ・｢繝ｻ・ｽ繝ｻ・｢鬮ｫ・ｴ髮懶ｽ｣繝ｻ・ｽ繝ｻ・｢驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻ鬯ｯ・ｩ陝ｷ・｢繝ｻ・ｽ繝ｻ・｢驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｧ鬯ｮ・ｫ繝ｻ・ｰ驛｢譎｢・ｽ・ｻ驕ｶ荵暦ｽｧ・ｭ郢晢ｽｻ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ鬯ｩ蟷｢・ｽ・｢髫ｴ雜｣・ｽ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｻ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｷ " !important;
+  content: "SYNCED\00A0\00B7\00A0" !important;
   color: var(--blue) !important;
   font-weight: 850 !important;
   letter-spacing: .09em !important;
@@ -6613,7 +6613,7 @@ html:not([data-theme="space"]) .project-progress[data-mission-project="graduatio
 }
 
 .research-status-grid[data-mission-status-grid].is-status-synced .status-card:first-child span::after {
-  content: " 鬯ｯ・ｩ陝ｷ・｢繝ｻ・ｽ繝ｻ・｢鬮ｫ・ｴ髮懶ｽ｣繝ｻ・ｽ繝ｻ・｢驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻ鬯ｯ・ｩ陝ｷ・｢繝ｻ・ｽ繝ｻ・｢驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｧ鬯ｮ・ｫ繝ｻ・ｰ驛｢譎｢・ｽ・ｻ驕ｶ荵暦ｽｧ・ｭ郢晢ｽｻ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ鬯ｩ蟷｢・ｽ・｢髫ｴ雜｣・ｽ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｻ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｷ synced";
+  content: "\00A0\00B7\00A0synced";
   color: var(--blue);
   font-size: .78em;
   letter-spacing: .08em;
@@ -8039,7 +8039,7 @@ html:not([data-theme="space"]) body::after {
 }
 
 .section-label::before {
-  content: "鬯ｯ・ｯ繝ｻ・ｯ郢晢ｽｻ繝ｻ・ｮ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｫ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｨ鬯ｩ蟷｢・ｽ・｢髫ｴ雜｣・ｽ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｻ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｳ鬯ｯ・ｯ繝ｻ・ｩ髯晢ｽｷ繝ｻ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬯ｮ・ｫ繝ｻ・ｴ鬮ｮ諛ｶ・ｽ・｣郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻ";
+  content: "\2022";
   opacity: .64;
 }
 
@@ -9240,7 +9240,7 @@ body.ui-page-paper-shelf .paper-card {
 }
 
 body.ui-page-paper-shelf .paper-card h3::before {
-  content: "鬯ｯ・ｯ繝ｻ・ｯ郢晢ｽｻ繝ｻ・ｮ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｫ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｨ鬯ｩ蟷｢・ｽ・｢髫ｴ雜｣・ｽ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｻ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｳ鬯ｯ・ｯ繝ｻ・ｩ髯晢ｽｷ繝ｻ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬯ｮ・ｫ繝ｻ・ｴ鬮ｮ諛ｶ・ｽ・｣郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻ";
+  content: "\2022";
   color: rgba(255,217,154,.72);
   font-weight: 500;
 }
@@ -9494,7 +9494,7 @@ body.ui-page-home .hero a[href="research.html"]::after,
 body.ui-page-home .hero-actions a[href="research.html"]::after,
 body.ui-page-home .cta-row a[href="research.html"]::after,
 body.ui-page-home .action-row a[href="research.html"]::after {
-  content: "鬯ｯ・ｯ繝ｻ・ｯ郢晢ｽｻ繝ｻ・ｩ鬮ｯ蜈ｷ・ｽ・ｹ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｶ鬯ｯ・ｯ繝ｻ・ｩ髫ｲ・､隲橸ｽｺ隨ｳ蜀暦ｽｹ譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｫ鬯ｯ・ｩ陝ｷ・｢繝ｻ・ｽ繝ｻ・｢鬮ｫ・ｴ髮懶ｽ｣繝ｻ・ｽ繝ｻ・｢驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻ !important;
+  content: "\2192" !important;
   width: 24px !important;
   height: 24px !important;
   flex: 0 0 24px !important;
@@ -12350,7 +12350,6 @@ html.is-edge-page-exiting *::after {
 
 html.is-edge-page-exiting body::before,
 html.is-edge-page-exiting body::after,
-html.is-edge-page-exiting .ambient-space-layer,
 html.is-edge-page-exiting .ui2046-layer,
 html.is-edge-page-exiting .ui2046-progress,
 html.is-edge-page-exiting .entry-gate,
@@ -12520,7 +12519,7 @@ html.is-edge-page-exiting .mission-lightbox * {
 }
 
 .entry-gate__mode::before {
-  content: "鬯ｯ・ｯ繝ｻ・ｯ郢晢ｽｻ繝ｻ・ｮ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｫ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｨ鬯ｩ蟷｢・ｽ・｢髫ｴ雜｣・ｽ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・ｻ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｳ鬯ｯ・ｯ繝ｻ・ｩ髯晢ｽｷ繝ｻ・｢郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬯ｮ・ｫ繝ｻ・ｴ鬮ｮ諛ｶ・ｽ・｣郢晢ｽｻ繝ｻ・ｽ郢晢ｽｻ繝ｻ・｢鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｽ鬩幢ｽ｢隴趣ｽ｢繝ｻ・ｽ繝ｻ・ｻ驛｢譎｢・ｽ・ｻ郢晢ｽｻ繝ｻ・ｻ;
+  content: "\2022";
   color: rgba(255,211,128,.80);
   margin-right: .75em;
   text-shadow: 0 0 12px rgba(255,211,128,.24);
@@ -16234,23 +16233,6 @@ body.space-mode .paper-filter {
   color: #edf7ff;
 }
 
-/* mobile-research-title-no-overflow:
-   Keep the long graduation-research title inside the phone viewport. */
-@media (max-width: 560px) {
-  body.ui-page-research-graduation main > section h1 {
-    box-sizing: border-box !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    font-size: 2rem !important;
-    line-height: 1.08 !important;
-    letter-spacing: 0 !important;
-    overflow-wrap: anywhere !important;
-    word-break: normal !important;
-    hyphens: auto !important;
-  }
-}
-
-
 .mission-index-tools {
   display: flex;
   align-items: center;
@@ -17474,28 +17456,38 @@ html:not([data-theme="space"]) .header-actions > .nav-log-gate:hover {
   }
 }
 
+/* medium-desktop-header */
 @media (min-width: 761px) and (max-width: 1040px) {
   .header-actions {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
-    gap: 8px !important;
+    grid-template-columns: minmax(0, 1fr) max-content max-content !important;
+    gap: 6px !important;
   }
 
   .header-actions .nav {
-    grid-column: 1 / -1 !important;
-    display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 7px !important;
+    grid-column: auto !important;
+    display: flex !important;
+    gap: 2px !important;
+    padding: 7px 8px !important;
   }
 
   .header-actions .nav a {
-    width: 100% !important;
+    width: auto !important;
+    padding: 7px 6px !important;
+    font-size: 11px !important;
     text-align: center !important;
   }
 
-  .header-actions > .nav-log-gate,
+  .header-actions > .nav-log-gate {
+    width: 136px !important;
+    min-width: 136px !important;
+    padding-inline: 10px !important;
+    justify-content: flex-start !important;
+  }
+
   .header-actions > .theme-toggle {
-    width: 100% !important;
-    min-width: 0 !important;
+    width: auto !important;
+    min-width: 98px !important;
+    padding-inline: 10px !important;
     justify-content: center !important;
   }
 }
@@ -17615,4 +17607,42 @@ html:not([data-theme="space"]):not([data-theme-space]) body:not(.space-mode) .mi
 .mission-lightbox__img {
   backface-visibility: hidden !important;
   transform: translateZ(0) !important;
+}
+
+/* ui-regression-guards */
+[hidden] {
+  display: none !important;
+}
+
+.mission-log-entry .research-note-body {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+.mission-lightbox__captionbar {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: start !important;
+}
+
+.mission-lightbox__caption {
+  min-width: 0 !important;
+}
+
+.nav-log-gate {
+  position: relative !important;
+}
+
+.nav-log-gate::before,
+.nav-log-gate::after {
+  pointer-events: none !important;
+}
+
+@media (max-width: 760px) {
+  .mission-lightbox__captionbar {
+    max-height: min(22dvh, 150px);
+    overflow-y: auto;
+    padding-bottom: max(8px, env(safe-area-inset-bottom)) !important;
+  }
 }

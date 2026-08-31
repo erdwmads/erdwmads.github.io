@@ -42,7 +42,7 @@
     root.classList.add("is-edge-page-exiting");
     body.classList.add("is-edge-page-exiting");
     document
-      .querySelectorAll(".entry-gate, .ambient-space-layer, .ui2046-layer, .ui2046-progress")
+      .querySelectorAll(".entry-gate, .ui2046-layer, .ui2046-progress")
       .forEach((node) => node.classList.add("is-edge-teardown"));
   }
 
@@ -54,14 +54,6 @@
       .querySelectorAll(".is-edge-teardown")
       .forEach((node) => node.classList.remove("is-edge-teardown"));
   }
-
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden") {
-      beginEdgeTeardown();
-    } else {
-      restoreEdgeTeardown();
-    }
-  }, { passive: true });
 
   window.addEventListener("pagehide", (event) => {
     if (!event.persisted) beginEdgeTeardown();

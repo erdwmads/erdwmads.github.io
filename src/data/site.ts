@@ -35,8 +35,7 @@ export const contentPages = [
   { href: "paper-shelf.html", title: "Paper Shelf", key: "paper-shelf" },
   { href: "cv.html", title: "CV", key: "cv" },
   { href: "photography.html", title: "Photography", key: "photography" },
-  { href: "contact.html", title: "Contact", key: "contact" },
-  { href: "sample-cabinet.html", title: "Sample Cabinet", key: "sample-cabinet" }
+  { href: "contact.html", title: "Contact", key: "contact" }
 ] as const;
 
 export const footerItems = ["(c) 2026 Mads LIU Yong", "Built for GitHub Pages"] as const;
@@ -48,12 +47,14 @@ type ScriptSpec = {
 
 const commonScripts: ScriptSpec[] = [
   { src: "assets/js/site-header.js", defer: true },
-  { src: "assets/js/theme.js", defer: true },
-  { src: "assets/js/ambient-space.js", defer: true },
+  { src: "assets/js/theme.js?v=20260831-stability", defer: true },
+  { src: "assets/js/ambient-space.js?v=20260831-stability", defer: true },
   { src: "assets/js/research-coordinates.js", defer: true }
 ];
 
-const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js", defer: true };
+const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20260831-stability", defer: true };
+const powerManagerScript: ScriptSpec = { src: "assets/js/power-manager.js" };
+const legacyNavigationScript: ScriptSpec = { src: "assets/js/legacy-navigation.js", defer: true };
 
 const pageScripts: Record<string, ScriptSpec[]> = {
   contact: [...commonScripts, interfaceScript],
@@ -82,5 +83,10 @@ function renderScript(spec: ScriptSpec) {
 
 export function getPageScripts(pageKey: keyof typeof pageScripts | string, inlineHtml = "") {
   const scripts = pageScripts[pageKey] || pageScripts.home;
-  return [scripts.map(renderScript).join("\n"), inlineHtml].filter(Boolean).join("\n\n");
+  return [
+    renderScript(powerManagerScript),
+    scripts.map(renderScript).join("\n"),
+    inlineHtml,
+    renderScript(legacyNavigationScript)
+  ].filter(Boolean).join("\n\n");
 }

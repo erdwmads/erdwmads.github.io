@@ -1,4 +1,5 @@
 (function () {
+  const COLLAPSIBLE_NAVIGATION_MEDIA = "(max-width: 760px)";
   window.__madsSiteHeaderAbort?.abort();
   const controller = new AbortController();
   const signal = controller.signal;
@@ -7,6 +8,7 @@
   const toggle = document.querySelector("[data-nav-toggle]");
   const navigation = document.querySelector("[data-mobile-nav]");
   if (!toggle || !navigation) return;
+  const collapsibleNavigationMedia = window.matchMedia(COLLAPSIBLE_NAVIGATION_MEDIA);
 
   function close() {
     document.documentElement.classList.remove("mobile-nav-open");
@@ -32,9 +34,12 @@
     }
   }, { signal });
 
-  window.addEventListener("resize", () => {
-    if (window.innerWidth > 760) close();
-  }, { signal });
+  function syncNavigationMode() {
+    if (!collapsibleNavigationMedia.matches) close();
+  }
+
+  window.addEventListener("resize", syncNavigationMode, { signal });
+  collapsibleNavigationMedia.addEventListener("change", syncNavigationMode, { signal });
   window.addEventListener("pageshow", close, { signal });
   document.addEventListener("mads:soft-nav-ready", close, { signal });
   close();

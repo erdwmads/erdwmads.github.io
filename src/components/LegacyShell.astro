@@ -18,7 +18,7 @@ const bodyClass = `ui-page-${current}`;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="space" data-theme-space>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -42,23 +42,31 @@ const bodyClass = `ui-page-${current}`;
     (function () {
       try {
         var savedTheme = localStorage.getItem("mads-theme");
-        if (savedTheme === "space") {
+        if (savedTheme === "light") {
+          document.documentElement.setAttribute("data-theme", "light");
+          document.documentElement.removeAttribute("data-theme-space");
+          document.documentElement.classList.remove("theme-preloaded-space");
+          document.documentElement.style.backgroundColor = "#edf3f7";
+        } else {
           document.documentElement.setAttribute("data-theme", "space");
           document.documentElement.setAttribute("data-theme-space", "");
           document.documentElement.classList.add("theme-preloaded-space");
           document.documentElement.style.backgroundColor = "#040910";
-        } else {
-          document.documentElement.setAttribute("data-theme", "light");
-          document.documentElement.style.backgroundColor = "#edf3f7";
         }
       } catch (error) {
-        document.documentElement.setAttribute("data-theme", "light");
-        document.documentElement.style.backgroundColor = "#edf3f7";
+        document.documentElement.setAttribute("data-theme", "space");
+        document.documentElement.setAttribute("data-theme-space", "");
+        document.documentElement.classList.add("theme-preloaded-space");
+        document.documentElement.style.backgroundColor = "#040910";
       }
     })();
   </script>
   <style is:inline>
-    html { background: #edf3f7; color-scheme: light dark; }
+    html { background: #040910; color-scheme: dark; }
+    html[data-theme="light"]:not([data-theme-space]) {
+      background: #edf3f7 !important;
+      color-scheme: light;
+    }
     html[data-theme="space"],
     html[data-theme-space] {
       background: #040910 !important;
@@ -72,7 +80,7 @@ const bodyClass = `ui-page-${current}`;
   </style>
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/tokens.css">
-  <link rel="stylesheet" href="assets/css/shell-evolution.css">
+  <link rel="stylesheet" href="assets/css/shell-evolution.css?v=20260831-stability">
   <link rel="stylesheet" href="assets/css/research-log-evolution.css">
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="assets/img/favicon.png">
@@ -108,7 +116,7 @@ const bodyClass = `ui-page-${current}`;
           <small>{researchLogGate.status}</small>
         </span>
       </a>
-      <button class="theme-toggle" type="button" aria-label="Toggle light and space mode">Space Mode</button>
+      <button class="theme-toggle" type="button" aria-label="Toggle light and space mode" aria-pressed="true">Light Mode</button>
     </div>
   </div>
 </header>
@@ -120,9 +128,7 @@ const bodyClass = `ui-page-${current}`;
     {footerItems.map((item) => <span>{item}</span>)}
   </div>
 </footer>
-<script is:inline src="assets/js/power-manager.js"></script>
 <Fragment set:html={scriptHtml} />
-<script src="assets/js/legacy-navigation.js" defer></script>
 </body>
 </html>
 

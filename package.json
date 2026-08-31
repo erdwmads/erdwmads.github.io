@@ -8,7 +8,7 @@
     "build": "astro build",
     "preview": "astro preview --host 127.0.0.1",
     "check": "npm run build && npm run export:ppt-data && npm run check:site",
-    "check:all": "npm run test:mission-publisher && npm run test:research-lock && npm run test:mission-index && npm run test:mission-lightbox && npm run check",
+    "check:all": "npm run test:mission-publisher && npm run test:research-lock && npm run test:mission-index && npm run test:mission-lightbox && npm run test:mobile-layout && npm run check",
     "check:site": "node scripts/check-site.mjs",
     "images:derive": "node scripts/generate-image-derivatives.mjs",
     "audit:images": "node scripts/audit-images.mjs",
@@ -18,6 +18,7 @@
     "test:research-lock": "node --test scripts/research-lock.test.mjs",
     "test:mission-index": "node --test scripts/mission-index.test.mjs",
     "test:mission-lightbox": "node --test scripts/mission-lightbox.test.mjs",
+    "test:mobile-layout": "node --test scripts/mobile-layout.test.mjs",
     "publish:mission-log": "node scripts/publish-protected-mission-log.mjs"
   },
   "devDependencies": {

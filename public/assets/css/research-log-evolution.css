@@ -167,11 +167,18 @@ html:not([data-theme="space"]):not([data-theme-space]) .research-lock-card label
   body .research-log-main h1,
   body .research-graduation-page > section:first-child h1 {
     max-width: 100% !important;
-    font-size: 32px !important;
-    line-height: 1.08 !important;
-    overflow-wrap: break-word !important;
+    font-size: 28px !important;
+    line-height: 1.12 !important;
+    overflow-wrap: normal !important;
     word-break: normal !important;
     hyphens: none !important;
     letter-spacing: 0 !important;
+  }
+}
+
+@media (max-width: 360px) {
+  body .research-graduation-page > section:first-child h1 {
+    font-size: 25px !important;
+    line-height: 1.14 !important;
   }
 }

@@ -43,7 +43,7 @@
   function initialTheme() {
     const saved = readSavedTheme();
     if (saved === "space" || saved === "light") return saved;
-    return root.getAttribute("data-theme") === "space" ? "space" : "light";
+    return "space";
   }
 
   function toggleTheme() {

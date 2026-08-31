@@ -34,6 +34,11 @@ const staleNameNeedles = [
 ];
 const textFilePattern = /\.(?:astro|css|html|js|json|md|mjs|svg|ts|txt|xml)$/i;
 
+const legacyShellSource = fs.readFileSync(path.join(root, "src", "components", "LegacyShell.astro"), "utf8");
+if (/<script\b[^>]*\bsrc=["']assets\/js\/(?:power-manager|legacy-navigation)\.js["']/i.test(legacyShellSource)) {
+  fail("LegacyShell.astro: public runtime scripts must be emitted as raw HTML instead of Vite module imports");
+}
+
 function fail(message) {
   failures.push(message);
 }
@@ -388,7 +393,6 @@ if (!shellSource.includes("data-nav-toggle") || !shellSource.includes("data-mobi
 if (!shellSource.includes('assets/css/tokens.css') || shellSource.indexOf('assets/css/tokens.css') > shellSource.indexOf('assets/css/shell-evolution.css')) {
   fail("LegacyShell: evolution tokens must load before component styles");
 }
-
 const graduationPage = readDistPage("research-graduation.html");
 if (!graduationPage.includes("assets/js/research-lock.js") || !graduationPage.includes("data-research-lock-gate") || !graduationPage.includes("data-research-lock-content")) {
   fail("research-graduation.html: missing password gate");
@@ -436,6 +440,14 @@ for (const required of ["robots.txt", "sitemap.xml"]) {
   }
 }
 
+const sitemapPath = path.join(distDir, "sitemap.xml");
+if (fs.existsSync(sitemapPath)) {
+  const sitemap = fs.readFileSync(sitemapPath, "utf8");
+  if (sitemap.includes("sample-cabinet.html")) {
+    fail("sitemap.xml: retired hidden Sample Cabinet page must not be indexed");
+  }
+}
+
 const legacyNavigation = fs.readFileSync(path.join(assetsDir, "js", "legacy-navigation.js"), "utf8");
 if (!legacyNavigation.includes("mads-soft-nav-active") || !legacyNavigation.includes("mads:soft-nav-ready")) {
   fail("legacy-navigation.js: missing soft navigation stability lifecycle");
@@ -468,7 +480,43 @@ if (!/body \.header-inner\s*\{[\s\S]*?min-height:\s*0\s*!important[\s\S]*?paddin
   fail("shell-evolution.css: compact mobile header must clear legacy height and padding");
 }
 
+const collapsibleNavigationMedia = "(max-width: 760px)";
+if (!shellEvolution.includes(`@media ${collapsibleNavigationMedia}`)) {
+  fail("shell-evolution.css: collapsible navigation breakpoint must match the script");
+}
+if (/\(hover:\s*hover\)[\s\S]*?\(pointer:\s*fine\)/.test(shellEvolution)
+  || /html\.mobile-nav-open body \.header-actions\s*\{[^}]*position:\s*absolute\s*!important/is.test(shellEvolution)) {
+  fail("shell-evolution.css: mobile navigation must not change layout by pointer type or overlay page content");
+}
+const widerMobileGrid = shellEvolution.slice(shellEvolution.lastIndexOf("/* wider-mobile-nav-grid */"));
+if (!widerMobileGrid.startsWith("/* wider-mobile-nav-grid */")
+  || !widerMobileGrid.includes("@media (min-width: 400px) and (max-width: 760px)")
+  || !/grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\)\s*!important/.test(widerMobileGrid)) {
+  fail("shell-evolution.css: wider phones must use the compact three-column navigation grid");
+}
+
+const siteHeaderScript = fs.readFileSync(path.join(assetsDir, "js", "site-header.js"), "utf8");
+if (!siteHeaderScript.includes(`const COLLAPSIBLE_NAVIGATION_MEDIA = "${collapsibleNavigationMedia}"`)) {
+  fail("site-header.js: navigation state must use the same narrow-window breakpoint as CSS");
+}
+
 const styleCss = fs.readFileSync(path.join(assetsDir, "css", "style.css"), "utf8");
+if (styleCss.includes("/* compact-desktop-header */")) {
+  fail("style.css: narrow desktop navigation must not remain permanently expanded");
+}
+const mediumDesktopHeader = styleCss.slice(styleCss.lastIndexOf("/* medium-desktop-header */"));
+if (!mediumDesktopHeader.startsWith("/* medium-desktop-header */")
+  || !/@media \(min-width:\s*761px\) and \(max-width:\s*1040px\)/.test(mediumDesktopHeader)
+  || !/\.header-actions\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0,\s*1fr\)\s+max-content\s+max-content\s*!important/.test(mediumDesktopHeader)
+  || !/\.header-actions \.nav\s*\{[\s\S]*?grid-column:\s*auto\s*!important[\s\S]*?display:\s*flex\s*!important/.test(mediumDesktopHeader)) {
+  fail("style.css: medium desktop header must keep navigation and actions on one compact row");
+}
+const corruptedCssContent = styleCss
+  .split(/\r?\n/)
+  .filter((line) => /\bcontent\s*:/.test(line) && /[鬯驛郢繝譎髫]/.test(line));
+if (corruptedCssContent.length > 0) {
+  fail(`style.css: ${corruptedCssContent.length} rendered content declarations contain mojibake`);
+}
 if (!styleCss.includes('content: "\\2039" !important;') || !styleCss.includes('content: "\\203A" !important;')) {
   fail("style.css: photography controls must use encoding-safe previous/next arrows");
 }
@@ -492,6 +540,29 @@ if (!/mission-lightbox-rationalized-viewer[\s\S]*html:not\(\[data-theme="space"\
 }
 if (!styleCss.includes("mission-lightbox-stable-viewport")) {
   fail("style.css: missing stable Mission Log lightbox viewport rules");
+}
+const uiRegressionGuards = styleCss.slice(styleCss.lastIndexOf("/* ui-regression-guards */"));
+if (!uiRegressionGuards.startsWith("/* ui-regression-guards */")) {
+  fail("style.css: missing final UI regression guards");
+} else {
+  if (!/\[hidden\]\s*\{[\s\S]*?display:\s*none\s*!important[\s\S]*?\}/.test(uiRegressionGuards)) {
+    fail("style.css: hidden password-gate elements must stay visually hidden");
+  }
+  if (!/\.mission-log-entry\s+\.research-note-body\s*\{[\s\S]*?min-width:\s*0[\s\S]*?width:\s*100%[\s\S]*?max-width:\s*100%[\s\S]*?\}/.test(uiRegressionGuards)) {
+    fail("style.css: Mission Log body must not retain a desktop intrinsic width on mobile");
+  }
+  if (!/\.mission-lightbox__captionbar\s*\{[\s\S]*?display:\s*grid\s*!important[\s\S]*?grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\s*!important[\s\S]*?\}/.test(uiRegressionGuards)) {
+    fail("style.css: Mission Log caption bar must reserve a wrapping text column");
+  }
+  if (!/\.mission-lightbox__caption\s*\{[\s\S]*?min-width:\s*0\s*!important[\s\S]*?\}/.test(uiRegressionGuards)) {
+    fail("style.css: Mission Log caption must be allowed to wrap inside the viewport");
+  }
+  if (!/\.nav-log-gate\s*\{[\s\S]*?position:\s*relative\s*!important[\s\S]*?\}/.test(uiRegressionGuards)) {
+    fail("style.css: Research Log navigation gate must contain its decorative layers");
+  }
+  if (!/\.nav-log-gate::before,\s*\.nav-log-gate::after\s*\{[\s\S]*?pointer-events:\s*none\s*!important[\s\S]*?\}/.test(uiRegressionGuards)) {
+    fail("style.css: Research Log decorative layers must not intercept navigation clicks");
+  }
 }
 const finalLightboxBlock = styleCss.slice(styleCss.lastIndexOf("/* mission-lightbox-stable-viewport */"));
 if (/backdrop-filter:\s*blur/.test(finalLightboxBlock) || /-webkit-backdrop-filter:\s*blur/.test(finalLightboxBlock)) {

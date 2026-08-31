@@ -90,7 +90,6 @@
 
   function initAmbientSpace() {
     const existing = document.querySelector(".ambient-space-layer");
-    if (existing) existing.remove();
 
     if (isMobileAmbientView()) {
       // mobile ambient disabled: the mobile lightweight interface should not
@@ -106,6 +105,15 @@
 
     document.documentElement.classList.remove("ambient-fx-disabled");
     document.body.classList.remove("ambient-fx-disabled");
+
+    // Reuse a live layer when this script is re-entered by Edge or soft
+    // navigation. Removing and rebuilding the full fixed layer causes a
+    // visible one-frame blackout in Chromium compositing.
+    if (existing && existing.querySelector(".ambient-dust")) {
+      return;
+    }
+
+    if (existing) existing.remove();
 
     const layer = document.createElement("div");
     layer.className = "ambient-space-layer";
