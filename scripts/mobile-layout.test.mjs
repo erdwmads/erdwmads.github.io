@@ -17,6 +17,7 @@ const siteSource = fs.readFileSync(path.join(root, "src", "data", "site.ts"), "u
 const ambientScript = fs.readFileSync(path.join(root, "public", "assets", "js", "ambient-space.js"), "utf8");
 const themeScript = fs.readFileSync(path.join(root, "public", "assets", "js", "theme.js"), "utf8");
 const interfaceScript = fs.readFileSync(path.join(root, "public", "assets", "js", "interface-2046.js"), "utf8");
+const legacyNavigationScript = fs.readFileSync(path.join(root, "public", "assets", "js", "legacy-navigation.js"), "utf8");
 
 test("mobile navigation uses one in-flow layout for every pointer type", () => {
   assert.doesNotMatch(shellCss, /\(hover:\s*hover\).*\(pointer:\s*fine\)/);
@@ -191,6 +192,12 @@ test("first visit starts in Space Mode while preserving an explicit saved choice
   assert.match(legacyShell, /if \(savedTheme === "light"\)/);
   assert.match(legacyShell, /catch \(error\)\s*\{[\s\S]*?setAttribute\("data-theme", "space"\)/);
   assert.match(themeScript, /function initialTheme\(\)[\s\S]*?if \(saved === "space" \|\| saved === "light"\) return saved;[\s\S]*?return "space";/);
+});
+
+test("soft navigation does not reload versioned common scripts", () => {
+  assert.ok(legacyNavigationScript.includes('const normalizedSrc = src.split(/[?#]/, 1)[0];'));
+  assert.ok(legacyNavigationScript.includes("if (commonScripts.has(normalizedSrc)) return;"));
+  assert.match(siteSource, /assets\/js\/legacy-navigation\.js\?v=20260901-theme-toggle/);
 });
 
 test("Edge keeps the ambient particle layer mounted across visibility changes", () => {

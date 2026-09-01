@@ -54,7 +54,7 @@ const commonScripts: ScriptSpec[] = [
 
 const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20260831-stability", defer: true };
 const powerManagerScript: ScriptSpec = { src: "assets/js/power-manager.js" };
-const legacyNavigationScript: ScriptSpec = { src: "assets/js/legacy-navigation.js", defer: true };
+const legacyNavigationScript: ScriptSpec = { src: "assets/js/legacy-navigation.js?v=20260901-theme-toggle", defer: true };
 
 const pageScripts: Record<string, ScriptSpec[]> = {
   contact: [...commonScripts, interfaceScript],

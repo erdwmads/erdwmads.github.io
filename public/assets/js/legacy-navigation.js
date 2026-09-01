@@ -80,7 +80,8 @@
       const src = script.getAttribute("src");
       const fresh = document.createElement("script");
       if (src) {
-        if (commonScripts.has(src)) return;
+        const normalizedSrc = src.split(/[?#]/, 1)[0];
+        if (commonScripts.has(normalizedSrc)) return;
         fresh.src = src;
         if (script.defer) fresh.defer = true;
       } else {
