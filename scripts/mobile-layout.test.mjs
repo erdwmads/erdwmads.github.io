@@ -13,6 +13,7 @@ const researchCss = readCss("research-log-evolution.css");
 const legacyCss = readCss("style.css");
 const homeHtml = fs.readFileSync(path.join(root, "src", "legacy", "index-main.html"), "utf8");
 const legacyShell = fs.readFileSync(path.join(root, "src", "components", "LegacyShell.astro"), "utf8");
+const siteSource = fs.readFileSync(path.join(root, "src", "data", "site.ts"), "utf8");
 const ambientScript = fs.readFileSync(path.join(root, "public", "assets", "js", "ambient-space.js"), "utf8");
 const themeScript = fs.readFileSync(path.join(root, "public", "assets", "js", "theme.js"), "utf8");
 const interfaceScript = fs.readFileSync(path.join(root, "public", "assets", "js", "interface-2046.js"), "utf8");
@@ -209,4 +210,22 @@ test("Edge keeps the ambient particle layer mounted across visibility changes", 
     shellCss,
     /html\.is-edge-browser \.ambient-space-layer\s*\{[^}]*transform:\s*translate3d\(0,\s*0,\s*0\)\s*!important[^}]*backface-visibility:\s*hidden\s*!important/is
   );
+});
+
+test("ambient particles keep continuous positions at animation boundaries", () => {
+  const dustStart = legacyCss.lastIndexOf("@keyframes ambientDustMove");
+  const pebbleStart = legacyCss.lastIndexOf("@keyframes ambientPebbleMove");
+  const dustFrames = legacyCss.slice(dustStart, pebbleStart);
+  const pebbleFrames = legacyCss.slice(pebbleStart, legacyCss.indexOf("/*", pebbleStart));
+
+  assert.ok(dustStart >= 0 && pebbleStart > dustStart, "missing final ambient keyframes");
+  assert.doesNotMatch(ambientScript, /animationiteration/);
+  assert.doesNotMatch(dustFrames, /opacity:\s*0\s*;/);
+  assert.doesNotMatch(pebbleFrames, /opacity:\s*0\s*;/);
+  assert.match(
+    legacyCss,
+    /\.ambient-dust,\s*\.ambient-pebble\s*\{[^}]*animation-direction:\s*alternate\s*!important/is
+  );
+  assert.match(legacyShell, /assets\/css\/style\.css\?v=20260901-continuity/);
+  assert.match(siteSource, /assets\/js\/ambient-space\.js\?v=20260901-continuity/);
 });

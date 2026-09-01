@@ -119,13 +119,13 @@
     layer.className = "ambient-space-layer";
     document.body.appendChild(layer);
 
-    function resetDustMotion(el, initial) {
+    function configureDustMotion(el) {
       const isGoldDust = el.classList.contains("is-gold-dust");
       const size = isGoldDust ? rand(3.1, 5.6) : rand(2.2, 4.8);
       const duration = rand(28, 50);
 
-      // On every new cycle, move the particle to a fresh viewport position.
-      // This prevents the loop-reset from reappearing near the previous/initial point.
+      // Keep one anchor and vector for the particle's lifetime. CSS alternates
+      // direction at each boundary, avoiding a visible teleport in Edge.
       el.style.left = rand(0, 100) + "vw";
       el.style.top = rand(0, 100) + "vh";
       el.style.setProperty("--dust-size", size + "px");
@@ -134,7 +134,7 @@
       el.style.setProperty("--dust-duration", duration + "s");
       el.style.setProperty("--dust-opacity", (isGoldDust ? rand(0.72, 0.96) : rand(0.46, 0.88)).toFixed(2));
       el.style.animationDuration = duration + "s";
-      el.style.animationDelay = initial ? (-rand(0, duration * 0.64)) + "s" : "0s";
+      el.style.animationDelay = (-rand(0, duration * 0.64)) + "s";
     }
 
     function makeDust() {
@@ -143,24 +143,17 @@
       const isGoldDust = Math.random() < GOLD_DUST_RATIO;
       if (isGoldDust) el.classList.add("is-gold-dust");
 
-      resetDustMotion(el, true);
-
-      el.addEventListener("animationiteration", function () {
-        requestAnimationFrame(function () {
-          resetDustMotion(el, false);
-        });
-      });
+      configureDustMotion(el);
 
       layer.appendChild(el);
     }
 
-    function resetPebbleMotion(el, initial) {
+    function configurePebbleMotion(el) {
       const w = rand(8, 16);
       const h = w * rand(0.65, 1.05);
       const duration = rand(42, 74);
 
-      // Re-seed position and vector at each cycle so a pebble does not jump
-      // back to the same old start/end area.
+      // Pebbles use the same continuous out-and-back path as dust.
       el.style.left = rand(0, 100) + "vw";
       el.style.top = rand(0, 100) + "vh";
       el.style.setProperty("--pebble-w", w + "px");
@@ -171,20 +164,14 @@
       el.style.setProperty("--pebble-duration", duration + "s");
       el.style.setProperty("--pebble-opacity", rand(0.52, 0.82).toFixed(2));
       el.style.animationDuration = duration + "s";
-      el.style.animationDelay = initial ? (-rand(0, duration * 0.48)) + "s" : "0s";
+      el.style.animationDelay = (-rand(0, duration * 0.48)) + "s";
     }
 
     function makePebble() {
       const el = document.createElement("span");
       el.className = "ambient-pebble";
 
-      resetPebbleMotion(el, true);
-
-      el.addEventListener("animationiteration", function () {
-        requestAnimationFrame(function () {
-          resetPebbleMotion(el, false);
-        });
-      });
+      configurePebbleMotion(el);
 
       layer.appendChild(el);
     }

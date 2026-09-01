@@ -15557,46 +15557,31 @@ body.space-mode .ambient-space-layer .ambient-dust.is-gold-dust::after {
 
 
 /* ============================================================
-   Dust / Micro-meteorite Random Respawn Fix
-   Particles now fade down at the loop boundary; JS immediately re-seeds
-   their next cycle at a random viewport position. This removes the old
-   "reappears near where it disappeared / initial point" feeling.
+   Dust / Micro-meteorite Continuous Drift
+   Fixed anchors and alternating direction keep animation boundaries smooth;
+   particles never disappear or teleport to a new random position.
    ============================================================ */
+
+.ambient-dust,
+.ambient-pebble {
+  animation-direction: alternate !important;
+}
 
 @keyframes ambientDustMove {
   0% {
     transform: translate3d(0, 0, 0) scale(.90);
-    opacity: 0;
-  }
-  8% {
-    opacity: var(--dust-opacity, .68);
-  }
-  52% {
-    opacity: calc(var(--dust-opacity, .68) * .94);
-  }
-  88% {
-    opacity: var(--dust-opacity, .68);
   }
   100% {
     transform: translate3d(var(--dust-x, 70px), var(--dust-y, -70px), 0) scale(1.08);
-    opacity: 0;
   }
 }
 
 @keyframes ambientPebbleMove {
   0% {
     transform: translate3d(0, 0, 0) rotate(0deg);
-    opacity: 0;
-  }
-  10% {
-    opacity: var(--pebble-opacity, .66);
-  }
-  84% {
-    opacity: calc(var(--pebble-opacity, .66) * .94);
   }
   100% {
     transform: translate3d(var(--pebble-x, 90px), var(--pebble-y, 70px), 0) rotate(var(--pebble-rotate, 220deg));
-    opacity: 0;
   }
 }
 
