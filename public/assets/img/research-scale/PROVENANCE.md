@@ -1,10 +1,35 @@
 # Research Scale Journey imagery
 
-Verified 2026-09-06 against the primary sources below. These are public Bennu
-comparison images, not observations of Orgueil and not the site author's results.
+Verified 2026-09-06 against the primary sources below. These are public museum
+and Bennu comparison images, not the site author's experimental results.
 No parent-body relationship between Bennu and Orgueil is asserted. The sequence
 compares observation contexts; it is not a registered zoom into a single specimen.
 No protected Research Log images, archive material, or unpublished data are used.
+
+## ryugu-jaxa.jpg
+
+- Source: https://global.jaxa.jp/press/2018/06/20180627_hayabusa2.html
+- Download: https://global.jaxa.jp/press/2018/06/images/20180627_hayabusa2_01.jpg
+- Subject: Ryugu, Hayabusa2 ONC-T image, 26 June 2018, 12:50 JST.
+- Credit: JAXA, University of Tokyo, Kochi University, Rikkyo University, Nagoya University, Chiba Institute of Technology, Meiji University, University of Aizu, AIST.
+- Displayed short credit (expressly provided by the source): JAXA, University of Tokyo and collaborators.
+- Reuse: JAXA scientific/educational use conditions, source attributed; not CC0 or CC BY. No endorsement claimed. No crop, colour change or other modification.
+- Terms: https://global.jaxa.jp/policy.html sections 2(1)-2(2).
+- SHA-256: fe1d8623fef7fd97a173f0dffe35e8f3db947be8bc2f9df987151a73f82a04b1
+- Science source: https://www.isas.jaxa.jp/en/topics/003094.html (published 10 June 2022; CI similarities and aqueous alteration).
+- The comparison does not identify Ryugu as the specific parent body of Orgueil or represent the site author's measurements.
+
+## orgueil-smithsonian.jpg
+
+- Source: https://naturalhistory.si.edu/object/nmnhmineralsciences_1017941
+- Download: https://ids.si.edu/ids/deliveryService?id=ark%3A%2F65665%2Fm3d1b5d4a540ed48ecbaeba8d98ab443fc&max=1200
+- Credit: Chip Clark / Smithsonian National Museum of Natural History.
+- Subject: Orgueil meteorite, specimen USNM 388. A museum specimen, not the author's experimental sample; no individual mineral identification is inferred from this image.
+- Dimensions: 1200 x 800; Smithsonian rendition downloaded unchanged.
+- Reuse: CC0 (Viewer Image Usage and Open Access Online Media on collection record).
+- SHA-256: c6359b5c12cf042e6a53e726edda0dee09a02276cce9714a62e4b2a7a76a158a
+- Classification/fall source: https://www.mnhn.fr/fr/meteorite-d-orgueil (CI1; France; 14 May 1864).
+- Research question and approach describe the author's project, not completed findings.
 
 ## bennu-whole.png
 

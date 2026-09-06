@@ -50,7 +50,7 @@ const commonScripts: ScriptSpec[] = [
   { src: "assets/js/theme.js?v=20260831-stability", defer: true },
   { src: "assets/js/ambient-space.js?v=20260901-continuity", defer: true },
   { src: "assets/js/research-coordinates.js", defer: true },
-  { src: "assets/js/research-scale.js", defer: true }
+  { src: "assets/js/research-scale.js?v=20260906-materials", defer: true }
 ];
 
 const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20260906-luminous", defer: true };

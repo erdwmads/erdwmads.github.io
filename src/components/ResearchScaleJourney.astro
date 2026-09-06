@@ -1,10 +1,59 @@
 <section class="research-scale" data-research-scale aria-labelledby="research-scale-title">
   <header class="research-scale__heading">
-    <p class="research-scale__eyebrow">Scale journey</p>
+    <p class="research-scale__eyebrow">Materials &amp; scales</p>
     <h2 id="research-scale-title">From asteroid to microstructure</h2>
-    <p>Public Bennu imagery offers comparison context for my research on dolomite in the Orgueil CI1 chondrite.</p>
+    <p>Orgueil is my research material. Bennu and Ryugu offer independent comparisons, from spacecraft observations to returned samples.</p>
   </header>
 
+  <div class="research-scale__tabs research-scale__materials" role="tablist" aria-label="Research materials" data-material-tabs hidden>
+    <button type="button" role="tab" id="research-material-tab-orgueil" aria-controls="research-material-orgueil" aria-selected="true" tabindex="0">CI / Orgueil</button>
+    <button type="button" role="tab" id="research-material-tab-bennu" aria-controls="research-material-bennu" aria-selected="false" tabindex="-1">Bennu</button>
+    <button type="button" role="tab" id="research-material-tab-ryugu" aria-controls="research-material-ryugu" aria-selected="false" tabindex="-1">Ryugu</button>
+    <span class="research-scale__beam" aria-hidden="true"></span>
+  </div>
+
+  <div class="research-scale__materials-panels">
+  <div class="research-scale__material" id="research-material-orgueil" role="tabpanel" aria-labelledby="research-material-tab-orgueil" tabindex="0">
+    <div class="research-scale__context"><span class="research-scale__eyebrow">Research target</span><span>CI1 carbonaceous chondrite</span></div>
+    <figure class="research-scale__figure">
+      <div class="research-scale__media">
+        <img src="/assets/img/research-scale/orgueil-smithsonian.jpg" width="1200" height="800" loading="lazy" decoding="async" alt="Orgueil meteorite specimen USNM 388: a dark, irregular fragment photographed on a wooden support in the Smithsonian collection." />
+      </div>
+      <figcaption class="research-scale__caption">
+        <p class="research-scale__eyebrow">Orgueil / CI chondrite</p>
+        <h3>A mineral record of water</h3>
+        <p>Orgueil is a CI1 carbonaceous chondrite that fell in France in 1864. My research focuses on its dolomite, asking how this mineral records aqueous alteration and material evolution within a primitive parent body.</p>
+        <dl class="research-scale__facts">
+          <div><dt>Research question</dt><dd>What conditions controlled dolomite formation in Orgueil?</dd></div>
+          <div><dt>Approach</dt><dd>Connect mineral textures, chemistry and crystal structure.</dd></div>
+        </dl>
+        <p class="research-scale__credit">Specimen USNM 388. Photo: Chip Clark / Smithsonian.<br /><a href="https://naturalhistory.si.edu/object/nmnhmineralsciences_1017941">Collection &amp; CC0 image</a> &middot; <a href="https://www.mnhn.fr/fr/meteorite-d-orgueil">Meteorite record</a></p>
+      </figcaption>
+    </figure>
+    <p class="research-scale__boundary">Public museum specimen, not my experimental sample. The photograph does not identify individual minerals.</p>
+  </div>
+
+  <div class="research-scale__material" id="research-material-ryugu" role="tabpanel" aria-labelledby="research-material-tab-ryugu" tabindex="0">
+    <div class="research-scale__context"><span class="research-scale__eyebrow">Sample-return comparison</span><span>Hayabusa2 / Ryugu</span></div>
+    <figure class="research-scale__figure">
+      <div class="research-scale__media">
+        <img src="/assets/img/research-scale/ryugu-jaxa.jpg" width="512" height="512" loading="lazy" decoding="async" alt="Ryugu photographed by Hayabusa2's ONC-T camera on 26 June 2018: a diamond-shaped asteroid with a ridged, rocky surface against black space." />
+      </div>
+      <figcaption class="research-scale__caption">
+        <p class="research-scale__eyebrow">Ryugu / CI-like returned material</p>
+        <h3>A comparison for CI chondrites</h3>
+        <p>Hayabusa2 returned samples from Ryugu to Earth in 2020. Published analyses found similarities to CI chondrites and evidence of aqueous alteration, providing a comparison for the mineral record preserved in Orgueil.</p>
+        <dl class="research-scale__facts">
+          <div><dt>Observation</dt><dd>Spacecraft imaging and returned-sample analysis</dd></div>
+          <div><dt>Research question</dt><dd>Which alteration signatures are shared by CI meteorites and returned asteroid samples?</dd></div>
+        </dl>
+        <p class="research-scale__credit">Image: JAXA, University of Tokyo and collaborators.<br /><a href="https://global.jaxa.jp/press/2018/06/20180627_hayabusa2.html">JAXA image</a> &middot; <a href="https://www.isas.jaxa.jp/en/topics/003094.html">Sample analysis</a> &middot; <a href="https://global.jaxa.jp/policy.html">Media use</a></p>
+      </figcaption>
+    </figure>
+    <p class="research-scale__boundary">Public mission image and published findings, not my experimental results. Similarity to CI chondrites does not establish Ryugu as Orgueil's parent body.</p>
+  </div>
+
+  <div class="research-scale__material" id="research-material-bennu" role="tabpanel" aria-labelledby="research-material-tab-bennu" tabindex="0">
   <div class="research-scale__tabs" role="tablist" aria-label="Bennu observation scales" data-scale-tabs hidden>
     <button type="button" role="tab" id="research-scale-tab-asteroid" aria-controls="research-scale-panel-asteroid" aria-selected="true" tabindex="0">
       <span class="research-scale__number" aria-hidden="true">01</span> Asteroid
@@ -15,6 +64,7 @@
     <button type="button" role="tab" id="research-scale-tab-microstructure" aria-controls="research-scale-panel-microstructure" aria-selected="false" tabindex="-1">
       <span class="research-scale__number" aria-hidden="true">03</span> Grains
     </button>
+    <span class="research-scale__beam" aria-hidden="true"></span>
   </div>
 
   <div class="research-scale__panels">
@@ -74,4 +124,6 @@
   </div>
 
   <p class="research-scale__boundary">These are public Bennu observations, not my Orgueil results. Bennu is not identified as Orgueil's parent body.</p>
+  </div>
+  </div>
 </section>

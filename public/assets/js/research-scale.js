@@ -5,7 +5,10 @@
   }
 
   function select(section, tab, focus = false) {
-    section.querySelectorAll('[role="tab"]').forEach(item => {
+    const tablist = tab.closest('[role="tablist"]');
+    const tabs = [...tablist.querySelectorAll('[role="tab"]')];
+    tablist.style.setProperty('--selected-index', tabs.indexOf(tab));
+    tabs.forEach(item => {
       const active = item === tab;
       item.setAttribute('aria-selected', String(active));
       item.tabIndex = active ? 0 : -1;
@@ -28,10 +31,12 @@
 
   function init() {
     document.querySelectorAll('[data-research-scale]').forEach(section => {
-      const active = section.querySelector('[role="tab"][aria-selected="true"]') || section.querySelector('[role="tab"]');
-      select(section, active);
+      section.querySelectorAll('[role="tablist"]').forEach(tablist => {
+        const active = tablist.querySelector('[role="tab"][aria-selected="true"]') || tablist.querySelector('[role="tab"]');
+        select(section, active);
+        tablist.hidden = false;
+      });
       section.setAttribute('data-scale-ready', '');
-      section.querySelector('[data-scale-tabs]').hidden = false;
     });
     syncFx();
   }
@@ -45,7 +50,7 @@
     const tab = event.target.closest?.('[data-research-scale] [role="tab"]');
     if (!tab || event.altKey || event.ctrlKey || event.metaKey) return;
     const section = tab.closest('[data-research-scale]');
-    const tabs = [...section.querySelectorAll('[role="tab"]')];
+    const tabs = [...tab.closest('[role="tablist"]').querySelectorAll('[role="tab"]')];
     let index = tabs.indexOf(tab);
     if (event.key === 'ArrowRight') index = (index + 1) % tabs.length;
     else if (event.key === 'ArrowLeft') index = (index + tabs.length - 1) % tabs.length;
