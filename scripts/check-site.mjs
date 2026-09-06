@@ -408,9 +408,8 @@ if (!photographyPage.includes("assets/img/thumbs/photography/photo-01.webp")) {
 if ((photographyPage.match(/data-full-src="assets\/img\/photo%20%28\d+%29\.jpg"/g) || []).length !== 21) {
   fail("Photography: expected 21 independently hydratable full-image sources");
 }
-const photographyScript = fs.readFileSync(path.join(assetsDir, "js", "photography.js"), "utf8");
-if (!photographyScript.includes("PHOTO_AUTOPLAY_MEDIA") || !photographyScript.includes("REDUCED_MOTION_MEDIA")) {
-  fail("Photography: mobile and reduced-motion views must not autoplay full-resolution images");
+if (!photographyPage.includes('class="photo-wall"') || photographyPage.includes('assets/js/photography.js')) {
+  fail("Photography: expected a static photo wall without the retired autoplay controller");
 }
 if (!graduationPage.includes('data-protected-archive-url="assets/data/mission-log.enc.json"')) {
   fail("research-graduation.html: missing protected Mission Log archive URL");

@@ -14,7 +14,7 @@ const { title, description, current, mainClass = "main", path, scriptHtml } = As
 const canonicalPath = path || "index.html";
 const canonicalUrl = new URL(canonicalPath, `${siteMetadata.url}/`).toString();
 const imageUrl = new URL(siteMetadata.image, `${siteMetadata.url}/`).toString();
-const bodyClass = `ui-page-${current}`;
+const bodyClass = `site-refined ui-page-${current}`;
 ---
 
 <!doctype html>
@@ -82,11 +82,15 @@ const bodyClass = `ui-page-${current}`;
   <link rel="stylesheet" href="assets/css/tokens.css">
   <link rel="stylesheet" href="assets/css/shell-evolution.css?v=20260831-stability">
   <link rel="stylesheet" href="assets/css/research-log-evolution.css">
+    <link rel="stylesheet" href="assets/css/observatory.css?v=20260906-luminous">
+    <link rel="stylesheet" href="assets/css/observatory-experience.css?v=20260906-flight">
+    <link rel="stylesheet" href="assets/css/mineral-interactions.css?v=20260906">
+    <link rel="stylesheet" href="assets/css/research-scale.css?v=20260906">
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="assets/img/favicon.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 </head>
-<body class={bodyClass}>
+<body id="academic-site" class={bodyClass}>
 <header class="site-header">
   <div class="header-inner">
     <a class="brand" href={brand.homeHref}>

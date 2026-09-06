@@ -57,7 +57,7 @@
 
   function start() {
     stop();
-    if (window.innerWidth <= 760 || !PHOTO_AUTOPLAY_MEDIA.matches || REDUCED_MOTION_MEDIA.matches) return;
+    if (!shell.isConnected || document.hidden || document.documentElement.classList.contains('obs-presenting') || window.innerWidth <= 760 || !PHOTO_AUTOPLAY_MEDIA.matches || REDUCED_MOTION_MEDIA.matches) return;
     timer = window.setInterval(() => show(current + 1), interval);
   }
 
@@ -87,6 +87,11 @@
 
   shell.addEventListener("mouseenter", stop);
   shell.addEventListener("mouseleave", start);
+  window.addEventListener('mads:power-state', () => {
+    if (document.documentElement.classList.contains('obs-presenting')) stop();
+    else if (shell.dataset.autoplay === 'true') start();
+  });
+  window.addEventListener('mads:soft-nav-start', stop);
 
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) stop();

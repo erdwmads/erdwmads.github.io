@@ -15,14 +15,23 @@
   };
 
   const commonScripts = new Set([
+    "assets/js/power-manager.js",
     "assets/js/theme.js",
     "assets/js/ambient-space.js",
     "assets/js/research-coordinates.js",
+    "assets/js/research-scale.js",
     "assets/js/interface-2046.js",
+    "assets/js/observatory-interactions.js",
+    "assets/js/mineral-interactions.js",
     "assets/js/legacy-navigation.js"
   ]);
 
   let softNavToken = 0;
+  const documentKey = url => {
+    const parsed = new URL(url, window.location.href);
+    return parsed.pathname + parsed.search;
+  };
+  let renderedDocument = documentKey(window.location.href);
 
   function dispatchSoftNavEvent(name, detail) {
     window.dispatchEvent(new CustomEvent(name, { detail }));
@@ -104,12 +113,14 @@
 
     try {
       const response = await fetch(url, { credentials: "same-origin" });
+      if (token !== softNavToken) return;
       if (!response.ok) {
         window.location.href = url;
         return;
       }
 
       const html = await response.text();
+      if (token !== softNavToken) return;
       const nextDoc = new DOMParser().parseFromString(html, "text/html");
       const nextMain = nextDoc.querySelector("main");
       const currentMain = document.querySelector("main");
@@ -126,6 +137,7 @@
       }
 
       currentMain.replaceWith(nextMain);
+      renderedDocument = documentKey(url);
       pageName = pageNameFromUrl(url);
       setCurrentNav(pageName);
       setBodyPageClass(pageName);
@@ -136,14 +148,17 @@
       }
       window.scrollTo({ top: 0, behavior: "instant" });
       dispatchSoftNavEvent("mads:soft-nav-ready", { url, pageName });
+    } catch {
+      if (token === softNavToken) window.location.href = url;
     } finally {
       endSoftNav(token, { url, pageName });
     }
   }
 
   document.addEventListener("click", (event) => {
-    const link = event.target.closest && event.target.closest(".site-header a[href]");
+    const link = event.target.closest && event.target.closest(".site-header a[href], main a[data-soft-nav][href]");
     if (!link) return;
+    if (event.defaultPrevented || link.hasAttribute("download") || (link.target && link.target !== "_self")) return;
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
 
     const target = new URL(link.getAttribute("href"), window.location.href);
@@ -151,12 +166,16 @@
     if (!target.pathname.endsWith(".html") && target.pathname !== "/" && target.pathname !== window.location.pathname) return;
 
     event.preventDefault();
-    navigate(target.href, true).catch(() => {
-      window.location.href = target.href;
-    });
+    navigate(target.href, true);
   });
 
   window.addEventListener("popstate", () => {
-    navigate(window.location.href, false).catch(() => window.location.reload());
+    if (documentKey(window.location.href) === renderedDocument) {
+      softNavToken += 1;
+      document.documentElement.classList.remove("mads-soft-nav-active");
+      document.body.classList.remove("mads-soft-nav-active");
+      return;
+    }
+    navigate(window.location.href, false);
   });
 })();

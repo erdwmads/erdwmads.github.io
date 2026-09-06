@@ -1,0 +1,14 @@
+---
+import { papers } from '../data/papers';
+const data = {
+  question: 'What conditions controlled dolomite formation in the Orgueil CI1 chondrite?',
+  literature: papers.map((paper, index) => ({ ...paper, href: `paper-shelf.html#paper-${index + 1}` }))
+    .filter(paper => paper.filters.includes('dolomite') || paper.filters.includes('ci-orgueil')),
+  methods: [
+    { title: 'Texture', text: 'SEM / BSE observation: morphology and spatial relationships to clay-rich areas.' },
+    { title: 'Chemistry', text: 'EPMA mapping and microanalysis: elemental distribution and carbonate chemistry.' },
+    { title: 'Structure', text: 'Single-grain XRD and TEM: ordering, interfaces and nanoscale structure.' }
+  ]
+};
+---
+<template data-public-atlas-data>{JSON.stringify(data)}</template>

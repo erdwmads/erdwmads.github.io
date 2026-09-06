@@ -197,7 +197,8 @@ test("first visit starts in Space Mode while preserving an explicit saved choice
 test("soft navigation does not reload versioned common scripts", () => {
   assert.ok(legacyNavigationScript.includes('const normalizedSrc = src.split(/[?#]/, 1)[0];'));
   assert.ok(legacyNavigationScript.includes("if (commonScripts.has(normalizedSrc)) return;"));
-  assert.match(siteSource, /assets\/js\/legacy-navigation\.js\?v=20260901-theme-toggle/);
+  assert.match(siteSource, /assets\/js\/legacy-navigation\.js\?v=\d{8}-[a-z-]+/);
+  assert.ok(legacyNavigationScript.includes('"assets/js/observatory-interactions.js"'));
 });
 
 test("Edge keeps the ambient particle layer mounted across visibility changes", () => {

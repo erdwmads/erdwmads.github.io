@@ -1,5 +1,7 @@
 ---
 import LegacyShell from "../components/LegacyShell.astro";
+import EvidenceAtlasData from "../components/EvidenceAtlasData.astro";
+import ResearchScaleJourney from "../components/ResearchScaleJourney.astro";
 import { getPageScripts } from "../data/site";
 import mainHtml from "../legacy/research-main.html?raw";
 
@@ -7,5 +9,15 @@ const scriptHtml = getPageScripts("research");
 ---
 
 <LegacyShell title='Research | Mads LIU Yong' description='Personal academic website of Mads LIU Yong.' current='research' mainClass='main' path="research.html" scriptHtml={scriptHtml}>
+  <section>
+    <p class="eyebrow">Research</p>
+    <h1>Cosmic Mineralogy</h1>
+    <p class="lead">
+      My main research interest is Cosmic Mineralogy: the study of minerals and mineralogical processes
+      in extraterrestrial materials, especially primitive Solar System materials.
+    </p>
+  </section>
+  <ResearchScaleJourney />
   <Fragment set:html={mainHtml} />
+  <EvidenceAtlasData />
 </LegacyShell>

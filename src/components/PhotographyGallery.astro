@@ -1,7 +1,6 @@
 ---
 import { photographs } from "../data/photography";
 
-const marqueePhotographs = [...photographs, ...photographs];
 ---
 
 <section>
@@ -13,47 +12,32 @@ const marqueePhotographs = [...photographs, ...photographs];
   </p>
 </section>
 
-<section class="section photo-experience" aria-label="Photography slideshow">
-  <div class="slideshow-shell" data-autoplay="true">
-    <div class="slideshow-stage">
-      {photographs.map((photo, index) => (
+<section class="section photo-experience" aria-label="Photographs">
+  <div class="obs-photo-tools"><button class="button secondary obs-present-launch" type="button" data-present-photos>Present photographs</button></div>
+  <div class="photo-wall">
+    {photographs.map((photo, index) => (
+      <a
+        class:list={["photo-tile", { "photo-tile--wide": photo.width / photo.height > 2.3 }]}
+        href={photo.full}
+        data-photo-index={index}
+        aria-label={`Open photograph ${photo.number}`}
+      >
         <img
-          class:list={["photo-slide", { "is-active": index === 0 }]}
-          src={index === 0 ? photo.full : photo.thumb}
+          src={photo.thumb}
+          srcset={`${photo.thumb} 480w, ${photo.full} ${photo.width}w`}
+          sizes={photo.width / photo.height > 2.3
+            ? '(max-width: 760px) calc(100vw - 40px), (max-width: 1280px) calc(100vw - 80px), 1200px'
+            : '(max-width: 760px) calc((100vw - 50px) / 2), (max-width: 1280px) calc((100vw - 112px) / 3), 390px'}
           data-full-src={photo.full}
-          data-full-hydrated={index === 0 ? "true" : undefined}
+          width={photo.width}
+          height={photo.height}
           alt={photo.alt}
-          loading={index === 0 ? "eager" : "lazy"}
+          loading={index < 3 ? "eager" : "lazy"}
           decoding="async"
           fetchpriority={index === 0 ? "high" : "auto"}
         />
-      ))}
-
-      <button class="slide-control prev" type="button" aria-label="Previous photograph"></button>
-      <button class="slide-control next" type="button" aria-label="Next photograph"></button>
-
-      <div class="slide-status">
-        <span class="slide-number">01</span>
-        <span class="slide-divider">/</span>
-        <span class="slide-total">21</span>
-      </div>
-    </div>
-
-    <div class="filmstrip" aria-label="Photography thumbnails">
-      {photographs.map((photo, index) => (
-        <button class:list={["film-thumb", { "is-active": index === 0 }]} type="button" data-slide={index}>
-          <img src={photo.thumb} alt={`${photo.alt} thumbnail`} loading="lazy" decoding="async" />
-        </button>
-      ))}
-    </div>
-
-    <div class="photo-marquee" aria-hidden="true">
-      <div class="photo-marquee-track">
-        {marqueePhotographs.map((photo) => (
-          <img src={photo.thumb} alt="" loading="lazy" decoding="async" />
-        ))}
-      </div>
-    </div>
+      </a>
+    ))}
   </div>
 </section>
 

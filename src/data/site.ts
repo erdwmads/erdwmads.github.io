@@ -49,26 +49,27 @@ const commonScripts: ScriptSpec[] = [
   { src: "assets/js/site-header.js", defer: true },
   { src: "assets/js/theme.js?v=20260831-stability", defer: true },
   { src: "assets/js/ambient-space.js?v=20260901-continuity", defer: true },
-  { src: "assets/js/research-coordinates.js", defer: true }
+  { src: "assets/js/research-coordinates.js", defer: true },
+  { src: "assets/js/research-scale.js", defer: true }
 ];
 
-const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20260831-stability", defer: true };
+const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20260906-luminous", defer: true };
 const powerManagerScript: ScriptSpec = { src: "assets/js/power-manager.js" };
-const legacyNavigationScript: ScriptSpec = { src: "assets/js/legacy-navigation.js?v=20260901-theme-toggle", defer: true };
+const legacyNavigationScript: ScriptSpec = { src: "assets/js/legacy-navigation.js?v=20260906-flight", defer: true };
 
 const pageScripts: Record<string, ScriptSpec[]> = {
   contact: [...commonScripts, interfaceScript],
   cv: [...commonScripts, interfaceScript],
   home: [...commonScripts, interfaceScript],
   "paper-shelf": [...commonScripts, { src: "assets/js/paper-shelf.js", defer: true }, interfaceScript],
-  photography: [{ src: "assets/js/photography.js" }, ...commonScripts, interfaceScript],
+  photography: [...commonScripts, interfaceScript],
   research: [...commonScripts, interfaceScript],
   "research-log": [...commonScripts, interfaceScript],
   // Password-gated public page; keep it out of sitemap contentPages.
   "research-graduation": [
     ...commonScripts,
     { src: "assets/js/research-lock.js", defer: true },
-    { src: "assets/js/mission-index.js", defer: true },
+    { src: "assets/js/mission-index.js?v=20260906-timeline", defer: true },
     { src: "assets/js/mission-lightbox.js", defer: true },
     { src: "assets/js/mission-status-sync.js", defer: true },
     interfaceScript
@@ -86,6 +87,8 @@ export function getPageScripts(pageKey: keyof typeof pageScripts | string, inlin
   return [
     renderScript(powerManagerScript),
     scripts.map(renderScript).join("\n"),
+    renderScript({ src: "assets/js/observatory-interactions.js?v=20260906-flight", defer: true }),
+    renderScript({ src: "assets/js/mineral-interactions.js?v=20260906", defer: true }),
     inlineHtml,
     renderScript(legacyNavigationScript)
   ].filter(Boolean).join("\n\n");

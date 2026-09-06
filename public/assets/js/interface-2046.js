@@ -198,9 +198,11 @@
       pageBody.offsetHeight || 0
     );
 
-    const max = Math.max(1, scrollHeight - viewportHeight);
+    const scrollRange = scrollHeight - viewportHeight;
+    progress.hidden = scrollRange <= 2;
+    const max = Math.max(1, scrollRange);
     const nearBottom = Math.ceil(scrollTop + viewportHeight) >= scrollHeight - 2;
-    const pct = nearBottom ? 100 : Math.min(100, Math.max(0, (scrollTop / max) * 100));
+    const pct = progress.hidden ? 0 : nearBottom ? 100 : Math.min(100, Math.max(0, (scrollTop / max) * 100));
 
     bar.style.width = '100%';
     bar.style.transform = `scaleX(${pct / 100})`;
@@ -252,7 +254,7 @@
 
   const shouldPausePlanetMotion = () => {
     const state = window.__madsPowerState || {};
-    return !isOrbitalFxEnabled() || document.hidden || state.hidden || state.idle || state.lowPower || document.body.classList.contains("mission-lightbox-open") || document.documentElement.classList.contains("mission-lightbox-open");
+    return !isOrbitalFxEnabled() || document.hidden || state.hidden || state.idle || state.lowPower || document.body.classList.contains("mission-lightbox-open") || document.documentElement.classList.contains("mission-lightbox-open") || document.documentElement.classList.contains("mineral-atlas-open");
   };
 
   let planetAnimationRunning = false;

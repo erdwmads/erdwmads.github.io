@@ -40,8 +40,9 @@ const filters = [
 </section>
 
 <section class="section paper-shelf">
-  {papers.map((paper) => (
+  {papers.map((paper, index) => (
     <article
+      id={`paper-${index + 1}`}
       class="paper-card"
       data-paper-card
       data-paper-text={`${paper.status} ${paper.title} ${paper.authors} ${paper.summary} ${paper.tags.join(" ")}`.toLowerCase()}

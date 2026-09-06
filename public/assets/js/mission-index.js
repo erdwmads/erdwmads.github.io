@@ -10,10 +10,11 @@
   let missionEntries = [];
   let byId = new Map();
   let latestEntry = null;
+  const documentPath = window.location.pathname;
 
   const labels = {
     missionIndexLabel: 'Mission Index',
-    quickJump: 'Quick Jump',
+    quickJump: 'Experiment Timeline',
     navigatorTitle: 'Mission Log Navigator',
     earliestFirst: 'Earliest first',
     missionLogLabel: 'Mission Log',
@@ -95,6 +96,7 @@
         <a class="mission-jump-card compact-jump-card" href="#${id}" data-mission-target="${id}">
           <span class="mission-jump-log">${logLabel}</span>
           <span class="mission-jump-meta">${meta}</span>
+          <span class="mission-jump-stage">${escapeHtml(item.stage || '')}</span>
         </a>
       `;
     }).join('');
@@ -105,6 +107,7 @@
       const active = link.getAttribute('href') === `#${id}`;
       link.classList.toggle('is-active', active);
       link.setAttribute('aria-current', active ? 'true' : 'false');
+      if (active) indexList.scrollTo?.({ left: link.offsetLeft - indexList.offsetLeft - (indexList.clientWidth - link.offsetWidth) / 2, behavior: 'instant' });
     });
   };
 
@@ -166,6 +169,12 @@
     }
   };
 
+  const onLocationChange = () => {
+    if (!active || !started || !list?.isConnected || window.location.pathname !== documentPath) return;
+    const target = decodeTargetId(window.location.hash.slice(1)) || list.dataset.initialLogId || latestEntry?.id;
+    if (target !== currentId && byId.has(target)) renderMissionEntry(target, { updateHash: false, scroll: true });
+  };
+
   const resetRenderer = () => {
     indexList?.removeEventListener('click', onIndexClick);
     list?.classList.remove('is-loading');
@@ -223,11 +232,15 @@
     resetRenderer();
     document.removeEventListener('mads:research-unlocked', start);
     document.removeEventListener('mads:research-locked', resetRenderer);
+    window.removeEventListener('popstate', onLocationChange);
+    window.removeEventListener('hashchange', onLocationChange);
     if (window[cleanupKey] === cleanup) delete window[cleanupKey];
   };
 
   document.addEventListener('mads:research-unlocked', start);
   document.addEventListener('mads:research-locked', resetRenderer);
+  window.addEventListener('popstate', onLocationChange);
+  window.addEventListener('hashchange', onLocationChange);
   window[cleanupKey] = cleanup;
 
   const autoStart = document.querySelector('[data-mission-log-list]')?.dataset.missionAutoStart !== 'false';
