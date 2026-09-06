@@ -148,6 +148,9 @@ html[data-theme] body#academic-site main .research-scale :is(.research-scale__cr
   html[data-theme]:not(.ambient-fx-disabled) .research-scale[data-scale-fx] .research-scale__beam { transition: transform 240ms cubic-bezier(.2,.7,.2,1); }
 }
 @media (max-width: 760px) {
+  /* Stacked mobile content follows the active panel, not the longest hidden one. */
+  .research-scale[data-scale-ready] :is(.research-scale__materials-panels, .research-scale__panels) { display: block; }
+  .research-scale[data-scale-ready] :is(.research-scale__material, .research-scale__panel)[hidden] { display: none !important; }
   .research-scale { margin-block: 28px; padding-top: 22px; }
   .research-scale h2 { font-size: 23px; }
   .research-scale__figure { grid-template-columns: minmax(0, 1fr); gap: 20px; }

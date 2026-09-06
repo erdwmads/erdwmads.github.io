@@ -81,6 +81,7 @@ try {
         assert.equal(await section.locator('[role="tab"][tabindex="0"]').count(), 2);
         assert.equal(await panel.count(), 1);
         assert.equal(await panel.getAttribute('aria-labelledby'), await tabs.nth(index).getAttribute('id'));
+        await panel.locator('img').scrollIntoViewIfNeeded();
         await panel.locator('img').evaluate(image => image.decode());
         const geometry = await panel.evaluate(el => {
           const image = el.querySelector('img');
@@ -109,7 +110,7 @@ try {
         assert.ok(['0px', 'normal'].includes(geometry.spacing), 'zero tracking (Edge serializes zero as normal)');
         assert.equal(geometry.overflowingText, false);
         if (firstGeometry) {
-          for (const key of ['width', 'height', 'sectionHeight']) {
+          for (const key of width > 760 ? ['width', 'height', 'sectionHeight'] : ['width', 'height']) {
             assert.ok(Math.abs(geometry[key] - firstGeometry[key]) < 1, `${key} shifted at ${theme}/${width}`);
           }
         } else firstGeometry = geometry;
@@ -119,6 +120,7 @@ try {
       }
       const bennuHeight = await section.evaluate(el => el.getBoundingClientRect().height);
       await materials.first().click();
+      await orgueil.locator('img').scrollIntoViewIfNeeded();
       await orgueil.locator('img').evaluate(image => image.decode());
       const target = await orgueil.evaluate(el => {
         const section = el.closest('[data-research-scale]');
@@ -137,12 +139,13 @@ try {
       assert.ok(target.fits && target.separate && target.naturalWidth > 0, `Orgueil ${theme}/${width}: ${JSON.stringify(target)}`);
       assert.equal(target.fit, 'contain');
       assert.equal(target.dimensionsMatch, true, 'Orgueil image dimensions match the original');
-      assert.ok(Math.abs(target.height - bennuHeight) < 1, 'switching materials does not move following content');
+      if (width > 760) assert.ok(Math.abs(target.height - bennuHeight) < 1, 'desktop switching does not move following content');
       await materials.nth(2).click();
       const ryugu = section.locator('#research-material-ryugu');
       assert.equal(await ryugu.isVisible(), true);
       assert.match(await ryugu.innerText(), /Hayabusa2/);
       assert.match(await ryugu.innerText(), /CI chondrites/);
+      await ryugu.locator('img').scrollIntoViewIfNeeded();
       await ryugu.locator('img').evaluate(image => image.decode());
       const ryuguGeometry = await ryugu.evaluate(el => {
         const img = el.querySelector('img');
@@ -153,7 +156,7 @@ try {
       });
       assert.ok(ryuguGeometry.fits && ryuguGeometry.separate && ryuguGeometry.loaded, `Ryugu ${theme}/${width}: ${JSON.stringify(ryuguGeometry)}`);
       assert.equal(ryuguGeometry.fit, 'contain');
-      assert.ok(Math.abs(ryuguGeometry.height - bennuHeight) < 1);
+      if (width > 760) assert.ok(Math.abs(ryuguGeometry.height - bennuHeight) < 1);
       await page.keyboard.press('Home');
       assert.equal(await materials.first().getAttribute('aria-selected'), 'true');
       await page.keyboard.press('ArrowLeft');
