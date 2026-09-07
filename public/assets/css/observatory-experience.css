@@ -96,8 +96,8 @@ html[data-theme] body#academic-site .obs-nav-beam {
   left: 0;
   height: 2px;
   border-radius: 2px;
-  background: linear-gradient(90deg, var(--obs-cyan), var(--obs-accent));
-  box-shadow: 0 0 9px var(--obs-glow), 0 0 3px var(--obs-accent);
+  background: var(--obs-accent);
+  box-shadow: 0 0 9px var(--obs-gold-glow), 0 0 3px var(--obs-accent);
   transition: transform 300ms cubic-bezier(.22, 1, .36, 1), width 300ms cubic-bezier(.22, 1, .36, 1);
   pointer-events: none;
 }
@@ -115,7 +115,7 @@ html[data-theme] body#academic-site [data-edge-active]::after {
   border: 0 !important;
   border-radius: inherit !important;
   padding: 1px;
-  background: conic-gradient(from var(--edge-angle, 0deg), var(--obs-cyan), transparent 75deg 280deg, var(--obs-accent), var(--obs-cyan)) !important;
+  background: conic-gradient(from var(--edge-angle, 0deg), var(--obs-cyan), transparent 75deg 280deg, var(--obs-cyan)) !important;
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -203,6 +203,13 @@ html[data-theme] body#academic-site .obs-fx-panel[hidden] { display: none; }
 html[data-theme] body#academic-site .obs-fx-panel legend { font-size: 12px; padding: 0 6px; background: var(--obs-surface); }
 html[data-theme] body#academic-site .obs-fx-panel label { display: flex; align-items: center; gap: 10px; padding: 9px 0; font-size: 13px; cursor: pointer; }
 html[data-theme] body#academic-site .obs-fx-panel input { accent-color: var(--obs-accent); width: 16px; height: 16px; }
+html[data-theme] body#academic-site :is(.obs-fx-settings, main .button, main .paper-filter, .theme-toggle):focus-visible {
+  outline: 2px solid var(--obs-cyan) !important;
+  outline-offset: 3px !important;
+}
+html[data-theme] body#academic-site main .paper-filter[aria-pressed="true"]:hover { border-color: var(--obs-accent) !important; }
+html[data-theme] body#academic-site .obs-fx-settings:is(:hover, :focus-visible) { border-color: var(--obs-cyan); }
+html[data-theme] body#academic-site .obs-fx-settings[aria-expanded="true"] { border-color: var(--obs-accent); }
 
 /* The navigator is built only from the decrypted in-memory archive. */
 html[data-theme] body#academic-site #mission-index [data-mission-index-list] {
@@ -388,7 +395,16 @@ html.obs-presenting body#academic-site :is(.photo-marquee-track, .site-header::a
 html.obs-presenting { overflow: hidden !important; }
 
 @media (max-width: 760px), (pointer: coarse) {
-  html[data-theme] body#academic-site .obs-fx-dock { display: none; }
+  html[data-theme] body#academic-site .obs-fx-dock {
+    right: max(12px, env(safe-area-inset-right));
+    bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+  html[data-theme] body#academic-site .obs-fx-settings { width: 44px; height: 44px; background: var(--obs-surface); }
+  html[data-theme] body#academic-site .obs-fx-panel { width: min(252px, calc(100vw - 24px)); max-height: calc(100dvh - 88px); overflow-y: auto; box-sizing: border-box; }
+  html[data-theme] body#academic-site .obs-fx-dock > .ambient-fx-toggle { display: none !important; }
+  html[data-theme] body#academic-site .obs-fx-panel label { min-height: 44px; box-sizing: border-box; }
+  html[data-theme] body#academic-site .research-coordinates { display: none !important; }
+  html[data-theme] body#academic-site .site-footer { padding-bottom: calc(76px + env(safe-area-inset-bottom)) !important; }
   html[data-theme] body#academic-site .header-actions .nav { border: 0 !important; background: transparent !important; border-radius: 0 !important; box-shadow: none !important; }
   html[data-theme] body#academic-site .nav a { border-radius: 10px !important; }
   html[data-theme] body#academic-site .header-actions > :is(.nav-log-gate, .theme-toggle) { border-radius: 12px !important; }

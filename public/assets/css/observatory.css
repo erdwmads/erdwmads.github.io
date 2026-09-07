@@ -11,6 +11,7 @@ html[data-theme] {
   --obs-link: #9bcddd;
   --obs-highlight: #233a3e;
   --obs-paper: #0b1218;
+  --obs-reading: rgba(11, 18, 24, .88);
   --obs-cyan: #a8dcff;
   --obs-glow: rgba(132, 208, 255, .32);
   --obs-gold-glow: rgba(244, 211, 140, .24);
@@ -29,6 +30,7 @@ html[data-theme="light"] {
   --obs-link: #215d75;
   --obs-highlight: #e3edea;
   --obs-paper: #edf3f6;
+  --obs-reading: rgba(237, 243, 246, .94);
   --obs-cyan: #286183;
   --obs-glow: rgba(46, 125, 177, .17);
   --obs-gold-glow: rgba(159, 123, 51, .15);
@@ -48,7 +50,7 @@ html[data-theme] body#academic-site :is(h1, h2, h3, p, a, button, span, strong, 
   letter-spacing: 0 !important;
 }
 
-html[data-theme] body#academic-site main :is(p, li, dd) { text-shadow: none !important; }
+html[data-theme] body#academic-site main :is(p, li, dd, p *, li *, dd *) { text-shadow: none !important; }
 html[data-theme="space"] body#academic-site :is(.brand strong, main h1) {
   text-shadow: 0 0 2px rgba(255, 255, 255, .35), 0 0 18px var(--obs-glow), 0 0 42px rgba(132, 208, 255, .12) !important;
 }
@@ -218,6 +220,9 @@ html[data-theme] body#academic-site .main {
   max-width: 1280px !important;
   margin: 0 auto !important;
   padding: 56px 40px 72px !important;
+  /* Static paint: preserve the opening view while shielding longer reading passages. */
+  background: linear-gradient(180deg, transparent, var(--obs-reading) 440px) !important;
+  backdrop-filter: none !important;
 }
 
 html[data-theme] body#academic-site main :is(h1, h2, h3) { color: var(--obs-text) !important; }
@@ -447,19 +452,19 @@ html[data-theme]:is(.mads-page-hidden, .mads-power-idle, .mads-power-low, .missi
   html[data-theme].mobile-nav-open body#academic-site .header-actions .nav { grid-column: 1 / -1 !important; display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; width: 100% !important; gap: 4px !important; padding: 0 0 8px !important; }
   html[data-theme] body#academic-site .nav a { min-height: 44px !important; font-size: 13px !important; }
   html[data-theme].mobile-nav-open body#academic-site .header-actions > :is(.nav-log-gate, .theme-toggle) { width: 100% !important; min-width: 0 !important; margin: 0 !important; }
-  html[data-theme] body#academic-site .main { padding: 28px 20px 44px !important; }
+  html[data-theme] body#academic-site .main { padding: 24px 20px 44px !important; background: linear-gradient(180deg, transparent, var(--obs-reading) 280px) !important; }
   html[data-theme] body#academic-site main h1 { font-size: 30px !important; line-height: 1.2 !important; }
-  html[data-theme] body#academic-site main h2 { font-size: 23px !important; }
+  html[data-theme] body#academic-site main h2 { font-size: 21px !important; }
   html[data-theme] body#academic-site main h3 { font-size: 18px !important; }
   html[data-theme] body#academic-site main .lead { font-size: 15px !important; line-height: 1.7 !important; }
-  html[data-theme] body#academic-site .section { margin-top: 28px !important; padding-top: 24px !important; }
+  html[data-theme] body#academic-site .section { margin-top: 24px !important; padding-top: 20px !important; }
   html[data-theme] body#academic-site .two-col { grid-template-columns: 1fr !important; gap: 16px !important; }
   html[data-theme] body#academic-site main :is(.card, .callout, .paper-card) { padding: 18px !important; }
   html[data-theme] body#academic-site.ui-page-home .hero { grid-template-columns: 1fr !important; gap: 24px !important; }
   html[data-theme] body#academic-site.ui-page-home .hero > div:first-child { display: block !important; }
-  html[data-theme] body#academic-site.ui-page-home .hero h1 { font-size: 34px !important; margin-bottom: 16px !important; }
+  html[data-theme] body#academic-site.ui-page-home .hero h1 { font-size: 30px !important; margin-bottom: 12px !important; }
   html[data-theme] body#academic-site.ui-page-home .hero .muted { font-size: 14px !important; padding: 0 !important; border: 0 !important; margin: 14px 0 !important; }
-  html[data-theme] body#academic-site.ui-page-home .hero .pills { margin: 18px 0 !important; }
+  html[data-theme] body#academic-site.ui-page-home .hero .pills { margin: 14px 0 !important; }
   html[data-theme] body#academic-site.ui-page-home .hero .pill { width: auto !important; min-width: 0 !important; font-size: 10px !important; }
   html[data-theme] body#academic-site.ui-page-home .hero-card { display: grid !important; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) !important; align-items: center !important; gap: 16px !important; max-width: 520px !important; margin: 0 auto !important; }
   html[data-theme] body#academic-site.ui-page-home .affiliation-card { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; margin: 0 !important; font-size: 10px !important; }

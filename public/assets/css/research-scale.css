@@ -50,8 +50,8 @@ html[data-theme] body#academic-site main .research-scale :is(.research-scale__cr
   width: calc(100% / var(--tab-count) - 24px);
   height: 2px;
   border-radius: 1px;
-  background: linear-gradient(90deg, var(--obs-cyan), var(--obs-accent));
-  box-shadow: 0 0 9px var(--obs-glow);
+  background: var(--obs-accent);
+  box-shadow: 0 0 9px var(--obs-gold-glow);
   transform: translateX(calc(var(--selected-index) * (100% + 24px)));
   pointer-events: none;
 }

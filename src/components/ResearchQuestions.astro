@@ -1,0 +1,15 @@
+---
+import {researchQuestions} from '../scripts/research-questions.js';
+---
+<details class="planetary-questions" data-questions>
+  <summary>Three questions behind the research</summary>
+  <div class="planetary-question-tabs" role="tablist" aria-label="Research questions">
+    {researchQuestions.map((question,i)=><button type="button" role="tab" data-question={question.id} id={`research-question-${question.id}`} aria-controls="research-question-answer" aria-selected={i===0?'true':'false'} tabindex={i===0?0:-1}>{question.title}</button>)}
+  </div>
+  <div data-question-answer id="research-question-answer" role="tabpanel" tabindex="0" aria-labelledby="research-question-target"></div>
+  <div class="planetary-question-footer">
+    <a data-question-source target="_blank" rel="noopener" href={researchQuestions[0].source}>{researchQuestions[0].sourceLabel}</a>
+    <button type="button" data-question-explore>{researchQuestions[0].action}</button>
+  </div>
+  <p class="planetary-question-boundary">An analytical reasoning guide, not a report of completed measurements.</p>
+</details>

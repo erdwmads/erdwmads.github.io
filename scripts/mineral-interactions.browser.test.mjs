@@ -33,12 +33,9 @@ try {
   await page.locator('[data-public-atlas]').click();
   await page.locator('.evidence-atlas[open]').waitFor();
   assert.ok(await page.locator('.ambient-space-layer').evaluate(el => el.classList.contains('ambient-paused')), 'background particles did not pause behind atlas');
-  assert.equal(await page.locator('.atlas-node').count(), 5);
-  assert.ok(await page.locator('.atlas-core').evaluate(node => {
-    const box = node.getBoundingClientRect(), map = node.parentElement.getBoundingClientRect();
-    return Math.abs(box.x + box.width / 2 - map.x - map.width / 2) < 2;
-  }), 'graph nodes do not align with their connections');
-  await page.locator('.atlas-node[data-group="literature"]').click();
+  assert.equal(await page.locator('.atlas-step').count(), 4);
+  assert.equal(await page.locator('.atlas-core').count(), 0);
+  await page.locator('.atlas-step[data-group="evidence"]').click();
   assert.ok(await page.locator('.atlas-detail a[href^="paper-shelf.html#paper-"]').count() > 0, 'no real paper links');
   assert.equal(await page.locator('.evidence-atlas img[src*="mission-log"]').count(), 0, 'public atlas contains protected images');
   await page.keyboard.press('Escape');
@@ -89,9 +86,10 @@ try {
     await page.evaluate(theme => localStorage.setItem('mads-theme', theme), theme);
     await page.reload({ waitUntil: 'networkidle' });
     await page.locator('[data-public-atlas]').click();
-    await page.locator('[data-group="literature"]').click();
-    const href = await page.locator('.atlas-detail a').first().getAttribute('href');
-    await page.locator('.atlas-detail a').first().click();
+    await page.locator('[data-group="evidence"]').click();
+    const source = page.locator('.atlas-detail a[href^="paper-shelf.html#paper-"]').first();
+    const href = await source.getAttribute('href');
+    await source.click();
     await page.waitForURL(`**/${href}`);
     assert.equal(await page.locator(new URL(page.url()).hash).count(), 1, 'source anchor is missing');
   }
@@ -99,7 +97,7 @@ try {
     await page.setViewportSize({ width, height: 844 });
     await page.goto(`${base}/research.html`, { waitUntil: 'networkidle' });
     await page.locator('[data-public-atlas]').click();
-    await page.locator('[data-group="literature"]').click();
+    await page.locator('[data-group="evidence"]').click();
     assert.ok(await page.locator('.evidence-atlas').evaluate(el => el.scrollWidth <= el.clientWidth), `${width}: atlas overflow`);
     assert.ok(await page.locator('.atlas-close').isVisible());
     await page.keyboard.press('Escape');

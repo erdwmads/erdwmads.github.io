@@ -22,6 +22,11 @@
     "publish:mission-log": "node scripts/publish-protected-mission-log.mjs"
   },
   "devDependencies": {
-    "astro": "^5.0.0"
+    "astro": "^5.0.0",
+    "three-bvh-csg": "^0.0.18"
+  },
+  "dependencies": {
+    "lucide": "^1.41.0",
+    "three": "^0.185.1"
   }
 }

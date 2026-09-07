@@ -114,7 +114,7 @@
   if (fx) {
     dock = document.createElement('div');
     dock.className = 'obs-fx-dock';
-    dock.innerHTML = `<button class="obs-fx-settings" type="button" title="FX intensity" aria-label="FX intensity" aria-expanded="false" aria-controls="obs-fx-panel">${icon('settings')}</button>
+    dock.innerHTML = `<button class="obs-fx-settings" type="button" title="Visual effects" aria-label="Visual effects" aria-expanded="false" aria-controls="obs-fx-panel">${icon('settings')}</button>
       <fieldset id="obs-fx-panel" class="obs-fx-panel" hidden><legend>FX intensity</legend>
         <label><input type="radio" name="obs-intensity" value="standard"> Standard</label>
         <label><input type="radio" name="obs-intensity" value="immersive"> Immersive</label>
@@ -124,6 +124,13 @@
     const settings = dock.querySelector('.obs-fx-settings');
     const panel = dock.querySelector('fieldset');
     const closeSettings = () => { panel.hidden = true; settings.setAttribute('aria-expanded', 'false'); };
+    const compactDock = matchMedia('(max-width: 760px), (pointer: coarse)');
+    const resetSettings = () => {
+      const restoreFocus = panel.contains(document.activeElement);
+      closeSettings();
+      if (restoreFocus) settings.focus({ preventScroll: true });
+    };
+    compactDock.addEventListener('change', resetSettings);
     dock.querySelector(`input[value="${intensity}"]`).checked = true;
     settings.addEventListener('click', () => {
       panel.hidden = !panel.hidden;
@@ -135,6 +142,8 @@
       try { localStorage.setItem('madsFxIntensity', intensity); } catch {}
     });
     document.addEventListener('pointerdown', event => { if (!dock.contains(event.target)) closeSettings(); });
+    window.addEventListener('pagehide', closeSettings);
+    window.addEventListener('mads:soft-nav-start', closeSettings);
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && !panel.hidden) { closeSettings(); settings.focus(); }
     });

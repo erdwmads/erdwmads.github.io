@@ -2,6 +2,7 @@
 import LegacyShell from "../components/LegacyShell.astro";
 import EvidenceAtlasData from "../components/EvidenceAtlasData.astro";
 import ResearchScaleJourney from "../components/ResearchScaleJourney.astro";
+import PlanetaryExplorer from "../components/PlanetaryExplorer.astro";
 import { getPageScripts } from "../data/site";
 import mainHtml from "../legacy/research-main.html?raw";
 
@@ -17,6 +18,7 @@ const scriptHtml = getPageScripts("research");
       in extraterrestrial materials, especially primitive Solar System materials.
     </p>
   </section>
+  <PlanetaryExplorer />
   <ResearchScaleJourney />
   <Fragment set:html={mainHtml} />
   <EvidenceAtlasData />

@@ -1,0 +1,12 @@
+{
+  "ryugu": {
+    "asset": "/assets/img/research-scale/ryugu-sample-jaxa.jpg",
+    "original": "https://www.hayabusa2.jaxa.jp/en/topics/20201225_samples/img/fig3.jpg",
+    "source": "https://www.hayabusa2.jaxa.jp/en/topics/20201225_samples/",
+    "credit": "JAXA",
+    "subject": "Sample catcher chamber A; first-touchdown material",
+    "policy": "https://global.jaxa.jp/policy.html",
+    "use": "Scientific educational illustration. Original image unchanged, no cropping or recolouring.",
+    "retrieved": "2026-09-07"
+  }
+}

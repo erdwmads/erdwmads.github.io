@@ -1,0 +1,24 @@
+{
+  "bennu": {
+    "file": "bennu.glb",
+    "url": "https://assets.science.nasa.gov/content/dam/science/psd/solar/2023/09/b/Bennu_1_1.glb",
+    "source": "https://science.nasa.gov/resource/bennu-3d-model/",
+    "credit": "NASA Visualization Technology Applications and Development (VTAD)",
+    "diameterM": 492,
+    "asset": "/assets/data/planetary/bennu.glb"
+  },
+  "ryugu": {
+    "file": "ryugu.obj",
+    "url": "https://data.darts.isas.jaxa.jp/pub/hayabusa2/paper/Watanabe_2019/SHAPE_SFM_49k_v20180804.obj",
+    "source": "https://data.darts.isas.jaxa.jp/pub/hayabusa2/paper/Watanabe_2019/",
+    "credit": "ISAS/JAXA; Watanabe et al. (2019), shape-model team",
+    "diameterM": 900,
+    "asset": "/assets/data/planetary/ryugu.obj"
+  },
+  "orgueil": {
+    "model": null,
+    "source": "https://naturalhistory.si.edu/object/nmnhmineralsciences_1017941",
+    "credit": "Chip Clark / Smithsonian; specimen USNM 388, CC0",
+    "note": "Photograph only. No 3D scan of this specimen is supplied."
+  }
+}

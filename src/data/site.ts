@@ -50,7 +50,7 @@ const commonScripts: ScriptSpec[] = [
   { src: "assets/js/theme.js?v=20260831-stability", defer: true },
   { src: "assets/js/ambient-space.js?v=20260901-continuity", defer: true },
   { src: "assets/js/research-coordinates.js", defer: true },
-  { src: "assets/js/research-scale.js?v=20260906-materials", defer: true }
+  { src: "assets/js/research-scale.js?v=20260907-explorer", defer: true }
 ];
 
 const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20260906-luminous", defer: true };
@@ -87,8 +87,8 @@ export function getPageScripts(pageKey: keyof typeof pageScripts | string, inlin
   return [
     renderScript(powerManagerScript),
     scripts.map(renderScript).join("\n"),
-    renderScript({ src: "assets/js/observatory-interactions.js?v=20260906-flight", defer: true }),
-    renderScript({ src: "assets/js/mineral-interactions.js?v=20260906", defer: true }),
+    renderScript({ src: "assets/js/observatory-interactions.js?v=20260907-reading", defer: true }),
+    renderScript({ src: "assets/js/mineral-interactions.js?v=20260907-workflow", defer: true }),
     inlineHtml,
     renderScript(legacyNavigationScript)
   ].filter(Boolean).join("\n\n");

@@ -18,6 +18,9 @@
       panel.setAttribute('aria-hidden', String(!active));
     });
     if (focus) tab.focus({ preventScroll: true });
+    if (tablist.hasAttribute('data-material-tabs')) {
+      window.dispatchEvent(new CustomEvent('mads:material-selected', { detail: { material: tab.getAttribute('aria-controls').replace('research-material-', ''), origin: 'materials' } }));
+    }
   }
 
   function syncFx(event) {
@@ -63,6 +66,12 @@
   window.addEventListener('mads:soft-nav-ready', init);
   window.addEventListener('pageshow', init);
   window.addEventListener('mads:fx-state', syncFx);
+  window.addEventListener('mads:material-selected', event => {
+    if (event.detail?.origin !== 'explorer') return;
+    const section = document.querySelector('[data-research-scale]');
+    const tab = section?.querySelector(`[data-material-tabs] [aria-controls="research-material-${event.detail.material}"]`);
+    if (tab) select(section, tab);
+  });
   window.__madsResearchScale = { init };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
   else init();
