@@ -87,7 +87,7 @@ export function getPageScripts(pageKey: keyof typeof pageScripts | string, inlin
   return [
     renderScript(powerManagerScript),
     scripts.map(renderScript).join("\n"),
-    renderScript({ src: "assets/js/observatory-interactions.js?v=20260908-mission-edge", defer: true }),
+    renderScript({ src: "assets/js/observatory-interactions.js?v=20260908-stable-controls", defer: true }),
     renderScript({ src: "assets/js/mineral-interactions.js?v=20260907-workflow", defer: true }),
     inlineHtml,
     renderScript(legacyNavigationScript)

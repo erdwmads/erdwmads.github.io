@@ -1936,7 +1936,7 @@ body.space-mode .timeline-item::before {
   margin-bottom: 8px;
 }
 
-.cv-edu-card p:last-child {
+.cv-edu-card p:nth-last-child(1 of :not(.obs-edge-light)) {
   margin-bottom: 0;
 }
 

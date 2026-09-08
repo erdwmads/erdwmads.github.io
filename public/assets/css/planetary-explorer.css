@@ -24,20 +24,52 @@ html[data-theme] body#academic-site .planetary :is(button, select):focus-visible
 html[data-theme] body#academic-site .planetary button:is(:hover, :focus-visible) { border-color: var(--obs-cyan) !important; }
 html[data-theme] body#academic-site .planetary button:is([aria-pressed="true"], [aria-selected="true"]) { background: var(--obs-control-active) !important; border-color: var(--obs-accent) !important; }
 html[data-theme] body#academic-site .planetary select { background: var(--obs-surface) !important; max-width: 100%; }
-.planetary-navigation, .planetary-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+html[data-theme] body#academic-site .planetary :is(.planetary-materials, .planetary-toolbar, .planetary-mineral-tabs) button {
+  background: var(--obs-control) !important;
+  border-color: var(--obs-control-border) !important;
+  box-shadow: var(--obs-control-shadow) !important;
+  font-weight: 600;
+  box-sizing: border-box;
+  transition: border-color 180ms ease-out, box-shadow 140ms ease-out !important;
+}
+html[data-theme] body#academic-site .planetary :is(.planetary-materials, .planetary-toolbar, .planetary-mineral-tabs) button[aria-pressed="true"] {
+  background: var(--obs-control-active) !important;
+  border-color: var(--obs-accent) !important;
+}
+@media (hover:hover) {
+  html[data-theme] body#academic-site .planetary :is(.planetary-materials, .planetary-toolbar, .planetary-mineral-tabs) button:hover:not(:disabled) {
+    box-shadow: var(--obs-control-hover-shadow) !important;
+    border-color: var(--obs-cyan) !important;
+  }
+  html[data-theme] body#academic-site .planetary :is(.planetary-materials, .planetary-toolbar, .planetary-mineral-tabs) button[aria-pressed="true"]:hover { border-color: var(--obs-accent) !important; }
+}
+html[data-theme] body#academic-site .planetary :is(.planetary-materials, .planetary-toolbar, .planetary-mineral-tabs) button:active:not(:disabled) { box-shadow: var(--obs-control-pressed-shadow) !important; }
+@media (prefers-reduced-motion:reduce) {
+  html[data-theme] body#academic-site .planetary :is(.planetary-materials, .planetary-toolbar, .planetary-mineral-tabs) button { transition:none !important; }
+}
+.planetary-navigation { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
 .planetary-navigation { border-bottom: 1px solid var(--obs-line); padding-bottom: 18px; }
 .planetary-steps, .planetary-materials, .planetary-options, .planetary-tools, .planetary-mineral-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 html[data-theme] body#academic-site .planetary .planetary-steps button { border: 0 !important; border-radius: 0 !important; border-bottom: 2px solid transparent !important; background: none !important; }
 html[data-theme] body#academic-site .planetary .planetary-steps [aria-selected="true"] { border-bottom-color: var(--obs-accent) !important; }
 .planetary-steps span { color: var(--obs-accent); font-size: 11px; margin-right: 6px; }
-.planetary-toolbar { padding: 16px 0; min-height: 76px; box-sizing: border-box; }
+.planetary-toolbar { display: grid; grid-template-columns: minmax(0,1fr) auto 44px; align-items: center; gap: 12px 16px; padding: 16px 0; min-height: 76px; box-sizing: border-box; }
+/* Text and material-dependent tools cannot redistribute the camera controls. */
+.planetary-toolbar .planetary-journey { grid-column: 1; grid-row: 1; }
+.planetary-toolbar .planetary-tools { grid-column: 2; grid-row: 1; }
+.planetary-toolbar [data-share] { grid-column: 3; grid-row: 1; }
+.planetary-toolbar .planetary-options { grid-column: 1 / -1; grid-row: 2; }
+/* CI has no measured shape: unavailable controls keep their layout but not focus. */
+html[data-theme] body#academic-site .planetary[data-mode="shape"] .planetary-toolbar :is([data-shape-tools], [data-camera-tools])[hidden] { display:flex !important; visibility:hidden; }
 .planetary-journey { display:flex; align-items:center; gap:12px; min-width:0; }
 .planetary-journey [data-journey-label] { min-width:0; text-align:left; }
-html[data-theme] body#academic-site .planetary-journey [data-action="journey-start"] { max-width:100%; flex-shrink:1; }
+html[data-theme] body#academic-site .planetary-journey [data-action="journey-start"] { width:240px; max-width:100%; flex-shrink:1; min-height:44px; }
 .planetary-journey [data-action="journey-start"] [data-icon] { flex-shrink:0; }
 .planetary-journey [data-journey-controls] { display:flex; align-items:center; gap:8px; width:100%; }
 .planetary-journey output { flex:1; font-size:12px; color:var(--obs-accent); }
-.planetary[data-journey="active"] .planetary-journey { flex:1 0 100%; }
+.planetary[data-journey="active"] .planetary-journey { grid-column:1 / -1; }
+.planetary[data-journey="active"] .planetary-tools, .planetary[data-journey="active"] [data-share] { grid-row:2; }
+.planetary[data-journey="active"] .planetary-options { grid-row:3; }
 html[data-theme] body#academic-site .planetary-journey button { display:flex; align-items:center; justify-content:center; gap:8px; flex-shrink:0; }
 .planetary-journey svg { display:block; width:18px; height:18px; }
 html[data-theme] body#academic-site .planetary button:disabled { opacity:.4; cursor:default; }
@@ -124,8 +156,13 @@ html[data-theme="light"] .mineral-sulfide { fill: #c8cdd0; stroke: #53616b; }
   .planetary-steps span { display:none; }
   html[data-theme] body#academic-site .planetary-sample img { height:340px; }
   html[data-theme] body#academic-site .planetary .planetary-steps button { padding-inline: 2px !important; font-size:11px !important; }
-  .planetary-toolbar { gap: 10px; }
+  .planetary-toolbar { grid-template-columns: minmax(0,1fr) 44px; gap: 10px; }
+  .planetary-toolbar .planetary-journey { grid-column:1 / -1; }
+  .planetary-toolbar .planetary-tools { grid-column:1; grid-row:2; justify-self:start; margin-left:0; }
+  .planetary-toolbar [data-share] { grid-column:2; grid-row:2; align-self:start; }
+  .planetary-toolbar .planetary-options { grid-row:3; }
   .planetary-options { flex: 1 0 100%; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); }
+  html[data-theme] body#academic-site .planetary[data-mode="shape"] .planetary-toolbar [data-shape-tools][hidden] { display:grid !important; }
   .planetary-tools { margin-left: auto; }
   .planetary-stage { height: 340px; }
   html[data-theme] body#academic-site .planetary-ci img { height: auto; max-height: 360px; }
@@ -135,6 +172,11 @@ html[data-theme="light"] .mineral-sulfide { fill: #c8cdd0; stroke: #53616b; }
   html[data-theme] body#academic-site .planetary .planetary-touch { display: grid; }
   .planetary-stage, .planetary-stage canvas { touch-action: pan-y !important; }
   .planetary-stage[data-touch-active], .planetary-stage[data-touch-active] canvas { touch-action: none !important; }
+}
+@media (max-width:360px) {
+  .planetary-toolbar .planetary-tools { display:grid; grid-template-columns:repeat(4,44px); gap:6px; }
+  .planetary-toolbar .planetary-tools output { grid-column:1 / -1; justify-self:center; }
+  html[data-theme] body#academic-site .planetary[data-mode="shape"] .planetary-toolbar [data-camera-tools][hidden] { display:grid !important; }
 }
 .planetary-origin-controls { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); column-gap:32px; border-block:1px solid var(--obs-line); padding:0 0 12px; margin-bottom:12px; }
 .planetary-origin-steps { grid-column:1/-1; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:0; }

@@ -16,9 +16,9 @@ try {
     try {
       await primary.scrollIntoViewIfNeeded();await page.waitForTimeout(250);
       const resting=await primary.evaluate(el=>{const s=getComputedStyle(el);return {background:s.backgroundImage,shadow:s.boxShadow,arrow:getComputedStyle(el,'::after').content,color:s.color,transform:s.transform};});
-      assert((await primary.evaluate(el=>getComputedStyle(el).fontFamily)).startsWith('Inter'),'controls use Inter');
+      assert((await primary.evaluate(el=>getComputedStyle(el).fontFamily)).includes('Montserrat'),'controls use original Montserrat');
       assert.equal(await primary.evaluate(el=>getComputedStyle(el).fontWeight),'600');
-      assert(await page.evaluate(()=>document.fonts.check('600 14px Inter')&&document.fonts.check('700 24px Montserrat')),'local fonts load');
+      assert(await page.evaluate(()=>document.fonts.check('600 14px Montserrat')&&document.fonts.check('700 24px Montserrat')),'local fonts load');
       assert.notEqual(resting.background,await secondary.evaluate(el=>getComputedStyle(el).backgroundImage),'primary and secondary surfaces must be distinct');
       assert(resting.shadow.includes('3px'),'inner lip should be distinct from the outer border');
       const box=await primary.boundingBox();assert(box.height>=44);

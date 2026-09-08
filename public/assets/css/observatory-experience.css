@@ -13,9 +13,17 @@ html[data-theme] body#academic-site main :is(.pill, .paper-status, .status-badge
 html[data-theme] body#academic-site :is(.card, .paper-card, .cv-edu-card, .mini-timeline-item, .pathway-step, .research-lock-card, .mission-log-entry) { border-radius: 18px !important; }
 html[data-theme] body#academic-site.ui-page-home .hero-card .avatar {
   border-radius: 20px !important;
-  box-shadow: 0 0 0 5px rgba(155, 211, 248, .07), 0 0 28px var(--obs-glow), 0 16px 42px rgba(0, 0, 0, .22) !important;
+  box-shadow: none !important;
 }
-html[data-theme] body#academic-site .affiliation-emblem { filter: drop-shadow(0 0 9px var(--obs-glow)); }
+/* Only the photo crops to a rounded edge, not the entire portrait and caption. */
+html[data-theme] body#academic-site.ui-page-home :is(.hero-card, .affiliation-card) {
+  border-radius: 0 !important;
+  overflow: visible !important;
+}
+html[data-theme] body#academic-site.ui-page-home .affiliation-emblem {
+  filter: none !important;
+  box-shadow: none !important;
+}
 
 /* Prism lip and a lightly glazed face; no moving blur or translucent backdrop. */
 html[data-theme] {
@@ -76,6 +84,10 @@ html[data-theme] body#academic-site main :is(.pill, .paper-status, .status-badge
     border-color: var(--obs-control-hover-border, var(--obs-cyan)) !important;
   }
   html[data-theme] body#academic-site .nav a:hover { background: var(--obs-control-active) !important; box-shadow: none !important; }
+  html[data-theme] body#academic-site :is(.card, .paper-card, .cv-edu-card, .pathway-step, .mission-log-entry):hover {
+    border-color: color-mix(in srgb, var(--obs-accent) 45%, var(--obs-edge)) !important;
+    box-shadow: inset 0 1px rgba(225, 239, 245, .22), 0 4px 12px rgba(0, 0, 0, .12), 0 0 10px color-mix(in srgb, var(--obs-cyan) 9%, transparent) !important;
+  }
 }
 html[data-theme] body#academic-site main :is(.button, .paper-filter):active:not(:disabled):not([aria-disabled="true"]),
 html[data-theme] body#academic-site .header-actions > :is(.nav-log-gate, .theme-toggle):active:not(:disabled):not([aria-disabled="true"]) {

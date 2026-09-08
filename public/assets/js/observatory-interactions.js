@@ -85,7 +85,7 @@
   const edgeLight = document.createElement('span');
   edgeLight.className = 'obs-edge-light';
   edgeLight.setAttribute('aria-hidden', 'true');
-  const edgeSelector = '.button, .paper-card, .card, .cv-edu-card, .pathway-step, .nav-log-gate, .theme-toggle';
+  const edgeSelector = '.button, .paper-card, .card, .cv-edu-card, .pathway-step, .nav-log-gate, .theme-toggle, .planetary-materials button, .planetary-toolbar button, .planetary-mineral-tabs button';
   function clearEdge() {
     cancelAnimationFrame(edgeFrame);
     edgeFrame = 0;

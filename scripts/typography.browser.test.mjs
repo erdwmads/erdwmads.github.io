@@ -5,7 +5,7 @@ const browser=await chromium.launch({headless:true,executablePath:process.env.ED
 const routes=['index','research','cv','paper-shelf','photography','contact','research-log','research-graduation','sample-cabinet'];
 const failures=[];
 try {
-  for(const width of [1440,390,320])for(const theme of ['space','light']){
+  for(const width of (process.env.TEST_WIDTHS?.split(',').map(Number)||[1440,390,320]))for(const theme of ['space','light']){
     const context=await browser.newContext({viewport:{width,height:1000},hasTouch:width<760,isMobile:width<760,reducedMotion:'reduce'});
     const page=await context.newPage();
     const errors=[],remoteFonts=[];
@@ -16,10 +16,11 @@ try {
       try{
         await page.goto(`http://127.0.0.1:4322/${route}.html`);
         await page.evaluate(()=>document.fonts.ready);
-        assert((await page.locator('body').evaluate(el=>getComputedStyle(el).fontFamily)).startsWith('Inter'));
+        assert((await page.locator('body').evaluate(el=>getComputedStyle(el).fontFamily)).startsWith('Montserrat'));
         assert((await page.locator('h1').first().evaluate(el=>getComputedStyle(el).fontFamily)).startsWith('Montserrat'));
-        const fonts=await page.evaluate(()=>[...document.fonts].filter(f=>f.status==='loaded').map(f=>f.family));
-        assert(fonts.includes('Inter')&&fonts.includes('Montserrat'),'real local font faces loaded');
+        const fonts=await page.evaluate(()=>[...document.fonts].filter(f=>f.status==='loaded').map(f=>f.family.replace(/["']/g,'')));
+        assert(fonts.includes('Montserrat'),'original local font face loaded');
+        assert(!fonts.some(font=>['Source Sans 3','Manrope','Inter'].includes(font)),'experimental font faces are not loaded');
         assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'page horizontal overflow');
         const clipped=await page.locator('main .button, .nav a, .theme-toggle').evaluateAll(nodes=>nodes.filter(el=>el.getBoundingClientRect().width>0&&el.scrollWidth>el.clientWidth+2).map(el=>el.textContent.trim()));
         assert.deepEqual(clipped,[],'control labels overflow');
@@ -32,5 +33,5 @@ try {
     await context.close();
   }
   assert.deepEqual(failures,[]);
-  console.log('PASS 54 page/theme/viewport checks: local fonts, hierarchy, labels and overflow');
+  console.log('PASS all requested page/theme/viewport checks: local fonts, hierarchy, labels and overflow');
 }finally{await browser.close();}
