@@ -1,6 +1,9 @@
 import * as THREE from 'three';
 import {ImprovedNoise} from 'three/addons/math/ImprovedNoise.js';
 import {createOriginSurface,createOriginCarbonates} from './origins-surface.js';
+import {accretionState,alterationState} from './origins-process.js';
+import {createAqueousPockets} from './origins-aqueous.js';
+import {prepareAssembly} from './origins-assembly.js';
 
 const smooth=value=>{const t=THREE.MathUtils.clamp(value,0,1);return t*t*(3-2*t);};
 
@@ -12,6 +15,7 @@ export function createOriginVolume(material,random,light,originVolume) {
     new THREE.MeshStandardMaterial({...inside,color:0xc4c0ad,vertexColors:true,bumpScale:.065}),
     new THREE.MeshStandardMaterial({...inside,color:0x858c80,vertexColors:true,bumpScale:.04})
   ];
+  const freshInner=new THREE.Color(0xc4c0ad),alteredInner=new THREE.Color(0xaeb8a7),freshPore=new THREE.Color(0x858c80),alteredPore=new THREE.Color(0x78877c);
   const inclusionGeometry=new THREE.IcosahedronGeometry(1,1),inclusionMaterial=new THREE.MeshStandardMaterial({color:0xb0b5aa,roughness:.9});
   const placer=new THREE.Object3D(),up=new THREE.Vector3(0,0,1);
   const pieces=originVolume.chunks.map((data,i)=>{
@@ -53,6 +57,7 @@ export function createOriginVolume(material,random,light,originVolume) {
     piece.name=i===4?'origin-fragment':`origin-piece-${i+1}`;
     piece.userData.rest=center;piece.userData.index=i;group.add(piece);return piece;
   });
+  prepareAssembly(pieces,originVolume.chunks);
   const survivor=pieces[4],record=new THREE.Group();record.name='origin-carbonates';survivor.add(record);
   // Embedded in a cavity, not an abundance/phase map or a measured grain.
   const anchors=[[-.02,.035,-.075],[-.18,.24,-.018],[.23,.31,.045]];
@@ -85,21 +90,22 @@ export function createOriginVolume(material,random,light,originVolume) {
   ];
   group.updateMatrixWorld(true);
   const exposed=pieces.slice(0,8).map(piece=>piece.children[0]),ray=new THREE.Raycaster();
+  const project=point=>{ray.set(new THREE.Vector3(point.x,point.y,3),new THREE.Vector3(0,0,-1));return ray.intersectObjects(exposed,false)[0];};
   const flows=paths.map(path=>{
     // Project the illustration onto the exposed rock, instead of drawing free-floating pipes.
     const guide=new THREE.CatmullRomCurve3(path.map(p=>new THREE.Vector3(...p)),false,'centripetal');
     const points=guide.getPoints(144).map(point=>{
-      ray.set(new THREE.Vector3(point.x,point.y,3),new THREE.Vector3(0,0,-1));
-      const hit=ray.intersectObjects(exposed,false)[0];
+      const hit=project(point);
       return hit?hit.point.clone().add(new THREE.Vector3(0,0,.002)):null;
     }).filter(Boolean);
     const curve=new THREE.CurvePath();
     for(let i=1;i<points.length;i++)curve.add(new THREE.LineCurve3(points[i-1],points[i]));
-    const fluid=new THREE.Mesh(new THREE.TubeGeometry(curve,288,.003,6,false),new THREE.MeshStandardMaterial({color:light?0x287c8f:0x74c7d1,emissive:0x397e89,emissiveIntensity:.25,roughness:.6}));
+    const fluid=new THREE.Mesh(new THREE.TubeGeometry(curve,288,.004,8,false),new THREE.MeshPhysicalMaterial({color:light?0x287c8f:0x438998,roughness:.3,clearcoat:.8,transparent:true,opacity:.5,depthWrite:false}));
     water.add(fluid);
     const beads=new THREE.InstancedMesh(new THREE.SphereGeometry(.0045,8,6),new THREE.MeshBasicMaterial({color:0xc6e8e7}),9);
     beads.frustumCulled=false;water.add(beads);return {curve,fluid,beads};
   });
+  const aqueous=createAqueousPockets(flows.map(flow=>flow.curve),project,random,light);survivor.add(aqueous.group);aqueous.group.position.copy(survivor.userData.rest).negate();
   const helper=new THREE.Object3D(),point=new THREE.Vector3();
   function update(phase,t,depth) {
     const release=phase===3?smooth(t/.55):0,ending=phase===3?smooth((t-.48)/.52):0;
@@ -108,6 +114,15 @@ export function createOriginVolume(material,random,light,originVolume) {
       const {rest,index:i}=piece.userData,cover=[8,9,10,11].includes(i),angle=i*2.39996;
       piece.position.copy(rest);piece.rotation.set(0,0,0);piece.scale.setScalar(1);
       piece.visible=!(cover&&phase>=2&&interior);
+      if(phase<2) {
+        const assembly=accretionState(phase===0?0:t,piece.userData.assemblyRank);
+        point.copy(rest).normalize();
+        if(point.lengthSq()<.1)point.set(.3,.5,.2).normalize();
+        piece.position.addScaledVector(point,assembly.gap);
+        piece.position.applyAxisAngle(new THREE.Vector3(0,1,0),assembly.turn);
+        piece.rotation.set(Math.sin(angle)*assembly.gap*.28,assembly.turn*.35,Math.cos(angle)*assembly.gap*.22);
+        if(phase===0)piece.scale.setScalar(smooth((t-.45)/.55));
+      }
       if(phase===3) {
         piece.position.addScaledVector(rest.clone().normalize(),release*.55);
         piece.rotation.set(Math.sin(angle)*release*.33,Math.cos(angle)*release*.4,release*.18);
@@ -127,16 +142,22 @@ export function createOriginVolume(material,random,light,originVolume) {
       }
     }
     const alteration=phase===3?1:t;
+    const chemistry=alterationState(alteration);aqueous.update(phase,t,interior);
+    materials[1].color.copy(freshInner).lerp(alteredInner,phase>=2?chemistry.reaction:0);
+    materials[2].color.copy(freshPore).lerp(alteredPore,phase>=2?chemistry.reaction:0);
+    if(phase<2){materials[1].color.setHex(0x8c9694);materials[2].color.setHex(0x666f6c);}
     record.visible=phase>=2&&(phase===3||interior);
-    record.children.forEach((crystal,i)=>crystal.scale.setScalar(crystal.userData.size*(.08+.92*smooth((alteration-.12-i*.07)/.55))));
-    water.visible=phase===2&&interior&&t>.25;
+    record.children.forEach((crystal,i)=>crystal.scale.setScalar(crystal.userData.size*alterationState(Math.max(0,alteration-i*.025)).carbonate));
+    water.visible=phase===2&&interior&&chemistry.wetting>0;
     flows.forEach(({curve,fluid,beads},i)=>{
-      const front=THREE.MathUtils.clamp((alteration-i*.065)/.64,0,1);
-      fluid.geometry.setDrawRange(0,Math.floor(front*288)*36);
+      const front=THREE.MathUtils.clamp(chemistry.wetting-i*.035,0,1);
+      const markers=1-smooth((alteration-.75)/.25);
+      fluid.geometry.setDrawRange(0,Math.floor(front*288)*48);
+      fluid.material.opacity=.5*(1-.65*chemistry.reaction)*markers;
       for(let j=0;j<beads.count;j++) {
         const f=(alteration*1.4+j/beads.count)%1;
         helper.position.copy(curve.getPoint(f));
-        helper.scale.setScalar(f<front?Math.sin(f*Math.PI):0);helper.updateMatrix();beads.setMatrixAt(j,helper.matrix);
+        helper.scale.setScalar(f<front?Math.sin(f*Math.PI)*markers:0);helper.updateMatrix();beads.setMatrixAt(j,helper.matrix);
       }
       beads.instanceMatrix.needsUpdate=true;
     });

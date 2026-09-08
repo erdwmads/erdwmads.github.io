@@ -8,7 +8,7 @@ export function initOriginsControls(root,{signal,state,onChange,onEvidence,onIns
   let inspectionKey='';
   function inspectionUI() {
     const phase=originStage(state.originProgress),focused=root.dataset.originFocus==='carbonate';
-    const hidden=state.view!=='origins',disabled=phase!==2||state.originProgress<=.56||state.originCutaway<=0||root.dataset.renderState!=='ready';
+    const hidden=state.view!=='origins',disabled=phase!==2||state.originProgress<=.62||state.originCutaway<=0||root.dataset.renderState!=='ready';
     const moment=originAlterationIndex(state.originProgress),specimen=!hidden&&originHasSpecimen(state.material,state.originProgress);
     root.dataset.originSpecimen=String(specimen);root.querySelector('[data-origin-specimen]').hidden=!specimen;
     if(!hidden)root.querySelector('[data-camera-tools]').hidden=specimen;
@@ -81,7 +81,7 @@ export function initOriginsControls(root,{signal,state,onChange,onEvidence,onIns
   }
   panel.addEventListener('click',event=>{
     const step=event.target.closest('[data-origin-step]');
-    if(step){pause();change([.125,.4375,.65,.80][Number(step.dataset.originStep)],true);}
+    if(step){pause();change([.125,.28,.52,.80][Number(step.dataset.originStep)],true);}
     if(event.target.closest('[data-origin-play]')&&!button.disabled) {
       if(playing)pause();
       else {if(state.originProgress>=1)change(0,true);playing=true;last=0;playbackUI();frame=requestAnimationFrame(tick);}

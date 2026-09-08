@@ -21,7 +21,7 @@ try {
   await button.click();await page.waitForFunction(()=>document.querySelector('.planetary').dataset.zoom==='5.8000');
   await root.locator('[data-origin-step="3"]').click();assert.equal(await button.isDisabled(),true);
   assert.equal(await root.getAttribute('data-origin-focus'),null);
-  await root.locator('[data-origin-step="2"]').click();await button.click();
+  await root.locator('[data-origin-step="2"]').click();await root.locator('[data-origin-moment]').selectOption('2');await button.click();
   await page.waitForFunction(()=>document.querySelector('.planetary').dataset.zoom==='5.8000');
   await root.locator('[data-action="reset"]').click();
   assert.equal(await button.getAttribute('aria-pressed'),'false','Reset must clear inspection UI');
@@ -30,7 +30,7 @@ try {
   const timeline=root.locator('[data-origin-progress]');await timeline.fill('0.54');await timeline.dispatchEvent('input');
   assert.equal(await button.isDisabled(),true);
   await root.locator('[data-origin-play]').click();
-  await page.waitForFunction(()=>Number(document.querySelector('.planetary').dataset.originProgress)>.57);
+  await page.waitForFunction(()=>Number(document.querySelector('.planetary').dataset.originProgress)>.63);
   await root.locator('[data-origin-play]').click();
   assert.equal(await button.isDisabled(),false,'Autoplay must enable inspection after crossing its threshold');
   await page.emulateMedia({reducedMotion:'reduce'});
@@ -46,7 +46,7 @@ try {
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
     }
   }
-  await root.locator('[data-origin-step="2"]').click();await button.click();
+  await root.locator('[data-origin-step="2"]').click();await root.locator('[data-origin-moment]').selectOption('2');await button.click();
   await page.waitForFunction(()=>document.querySelector('.planetary').dataset.originFocus==='carbonate');
   await page.evaluate(()=>window.dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true})));
   assert.equal(await root.getAttribute('data-origin-focus'),null,'Disposal clears inspection state before page restoration');

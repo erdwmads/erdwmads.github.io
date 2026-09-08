@@ -7,7 +7,7 @@ try {
   page.on('pageerror',e=>errors.push(e.message));
   page.setDefaultTimeout(15000);
   let requested=false;
-  await page.route('**/origins-volume-data.js*',async route=>{
+  await page.route('**/origins-volume-data*.js*',async route=>{
     requested=true;
     await page.evaluate(()=>{
       document.querySelector('[data-origin-step="2"]').click();

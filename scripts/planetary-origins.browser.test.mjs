@@ -32,7 +32,7 @@ try {
       }
       assert.equal(await root.getAttribute('data-origin-stage'),String(stage));
     }
-    assert.match(await root.locator('[data-description]').innerText(),material==='orgueil'?/not identified/:new RegExp(material,'i'));
+    assert.match(await root.locator('[data-description]').innerText(),material==='orgueil'?/not identified|unidentified/:new RegExp(material,'i'));
   }
   assert.ok(new Set(frames.map(buffer=>buffer.toString('base64'))).size===4);
   await root.locator('[data-origin-step="2"]').click();

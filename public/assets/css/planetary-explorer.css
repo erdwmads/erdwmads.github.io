@@ -212,11 +212,17 @@ html[data-theme] body#academic-site .planetary .planetary-origin-steps button[ar
 }
 .planetary-origin-legend span { display:flex; align-items:center; gap:6px; }
 .planetary-origin-legend span::before { content:''; width:8px; height:8px; background:#848d8c; }
-.planetary-origin-legend span:nth-child(2)::before { background:#62b9ca; }
-.planetary-origin-legend span:nth-child(3)::before { background:#d3b571; }
+.planetary-origin-legend span:nth-child(2)::before { background:#c4e4e7; }
+.planetary-origin-legend span:nth-child(3)::before { background:#4eacbd; }
+.planetary-origin-legend span:nth-child(4)::before { background:#879a80; }
+.planetary-origin-legend span:nth-child(5)::before { background:#d3b571; }
 .planetary-origin-evidence { display:flex; flex-wrap:wrap; gap:10px; margin-top:24px; }
 .planetary[data-mode="origins"] .planetary-stage { height:560px; }
 .planetary[data-mode="origins"] .planetary-toolbar { min-height:64px; padding-block:10px; }
+html[data-theme] body#academic-site .planetary[data-mode="origins"] [data-camera-tools][hidden] { display:flex !important; visibility:hidden; pointer-events:none; }
+@media(max-width:360px) {
+  html[data-theme] body#academic-site .planetary[data-mode="origins"] [data-camera-tools][hidden] { display:grid !important; }
+}
 .planetary[data-mode="origins"] .planetary-tools { margin-left:0; }
 .planetary[data-mode="origins"] .planetary-summary { padding-top:12px; }
 @media(max-width:760px) {

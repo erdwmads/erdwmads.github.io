@@ -19,7 +19,7 @@ try {
       const target=i/100;await page.mouse.move(initial.x+8+(initial.width-16)*target,initial.y+initial.height/2);
       const value=Number(await root.getAttribute('data-origin-progress')),box=await range.boundingBox();
       assert.ok(Math.abs(box.width-initial.width)<1,`${width}: timeline width changed while dragging: ${initial.width} -> ${box.width}`);
-      assert.ok(Math.abs(box.y-initial.y)<1,`${width}: timeline moved vertically`);
+      assert.ok(Math.abs(box.y-initial.y)<1,`${width}: timeline moved vertically at ${target}: ${initial.y} -> ${box.y}; label=${await root.locator('[data-origin-timeline-label]').textContent()}`);
       assert.ok(value>=previous-.006,`${width}: pointer moved forwards but timeline reversed ${previous} -> ${value}`);
       assert.ok(Math.abs(value-target)<.025,`${width}: pointer ${target} jumped to ${value}`);previous=value;
       assert.ok(Math.abs((await root.locator('[data-stage]').boundingBox()).y-stage.y)<1,`${width}: canvas moved on stage change`);

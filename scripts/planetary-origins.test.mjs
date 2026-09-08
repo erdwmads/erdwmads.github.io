@@ -19,7 +19,7 @@ test('Origins keeps four bounded stages and distinct evidence branches',()=>{
   assert.equal(originBranch('orgueil').view,'sample');
   assert.equal(originBranch('ryugu').view,'shape');
   assert.notEqual(originBranch('ryugu').description,originBranch('bennu').description);
-  assert.match(originBranch('orgueil').description,/not identified|unknown/);
+  assert.match(originBranch('orgueil').description,/not identified|unknown|unidentified/);
 });
 
 test('Origins geometry is finite, deterministic and responds without reallocating',()=>{

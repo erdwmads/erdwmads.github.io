@@ -285,7 +285,7 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
       if(!alive||contextLost||ticket!==version)return false;
       const originScene=volumeData?createOriginsScene(state.material,document.documentElement.dataset.theme==='light',volumeData):null;
       originScene?.update(state.originProgress,state.originCutaway);
-      const built = originScene ? {group:originScene.group,pending:[],targets:[],radius:2.4,radiusY:1.65} : state.view === 'orbit' ? orbitGroup(state) : state.view === 'minerals' ? {group:createMineralGroup(state.mineral,state.separated),pending:[],targets:[],radius:1.55} : await shapeGroup(state);
+      const built = originScene ? {group:originScene.group,pending:[],targets:[],radius:2.65,radiusY:2.25} : state.view === 'orbit' ? orbitGroup(state) : state.view === 'minerals' ? {group:createMineralGroup(state.mineral,state.separated),pending:[],targets:[],radius:1.55} : await shapeGroup(state);
       if (!alive || contextLost || ticket !== version) { disposeObject(built.group); return false; }
       current = state;
       origins=originScene;

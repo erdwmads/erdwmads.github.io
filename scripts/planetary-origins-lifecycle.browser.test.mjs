@@ -40,7 +40,7 @@ try {
   await page.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async url=>{window.observation=url;}}}));
   await root.locator('[data-share]').click();
   const url=await page.evaluate(()=>window.observation),saved=decodeObservation(new URL(url).hash);
-  assert.equal(saved.view,'origins');assert.equal(saved.originCutaway,.85);assert.equal(saved.originProgress,.65);assert.ok(saved.camera.zoom>1);
+  assert.equal(saved.view,'origins');assert.equal(saved.originCutaway,.85);assert.equal(saved.originProgress,.52);assert.ok(saved.camera.zoom>1);
   await page.reload({waitUntil:'networkidle'});
   await page.waitForFunction(()=>document.querySelector('.planetary').dataset.modelReady==='origins');
   await page.evaluate(url=>location.hash=new URL(url).hash,url);
