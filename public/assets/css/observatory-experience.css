@@ -17,26 +17,42 @@ html[data-theme] body#academic-site.ui-page-home .hero-card .avatar {
 }
 html[data-theme] body#academic-site .affiliation-emblem { filter: drop-shadow(0 0 9px var(--obs-glow)); }
 
-/* One light source above the controls. Glow belongs to the interactive edge. */
+/* Prism lip and a lightly glazed face; no moving blur or translucent backdrop. */
 html[data-theme] {
-  --obs-control: linear-gradient(180deg, #253640, #1c2c36);
+  --obs-control: linear-gradient(135deg, #2a353e, #202a32 58%, #242e35);
+  --obs-control-primary: linear-gradient(135deg, #344b59, #223641 58%, #29383f);
+  --obs-control-secondary: linear-gradient(135deg, #2d333b, #20262e 58%, #252c32);
   --obs-control-active: linear-gradient(180deg, #314954, #263c48);
-  --obs-control-border: #455966;
-  --obs-control-shadow: inset 0 1px rgba(223, 239, 248, .1), 0 3px 7px rgba(0, 0, 0, .14);
+  --obs-control-border: #52636e;
+  --obs-control-shadow: inset 0 1px rgba(228, 244, 252, .17), inset 0 0 0 3px rgba(7, 15, 23, .15), 0 3px 8px rgba(0, 0, 0, .18);
+  --obs-control-hover-shadow: inset 0 1px rgba(233, 247, 255, .23), inset 0 0 0 3px rgba(7, 15, 23, .1), 0 4px 10px rgba(0, 0, 0, .2);
+  --obs-control-pressed-shadow: inset 0 2px 5px rgba(0, 0, 0, .3), inset 0 0 0 3px rgba(7, 15, 23, .12);
 }
 html[data-theme="light"] {
-  --obs-control: linear-gradient(180deg, #fff, #edf2f5);
+  --obs-control: linear-gradient(135deg, #fff, #edf3f6 58%, #f6f8fa);
+  --obs-control-primary: linear-gradient(135deg, #f9fdff, #dcebf2 58%, #e8f0f3);
+  --obs-control-secondary: linear-gradient(135deg, #fff, #f0f3f5 58%, #f8fafb);
   --obs-control-active: linear-gradient(180deg, #edf5f8, #dfeaf0);
-  --obs-control-border: #bacbd4;
-  --obs-control-shadow: inset 0 1px #fff, 0 2px 4px rgba(36, 65, 82, .08);
+  --obs-control-border: #afc3ce;
+  --obs-control-shadow: inset 0 1px #fff, inset 0 0 0 3px rgba(255, 255, 255, .38), 0 2px 5px rgba(36, 65, 82, .09);
+  --obs-control-hover-shadow: inset 0 1px #fff, inset 0 0 0 3px rgba(255, 255, 255, .48), 0 3px 8px rgba(36, 65, 82, .12);
+  --obs-control-pressed-shadow: inset 0 2px 4px rgba(36, 65, 82, .15), inset 0 0 0 3px rgba(255, 255, 255, .2);
 }
-html[data-theme] body#academic-site main :is(.button, .button.secondary, .paper-filter),
+html[data-theme] body#academic-site main :is(.button, .paper-filter),
 html[data-theme] body#academic-site .header-actions > :is(.nav-log-gate, .theme-toggle) {
-  background: var(--obs-control) !important;
+  --obs-control-face: var(--obs-control);
+  background: var(--obs-control-face) !important;
   border-color: var(--obs-control-border) !important;
   box-shadow: var(--obs-control-shadow) !important;
   text-shadow: none !important;
+  transform: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transition: border-color 180ms ease-out, box-shadow 140ms ease-out, color 140ms ease-out !important;
 }
+html[data-theme] body#academic-site main .button:not(.secondary):not(.atlas-launch) { --obs-control-face: var(--obs-control-primary); }
+html[data-theme] body#academic-site main .button.secondary { --obs-control-face: var(--obs-control-secondary); background: var(--obs-control-face) !important; }
 html[data-theme] body#academic-site .header-actions > .nav-log-gate { border-color: var(--obs-accent) !important; }
 html[data-theme] body#academic-site .nav-log-gate__signal { box-shadow: 0 0 7px var(--obs-gold-glow) !important; }
 html[data-theme] body#academic-site .nav a { text-shadow: none !important; }
@@ -45,7 +61,7 @@ html[data-theme] body#academic-site main .paper-filter[aria-pressed="true"] {
   background: var(--obs-control-active) !important;
   box-shadow: inset 0 1px rgba(212, 234, 248, .1) !important;
 }
-html[data-theme] body#academic-site main .paper-filter[aria-pressed="true"] { border-color: var(--obs-accent) !important; }
+html[data-theme] body#academic-site main .paper-filter[aria-pressed="true"] { --obs-control-face: var(--obs-control-active); --obs-control-hover-border: var(--obs-accent); border-color: var(--obs-accent) !important; }
 html[data-theme] body#academic-site main :is(.pill, .paper-status, .status-badge, .project-tags span) {
   background: var(--obs-surface) !important;
   box-shadow: none !important;
@@ -53,13 +69,29 @@ html[data-theme] body#academic-site main :is(.pill, .paper-status, .status-badge
   text-shadow: none !important;
 }
 @media (hover: hover) {
-  html[data-theme] body#academic-site main :is(.button, .button.secondary, .paper-filter):hover,
-  html[data-theme] body#academic-site .header-actions > :is(.nav-log-gate, .theme-toggle):hover {
-    background: var(--obs-control-active) !important;
-    box-shadow: var(--obs-control-shadow) !important;
-    border-color: var(--obs-cyan) !important;
+  html[data-theme] body#academic-site main :is(.button, .paper-filter):hover:not(:disabled):not([aria-disabled="true"]),
+  html[data-theme] body#academic-site .header-actions > :is(.nav-log-gate, .theme-toggle):hover:not(:disabled):not([aria-disabled="true"]) {
+    background: var(--obs-control-face) !important;
+    box-shadow: var(--obs-control-hover-shadow) !important;
+    border-color: var(--obs-control-hover-border, var(--obs-cyan)) !important;
   }
   html[data-theme] body#academic-site .nav a:hover { background: var(--obs-control-active) !important; box-shadow: none !important; }
+}
+html[data-theme] body#academic-site main :is(.button, .paper-filter):active:not(:disabled):not([aria-disabled="true"]),
+html[data-theme] body#academic-site .header-actions > :is(.nav-log-gate, .theme-toggle):active:not(:disabled):not([aria-disabled="true"]) {
+  box-shadow: var(--obs-control-pressed-shadow) !important;
+}
+html[data-theme] body#academic-site main :is(.button, .paper-filter):is(:disabled, [aria-disabled="true"]) {
+  background: var(--obs-control-face) !important;
+  border-color: var(--obs-control-border) !important;
+  opacity: .45 !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+}
+html[data-theme] body#academic-site :is(:disabled, [aria-disabled="true"]) > .obs-edge-light { display: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme] body#academic-site main :is(.button, .paper-filter),
+  html[data-theme] body#academic-site .header-actions > :is(.nav-log-gate, .theme-toggle) { transition: none !important; }
 }
 
 /* A single moving navigation marker; the text layout never moves with it. */
