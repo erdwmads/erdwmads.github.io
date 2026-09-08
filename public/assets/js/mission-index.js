@@ -111,6 +111,63 @@
     });
   };
 
+  const renderProgress = (entry) => `<dl class="mission-progress">${[
+    ['Recorded', entry.latestNote || entry.stageNote || entry.stage],
+    ['Still open', entry.questionNote || entry.question],
+    ['Next step', entry.nextNote || entry.nextStep]
+  ].map(([label, value]) => `<div><dt>${label}</dt><dd>${escapeHtml(value || 'Not specified in this record.')}</dd></div>`).join('')}</dl>`;
+
+  const renderComparisonFigure = (entry) => {
+    const template = document.createElement('template');
+    template.innerHTML = entry.bodyHtml || '';
+    const figure = template.content.querySelector('figure');
+    const img = figure?.querySelector('img');
+    if (!img) return '';
+    return `<figure class="mission-comparison-figure"><img src="${escapeAttr(img.getAttribute('src'))}"
+      data-full-src="${escapeAttr(img.getAttribute('data-full-src') || img.getAttribute('src'))}"
+      alt="${escapeAttr(img.getAttribute('alt') || entry.label)}" loading="lazy" decoding="async">
+      <figcaption>${escapeHtml(figure.querySelector('figcaption')?.textContent || '')}</figcaption></figure>`;
+  };
+
+  const renderComparison = (selectedId) => {
+    const panel = list.querySelector('[data-mission-comparison]');
+    const current = byId.get(currentId);
+    if (!panel || !current) return;
+    const ordered = [...missionEntries].sort(compareEntries);
+    const alternatives = ordered.filter(entry => entry.id !== currentId);
+    const previous = ordered[ordered.indexOf(current) + 1];
+    const selected = alternatives.find(entry => entry.id === selectedId) || previous || alternatives[0];
+    if (!selected) return;
+    const pair = [selected, current].sort((a, b) => -compareEntries(a, b));
+    panel.innerHTML = `<div class="mission-comparison-toolbar"><label for="mission-compare-date">Compare with</label>
+      <select id="mission-compare-date" data-mission-compare-select>${alternatives.map(entry => `
+        <option value="${escapeAttr(entry.id)}"${entry.id === selected.id ? ' selected' : ''}>${escapeHtml(normaliseDate(entry.date || entry.isoDate))} / ${escapeHtml(entry.label)}</option>`).join('')}</select></div>
+      <div class="mission-comparison-grid">${pair.map(entry => `
+        <section class="mission-comparison-record" aria-label="${escapeAttr(entry.label)} comparison">
+          <h4>${escapeHtml(entry.label)} <time>${escapeHtml(normaliseDate(entry.date || entry.isoDate))}</time></h4>
+          ${renderProgress(entry)}${renderComparisonFigure(entry)}</section>`).join('')}</div>
+      <p class="mission-comparison-note">Records reflect what was known on each date; planned steps are not completion claims. Images show different fields of view and are not spatially registered.</p>`;
+    window.MadsMissionLightbox?.prepare?.(panel);
+  };
+
+  const onComparisonClick = (event) => {
+    const button = event.target.closest('[data-mission-compare-toggle]');
+    if (!button || !list?.contains(button)) return;
+    const panel = list.querySelector('[data-mission-comparison]');
+    const opening = panel.hidden;
+    if (opening) renderComparison();
+    else panel.innerHTML = '';
+    panel.hidden = !opening;
+    button.setAttribute('aria-expanded', String(opening));
+    button.textContent = opening ? 'Close comparison' : 'Compare records';
+  };
+
+  const onComparisonChange = (event) => {
+    if (!event.target.matches('[data-mission-compare-select]')) return;
+    renderComparison(event.target.value);
+    list.querySelector('[data-mission-compare-select]')?.focus({ preventScroll: true });
+  };
+
   const renderMissionEntry = (id, options = {}) => {
     const entry = byId.get(id) || latestEntry;
     if (!entry) return false;
@@ -131,7 +188,13 @@
         data-log-next-note="${escapeAttr(entry.nextNote)}"
       >
         <div class="research-note-date">${escapeHtml(entry.label)}</div>
-        <div class="research-note-body">${entry.bodyHtml || ''}</div>
+        <div class="research-note-body">
+          <div class="mission-progress-heading"><span>RECORD BRIEF</span><time>${escapeHtml(normaliseDate(entry.date || entry.isoDate))}</time></div>
+          ${renderProgress(entry)}
+          ${missionEntries.length > 1 ? `<button type="button" class="button secondary mission-compare-toggle" data-mission-compare-toggle aria-expanded="false" aria-controls="mission-comparison">Compare records</button>
+            <div id="mission-comparison" data-mission-comparison hidden></div>` : ''}
+          <div class="mission-original-record">${entry.bodyHtml || ''}</div>
+        </div>
       </article>
     `;
 
@@ -177,6 +240,8 @@
 
   const resetRenderer = () => {
     indexList?.removeEventListener('click', onIndexClick);
+    list?.removeEventListener('click', onComparisonClick);
+    list?.removeEventListener('change', onComparisonChange);
     list?.classList.remove('is-loading');
     started = false;
     currentId = '';
@@ -204,6 +269,8 @@
       applyStaticLabels();
       renderNavigator();
       indexList.addEventListener('click', onIndexClick);
+      list.addEventListener('click', onComparisonClick);
+      list.addEventListener('change', onComparisonChange);
 
       const initialTargetId = window.location.hash ? decodeTargetId(window.location.hash.slice(1)) : '';
       const initialId = byId.has(initialTargetId) ? initialTargetId : list.dataset.initialLogId || latestEntry.id;

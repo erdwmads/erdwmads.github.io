@@ -32,7 +32,7 @@ async function swipe(page, selector, dx, dy=0) {
 }
 try {
   const desktop = await browser.newPage({viewport:{width:1440,height:1000}});
-  await desktop.addInitScript(()=>sessionStorage.setItem('mads-entry-gate-v1','done'));
+  await desktop.addInitScript(()=>{sessionStorage.setItem('mads-entry-gate-v1','done');sessionStorage.setItem('mads-cosmic-arrival-v1','done');});
   await desktop.goto(`${base}/index.html`);
   await desktop.evaluate(()=>document.fonts.ready);
   if (await desktop.locator('html').evaluate(el=>el.classList.contains('ambient-fx-disabled'))) await desktop.locator('.ambient-fx-toggle').click();
@@ -84,7 +84,7 @@ try {
   });
   await desktop.close();
   const coarse=await browser.newPage({viewport:{width:1280,height:900},hasTouch:true});
-  await coarse.addInitScript(()=>sessionStorage.setItem('mads-entry-gate-v1','done'));
+  await coarse.addInitScript(()=>{sessionStorage.setItem('mads-entry-gate-v1','done');sessionStorage.setItem('mads-cosmic-arrival-v1','done');});
   await coarse.goto(`${base}/index.html`);
   await check('desktop-width coarse-pointer device never creates an edge',async()=>{
     assert(await coarse.evaluate(()=>matchMedia('(pointer: coarse)').matches));

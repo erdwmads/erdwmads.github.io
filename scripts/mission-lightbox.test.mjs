@@ -130,13 +130,13 @@ const bootLightbox = () => {
   figure.querySelector = (selector) => ({ img: image, figcaption: caption })[selector] || null;
   figure.closest = (selector) => selector === ".mission-log-entry" ? scope : null;
   image.closest = (selector) => selector === ".mission-photo-grid figure" ? figure : null;
-  scope.querySelectorAll = (selector) => selector === ".mission-photo-grid figure" ? [figure] : [];
+  scope.querySelectorAll = (selector) => selector.includes(".mission-photo-grid figure") ? [figure] : [];
   const document = {
     activeElement: new FakeElement("button"),
     body,
     documentElement,
     createElement: (tagName) => new FakeElement(tagName),
-    querySelectorAll: (selector) => selector === ".mission-photo-grid figure" ? [figure] : [],
+    querySelectorAll: (selector) => selector.includes(".mission-photo-grid figure") ? [figure] : [],
     addEventListener(type, listener) {
       const listeners = documentListeners.get(type) || [];
       listeners.push(listener);

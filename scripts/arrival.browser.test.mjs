@@ -26,6 +26,8 @@ try{
     return{lit,hash};
    });
    assert(pixels.lit>500,'Scene is visibly rendered');frames.push(pixels.hash);
+   if(progress===.14) assert.equal(await page.locator('.arrival-name').evaluate(el=>Number(getComputedStyle(el).opacity)),0,'The question precedes the name');
+   if(progress===.42) assert.equal(await page.locator('.arrival-name').evaluate(el=>Number(getComputedStyle(el).opacity)),1,'The name arrives during the Solar System stage');
    await page.screenshot({path:`.codex_tmp/arrival-${width}-${progress}.png`});
   }
   assert.equal(new Set(frames).size,3,'Galaxy, Solar System and Earth have distinct rendered frames');

@@ -1,9 +1,11 @@
 import {createElement,ArrowRight,RotateCcw} from 'lucide';
+import {arrivalProgress} from './timeline.js';
 
 const gate=document.querySelector('#cosmic-arrival');
 if(gate){
  const root=document.documentElement,skip=document.querySelector('#arrival-skip'),replay=document.querySelector('#arrival-replay');
  const signature=gate.querySelector('.arrival-signature'),number=gate.querySelector('.arrival-number'),label=gate.querySelector('.arrival-label'),track=gate.querySelector('.arrival-track span');
+ const name=gate.querySelector('.arrival-name');
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  const smooth=(a,b,v)=>{const t=Math.max(0,Math.min(1,(v-a)/(b-a)));return t*t*(3-2*t);};
  let scene,frame,timer,serial=0,active=false,chapter=-1;
@@ -17,9 +19,11 @@ if(gate){
   root.classList.remove('cosmic-arrival-active');syncReplay();
   try{sessionStorage.setItem('mads-cosmic-arrival-v1','done');}catch{}
  }
- function draw(p){
+ function draw(time){
+  const p=arrivalProgress(time);
   scene.render(p);gate.style.opacity=String(1-smooth(.88,1,p));
-  signature.style.opacity=String(smooth(.025,.09,p)*(1-smooth(.50,.59,p)));
+  signature.style.opacity=String(smooth(.025,.10,time)*(1-smooth(.54,.64,time)));
+  name.style.opacity=String(smooth(.29,.40,time));
   const next=p<.28?0:p<.61?1:p<.88?2:3;
   if(next!==chapter){number.textContent=['01','02','03','04'][next];label.textContent=['GALACTIC DUST','SOLAR SYSTEM','EARTH','THE MINERAL RECORD'][next];chapter=next;}
   track.style.transform=`scaleX(${p})`;gate.dataset.progress=p.toFixed(3);
@@ -29,7 +33,7 @@ if(gate){
   finish();const run=++serial;active=true;replay.hidden=true;chapter=-1;
   gate.showModal();root.classList.add('cosmic-arrival-active');gate.dataset.state='preparing';gate.dataset.progress='0';
   // Prime the underlying homepage compositor before the final single-overlay fade.
-  gate.style.opacity='.999';signature.style.opacity='0';track.style.transform='scaleX(0)';
+  gate.style.opacity='.999';signature.style.opacity='0';name.style.opacity='0';track.style.transform='scaleX(0)';
   number.textContent='01';label.textContent='GALACTIC DUST';skip.focus({preventScroll:true});
   timer=setTimeout(finish,11000);
   try{

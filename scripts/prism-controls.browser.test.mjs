@@ -9,7 +9,7 @@ try {
     const context=await browser.newContext({viewport:{width,height:1000},hasTouch:width<760,isMobile:width<760});
     const page=await context.newPage();
     const errors=[];page.on('pageerror',e=>errors.push(e.message));
-    await page.addInitScript(theme=>{sessionStorage.setItem('mads-entry-gate-v1','done');localStorage.setItem('mads-theme',theme);},theme);
+    await page.addInitScript(theme=>{sessionStorage.setItem('mads-entry-gate-v1','done');sessionStorage.setItem('mads-cosmic-arrival-v1','done');localStorage.setItem('mads-theme',theme);},theme);
     await page.goto(`${base}/index.html`);await page.evaluate(()=>document.fonts.ready);
     const primary=page.locator('main .button:not(.secondary)').first();
     const secondary=page.locator('main .button.secondary').first();

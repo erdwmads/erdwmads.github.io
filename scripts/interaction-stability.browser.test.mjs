@@ -17,7 +17,7 @@ try {
   for (const width of widths) for (const theme of ['space','light']) {
     const context = await browser.newContext({ viewport:{width,height:1000}, hasTouch:width<760, isMobile:width<760 });
     const page = await context.newPage();
-    await page.addInitScript(theme => {sessionStorage.setItem('mads-entry-gate-v1','done');localStorage.setItem('mads-theme',theme);}, theme);
+    await page.addInitScript(theme => {sessionStorage.setItem('mads-entry-gate-v1','done');sessionStorage.setItem('mads-cosmic-arrival-v1','done');localStorage.setItem('mads-theme',theme);}, theme);
     const routes = process.env.TEST_ROUTES?.split(',') || ([1440,390].includes(width) && !process.env.TEST_QUICK ? ['cv','research','index','paper-shelf','photography','contact','research-log','research-graduation','sample-cabinet'] : ['cv','research']);
     const errors=[];page.on('pageerror',error=>errors.push(error.message));
     for (const route of routes) {
@@ -35,7 +35,7 @@ try {
           for (let i=0;i<await cards.count();i++) {
             await cards.nth(i).hover();await page.waitForTimeout(250);
             const box=await cards.nth(i).boundingBox();await page.mouse.move(box.x+60,box.y+40);await page.waitForTimeout(100);
-            if(width>760) assert(await cards.nth(i).evaluate(el=>el.hasAttribute('data-edge-active')),'CV edge must be active during the regression check');
+            assert.equal(await cards.nth(i).evaluate(el=>el.hasAttribute('data-edge-active')),false,'Reading surfaces must not receive the action-only pointer edge');
             same(before,await geometry(targets),'CV hover');
           }
           await cards.first().screenshot({path:`.codex_tmp/stable-cv-${width}-${theme}.png`});

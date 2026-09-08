@@ -302,3 +302,23 @@ test("soft re-entry leaves one Mission Index renderer active before unlock", asy
   assert.equal(page.documentEvents.filter((type) => type === "mads:mission-log-rendered").length, 1);
   assert.match(page.missionNodes.list.innerHTML, /id="log-002"/);
 });
+
+test("progress brief uses escaped archive metadata and preserves the original record", async () => {
+  const entry = { ...firstEntries[0], latestNote: 'Observed <relief>', questionNote: 'Identity remains open', nextNote: 'Planned, not completed' };
+  const page = bootPage([createPayload([entry])]);
+  page.input.value = password;
+  await page.form.emit('submit');
+  await flush();
+  const html = page.missionNodes.list.innerHTML;
+  assert.match(html, /Recorded/);
+  assert.match(html, /Still open/);
+  assert.match(html, /Next step/);
+  assert.match(html, /Observed &lt;relief&gt;/);
+  assert.match(html, /Identity remains open/);
+  assert.match(html, /Planned, not completed/);
+  assert.ok(html.includes(entry.bodyHtml));
+  assert.doesNotMatch(html, /data-mission-compare-toggle/);
+  assert.equal(page.missionNodes.list.listenerCount('click'), 1);
+  page.window.emit('pagehide', { persisted: true });
+  assert.equal(page.content.innerHTML, page.lockedMarkup);
+});

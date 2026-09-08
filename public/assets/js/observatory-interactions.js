@@ -85,7 +85,7 @@
   const edgeLight = document.createElement('span');
   edgeLight.className = 'obs-edge-light';
   edgeLight.setAttribute('aria-hidden', 'true');
-  const edgeSelector = '.button, .paper-card, .card, .cv-edu-card, .pathway-step, .nav-log-gate, .theme-toggle, .planetary-materials button, .planetary-toolbar button, .planetary-mineral-tabs button';
+  const edgeSelector = 'a.button, button.button, a.paper-card, a.pathway-step, .nav-log-gate, .theme-toggle, .paper-filter, .planetary-materials button, .planetary-toolbar button, .planetary-mineral-tabs button';
   function clearEdge() {
     cancelAnimationFrame(edgeFrame);
     edgeFrame = 0;
@@ -97,6 +97,7 @@
   document.addEventListener('pointermove', event => {
     if (event.pointerType === 'touch' || !desktop.matches || reduced.matches || root.classList.contains('ambient-fx-disabled') || window.__madsPowerState?.lowPower) return clearEdge();
     const target = event.target.closest(edgeSelector);
+    if (target?.matches(':disabled, [aria-disabled="true"]')) return clearEdge();
     if (target !== edgeTarget) { clearEdge(); edgeTarget = target; }
     if (!target) return;
     pointer = { x: event.clientX, y: event.clientY };
@@ -397,7 +398,7 @@
       button.className = 'button secondary obs-present-launch';
       button.setAttribute('data-present-mission', '');
       button.innerHTML = `${icon('present')}<span>Present images</span>`;
-      scope.querySelector('.research-note-body').prepend(button);
+      (scope.querySelector('.mission-original-record') || scope.querySelector('.research-note-body')).prepend(button);
     }
     document.querySelectorAll('[data-present-photos]').forEach(button => {
       if (!button.querySelector('svg')) button.insertAdjacentHTML('afterbegin', icon('present'));

@@ -5,6 +5,7 @@
   }
 
   const isTouch = window.matchMedia('(hover: none), (pointer: coarse), (max-width: 760px)').matches;
+  const figureSelector = '.mission-photo-grid figure, .mission-comparison-figure';
 
   function fullSrc(img) {
     if (isTouch && img?.dataset?.mobileFullSrc) {
@@ -81,7 +82,7 @@
   }
 
   function prepare(scope = document) {
-    const figures = scope.querySelectorAll('.mission-photo-grid figure');
+    const figures = scope.querySelectorAll(figureSelector);
     if (figures.length) locked = false;
     figures.forEach((figure, index) => {
       const item = itemFromFigure(figure, index);
@@ -173,8 +174,9 @@
   function prev() { show(current - 1); }
 
   function openFromFigure(figure) {
-    const scope = figure.closest('.mission-log-entry') || document;
-    const scopedFigures = Array.from(scope.querySelectorAll('.mission-photo-grid figure'));
+    const comparison = figure.closest('[data-mission-comparison]');
+    const scope = comparison || figure.closest('.mission-log-entry') || document;
+    const scopedFigures = Array.from(scope.querySelectorAll(comparison ? '.mission-comparison-figure' : '.mission-photo-grid figure'));
     const scopedItems = scopedFigures.map((scopedFigure, idx) => itemFromFigure(scopedFigure, idx)).filter((item) => item.src);
     const initialIndex = scopedItems.findIndex((item) => item.figure === figure);
     if (!scopedItems.length || initialIndex < 0) return;
@@ -183,7 +185,7 @@
 
   document.addEventListener('click', (event) => {
     if (locked) return;
-    const figure = event.target.closest?.('.mission-photo-grid figure');
+    const figure = event.target.closest?.(figureSelector);
     if (!figure) return;
     openFromFigure(figure);
   });
@@ -198,7 +200,7 @@
     }
 
     if (event.key !== 'Enter' && event.key !== ' ') return;
-    const figure = event.target.closest?.('.mission-photo-grid figure');
+    const figure = event.target.closest?.(figureSelector);
     if (!figure) return;
     event.preventDefault();
     openFromFigure(figure);

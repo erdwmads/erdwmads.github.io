@@ -10,8 +10,8 @@ html.cosmic-arrival-active { overflow: hidden; }
 #arrival-universe, #arrival-universe canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 #cosmic-arrival .arrival-signature { position: absolute; left: 7%; bottom: 23%; width: min(480px,86%); opacity: 0; pointer-events: none; text-shadow: 0 2px 12px #040910; }
 #cosmic-arrival .arrival-signature span { font-size: 11px; font-weight: 600; color: #cfbc8e; }
-#cosmic-arrival .arrival-signature p { font-size: 28px; line-height: 1.25; font-weight: 600; margin: 12px 0 0; color: #e8eff2; }
-#cosmic-arrival .arrival-signature small { display: block; font-size: 15px; line-height: 1.65; color: #c2cfd7; margin-top: 16px; text-wrap: pretty; }
+#cosmic-arrival #arrival-question { font-size: 23px; line-height: 1.5; font-weight: 500; margin: 16px 0 0; color: #e8eff2; text-wrap: pretty; }
+#cosmic-arrival .arrival-name { font-size: 13px; line-height: 1.5; font-weight: 500; color: #c2cfd7; margin: 18px 0 0; opacity: 0; }
 #cosmic-arrival .arrival-bottom { position: absolute; bottom: max(28px,env(safe-area-inset-bottom)); left: 7%; right: 5%; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
 #cosmic-arrival .arrival-sequence { display: grid; grid-template-columns: 20px 170px; gap: 8px 12px; align-items: center; min-width: 0; font-size: 10px; font-weight: 500; color: #95a5af; }
 #cosmic-arrival .arrival-number { font-variant-numeric: tabular-nums; color: #ccb88a; }
@@ -36,9 +36,9 @@ html.cosmic-arrival-active { overflow: hidden; }
 #arrival-universe .celestial-labels span:nth-child(4) { color: #e1eaf0; }
 @media(max-width:600px) {
   #cosmic-arrival .arrival-signature { bottom: 24%; }
-  #cosmic-arrival .arrival-signature p { font-size: 23px; }
+  #cosmic-arrival #arrival-question { font-size: 17px; }
   #cosmic-arrival .arrival-signature span { font-size: 9px; }
-  #cosmic-arrival .arrival-signature small { font-size: 13px; margin-top: 12px; }
+  #cosmic-arrival .arrival-name { font-size: 12px; margin-top: 14px; }
   #cosmic-arrival .arrival-bottom { bottom: max(20px,env(safe-area-inset-bottom)); gap: 8px; }
   #cosmic-arrival .arrival-sequence { grid-template-columns: 16px 125px; gap: 8px; font-size: 9px; }
   #cosmic-arrival .arrival-label { font-size: 8px; }
