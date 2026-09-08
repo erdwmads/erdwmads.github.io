@@ -9,8 +9,8 @@
   const header = document.querySelector('.site-header');
   const fx = document.querySelector('.ambient-fx-toggle');
   const orbitMap = { home: 2, research: 3, 'paper-shelf': 5, cv: 0, photography: 7, contact: 1 };
-  let intensity = 'standard';
-  try { if (localStorage.getItem('madsFxIntensity') === 'immersive') intensity = 'immersive'; } catch {}
+  let intensity = 'immersive';
+  try { if (localStorage.getItem('madsFxIntensity') === 'standard') intensity = 'standard'; } catch {}
   root.dataset.fxIntensity = intensity;
 
   // Lucide icons (ISC): sliders-horizontal, presentation, maximize, x and chevrons.

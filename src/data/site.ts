@@ -38,7 +38,7 @@ export const contentPages = [
   { href: "contact.html", title: "Contact", key: "contact" }
 ] as const;
 
-export const footerItems = ["(c) 2026 Mads LIU Yong", "Built for GitHub Pages"] as const;
+export const footerItems = ["(c) 2026 Mads LIU Yong", "What was responsible for making diverse planets in the Solar System?"] as const;
 
 type ScriptSpec = {
   src: string;
@@ -48,14 +48,14 @@ type ScriptSpec = {
 const commonScripts: ScriptSpec[] = [
   { src: "assets/js/site-header.js", defer: true },
   { src: "assets/js/theme.js?v=20260831-stability", defer: true },
-  { src: "assets/js/ambient-space.js?v=20260901-continuity", defer: true },
+  { src: "assets/js/ambient-space.js?v=20260909-immersive", defer: true },
   { src: "assets/js/research-coordinates.js", defer: true },
   { src: "assets/js/research-scale.js?v=20260907-explorer", defer: true }
 ];
 
-const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20260906-luminous", defer: true };
+const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20260909-arrival", defer: true };
 const powerManagerScript: ScriptSpec = { src: "assets/js/power-manager.js" };
-const legacyNavigationScript: ScriptSpec = { src: "assets/js/legacy-navigation.js?v=20260906-flight", defer: true };
+const legacyNavigationScript: ScriptSpec = { src: "assets/js/legacy-navigation.js?v=20260909-modules", defer: true };
 
 const pageScripts: Record<string, ScriptSpec[]> = {
   contact: [...commonScripts, interfaceScript],
@@ -87,7 +87,7 @@ export function getPageScripts(pageKey: keyof typeof pageScripts | string, inlin
   return [
     renderScript(powerManagerScript),
     scripts.map(renderScript).join("\n"),
-    renderScript({ src: "assets/js/observatory-interactions.js?v=20260908-stable-controls", defer: true }),
+    renderScript({ src: "assets/js/observatory-interactions.js?v=20260909-immersive", defer: true }),
     renderScript({ src: "assets/js/mineral-interactions.js?v=20260907-workflow", defer: true }),
     inlineHtml,
     renderScript(legacyNavigationScript)

@@ -332,6 +332,7 @@
 /* Astromaterials Archive Entry Gate
    Plays once per browser session. */
 (() => {
+  if (document.querySelector('#cosmic-arrival')) return;
   const KEY = 'mads-entry-gate-v1';
   const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

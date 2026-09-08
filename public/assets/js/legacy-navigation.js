@@ -88,6 +88,10 @@
     scripts.forEach((script) => {
       const src = script.getAttribute("src");
       const fresh = document.createElement("script");
+      if (script.type === "module") {
+        fresh.type = "module";
+        if (src && Array.from(document.scripts).some(item => item.type === "module" && item.src === new URL(src, window.location.href).href)) return;
+      }
       if (src) {
         const normalizedSrc = src.split(/[?#]/, 1)[0];
         if (commonScripts.has(normalizedSrc)) return;

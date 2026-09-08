@@ -15,11 +15,12 @@
   function isAmbientEnabled() {
     if (prefersReducedMotion()) return false;
     if (isMobileAmbientView()) return false;
-    return window.localStorage.getItem(AMBIENT_STORAGE_KEY) === "1";
+    try { return window.localStorage.getItem(AMBIENT_STORAGE_KEY) !== "0"; }
+    catch { return true; }
   }
 
   function setAmbientEnabled(enabled) {
-    window.localStorage.setItem(AMBIENT_STORAGE_KEY, enabled ? "1" : "0");
+    try { window.localStorage.setItem(AMBIENT_STORAGE_KEY, enabled ? "1" : "0"); } catch {}
   }
 
   function emitAmbientState() {

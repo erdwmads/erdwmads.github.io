@@ -235,5 +235,5 @@ test("ambient particles keep continuous positions at animation boundaries", () =
     /\.ambient-dust,\s*\.ambient-pebble\s*\{[^}]*animation-direction:\s*alternate\s*!important/is
   );
   assert.match(legacyShell, /assets\/css\/style\.css\?v=20260908-stable-controls/);
-  assert.match(siteSource, /assets\/js\/ambient-space\.js\?v=20260901-continuity/);
+  assert.match(siteSource, /assets\/js\/ambient-space\.js\?v=20260909-immersive/);
 });

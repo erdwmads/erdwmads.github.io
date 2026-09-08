@@ -1,0 +1,32 @@
+---
+import '../styles/arrival.css';
+interface Props { home: boolean; }
+const {home}=Astro.props;
+---
+<dialog id="cosmic-arrival" data-home={String(home)} aria-label="Cosmic Mineralogy" aria-describedby="arrival-question">
+  <div id="arrival-universe" aria-hidden="true"></div>
+  <div class="arrival-signature">
+    <span>COSMIC MINERALOGY</span>
+    <p>Mads LIU Yong</p>
+    <small id="arrival-question">What was responsible for making diverse planets in the Solar System?</small>
+  </div>
+  <div class="arrival-bottom">
+    <span class="arrival-sequence" aria-hidden="true"><span class="arrival-number">01</span><span class="arrival-label">GALACTIC DUST</span><span class="arrival-track"><span></span></span></span>
+    <button id="arrival-skip" type="button" autofocus>Skip intro <span data-arrival-icon="next"></span></button>
+  </div>
+</dialog>
+<button id="arrival-replay" type="button" title="Replay entrance animation" aria-label="Replay entrance animation" hidden><span data-arrival-icon="replay"></span></button>
+<script is:inline>
+  (()=>{
+    const gate=document.querySelector('#cosmic-arrival');
+    let played=false,disabled=false;
+    try{played=sessionStorage.getItem('mads-cosmic-arrival-v1')==='done';disabled=localStorage.getItem('madsAmbientFxEnabled')==='0';}catch{}
+    if(gate.dataset.home!=='true'||location.hash||played||disabled||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    gate.showModal();gate.dataset.state='preparing';document.documentElement.classList.add('cosmic-arrival-active');
+    // A failed module must never leave the page behind a modal or a scroll lock.
+    window.cosmicArrivalFallback=setTimeout(()=>{gate.close();gate.dataset.state='complete';document.documentElement.classList.remove('cosmic-arrival-active');},11000);
+  })();
+</script>
+<script>
+  import '../scripts/arrival/entry.js';
+</script>

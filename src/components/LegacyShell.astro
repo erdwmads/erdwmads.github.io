@@ -1,5 +1,6 @@
 ---
 import { brand, footerItems, navItems, researchLogGate, siteMetadata } from "../data/site";
+import CosmicArrival from './CosmicArrival.astro';
 
 interface Props {
   title: string;
@@ -97,6 +98,7 @@ const bodyClass = `site-refined ui-page-${current}`;
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 </head>
 <body id="academic-site" class={bodyClass}>
+<CosmicArrival home={current === 'home'} />
 <header class="site-header">
   <div class="header-inner">
     <a class="brand" href={brand.homeHref}>
