@@ -82,15 +82,20 @@
   let edgeFrame = 0;
   let edgeTarget = null;
   let pointer = null;
+  const edgeLight = document.createElement('span');
+  edgeLight.className = 'obs-edge-light';
+  edgeLight.setAttribute('aria-hidden', 'true');
   const edgeSelector = '.button, .paper-card, .card, .cv-edu-card, .pathway-step, .nav-log-gate, .theme-toggle';
   function clearEdge() {
     cancelAnimationFrame(edgeFrame);
     edgeFrame = 0;
     edgeTarget?.removeAttribute('data-edge-active');
+    edgeTarget?.style.removeProperty('--edge-angle');
+    edgeLight.remove();
     edgeTarget = null;
   }
   document.addEventListener('pointermove', event => {
-    if (!desktop.matches || reduced.matches || root.classList.contains('ambient-fx-disabled') || window.__madsPowerState?.lowPower) return clearEdge();
+    if (event.pointerType === 'touch' || !desktop.matches || reduced.matches || root.classList.contains('ambient-fx-disabled') || window.__madsPowerState?.lowPower) return clearEdge();
     const target = event.target.closest(edgeSelector);
     if (target !== edgeTarget) { clearEdge(); edgeTarget = target; }
     if (!target) return;
@@ -102,10 +107,16 @@
       const box = edgeTarget.getBoundingClientRect();
       const angle = Math.atan2(pointer.y - box.top - box.height / 2, pointer.x - box.left - box.width / 2) * 180 / Math.PI + 90;
       edgeTarget.style.setProperty('--edge-angle', `${angle}deg`);
+      if (edgeLight.parentElement !== edgeTarget) edgeTarget.appendChild(edgeLight);
       edgeTarget.setAttribute('data-edge-active', '');
     });
   }, { passive: true });
   document.addEventListener('pointerout', event => { if (!event.relatedTarget) clearEdge(); });
+  document.addEventListener('scroll', clearEdge, { capture: true, passive: true });
+  document.addEventListener('visibilitychange', clearEdge);
+  window.addEventListener('blur', clearEdge);
+  window.addEventListener('pagehide', clearEdge);
+  window.addEventListener('mads:soft-nav-start', clearEdge);
   window.addEventListener('mads:fx-state', clearEdge);
   desktop.addEventListener('change', clearEdge);
   reduced.addEventListener('change', clearEdge);

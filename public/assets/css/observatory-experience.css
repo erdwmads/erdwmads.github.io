@@ -105,17 +105,17 @@ html[data-theme] body#academic-site .obs-nav-beam[hidden] { display: none; }
 
 /* Conic light only paints the border, not a spotlight over content. */
 html[data-theme] body#academic-site [data-edge-active] { position: relative; }
-html[data-theme] body#academic-site [data-edge-active]::after {
-  content: "" !important;
+html[data-theme] body#academic-site [data-edge-active] > .obs-edge-light {
   display: block !important;
   position: absolute !important;
-  inset: -1px !important;
+  inset: 0 !important;
+  z-index: 2;
   width: auto !important;
   height: auto !important;
   border: 0 !important;
   border-radius: inherit !important;
   padding: 1px;
-  background: conic-gradient(from var(--edge-angle, 0deg), var(--obs-cyan), transparent 75deg 280deg, var(--obs-cyan)) !important;
+  background: conic-gradient(from var(--edge-angle, 0deg), var(--obs-cyan), transparent 75deg 125deg, var(--obs-accent) 180deg, transparent 235deg 285deg, var(--obs-cyan)) !important;
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -211,6 +211,14 @@ html[data-theme] body#academic-site main .paper-filter[aria-pressed="true"]:hove
 html[data-theme] body#academic-site .obs-fx-settings:is(:hover, :focus-visible) { border-color: var(--obs-cyan); }
 html[data-theme] body#academic-site .obs-fx-settings[aria-expanded="true"] { border-color: var(--obs-accent); }
 
+/* Keep spectra, annotations and scale bars visible in the scientific archive. */
+html[data-theme] body#academic-site .mission-log-entry .mission-photo-grid img {
+  object-fit: contain !important;
+}
+html[data-theme="light"] body#academic-site .mission-log-entry :is(.research-note-date, .log-tags span) {
+  color: #70521c !important;
+}
+
 /* The navigator is built only from the decrypted in-memory archive. */
 html[data-theme] body#academic-site #mission-index [data-mission-index-list] {
   display: flex !important;
@@ -220,8 +228,13 @@ html[data-theme] body#academic-site #mission-index [data-mission-index-list] {
   justify-content: flex-start !important;
   gap: 12px !important;
   padding: 18px 6px 16px !important;
-  overflow-x: auto;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  touch-action: pan-x pan-y pinch-zoom;
   overscroll-behavior-x: contain;
+  scrollbar-width: thin;
   scrollbar-color: var(--obs-accent) var(--obs-paper);
 }
 html[data-theme] body#academic-site #mission-index .compact-jump-card {
