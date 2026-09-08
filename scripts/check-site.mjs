@@ -80,8 +80,8 @@ const missionThumbCount = collectFiles(missionThumbDir).filter((file) => file.en
 if (photoThumbCount !== 21) {
   fail(`Photography: expected 21 WebP thumbnails, found ${photoThumbCount}`);
 }
-if (missionThumbCount !== 55) {
-  fail(`Mission Log: expected 55 WebP thumbnails, found ${missionThumbCount}`);
+if (missionThumbCount !== 62) {
+  fail(`Mission Log: expected 62 WebP thumbnails, found ${missionThumbCount}`);
 }
 
 const requiredEncryptedMissionPayloadKeys = ["cipher", "ciphertext", "iterations", "iv", "kdf", "salt", "version"];
