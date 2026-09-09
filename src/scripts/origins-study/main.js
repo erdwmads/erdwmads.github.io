@@ -1,3 +1,5 @@
+import {studyLocation} from './navigation.js';
+import {syncOcclusionCamera} from './occlusion.js';
 import {createIcons, BookOpen, ZoomIn, ZoomOut, RotateCcw, Pause, Play, X} from 'lucide';
 const lucide={createIcons:()=>createIcons({icons:{BookOpen,ZoomIn,ZoomOut,RotateCcw,Pause,Play,X}})};
 import * as T from 'three';
@@ -5,6 +7,7 @@ import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
 import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';
 import {SSAOPass} from 'three/addons/postprocessing/SSAOPass.js';
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
 import {nebula,accretion,alteration,inheritance} from './scenes.js';
 
@@ -14,10 +17,13 @@ const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:false,powerPrefe
 renderer.info.autoReset=false;
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setClearColor(0x080d10);renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;renderer.localClippingEnabled=true;
 const world=new T.Scene();world.background=new T.Color(0x080d10);
+const environmentScene=new RoomEnvironment(),pmrem=new T.PMREMGenerator(renderer),environment=pmrem.fromScene(environmentScene,.08);world.environment=environment.texture;world.environmentIntensity=.22;environmentScene.dispose();pmrem.dispose();
 const camera=new T.PerspectiveCamera(42,1,.04,100);
 const controls=new OrbitControls(camera,canvas);controls.enableDamping=true;controls.dampingFactor=.09;controls.enablePan=false;controls.minDistance=3;controls.maxDistance=45;controls.maxPolarAngle=Math.PI*.88;
-world.add(new T.HemisphereLight(0x9eb3bf,0x282623,.6));
+const ambient=new T.HemisphereLight(0x9eb3bf,0x282623,.6);world.add(ambient);
 const key=new T.DirectionalLight(0xffe9cf,2.7);key.position.set(3,5,6);world.add(key);
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
+key.castShadow=true;key.shadow.mapSize.setScalar(viewport.clientWidth>760?2048:1024);key.shadow.camera.left=-6;key.shadow.camera.right=6;key.shadow.camera.top=6;key.shadow.camera.bottom=-6;key.shadow.camera.near=.5;key.shadow.camera.far=30;key.shadow.normalBias=.025;key.shadow.bias=-.0001;
 const rim=new T.DirectionalLight(0x9abfcd,2.1);rim.position.set(-4,2,-3);world.add(rim);
 const fill=new T.DirectionalLight(0xbcc3d1,.3);fill.position.set(-3,-1,5);world.add(fill);
 const composer=new EffectComposer(renderer);composer.addPass(new RenderPass(world,camera));
@@ -46,7 +52,7 @@ function showStage(index,initial=.05){
   const data=descriptions[index];for(const key of['eyebrow','title','description','scale','environment'])$('#'+key).textContent=data[key];
   document.querySelectorAll('[data-stage]').forEach(b=>{if(Number(b.dataset.stage)===index)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current');});
   $('#legend').innerHTML=data.legend.map(([color,label])=>`<span><i style="--swatch:${color}"></i>${label}</span>`).join('');
-  ao.enabled=index!==0 && viewport.clientWidth>760;resetCamera();sync();
+  ao.enabled=index!==0 && viewport.clientWidth>760;key.intensity=index===0?2.7:3.6;rim.intensity=index===0?2.1:1.1;fill.intensity=index===0?.3:.24;ambient.intensity=index===0?.6:.36;world.environmentIntensity=index===0?.22:.14;resetCamera();sync();
 }
 function sync(){
   dirty=true;
@@ -68,14 +74,14 @@ document.addEventListener('visibilitychange',()=>last=performance.now());
 canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();setPlaying(false);$('#loading').hidden=false;$('#loading').textContent='The graphics context was interrupted. Reload this study to continue.';});
 // Build once. Scrubbing reuses geometry and deterministic transforms in every chapter.
 try{
-  for(const build of[nebula,accretion,alteration,inheritance]){await new Promise(resolve=>requestAnimationFrame(resolve));const s=build();scenes.push(s);world.add(s.group);s.group.visible=false;}
+  for(const build of[nebula,accretion,alteration,inheritance]){await new Promise(resolve=>requestAnimationFrame(resolve));const s=build();s.group.traverse(node=>{if(node.isMesh&&node.material?.isMeshStandardMaterial&&!node.material.transparent){node.castShadow=node.material.side!==T.BackSide;node.receiveShadow=node.material.side!==T.BackSide;}});scenes.push(s);world.add(s.group);s.group.visible=false;}
   resize();scenes.forEach(s=>s.group.visible=true);await renderer.compileAsync(world,camera);
-  showStage(0,.08);setPlaying(playing);$('#loading').hidden=true;
+  const initial=studyLocation(location.hash);showStage(initial.stage,initial.progress);setPlaying(initial.paused?false:playing);$('#loading').hidden=true;
   document.querySelectorAll('button,input').forEach(control=>control.disabled=false);
   new ResizeObserver(resize).observe(viewport);
   window.study={select:showStage,setProgress(t){progress=t;setPlaying(false);sync();},setPhase,get state(){return{stage,progress,playing,phase,camera:camera.position.toArray(),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles};}};
   function frame(now){requestAnimationFrame(frame);const dt=Math.min((now-last)/1000,.06);last=now;if(document.hidden)return;
     if(playing){if(progress<1){progress=Math.min(1,progress+dt/[32,42,38,40][stage]);sync();}else{hold+=dt;if(hold>2)setPlaying(false);}}
-    controls.update();if(dirty){renderer.info.reset();composer.render();dirty=false;}
+    controls.update();if(dirty){renderer.info.reset();syncOcclusionCamera(ao,camera);composer.render();dirty=false;}
   }requestAnimationFrame(frame);
 }catch(error){console.error(error);$('#loading').textContent='This preview could not initialize its 3D scene.';}

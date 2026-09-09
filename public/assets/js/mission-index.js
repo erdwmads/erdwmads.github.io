@@ -187,12 +187,16 @@
         data-log-question-note="${escapeAttr(entry.questionNote)}"
         data-log-next-note="${escapeAttr(entry.nextNote)}"
       >
-        <div class="research-note-date">${escapeHtml(entry.label)}</div>
         <div class="research-note-body">
-          <div class="mission-progress-heading"><span>RECORD BRIEF</span><time>${escapeHtml(normaliseDate(entry.date || entry.isoDate))}</time></div>
+          <header class="mission-record-header">
+            <div class="mission-record-meta"><span class="research-note-date">${escapeHtml(entry.label)}</span><time>${escapeHtml(normaliseDate(entry.date || entry.isoDate))}</time></div>
+            <div class="mission-record-actions" role="group" aria-label="Record tools">
+              ${missionEntries.length > 1 ? '<button type="button" class="button secondary mission-compare-toggle" data-mission-compare-toggle aria-expanded="false" aria-controls="mission-comparison">Compare records</button>' : ''}
+            </div>
+          </header>
+          <div class="mission-progress-heading"><span>RECORD BRIEF</span></div>
           ${renderProgress(entry)}
-          ${missionEntries.length > 1 ? `<button type="button" class="button secondary mission-compare-toggle" data-mission-compare-toggle aria-expanded="false" aria-controls="mission-comparison">Compare records</button>
-            <div id="mission-comparison" data-mission-comparison hidden></div>` : ''}
+          ${missionEntries.length > 1 ? '<div id="mission-comparison" data-mission-comparison hidden></div>' : ''}
           <div class="mission-original-record">${entry.bodyHtml || ''}</div>
         </div>
       </article>

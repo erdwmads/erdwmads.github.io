@@ -398,7 +398,7 @@
       button.className = 'button secondary obs-present-launch';
       button.setAttribute('data-present-mission', '');
       button.innerHTML = `${icon('present')}<span>Present images</span>`;
-      (scope.querySelector('.mission-original-record') || scope.querySelector('.research-note-body')).prepend(button);
+      (scope.querySelector('.mission-record-actions') || scope.querySelector('.research-note-body')).prepend(button);
     }
     document.querySelectorAll('[data-present-photos]').forEach(button => {
       if (!button.querySelector('svg')) button.insertAdjacentHTML('afterbegin', icon('present'));

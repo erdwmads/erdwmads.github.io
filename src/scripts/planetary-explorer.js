@@ -1,10 +1,8 @@
 import { createElement, RotateCcw, ZoomIn, ZoomOut, Hand, Play, Pause, Clock3, Link, Route, ArrowLeft, ArrowRight, X } from 'lucide';
 import { mineralModels } from './mineral-guide.js';
 import { initResearchQuestions } from './research-questions.js';
-import { encodeObservation, decodeObservation } from './planetary-view-link.js';
+import { encodeObservation, decodeObservation, legacyOriginsDestination } from './planetary-view-link.js';
 import { samplePhotos } from './planetary-samples.js';
-import { originStage, originStages, originBranch,originAlterationSteps,originAlterationIndex,originHasSpecimen } from './origins-content.js';
-import { initOriginsControls } from './origins-controls.js';
 
 const materials = {
   bennu: { name: 'Bennu', mission: 'OSIRIS-REx', size: 'About 492 m', source: 'https://science.nasa.gov/resource/bennu-3d-model/', photo: '/assets/img/research-scale/bennu-whole.png', shape: 'A small, top-shaped asteroid with an equatorial bulge and a rough, boulder-rich surface.', mineral: 'Returned Bennu material records water-rock interaction. Published analyses describe hydrated silicates, carbonates and other phases; the same-looking grain need not be the same mineral.', citation: 'https://doi.org/10.1111/maps.14227' },
@@ -16,12 +14,14 @@ let cleanup = () => {};
 function init() {
   const root = document.querySelector('[data-planetary-explorer]');
   if (!root || root.dataset.initialized) return;
+  const destination=legacyOriginsDestination(location.hash);
+  if(destination){location.replace(destination);return;}
   cleanup();
   root.dataset.initialized = 'true';
   const abort = new AbortController();
   const { signal } = abort;
   const el = name => root.querySelector(`[data-${name}]`);
-  const defaults = { view: 'orbit', material: 'bennu', inspected: 'bennu', scope: 'inner', angle: 'plan', compare: false, wireframe: false, mineral: 'carbonate', separated: false, day: 0, originProgress: .125, originCutaway: .85 };
+  const defaults = { view: 'orbit', material: 'bennu', inspected: 'bennu', scope: 'inner', angle: 'plan', compare: false, wireframe: false, mineral: 'carbonate', separated: false, day: 0 };
   const state = {...defaults};
   let pendingObservation=decodeObservation(location.hash),restoreVersion=0,syncingMaterial=false,lastHash=location.hash;
   let renderVersion=0,rendering=false,restoring=false,shareVersion=0;
@@ -31,16 +31,6 @@ function init() {
   const dayMs = 86400000;
   const lastDay = () => Number(el('timeline').max)/24;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const origins=initOriginsControls(root,{signal,state,onChange:(manual,stageChanged)=>{
-    if(manual)interrupt(false);else clearShare();
-    viewer?.setOrigins(state.originProgress,state.originCutaway);
-    if(manual)origins.sync();
-    if(stageChanged)describe();
-  },onInspect:()=>{interrupt(false);viewer?.inspectOrigin();},onEvidence:view=>{
-    interrupt();state.view=view;
-    if(view==='minerals')state.mineral='carbonate';
-    sync();root.querySelector(`[data-view="${view}"]`).focus({preventScroll:true});
-  }});
   function touchMode(enabled) {
     const button=root.querySelector('[data-action="interact"]');
     button.setAttribute('aria-pressed',String(enabled));
@@ -108,7 +98,6 @@ function init() {
     if (typeof event?.detail?.enabled === 'boolean') fxEnabled = event.detail.enabled;
     const enabled = fxEnabled && !reduced.matches && !window.__madsPowerState?.lowPower;
     root.dataset.focusFx = enabled ? 'on' : 'off';
-    origins.setMotionAllowed(enabled);
     if(!enabled)cancelJourney(false);
     viewer?.setFx(enabled);
   }
@@ -178,21 +167,10 @@ function init() {
     root.dataset.focus = state.view === 'minerals' ? state.mineral : state.view === 'orbit' ? state.inspected : state.material;
     el('object-title').textContent = m.name;
     el('source').href = state.view === 'minerals' ? m.citation : m.source;
-    el('source').textContent=state.view==='origins'?'Scientific context':'Data source';
+    el('source').textContent='Data source';
     el('epoch').hidden = state.view !== 'orbit';
     el('mindat').hidden = state.view !== 'minerals' || !mineralModels[state.mineral].mindat;
-    if (state.view === 'origins') {
-      const phase=originStage(state.originProgress),stage=originStages[phase],branch=originBranch(state.material),moment=originAlterationSteps[originAlterationIndex(state.originProgress)],specimen=originHasSpecimen(state.material,state.originProgress);
-      el('object-title').textContent=specimen?'Orgueil: the observed specimen':phase===3?branch.title:phase===2?moment.title:stage.title;
-      el('evidence').textContent=specimen?'04 / Observational evidence':stage.subtitle;
-      el('description').textContent=specimen?'This is the Smithsonian Orgueil specimen USNM 388. The preceding fragment illustrates preservation of a mineral record; it does not reconstruct this specimen or identify its parent body.':phase===3?branch.description:phase===2?moment.description:stage.description;
-      facts(specimen?[['Collection','Smithsonian, USNM 388'],['Evidence type','Specimen photograph']]:[['Process',stage.process],['Preserved record',stage.record]]);
-      el('interpretation').textContent=phase===2?'Chemically primitive does not mean mineralogically unchanged. Porosity, fluid paths and carbonate forms shown here are illustrative.':'Conceptual evolution, not a dated reconstruction. The observed specimen and public asteroid meshes are separate evidence.';
-      el('scale-note').textContent=specimen?'Observed specimen · original proportions':'Conceptual geometry · not to scale';
-      el('source').href=specimen?materials.orgueil.source:phase===3?branch.source:stage.source;
-      if(specimen)el('source').textContent='Specimen record';
-      el('boundary').textContent='Accretion, cutaway and fragmentation are process illustrations, not measured geometry or a physical simulation. Orgueil has no identified parent body here; Bennu and Ryugu are independent comparisons, not its proposed parents.';
-    } else if (state.view === 'orbit') {
+    if (state.view === 'orbit') {
       el('evidence').textContent = 'JPL ephemeris · selected UTC time';
       el('scale-note').textContent = 'Heliocentric · distances in AU';
       el('source').href = 'https://ssd.jpl.nasa.gov/horizons/';
@@ -246,7 +224,6 @@ function init() {
   async function sync() {
     const ticket=++renderVersion;
     rendering=true;shareUI();
-    if(root.dataset.mode!==state.view || root.dataset.activeMaterial!==state.material)origins.pause();
     if(root.dataset.mode!==state.view)touchMode(false);
     root.dataset.mode = state.view;
     root.dataset.activeMaterial = state.material;
@@ -257,7 +234,7 @@ function init() {
     root.querySelector('#planetary-panel').setAttribute('aria-labelledby', `planetary-${state.view}`);
     root.querySelectorAll('[data-material]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.material === state.material)));
     root.querySelectorAll('[data-mineral]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mineral === state.mineral)));
-    const renderable = state.view==='origins' || state.view==='orbit' || state.view==='minerals' || state.view==='shape' && state.material!=='orgueil';
+    const renderable = state.view==='orbit' || state.view==='minerals' || state.view==='shape' && state.material!=='orgueil';
     if (root.dataset.renderState === 'error') el('fallback').src = materials[state.material].photo;
     el('stage').hidden = !renderable;
     el('ci-figure').hidden = state.view !== 'shape' || state.material !== 'orgueil';
@@ -277,16 +254,13 @@ function init() {
     for(const action of ['compare','wireframe']) root.querySelector(`[data-action="${action}"]`).setAttribute('aria-pressed',String(state[action]));
     describe();
     journeyUI();
-    root.querySelector('.planetary-journey').hidden=state.view==='origins';
-    origins.sync();
     if(!renderable)viewer?.cancelPending();
     const renderRequest = viewer && renderable ? viewer.show(state) : Promise.resolve(true);
     viewer?.setVisible(visible && renderable && !document.hidden);
     scheduleClock();
     const ready=await renderRequest;
     if(ticket===renderVersion && !signal.aborted) {
-      if(ready&&state.view==='origins')viewer?.setOrigins(state.originProgress,state.originCutaway);
-      rendering=false;shareUI();origins.sync();
+      rendering=false;shareUI();
     }
     return ready;
   }
@@ -296,7 +270,6 @@ function init() {
     finally {syncingMaterial=false;}
   }
   async function restoreObservation(saved) {
-    origins.pause();
     cancelJourney();
     clearShare();
     const ticket=++restoreVersion;
@@ -316,7 +289,6 @@ function init() {
   }
   async function shareObservation() {
     if(el('share').disabled)return;
-    origins.pause();
     const ticket=++shareVersion;
     const snapshot={...state};
     if(!el('stage').hidden && viewer)snapshot.camera=viewer.cameraState();
@@ -342,7 +314,6 @@ function init() {
     if (signal.aborted || error?.name === 'AbortError') return;
     playing = false; clockUI(); scheduleClock();
     root.dataset.renderState = 'error';
-    origins.pause();
     shareUI();
     el('stage').querySelector('canvas')?.style.setProperty('visibility','hidden');
     el('labels').hidden = true;
@@ -376,7 +347,7 @@ function init() {
         interrupt(Boolean(materials[id] && id!==state.material));
         if (materials[id]) selectMaterial(id);
         else { state.inspected = id; describe(); viewer.highlight(id); }
-      }, onFeature: feature => { interrupt(false);if(feature==='origin-carbonate'){origins.pause();viewer?.inspectOrigin();origins.sync();return;}state.feature = feature; describe(); }, onError: failure, onReady:()=>origins.sync() });
+      }, onFeature: feature => { interrupt(false);state.feature = feature; describe(); }, onError: failure });
       sync();
       syncFx();
       el('time-controls').disabled = false;
@@ -432,7 +403,6 @@ function init() {
     if (playing && event.target.matches('[data-date],[data-timeline]')) { playing=false; live=false; timeUI(); describe(); clockUI(); scheduleClock(); }
   }, {signal});
   root.addEventListener('change', event => {
-    if(event.target.closest('[data-origin-controls],[data-origin-inspection]'))return;
     interrupt(false);
     if (event.target.matches('[data-date]')) { setDay((Date.parse(`${event.target.value}Z`)-Date.parse(timeline.start))/dayMs); return; }
     if (event.target.matches('[data-speed]')) { live=false; clockUI(); return; }
@@ -454,14 +424,16 @@ function init() {
       event.preventDefault();
       if(state.view!==tabs[index].dataset.view) {interrupt();state.view = tabs[index].dataset.view;sync();}
       tabs[index].focus();
-    } else if (event.target === el('stage') && root.dataset.originSpecimen!=='true' && /^Arrow/.test(event.key)) { event.preventDefault(); interrupt(false);viewer?.rotate(event.key); }
-    else if (event.key === 'Escape') { interrupt();touchMode(false);origins.pause(); }
+    } else if (event.target === el('stage') && /^Arrow/.test(event.key)) { event.preventDefault(); interrupt(false);viewer?.rotate(event.key); }
+    else if (event.key === 'Escape') { interrupt();touchMode(false); }
   }, { signal });
   window.addEventListener('mads:material-selected', e => { if (!pendingObservation && !syncingMaterial && e.detail?.origin !== 'explorer') {interrupt();selectMaterial(e.detail?.material, false);} }, { signal });
   function restoreHash() {
     if(lastHash===location.hash || !location.pathname.endsWith('/research.html'))return;
     lastHash=location.hash;
     restoreVersion++;pendingObservation=null;restoring=false;clearShare();shareUI();
+    const destination=legacyOriginsDestination(location.hash);
+    if(destination){location.replace(destination);return;}
     const saved=decodeObservation(location.hash);
     if(!saved)return;
     if(viewer)restoreObservation(saved);else {pendingObservation=saved;start();}
@@ -470,14 +442,13 @@ function init() {
   window.addEventListener('popstate',restoreHash,{signal});
   const intersection = new IntersectionObserver(entries => {
     visible = entries[0].isIntersecting;
-    origins.setVisible(visible&&!document.hidden);
     if(!visible)cancelJourney(false);
     if (visible) start();
     viewer?.setVisible(visible && !el('stage').hidden && !document.hidden);
     scheduleClock();
   });
   intersection.observe(el('visual') || root.querySelector('.planetary-visual'));
-  document.addEventListener('visibilitychange', () => { if(document.hidden)cancelJourney(false);origins.setVisible(visible&&!document.hidden);viewer?.setVisible(visible && !el('stage').hidden && !document.hidden); scheduleClock(); }, { signal });
+  document.addEventListener('visibilitychange', () => { if(document.hidden)cancelJourney(false);viewer?.setVisible(visible && !el('stage').hidden && !document.hidden); scheduleClock(); }, { signal });
   const theme = new MutationObserver(() => {if(!rendering && !restoring)viewer?.theme();});
   theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   cleanup = () => { cancelJourney();abort.abort(); cancelAnimationFrame(clockFrame); intersection.disconnect(); theme.disconnect(); viewer?.dispose(); delete root.dataset.initialized; };

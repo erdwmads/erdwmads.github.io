@@ -11,11 +11,11 @@ export function createOriginVolume(material,random,light,originVolume) {
   const group=new THREE.Group();group.name='origin-pieces';
   const noise=new ImprovedNoise(),surface=createOriginSurface(),inside=createOriginSurface(true);
   const materials=[
-    new THREE.MeshStandardMaterial({...surface,color:0xb8bebd,vertexColors:true}),
-    new THREE.MeshStandardMaterial({...inside,color:0xc4c0ad,vertexColors:true,bumpScale:.065}),
+    new THREE.MeshStandardMaterial({...surface,color:0x939d9c,vertexColors:true}),
+    new THREE.MeshStandardMaterial({...inside,color:0xa5aa99,vertexColors:true,bumpScale:.065}),
     new THREE.MeshStandardMaterial({...inside,color:0x858c80,vertexColors:true,bumpScale:.04})
   ];
-  const freshInner=new THREE.Color(0xc4c0ad),alteredInner=new THREE.Color(0xaeb8a7),freshPore=new THREE.Color(0x858c80),alteredPore=new THREE.Color(0x78877c);
+  const freshInner=new THREE.Color(0xa5aa99),alteredInner=new THREE.Color(0x8e9d8f),freshPore=new THREE.Color(0x858c80),alteredPore=new THREE.Color(0x78877c);
   const inclusionGeometry=new THREE.IcosahedronGeometry(1,1),inclusionMaterial=new THREE.MeshStandardMaterial({color:0xb0b5aa,roughness:.9});
   const placer=new THREE.Object3D(),up=new THREE.Vector3(0,0,1);
   const pieces=originVolume.chunks.map((data,i)=>{
@@ -81,7 +81,6 @@ export function createOriginVolume(material,random,light,originVolume) {
     });
     crystal.userData.size=i===0?.16:.09;record.add(crystal);
   }
-  const water=new THREE.Group();water.name='origin-fluid';survivor.add(water);water.position.copy(survivor.userData.rest).negate();
   const paths=[
     [[-.52,-.64,.10],[-.36,-.39,.13],[-.22,-.18,.01],[-.08,.0,-.08],[.04,.16,-.06],[.26,.36,.05],[.47,.65,.14]],
     [[-.24,-.2,.01],[-.45,-.11,.05],[-.56,.14,.11]],
@@ -91,8 +90,8 @@ export function createOriginVolume(material,random,light,originVolume) {
   group.updateMatrixWorld(true);
   const exposed=pieces.slice(0,8).map(piece=>piece.children[0]),ray=new THREE.Raycaster();
   const project=point=>{ray.set(new THREE.Vector3(point.x,point.y,3),new THREE.Vector3(0,0,-1));return ray.intersectObjects(exposed,false)[0];};
-  const flows=paths.map(path=>{
-    // Project the illustration onto the exposed rock, instead of drawing free-floating pipes.
+  const pocketGuides=paths.map(path=>{
+    // These unrendered guides distribute wall-bound wetting patches.
     const guide=new THREE.CatmullRomCurve3(path.map(p=>new THREE.Vector3(...p)),false,'centripetal');
     const points=guide.getPoints(144).map(point=>{
       const hit=project(point);
@@ -100,13 +99,10 @@ export function createOriginVolume(material,random,light,originVolume) {
     }).filter(Boolean);
     const curve=new THREE.CurvePath();
     for(let i=1;i<points.length;i++)curve.add(new THREE.LineCurve3(points[i-1],points[i]));
-    const fluid=new THREE.Mesh(new THREE.TubeGeometry(curve,288,.004,8,false),new THREE.MeshPhysicalMaterial({color:light?0x287c8f:0x438998,roughness:.3,clearcoat:.8,transparent:true,opacity:.5,depthWrite:false}));
-    water.add(fluid);
-    const beads=new THREE.InstancedMesh(new THREE.SphereGeometry(.0045,8,6),new THREE.MeshBasicMaterial({color:0xc6e8e7}),9);
-    beads.frustumCulled=false;water.add(beads);return {curve,fluid,beads};
+    return curve;
   });
-  const aqueous=createAqueousPockets(flows.map(flow=>flow.curve),project,random,light);survivor.add(aqueous.group);aqueous.group.position.copy(survivor.userData.rest).negate();
-  const helper=new THREE.Object3D(),point=new THREE.Vector3();
+  const aqueous=createAqueousPockets(pocketGuides,project,random,light);survivor.add(aqueous.group);aqueous.group.position.copy(survivor.userData.rest).negate();
+  const point=new THREE.Vector3();
   function update(phase,t,depth) {
     const release=phase===3?smooth(t/.55):0,ending=phase===3?smooth((t-.48)/.52):0;
     const interior=depth>0;
@@ -148,19 +144,7 @@ export function createOriginVolume(material,random,light,originVolume) {
     if(phase<2){materials[1].color.setHex(0x8c9694);materials[2].color.setHex(0x666f6c);}
     record.visible=phase>=2&&(phase===3||interior);
     record.children.forEach((crystal,i)=>crystal.scale.setScalar(crystal.userData.size*alterationState(Math.max(0,alteration-i*.025)).carbonate));
-    water.visible=phase===2&&interior&&chemistry.wetting>0;
-    flows.forEach(({curve,fluid,beads},i)=>{
-      const front=THREE.MathUtils.clamp(chemistry.wetting-i*.035,0,1);
-      const markers=1-smooth((alteration-.75)/.25);
-      fluid.geometry.setDrawRange(0,Math.floor(front*288)*48);
-      fluid.material.opacity=.5*(1-.65*chemistry.reaction)*markers;
-      for(let j=0;j<beads.count;j++) {
-        const f=(alteration*1.4+j/beads.count)%1;
-        helper.position.copy(curve.getPoint(f));
-        helper.scale.setScalar(f<front?Math.sin(f*Math.PI)*markers:0);helper.updateMatrix();beads.setMatrixAt(j,helper.matrix);
-      }
-      beads.instanceMatrix.needsUpdate=true;
-    });
+
   }
   return {group,update,inspectionTarget:()=>record.children[0]};
 }

@@ -5,8 +5,8 @@ export { mineralModels } from './mineral-guide.js';
 export function createMineralGroup(id, separated) {
   const group = new THREE.Group();
   function mesh(geometry, color, metalness = 0) {
-    const item = new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({color,metalness,roughness:metalness?0.32:0.48,flatShading:true}));
-    const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geometry,25),new THREE.LineBasicMaterial({color:0x425461,transparent:true,opacity:0.35}));
+    const item = new THREE.Mesh(geometry,new THREE.MeshPhysicalMaterial({color,metalness,roughness:metalness?0.28:0.3,clearcoat:metalness?.05:.23,clearcoatRoughness:.32,flatShading:true}));
+    const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geometry,25),new THREE.LineBasicMaterial({color:0x425461,transparent:true,opacity:0.12}));
     item.add(edges); group.add(item); return item;
   }
   if (id === 'carbonate') {
@@ -15,7 +15,7 @@ export function createMineralGroup(id, separated) {
     const basis = [new THREE.Vector3(1,0,0),new THREE.Vector3(c,s,0),new THREE.Vector3(c,(c-c*c)/s,Math.sqrt(1-c*c-((c-c*c)/s)**2))];
     for (let x=0;x<2;x++) for (let y=0;y<2;y++) for (let z=0;z<2;z++) {
       const points = [];
-      for (const a of [-0.5,0.5]) for (const b of [-0.5,0.5]) for (const d of [-0.5,0.5]) points.push(basis[0].clone().multiplyScalar(a).addScaledVector(basis[1],b).addScaledVector(basis[2],d).multiplyScalar(0.57));
+      for (const a of [-0.5,0.5]) for (const b of [-0.5,0.5]) for (const d of [-0.5,0.5]) for(let edge=0;edge<3;edge++) { const v=[a,b,d].map((n,i)=>n*(i===edge?1:.97)); points.push(basis[0].clone().multiplyScalar(v[0]).addScaledVector(basis[1],v[1]).addScaledVector(basis[2],v[2]).multiplyScalar(0.57)); }
       const block = mesh(new ConvexGeometry(points),0xe9c9c9);
       block.position.copy(basis[0]).multiplyScalar(x-0.5).addScaledVector(basis[1],y-0.5).addScaledVector(basis[2],z-0.5).multiplyScalar(separated?0.86:0.574);
     }

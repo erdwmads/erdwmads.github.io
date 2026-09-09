@@ -485,3 +485,12 @@ html[data-theme]:is(.mads-page-hidden, .mads-power-idle, .mads-power-low, .missi
   html[data-theme] body#academic-site .pathway-step p { font-size: 12px !important; }
   html[data-theme] body#academic-site .footer-inner { padding: 0 20px; flex-wrap: wrap; gap: 8px; }
 }
+
+@media (max-width: 600px) {
+  html[data-theme] body#academic-site .pathway-grid { grid-template-columns: minmax(0, 1fr) !important; }
+}
+@media (max-width: 400px) {
+  html[data-theme] body#academic-site .home-card-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  html[data-theme] body#academic-site.ui-page-home .hero .button-row { grid-template-columns: minmax(0, 1fr) !important; flex-direction: column !important; }
+  html[data-theme] body#academic-site.ui-page-home .hero .button-row .button { width: 100% !important; }
+}

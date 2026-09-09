@@ -35,7 +35,7 @@ html[data-theme] body#academic-site main :is(h4, h5, h6) {
 html[data-theme] body#academic-site :is(button, input, select, textarea, .button, .nav a, .nav-log-gate, .eyebrow, .section-label, .pill, .status-badge) {
   font-family: var(--type-reading) !important;
 }
-html[data-theme] body#academic-site :is(.button, .paper-filter, .nav a, .theme-toggle, .nav-log-gate) {
+html[data-theme] body#academic-site :is(.button, .paper-filter, .nav a, .theme-toggle, .nav-log-gate, .pill, .badge, .status-badge) {
   font-weight: 600 !important;
 }
 html[data-theme] body#academic-site :is(.button, .theme-toggle, .nav-log-gate) strong { font-weight: inherit !important; }
@@ -45,3 +45,11 @@ html[data-theme] body#academic-site :is(.research-note-date, .mission-sol-chip, 
   font-variant-numeric: tabular-nums;
 }
 html[data-theme] body#academic-site main .button svg { flex-shrink: 0; }
+
+/* Reserve equal space for both theme labels so the navigation stays anchored. */
+@media (min-width: 761px) {
+  html[data-theme] body#academic-site .header-actions > .theme-toggle {
+    width: 112px !important;
+    min-width: 112px !important;
+  }
+}

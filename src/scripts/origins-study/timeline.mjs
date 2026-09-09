@@ -12,7 +12,7 @@ export const IMPACTS = [
 export function collision(t, e) {
   const approach = smooth((t-e.time+.17)/.17);
   const retained = smooth((t-e.time)/.10);
-  return {distance:e.contact+(1-approach)*6.5-retained*e.radius*.35,
+  return {distance:e.contact+(1-approach)*6.5-retained*e.radius*.04,
     retained, approach, impact:Math.exp(-Math.max(0,t-e.time)*60)*(t>=e.time?1:0)};
 }
 export function bodyVolume(t) {

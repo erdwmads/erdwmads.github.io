@@ -126,3 +126,11 @@ export function decodeObservation(hash) {
     return null;
   }
 }
+
+// Translate retired embedded Origins links to the one maintained study.
+export function legacyOriginsDestination(hash) {
+  const saved=decodeObservation(hash);
+  if(saved?.view!=='origins')return null;
+  const position=(saved.originProgress??.125)*4,stage=Math.min(3,Math.floor(position));
+  return '/origins-study.html#'+new URLSearchParams({stage:String(stage),progress:String(Number((position-stage).toFixed(6)))});
+}

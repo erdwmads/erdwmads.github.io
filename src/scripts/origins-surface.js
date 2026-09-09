@@ -17,10 +17,11 @@ export function createOriginSurface(section=false) {
     const coarse=noise.noise(u*8,v*8,2),fine=noise.noise(u*95,v*95,7);
     const pore=Math.max(0,noise.noise(u*19,v*19,4)-.16);
     const fleck=Math.max(0,noise.noise(u*150,v*150,12)-.32);
-    const value=THREE.MathUtils.clamp((section?132:152)+coarse*30+fine*30-pore*110+fleck*95,36,220);
+    const value=THREE.MathUtils.clamp((section?119:135)+coarse*43+fine*24-pore*135+fleck*60,36,220);
     const relief=section?sectionRelief(u,v):coarse*.025+fine*.013-pore*.055;
     const i=(y*size+x)*4;
-    albedo[i]=value;albedo[i+1]=value*.99;albedo[i+2]=value*.95;albedo[i+3]=255;
+    const tint=noise.noise(u*3,v*3,11);
+    albedo[i]=value*(.97+tint*.07);albedo[i+1]=value;albedo[i+2]=value*(.99-tint*.06);albedo[i+3]=255;
     height[i]=height[i+1]=height[i+2]=THREE.MathUtils.clamp(145+relief*1700,0,255);height[i+3]=255;
   }
   function texture(data,colorSpace) {
@@ -29,7 +30,7 @@ export function createOriginSurface(section=false) {
     map.magFilter=THREE.LinearFilter;map.minFilter=THREE.LinearMipmapLinearFilter;
     map.generateMipmaps=true;map.needsUpdate=true;return map;
   }
-  return {map:texture(albedo,THREE.SRGBColorSpace),bumpMap:texture(height,THREE.NoColorSpace),bumpScale:section?.028:.055,roughness:.92};
+  return {map:texture(albedo,THREE.SRGBColorSpace),bumpMap:texture(height,THREE.NoColorSpace),bumpScale:section?.045:.075,roughness:.92};
 }
 
 export function createOriginCarbonates(random) {
@@ -56,7 +57,7 @@ export function createOriginCarbonates(random) {
   const map=new THREE.DataTexture(pixels,size,size,THREE.RGBAFormat);map.colorSpace=THREE.SRGBColorSpace;map.magFilter=THREE.LinearFilter;map.minFilter=THREE.LinearMipmapLinearFilter;map.generateMipmaps=true;map.needsUpdate=true;
   for(let i=0;i<16;i++) {
     const crystal=new THREE.Mesh(geometry,new THREE.MeshPhysicalMaterial({
-      map,color:new THREE.Color().setHSL(.105,.12,.54+random()*.12),roughness:.38,metalness:0,flatShading:true,clearcoat:.14,clearcoatRoughness:.3,
+      map,color:new THREE.Color().setHSL(.105,.12,.54+random()*.12),roughness:.28,metalness:0,flatShading:true,clearcoat:.24,clearcoatRoughness:.3,
       emissive:0xa48442,emissiveIntensity:.025
     }));
     const angle=i*2.4,r=i===0?0:.20+random()*.42,size=i===0?.65:i<6?.30+random()*.30:.12+random()*.24;

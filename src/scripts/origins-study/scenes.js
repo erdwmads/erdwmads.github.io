@@ -1,9 +1,10 @@
 import * as T from 'three';
 import {Brush,Evaluator,SUBTRACTION} from 'three-bvh-csg';
 import {ConvexGeometry} from 'three/addons/geometries/ConvexGeometry.js';
-import {rng,rockMaterial,stoneGeometry,fractureGeometry,rubble,dustCloud} from './materials.js';
+import {rng,rockMaterial,stoneGeometry,rubble,dustCloud,fractureRelief} from './materials.js';
 import {IMPACTS,collision,evolution,smooth} from './timeline.mjs';
 import {diskVolume} from './disk-volume.js';
+import {fracturedBody} from './fracture.js';
 
 export function nebula(){
   const group=new T.Group(),disk=new T.Group();group.add(disk);
@@ -35,8 +36,17 @@ export function nebula(){
 
 export function accretion(){
   const group=new T.Group(),body=new T.Group();group.add(body);
-  const material=rockMaterial(0x656866),iceMat=new T.MeshPhysicalMaterial({color:0x95aaa9,roughness:.6,metalness:0,clearcoat:.1});
+  const material=rockMaterial(0x656866),iceMat=new T.MeshPhysicalMaterial({color:0xaebbb9,roughness:.32,metalness:0,clearcoat:.25,clearcoatRoughness:.35});
   body.add(rubble(41,.95,material));
+  const crustGeo=stoneGeometry(313,2),crust=new T.InstancedMesh(crustGeo,iceMat,46),crustRandom=rng(902),crustObject=new T.Object3D(),surfaceRay=new T.Raycaster();
+  const core=body.children[0].children[0];core.updateWorldMatrix(true,false);crust.name='surface-ice';
+  for(let i=0;i<46;i++){
+    const a=crustRandom()*Math.PI*2,z=crustRandom()*1.7-.85,r=Math.sqrt(1-z*z),direction=new T.Vector3(Math.cos(a)*r,z,Math.sin(a)*r);
+    surfaceRay.set(direction.clone().multiplyScalar(3),direction.clone().negate());const hit=surfaceRay.intersectObject(core,false)[0];
+    crustObject.position.copy(hit.point).divideScalar(.95).addScaledVector(hit.face.normal,-.004);
+    crustObject.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),hit.face.normal);crustObject.rotateZ(crustRandom()*6.28);
+    crustObject.scale.set(.02+crustRandom()*.035,.012+crustRandom()*.025,.009);crustObject.updateMatrix();crust.setMatrixAt(i,crustObject.matrix);
+  }body.children[0].add(crust);
   const settled=[body.children[0]],ray=new T.Raycaster();
   const events=IMPACTS.map((e,i)=>{
     const rock=rubble(73+i,e.radius,material);body.add(rock);
@@ -49,16 +59,18 @@ export function accretion(){
     const incomingHit=ray.intersectObject(rock,true)[0];
     const support=incomingHit?Math.abs(incomingHit.point.dot(dir)):e.radius;
     e={...e,contact:contactPoint.dot(dir)+support};
-    rock.position.copy(dir).multiplyScalar(e.contact-e.radius*.35);settled.push(rock);
+    rock.position.copy(dir).multiplyScalar(e.contact-e.radius*.04);settled.push(rock);
     const dust=dustCloud(250,31+i);body.add(dust.points);
-    const ice=new T.Mesh(stoneGeometry(i+2,1),iceMat);ice.scale.set(.22,.08,.16);ice.position.set(.31,.63,.53);rock.add(ice);
+    const ice=new T.Mesh(stoneGeometry(i+2,1),iceMat);ice.scale.set(.22,.08,.16);const iceDirection=new T.Vector3(.31,.63,.53).normalize();
+    const localCore=new T.Mesh(rock.children[0].geometry);localCore.updateMatrixWorld(true);surfaceRay.set(iceDirection.clone().multiplyScalar(3),iceDirection.clone().negate());const iceHit=surfaceRay.intersectObject(localCore,false)[0];
+    ice.position.copy(iceHit.point).addScaledVector(iceHit.face.normal,-.02);ice.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),iceHit.face.normal);ice.scale.set(.09,.035,.07);rock.add(ice);
     return{e,rock,dir,dust,contactPoint};
   });
   const random=rng(17),particles=new T.InstancedMesh(stoneGeometry(2,0),material,180),o=new T.Object3D(),orbits=[];
   for(let i=0;i<180;i++)orbits.push({a:random()*6.28,r:2.6+random()*3.2,y:(random()-.5)*1.6,s:.009+random()**3*.06});
   group.add(particles);
-  return{group,camera:[4.9,3.2,7.8],target:[0,0,0],update(t,phase){
-    material.color.setHex(phase?0x8f7c59:0x656866);iceMat.color.setHex(phase?0x7bcedb:0x95aaa9);
+  return{group,camera:[4.6,2.5,7.4],target:[0,0,0],update(t,phase){
+    material.color.setHex(phase?0x8f7c59:0x434b4c);iceMat.color.setHex(phase?0x7bcedb:0xaebbb9);
     body.rotation.y=-.3+t*.9;body.rotation.z=.08;
     events.forEach(({e,rock,dir,dust,contactPoint},i)=>{
       const state=collision(t,e),a=1-state.approach;
@@ -80,69 +92,96 @@ function carbonateGeometry(){
 }
 export function alteration(){
   const group=new T.Group(),random=rng(31),matrix=rockMaterial(0x515950);
-  const outerGeo=stoneGeometry(91,10);outerGeo.scale(2.3,1.9,.85);
+  const outerGeo=stoneGeometry(91,10);outerGeo.scale(2.3,1.8,1.35);
   const evaluator=new Evaluator();evaluator.attributes=['position','normal'];evaluator.useGroups=false;
   let rock=new Brush(outerGeo,matrix);rock.updateMatrixWorld();
   const cut=new Brush(new T.BoxGeometry(8,8,5));cut.position.z=2.64;cut.updateMatrixWorld();
   rock=evaluator.evaluate(rock,cut,SUBTRACTION);rock.updateMatrixWorld();
-  const cavities=[[-1.05,.63,.37],[-.12,.90,.32],[.86,.48,.45],[1.06,-.45,.31],[-.10,-.65,.46],[-1.05,-.45,.29],[0,.1,.27]];
-  const poreGeometries=cavities.map(([, ,r],i)=>{const g=stoneGeometry(601+i,5);g.scale(r*(i%2?1.25:.85),r*(i%2?.65:1.2),r*.9);g.rotateZ(i*1.6);return g;});
-  for(let i=0;i<cavities.length;i++){const[x,y]=cavities[i];const pore=new Brush(poreGeometries[i]);pore.position.set(x,y,.08);pore.updateMatrixWorld();rock=evaluator.evaluate(rock,pore,SUBTRACTION);rock.updateMatrixWorld();}
-  rock.material=matrix;group.add(rock);
-  const icy=new T.MeshPhysicalMaterial({color:0xb2c9c9,roughness:.45,metalness:0,clearcoat:.12,flatShading:true});
-  const waterBase=new T.MeshPhysicalMaterial({color:0x617b80,roughness:.46,metalness:0,transparent:true,opacity:.38,depthWrite:false,clearcoat:.07,side:T.BackSide});
-  const carbonMat=new T.MeshStandardMaterial({color:0xd3c9ac,roughness:.46,metalness:0});
-  const crystalGeo=carbonateGeometry(),ice=[],waters=[],crystals=[],linings=[];
+  const cavities=[[-1.15,.58,.22],[-.21,1.0,.11],[.78,.59,.19]];
+  const poreRandom=rng(538);
+  while(cavities.length<16){const x=(poreRandom()-.5)*3.8,y=(poreRandom()-.5)*2.65,r=.06+Math.pow(poreRandom(),1.7)*.17;if(x*x/3.6+y*y/1.8>.83||cavities.some(([cx,cy,cr])=>Math.hypot(x-cx,y-cy)<r+cr+.035))continue;cavities.push([x,y,r]);}
+  const poreGeometries=cavities.map(([, ,r],i)=>{const g=stoneGeometry(601+i,5);g.scale(r*(i%2?1.4:.72),r*(i%2?.6:1.25),r*.56);g.rotateZ(i*1.6);return g;});
+  for(let i=0;i<cavities.length;i++){const[x,y]=cavities[i];const pore=new Brush(poreGeometries[i]);pore.position.set(x,y,.14);pore.updateMatrixWorld();rock=evaluator.evaluate(rock,pore,SUBTRACTION);rock.updateMatrixWorld();}
+  // Closed, tapered cutters remove actual rock. No line mesh is rendered above the section.
+  const fissures=[[[ -.86,.62],[-.65,.74],[-.38,.86]],[[.60,.42],[.47,.28],[.34,.15]],[[.1,-.63],[-.06,-.37],[-.1,-.1]]];
+  for(const path of fissures)for(let j=0;j<path.length-1;j++){
+    const a=new T.Vector3(...path[j],.2),b=new T.Vector3(...path[j+1],.2),side=new T.Vector3(-(b.y-a.y),b.x-a.x,0).normalize(),points=[];
+    for(const [p,w] of [[a,.028],[b,j===path.length-2?.013:.025]]){points.push(p.clone().addScaledVector(side,w),p.clone().addScaledVector(side,-w),new T.Vector3(p.x,p.y,.045));}
+    const cutter=new Brush(new ConvexGeometry(points));cutter.updateMatrixWorld();
+    const previous=rock;rock=evaluator.evaluate(rock,cutter,SUBTRACTION);rock.updateMatrixWorld();previous.geometry.dispose();cutter.geometry.dispose();
+  }
+  rock.name='alteration-matrix';rock.material=matrix;group.add(rock);
+  const icy=new T.MeshPhysicalMaterial({color:0x9aa5a2,roughness:.52,metalness:0,clearcoat:.08,flatShading:false});
+  const waterBase=new T.MeshPhysicalMaterial({color:0x475452,roughness:.28,metalness:0,transparent:true,opacity:.13,depthWrite:false,clearcoat:.22,side:T.BackSide});
+  const carbonMat=new T.MeshPhysicalMaterial({color:0xe1d8c2,roughness:.27,metalness:0,clearcoat:.35,clearcoatRoughness:.3});
+  const crystalGeo=carbonateGeometry(),ice=[],waters=[],crystals=[],linings=[],wallRay=new T.Raycaster();rock.updateMatrixWorld(true);
   cavities.forEach(([x,y,r],index)=>{
-    const lining=new T.Mesh(poreGeometries[index],new T.MeshStandardMaterial({color:0x555e49,roughness:.96,side:T.BackSide,clippingPlanes:[new T.Plane(new T.Vector3(0,0,-1),.132)]}));
-    lining.position.set(x,y,.08);lining.scale.setScalar(.995);group.add(lining);linings.push(lining);
-    for(let j=0;j<4;j++){
-      const mesh=new T.Mesh(stoneGeometry(index*10+j,0),icy),a=j*2.4;
+    const alteredWall=rockMaterial(0x505a4f);alteredWall.side=T.BackSide;alteredWall.clippingPlanes=[new T.Plane(new T.Vector3(0,0,-1),.132)];
+    const lining=new T.Mesh(poreGeometries[index],alteredWall);
+    lining.position.set(x,y,.14);lining.scale.setScalar(.995);group.add(lining);linings.push(lining);
+    for(let j=0;j<3;j++){
+      const mesh=new T.Mesh(stoneGeometry(index*10+j,2),icy),a=j*2.4;
       mesh.position.set(x+Math.cos(a)*r*.22,y+Math.sin(a)*r*.25,-.035);
-      mesh.rotation.set(random(),random(),random());mesh.userData.size=r*(.34+random()*.14);group.add(mesh);ice.push(mesh);
+      mesh.rotation.set(random(),random(),random());mesh.userData.size=r*(.28+random()*.10);mesh.name='embedded-ice';
+      wallRay.set(new T.Vector3(mesh.position.x,mesh.position.y,2),new T.Vector3(0,0,-1));const wall=wallRay.intersectObject(rock,false)[0];
+      if(wall){mesh.position.copy(wall.point).addScaledVector(wall.face.normal,mesh.userData.size*.4);mesh.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),wall.face.normal);}
+      group.add(mesh);ice.push(mesh);
     }
-    const mat=waterBase.clone(),plane=new T.Plane(new T.Vector3(0,-1,0),y-r*.65);mat.clippingPlanes=[plane,new T.Plane(new T.Vector3(0,0,-1),.065)];
-    const water=new T.Mesh(poreGeometries[index],mat);water.position.set(x,y,.08);water.scale.setScalar(.96);group.add(water);waters.push({water,plane,x,y,r});
-    for(let j=0;j<7;j++){
+    const mat=waterBase.clone();mat.clippingPlanes=[new T.Plane(new T.Vector3(0,0,-1),.13)];
+    const water=new T.Mesh(poreGeometries[index],mat);water.position.set(x,y,.14);water.scale.setScalar(.997);group.add(water);waters.push(water);
+    for(let j=0;j<5;j++){
       const mesh=new T.Mesh(crystalGeo,carbonMat),a=j*2.4;
-      mesh.position.set(x+Math.cos(a)*r*.45,y+Math.sin(a)*r*.50,-r*.26);
-      mesh.rotation.set(.4+random()*.5,.2+random()*.4,a);mesh.userData.size=r*(.09+random()*.1);group.add(mesh);crystals.push(mesh);
+      mesh.position.set(x+Math.cos(a)*r*(.15+random()*.5),y+Math.sin(a)*r*(.15+random()*.45),-r*.26);
+      mesh.rotation.set(.4+random()*.5,.2+random()*.4,a);mesh.userData.size=r*(j===0?.40+random()*.12:.13+random()*.16);
+      wallRay.set(new T.Vector3(mesh.position.x,mesh.position.y,2),new T.Vector3(0,0,-1));
+      const wall=wallRay.intersectObject(rock,false)[0];
+      if(wall){mesh.userData.root=wall.point.clone();mesh.userData.normal=wall.face.normal.clone().normalize();mesh.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),mesh.userData.normal);mesh.rotateZ(a);}
+      group.add(mesh);crystals.push(mesh);
     }
   });
-  const flecks=new T.InstancedMesh(stoneGeometry(77,0),new T.MeshStandardMaterial({color:0xaca78e,roughness:.8}),420),o=new T.Object3D();
-  for(let i=0;i<420;i++){
+  const flecks=new T.InstancedMesh(stoneGeometry(77,0),new T.MeshStandardMaterial({color:0x555c56,roughness:.8}),270),o=new T.Object3D();
+  for(let i=0;i<270;i++){
     let x,y;do{x=(random()-.5)*4.2;y=(random()-.5)*3.35;}while((x*x/4.41+y*y/2.8)>.9||cavities.some(([cx,cy,r])=>Math.hypot(cx-x,cy-y)<r*1.1));
     o.position.set(x,y,.145);o.scale.set(.006+random()*.017,.007+random()*.026,.007);o.rotation.set(random(),random(),random()*6);o.updateMatrix();flecks.setMatrixAt(i,o.matrix);
   }group.add(flecks);
-  return{group,camera:[.5,1.25,7.6],target:[0,0,0],update(t,phase){
-    const state=evolution(t);matrix.color.setHex(phase?0x736b52:0x565956);icy.color.setHex(phase?0x85cfe2:0xb2c9c9);
+  return{group,camera:[3.0,1.7,6.8],target:[0,0,0],update(t,phase){
+    const state=evolution(t);matrix.color.setHex(phase?0x736b52:0x343d3c);icy.color.setHex(phase?0x85cfe2:0x9aa5a2);
     ice.forEach(m=>{m.scale.setScalar(m.userData.size*Math.cbrt(state.ice));m.visible=state.ice>.001;});
-    waters.forEach(({water,plane,y,r})=>{water.visible=state.liquid>.01;plane.constant=y-r*.65+state.liquid*r*1.25;water.material.color.setHex(phase?0x368fae:0x617b80);water.material.opacity=state.liquid*.38;});
-    crystals.forEach(m=>m.scale.setScalar(m.userData.size*state.carbonate));
-    linings.forEach(m=>{m.visible=state.reaction>.01;m.material.color.setHex(phase?0x5e936f:0x696e5a);m.material.color.multiplyScalar(.7+state.reaction*.3);});
+    waters.forEach(water=>{water.visible=state.liquid>.01;water.material.color.setHex(phase?0x368fae:0x475452);water.material.opacity=state.liquid*(phase?.42:.13);});
+    crystals.forEach(m=>{const size=m.userData.size*state.carbonate;m.scale.setScalar(size);if(m.userData.root)m.position.copy(m.userData.root).addScaledVector(m.userData.normal,size*.2);});
+    linings.forEach(m=>{m.visible=state.reaction>.01;m.material.color.setHex(phase?0x5e936f:0x3e4e48);m.material.color.multiplyScalar(.7+state.reaction*.3);});
   },moment(t){return t<.2?'Embedded water ice':t<.4?'Melting and pore water':t<.7?'Water-rock reaction & carbonates':'Cooling / a mineral record remains';}};
 }
 
 export function inheritance(){
-  const group=new T.Group(),material=rockMaterial(0x656866),random=rng(65),parts=[];
-  for(let i=0;i<26;i++){
-    const a=i*2.399,z=1-2*(i+.5)/26,r=Math.sqrt(1-z*z),dir=new T.Vector3(Math.cos(a)*r,z,Math.sin(a)*r);
-    const mesh=new T.Mesh(fractureGeometry(200+i),material);mesh.scale.setScalar(.52+random()*.16);mesh.userData.spin=new T.Vector3(random(),random(),random());group.add(mesh);
-    parts.push({mesh,dir,start:dir.clone().multiplyScalar(1.02),far:dir.clone().multiplyScalar(2+random()*2.5),target:dir.clone().multiplyScalar(.74),preserved:dir.x<.1});
-  }
-  const impactor=rubble(19,.47,rockMaterial(0xa19788));group.add(impactor);
-  const dust=dustCloud(900,89);group.add(dust.points);
-  return{group,camera:[7.8,5,17.6],target:[0,0,0],update(t,phase){
-    const approach=smooth(t/.20),breakup=smooth((t-.20)/.26),gather=smooth((t-.57)/.40);
-    material.color.setHex(phase?0x688b93:0x656866);
-    impactor.position.set(5.5-approach*4.08,.38,.15);impactor.visible=t<.245;impactor.rotation.y=t*3;
-    parts.forEach(({mesh,dir,start,far,target,preserved})=>{
+  const group=new T.Group(),body=new T.Group(),material=rockMaterial(0x747a78),random=rng(65);group.add(body);
+  const {shell,cells}=fracturedBody(65,64);shell.dispose();
+  const parts=cells.map(({geometry,center},i)=>{
+    const mesh=new T.Mesh(fractureRelief(geometry,center),material);geometry.dispose();mesh.name=`parent-fragment-${i}`;body.add(mesh);
+    const dir=center.clone().normalize(),preserved=center.x<.18,spin=new T.Vector3(random()-.5,random()-.5,random()-.5);
+    const kick=1.0+random()*.85;
+    const far=center.clone().addScaledVector(dir,kick).add(new T.Vector3(Math.max(0,center.x)*.8,random()*.15,0));
+    const target=center.clone().multiplyScalar(.82).add(new T.Vector3(-1.1,-.08,0));
+    return{mesh,start:center,dir,far,target,preserved,spin};
+  });
+  const impactor=rubble(19,.38,rockMaterial(0xa19788));body.add(impactor);
+  const dust=dustCloud(1500,89);body.add(dust.points);
+  const splinters=new T.InstancedMesh(stoneGeometry(873,0),material,260),o=new T.Object3D(),debris=[];body.add(splinters);
+  for(let i=0;i<260;i++)debris.push({v:new T.Vector3(.5+random(),(random()-.5)*1.2,(random()-.5)*1.2).normalize(),speed:2+random()*10,size:.008+random()**2*.065});
+  return{group,camera:[5.8,3.5,14.5],target:[0,0,0],update(t,phase){
+    const approach=smooth(t/.22),breakup=smooth((t-.22)/.26),gather=smooth((t-.59)/.39);
+    material.color.setHex(phase?0x688b93:0x454f50);
+    body.rotation.set(.08,-.28+t*.18,.07);
+    impactor.position.set(5.5-approach*4.12,.24,.06);impactor.visible=t<.24;impactor.rotation.y=t*3;
+    parts.forEach(({mesh,start,dir,far,target,preserved,spin})=>{
       mesh.position.copy(start).lerp(far,breakup);
-      if(preserved)mesh.position.lerp(target.clone().add(new T.Vector3(-1.0,0,0)),gather);
-      else mesh.position.addScaledVector(dir,smooth((t-.45)/.55)*5);
-      const spin=breakup*(1-gather*.9);mesh.rotation.set(mesh.userData.spin.x*spin*4,mesh.userData.spin.y*spin*5,mesh.userData.spin.z*spin*3);
-      mesh.visible=preserved||t<.88;
+      if(preserved)mesh.position.lerp(target,gather);
+      else mesh.position.addScaledVector(dir,smooth((t-.45)/.55)*3.4);
+      const turn=breakup*(1-gather*.65);mesh.rotation.set(spin.x*turn*2,spin.y*turn*3,spin.z*turn*2);
+      mesh.scale.setScalar(1);mesh.morphTargetInfluences[0]=breakup;
     });
-    dust.update(t-.20,new T.Vector3(1.4,.35,0),new T.Vector3(1,.2,0));
-  },moment(t){return t<.2?'A later, localized impact':t<.5?'Disruption and escaping ejecta':t<.75?'Less-heated fragments survive':'Reaccretion / a rubble-pile descendant';}};
+    const age=Math.max(0,t-.22);splinters.visible=age>0;
+    debris.forEach((p,i)=>{o.position.set(1.35,.24,.06).addScaledVector(p.v,age*p.speed*2);o.rotation.set(age*p.speed,age*p.speed*.7,age*p.speed*.4);o.scale.setScalar(p.size*smooth(age/.04));o.updateMatrix();splinters.setMatrixAt(i,o.matrix);});splinters.instanceMatrix.needsUpdate=true;
+    dust.update(t-.22,new T.Vector3(1.4,.24,0),new T.Vector3(1,.2,0));
+  },moment(t){return t<.22?'A coherent parent / a later impact':t<.5?'Fracture surfaces & escaping ejecta':t<.75?'Less-heated fragments survive':'Reaccretion / an inherited mineral record';}};
 }

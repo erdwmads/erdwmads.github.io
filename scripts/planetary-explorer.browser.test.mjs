@@ -36,10 +36,11 @@ try {
     await overlayStyle.evaluate(el=>el.remove());
     const {data: rgb, info} = await sharp(buffer).removeAlpha().raw().toBuffer({resolveWithObject:true});
     let count=0, left=info.width, top=info.height, right=0, bottom=0;
-    // Fractional CSS bounds can include one row of the surrounding page.
+    const background=(5*info.width+5)*3;
+    // Fractional CSS bounds can include a page-coloured border; sample the canvas interior.
     for(let y=1;y<info.height-1;y++) for(let x=1;x<info.width-1;x++) {
       const i=(y*info.width+x)*3;
-      if(Math.abs(rgb[i]-rgb[0])+Math.abs(rgb[i+1]-rgb[1])+Math.abs(rgb[i+2]-rgb[2])>60) { count++; left=Math.min(left,x); right=Math.max(right,x); top=Math.min(top,y); bottom=Math.max(bottom,y); }
+      if(Math.abs(rgb[i]-rgb[background])+Math.abs(rgb[i+1]-rgb[background+1])+Math.abs(rgb[i+2]-rgb[background+2])>60) { count++; left=Math.min(left,x); right=Math.max(right,x); top=Math.min(top,y); bottom=Math.max(bottom,y); }
     }
     assert.ok(count>(model?info.width*info.height*0.03:150),'Canvas must contain actual rendered geometry');
     if(model) {

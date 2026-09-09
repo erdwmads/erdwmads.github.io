@@ -69,7 +69,7 @@ const pageScripts: Record<string, ScriptSpec[]> = {
   "research-graduation": [
     ...commonScripts,
     { src: "assets/js/research-lock.js", defer: true },
-    { src: "assets/js/mission-index.js?v=20260909-progress", defer: true },
+    { src: "assets/js/mission-index.js?v=20260910-layout", defer: true },
     { src: "assets/js/mission-lightbox.js?v=20260909-comparison", defer: true },
     { src: "assets/js/mission-status-sync.js", defer: true },
     interfaceScript
@@ -87,8 +87,8 @@ export function getPageScripts(pageKey: keyof typeof pageScripts | string, inlin
   return [
     renderScript(powerManagerScript),
     scripts.map(renderScript).join("\n"),
-    renderScript({ src: "assets/js/observatory-interactions.js?v=20260909-hierarchy", defer: true }),
-    renderScript({ src: "assets/js/mineral-interactions.js?v=20260907-workflow", defer: true }),
+    renderScript({ src: "assets/js/observatory-interactions.js?v=20260910-layout", defer: true }),
+    renderScript({ src: "assets/js/mineral-interactions.js?v=20260910-layout", defer: true }),
     inlineHtml,
     renderScript(legacyNavigationScript)
   ].filter(Boolean).join("\n\n");

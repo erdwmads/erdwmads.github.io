@@ -1,17 +1,16 @@
 ---
 import ResearchQuestions from './ResearchQuestions.astro';
-import { originStages,originAlterationSteps } from '../scripts/origins-content.js';
 ---
 <section class="planetary" data-planetary-explorer aria-labelledby="planetary-title">
   <header class="planetary-heading">
     <p class="eyebrow">Planetary field guide</p>
     <h2 id="planetary-title">Different worlds. Shared questions.</h2>
-    <p>From near-Earth orbits to the mineral record of water.</p>
+    <p>Compare orbits, public shape models, sample photographs and mineral forms.</p>
+    <p><a class="planetary-origins-link" href="/origins-study.html">Origins · Explore formation &amp; evolution →</a></p>
   </header>
   <ResearchQuestions />
   <div class="planetary-navigation">
     <div class="planetary-steps" role="tablist" aria-label="Observation scale">
-      <button type="button" role="tab" id="planetary-origins" aria-controls="planetary-panel" aria-selected="false" tabindex="-1" data-view="origins" title="Formation and parent-body evolution">Origins</button>
       <button type="button" role="tab" id="planetary-orbit" aria-controls="planetary-panel" aria-selected="true" data-view="orbit"><span>01</span> Orbits</button>
       <button type="button" role="tab" id="planetary-shape" aria-controls="planetary-panel" aria-selected="false" tabindex="-1" data-view="shape"><span>02</span> Shapes</button>
       <button type="button" role="tab" id="planetary-sample" aria-controls="planetary-panel" aria-selected="false" tabindex="-1" data-view="sample"><span>03</span> Samples</button>
@@ -61,35 +60,13 @@ import { originStages,originAlterationSteps } from '../scripts/origins-content.j
       <input data-timeline type="range" min="0" max="52584" step="1" value="0" aria-label="Orbital timeline in hours" />
       <p data-clock-status role="status">Loading ephemeris...</p>
     </fieldset>
-    <div class="planetary-origin-controls" data-origin-controls hidden>
-      <div class="planetary-origin-steps" role="group" aria-label="Illustrative evolutionary stages">
-        {originStages.map((stage,index)=><button type="button" data-origin-step={index} aria-pressed={index===0?'true':'false'}><span>{String(index+1).padStart(2,'0')}</span>{stage.name}</button>)}
-      </div>
-      <div class="planetary-origin-playback">
-        <button type="button" data-origin-play aria-label="Play illustrative sequence" title="Play illustrative sequence" aria-pressed="false"><span data-icon="play"></span></button>
-        <label class="planetary-origin-timeline"><span data-origin-timeline-label>Formation sequence · 01 / Dust &amp; ice</span><input data-origin-progress type="range" min="0" max="1" step="0.001" value="0.125" aria-label="Formation sequence progression" /></label>
-        <output data-origin-sequence-status>1 / 4 · Dust &amp; ice</output>
-      </div>
-      <div class="planetary-origin-cutaway" data-origin-cutaway role="group" aria-label="Parent-body view"><button type="button" data-origin-view="0" aria-pressed="false">Exterior</button><button type="button" data-origin-view="1" aria-pressed="true">Interior</button></div>
-    </div>
     <div class="planetary-layout">
       <div class="planetary-visual">
-        <div class="planetary-origin-legend" data-origin-legend hidden aria-label="Illustrative material colours"><span>Rock &amp; pores</span><span>Ice</span><span>Liquid water</span><span>Altered rock</span><span>Carbonates</span></div>
         <div class="planetary-stage" data-stage tabindex="0" role="group" aria-label="Interactive solar system, asteroid and mineral models">
           <div class="planetary-labels" data-labels></div>
           <img class="planetary-fallback" data-fallback hidden alt="Public reference image of the selected material" />
           <p class="planetary-status" data-status role="status">Loading orbital data...</p>
           <button type="button" data-retry data-action="retry" hidden>Retry view</button>
-          <figure class="planetary-origin-specimen" data-origin-specimen hidden>
-            <img src="/assets/img/research-scale/orgueil-smithsonian.jpg" width="1200" height="800" alt="Observed Orgueil meteorite specimen USNM 388, photographed by Chip Clark at the Smithsonian." loading="lazy" />
-            <figcaption>Observed specimen: Orgueil, USNM 388. Chip Clark / Smithsonian · CC0.<br />Separate evidence, not the shape of the modeled fragment. <a href="https://naturalhistory.si.edu/object/nmnhmineralsciences_1017941" target="_blank" rel="noopener">Specimen record</a></figcaption>
-            <button type="button" data-origin-return><span data-icon="previous"></span>Return to fragment</button>
-          </figure>
-        </div>
-        <div class="planetary-origin-inspection" data-origin-inspection hidden>
-          <span data-origin-inspection-label>Parent-body interior</span>
-          <select data-origin-moment aria-label="Alteration step" hidden>{originAlterationSteps.map((step,index)=><option value={index}>{step.label}</option>)}</select>
-          <button type="button" data-origin-inspect title="Inspect the illustrative carbonate aggregate" aria-pressed="false"><span data-icon="zoom-in"></span><span data-origin-inspect-label>Inspect carbonate</span></button>
         </div>
         <figure class="planetary-ci" data-ci-figure hidden>
           <img src="/assets/img/research-scale/orgueil-smithsonian.jpg" width="1200" height="800" alt="Orgueil meteorite specimen USNM 388 photographed by Chip Clark at the Smithsonian." loading="lazy" />
@@ -119,16 +96,11 @@ import { originStages,originAlterationSteps } from '../scripts/origins-content.j
         <p data-interpretation></p>
         <a data-source href="https://ssd.jpl.nasa.gov/horizons/" target="_blank" rel="noopener">Data source</a>
         <a data-mindat hidden target="_blank" rel="noopener">Specimen photographs on Mindat</a>
-        <div class="planetary-origin-evidence" data-origin-evidence-actions hidden>
-          <button type="button" data-origin-evidence="primary">View public shape</button>
-          <button type="button" data-origin-evidence="secondary">View returned sample</button>
-        </div>
       </aside>
     </div>
     <p class="planetary-boundary" data-boundary>Positions at the stated epoch. Trajectory traces span approximately one revolution per body. Body markers are enlarged; present orbits are not formation locations.</p>
     <details class="planetary-sources">
       <summary>Sources &amp; model conventions</summary>
-      <p>Origins is an illustrative process model, not a numerical accretion simulation, dated history or measured interior. Parent-body shape, porosity, ice, liquid paths, colours and impact ejecta are conceptual. Ryugu evolution: <a href="https://doi.org/10.1126/science.abn8671">Nakamura et al. (2023), Formation and evolution of carbonaceous asteroid Ryugu</a>. CI carbonate interpretation: <a href="https://doi.org/10.1016/0016-7037(95)00399-1">Endress &amp; Bischoff (1996)</a>. No common parentage with Orgueil is implied. Enlarged ice pockets and crystals distinguish processes, not measured phase maps, abundances or flow speeds.</p>
       <p>Orbits: <a href="https://ssd.jpl.nasa.gov/horizons/">NASA/JPL Horizons</a>, Sun-centred geometric vectors, J2000 ecliptic / ICRF, astronomical units. Moving positions use linear interpolation of daily UTC vectors from 2025-01-01 to 2031-01-01; the current-clock view is an ephemeris estimate, not live telemetry or navigation-grade data. <a href="/assets/data/planetary/timeline.json">Download time-series data and provenance</a>. Orbit guide curves use approximately one revolution from 2026-09-07 TDB and are not spacecraft flight paths. <a href="/assets/data/planetary/orbits.json">Orbit guide data</a>.</p>
       <p>Shapes: <a href="https://science.nasa.gov/resource/bennu-3d-model/">Bennu: NASA VTAD</a>; <a href="https://data.darts.isas.jaxa.jp/pub/hayabusa2/paper/Watanabe_2019/">Ryugu: ISAS/JAXA, Watanabe et al. (2019), shape-model team</a>. Public meshes are recentered, oriented for display and rendered with neutral lighting. Comparison rescales their longest dimensions to approximately 492 m and 900 m; it is an illustrative size comparison, not metrology. Mesh resolutions differ, so displayed roughness is not directly comparable. Lighting, orientation and wireframe colours are not measured albedo, spin state or mineral composition. <a href="https://www.isas.jaxa.jp/en/researchers/data-policy/">JAXA data policy</a>.</p>
       <p>Mineral interpretation: <a href="https://www.isas.jaxa.jp/en/topics/003094.html">Ryugu initial chemical analysis</a>; <a href="https://doi.org/10.1111/maps.14227">Lauretta, Connolly et al. (2024), Bennu sample analysis</a>. Orgueil photograph: <a href="https://naturalhistory.si.edu/object/nmnhmineralsciences_1017941">Chip Clark / Smithsonian, USNM 388, CC0</a>. This specimen is not the author's experimental sample. No CI parent-body orbit or specimen scan is asserted.</p>

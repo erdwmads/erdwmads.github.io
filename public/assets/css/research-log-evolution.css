@@ -187,7 +187,7 @@ body#academic-site .mission-progress dt { margin: 0 0 8px; font-size: 12px; font
 body#academic-site .mission-progress dd { margin: 0; font-size: 13px; line-height: 1.7; color: var(--obs-text); overflow-wrap: anywhere; }
 body#academic-site .mission-compare-toggle { min-width: 172px; margin-bottom: 4px; }
 body#academic-site .mission-original-record { margin-top: 28px; }
-body#academic-site .mission-original-record > .obs-present-launch { margin: 0 0 20px !important; }
+
 @media (hover: hover) and (pointer: fine) and (min-width: 761px) {
   body#academic-site .mission-comparison-figure { cursor: zoom-in; }
   body#academic-site .mission-comparison-figure:focus-visible { outline: 2px solid var(--obs-cyan); outline-offset: 4px; }
@@ -224,3 +224,26 @@ body#academic-site .mission-comparison-note { font-size: 11px; line-height: 1.7;
     line-height: 1.14 !important;
   }
 }
+
+/* One reading column and one predictable toolbar for every unlocked record. */
+html[data-theme] body#academic-site .mission-log-entry { grid-template-columns: minmax(0, 1fr) !important; }
+html[data-theme] body#academic-site .mission-log-entry .research-note-body { min-width: 0; }
+html[data-theme] body#academic-site .mission-record-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--obs-line); }
+html[data-theme] body#academic-site .mission-record-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+html[data-theme] body#academic-site .mission-record-meta time { font-size: 13px; color: var(--obs-muted); font-variant-numeric: tabular-nums; }
+html[data-theme] body#academic-site .mission-record-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; max-width: 100%; }
+html[data-theme] body#academic-site .mission-record-actions > .button { margin: 0 !important; float: none !important; min-width: 0 !important; min-height: 44px; font-size: 13px !important; }
+html[data-theme] body#academic-site .mission-record-header ~ .mission-original-record > .mission-entry-kicker { display: none !important; }
+html[data-theme] body#academic-site .mission-photo-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)) !important; align-items: start; }
+html[data-theme] body#academic-site .mission-photo-grid figure { min-width: 0; height: auto !important; max-height: none !important; aspect-ratio: auto !important; }
+html[data-theme] body#academic-site .mission-photo-grid figcaption { display: block !important; min-height: 0 !important; padding: 14px 16px 18px !important; font-size: 13px !important; line-height: 1.65 !important; overflow-wrap: anywhere; text-align: left; }
+html[data-theme] body#academic-site .mission-photo-grid figcaption > strong:first-child { display: block; margin-bottom: 6px; color: var(--obs-text); line-height: 1.5; }
+@media (max-width: 600px) {
+  html[data-theme] body#academic-site .mission-record-actions { width: 100%; }
+  html[data-theme] body#academic-site .mission-record-actions > .button { flex: 1 1 150px; justify-content: center; }
+}
+@media (max-width: 360px) {
+  html[data-theme] body#academic-site .research-graduation-page > section:first-child h1 { font-size: 20px !important; line-height: 1.2 !important; }
+}
+
+html[data-theme] body#academic-site .mission-photo-grid img { height: auto !important; object-fit: contain !important; }

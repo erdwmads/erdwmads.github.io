@@ -372,7 +372,7 @@
       button.type = 'button';
       button.setAttribute('data-private-atlas', '');
       button.insertAdjacentHTML('afterbegin', networkIcon);
-      source.querySelector('.research-note-body').prepend(button);
+      (source.querySelector('.mission-record-actions') || source.querySelector('.research-note-body')).append(button);
     }
   }
   document.addEventListener('click', event => {

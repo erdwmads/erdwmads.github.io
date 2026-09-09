@@ -1,10 +1,15 @@
+import {syncOcclusionCamera} from './origins-study/occlusion.js';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
+import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';
+import {SSAOPass} from 'three/addons/postprocessing/SSAOPass.js';
+import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { createEphemeris } from './planetary-ephemeris.js';
 import { createMineralGroup } from './planetary-minerals.js';
-import { createOriginsScene } from './planetary-origins.js';
 
 export function disposeObject(object, includeCached = false) {
   object.traverse(node => {
@@ -26,8 +31,13 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
   renderer.localClippingEnabled = true;
   stage.prepend(renderer.domElement);
   const scene = new THREE.Scene();
+  const studio=new RoomEnvironment(),pmrem=new THREE.PMREMGenerator(renderer),studioMap=pmrem.fromScene(studio,.06);studio.dispose();pmrem.dispose();
+  scene.environment=studioMap.texture;scene.environmentIntensity=.25;
+  signal.addEventListener('abort',()=>studioMap.dispose(),{once:true});
   const camera = new THREE.OrthographicCamera(-2,2,2,-2,0.001,2000);
   const controls = new OrbitControls(camera, stage);
+  const composer=new EffectComposer(renderer);composer.addPass(new RenderPass(scene,camera));
+  const ao=new SSAOPass(scene,camera,1,1);ao.kernelRadius=10;ao.minDistance=.001;ao.maxDistance=.08;composer.addPass(ao);composer.addPass(new OutputPass());
   root.querySelector('[data-retry]').addEventListener('pointerdown',event=>event.stopPropagation(),{signal});
   const ephemeris = createEphemeris(data.timeline);
   controls.enableDamping = false;
@@ -39,34 +49,7 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
   const coarse = matchMedia('(pointer: coarse)');
   let alive = true, visible = false, contextLost = false, touch = false, frame = 0, version = 0, current = null, world = new THREE.Group(), labels = [], clickable = [], radius = 2.1, radiusY = 2.1;
   const cache = new Map();
-  let focusFx = true, flightFrame = 0, finishFlight = null, requested = null, origins = null;
-  let originCamera=null;
-  function leaveOriginInspection() {
-    if(!originCamera)return;
-    cancelFlight();
-    camera.position.copy(originCamera.position);controls.target.copy(originCamera.target);camera.zoom=originCamera.zoom;
-    camera.lookAt(controls.target);controls.update();camera.updateProjectionMatrix();
-    originCamera=null;delete root.dataset.originFocus;root.dispatchEvent(new Event('origininspectionchange'));requestRender();
-  }
-  function inspectOrigin() {
-    if(originCamera){leaveOriginInspection();return;}
-    const object=current?.view==='origins'&&origins?.inspectionTarget();
-    if(!object||!visible||contextLost)return;
-    cancelFlight();world.updateMatrixWorld(true);
-    originCamera={position:camera.position.clone(),target:controls.target.clone(),zoom:camera.zoom};
-    const target=object.getWorldPosition(new THREE.Vector3()),start=originCamera;
-    const direction=new THREE.Vector3(.15,.08,1).normalize().multiplyScalar(camera.position.distanceTo(controls.target));
-    const endPosition=target.clone().add(direction),started=performance.now();
-    root.dataset.originFocus='carbonate';
-    root.dispatchEvent(new Event('origininspectionchange'));
-    function step(now) {
-      const t=matchMedia('(prefers-reduced-motion: reduce)').matches?1:Math.min(1,(now-started)/420),e=t*t*(3-2*t);
-      controls.target.lerpVectors(start.target,target,e);camera.position.lerpVectors(start.position,endPosition,e);
-      camera.zoom=THREE.MathUtils.lerp(start.zoom,5.8,e);camera.lookAt(controls.target);controls.update();camera.updateProjectionMatrix();requestRender();
-      if(t<1)flightFrame=requestAnimationFrame(step);else flightFrame=0;
-    }
-    flightFrame=requestAnimationFrame(step);
-  }
+  let focusFx = true, flightFrame = 0, finishFlight = null, requested = null;
   function cancelFlight() {
     cancelAnimationFrame(flightFrame);flightFrame=0;
     finishFlight?.(false);finishFlight=null;
@@ -92,11 +75,10 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
       flightFrame=requestAnimationFrame(step);
     });
   }
-  scene.add(world, new THREE.HemisphereLight(0xe6f2ff,0x394350,1.2));
+  const hemisphere=new THREE.HemisphereLight(0xe6f2ff,0x394350,1.2);scene.add(world,hemisphere);
   const key = new THREE.DirectionalLight(0xffffff,2.4); key.position.set(3,5,6); scene.add(key);
   const fill = new THREE.DirectionalLight(0xabc9ec,0.7); fill.position.set(-4,0,2); scene.add(fill);
   const originRim = new THREE.DirectionalLight(0x75cddd,1.6);originRim.position.set(-3,1,-3);originRim.visible=false;scene.add(originRim);
-  const originInspection = new THREE.DirectionalLight(0xf0efea,1.8);originInspection.visible=false;scene.add(originInspection,originInspection.target);
 
   function color() { return document.documentElement.dataset.theme === 'light' ? { bg:0xe8f0f4, line:0x9caeb7, blue:0x287e9c, gold:0x99731f, body:0x626f79 } : { bg:0x091219, line:0x41535e, blue:0x8ed4e9, gold:0xe6c77b, body:0x737b82 }; }
   function halo(size) {
@@ -110,8 +92,8 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
   }
   function setFx(value) {
     focusFx = value;
-    originRim.visible=current?.view==='origins'&&value;
-    if(current?.view==='origins') {origins?.setFx(value);requestRender();return;}
+    originRim.visible=['shape','minerals'].includes(current?.view)&&value;
+    key.intensity=current?.view==='orbit'?2.4:2.8;fill.intensity=current?.view==='orbit'?.7:.2;hemisphere.intensity=current?.view==='orbit'?1.2:.55;
     world.traverse(node => {
       if (node.userData.focusHalo) node.visible = value;
       if (node.isMesh && node.material?.emissive) { node.material.emissive.setHex(color().gold); node.material.emissiveIntensity = value ? 0.035 : 0; }
@@ -126,11 +108,11 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
   function draw() {
     frame = 0;
     if (!alive || contextLost || !visible || document.hidden) return;
-    originInspection.visible=current?.view==='origins';
-    if(originInspection.visible){originInspection.position.copy(camera.position);originInspection.target.position.copy(controls.target);}
     for (const marker of world.userData.markers || []) marker.scale.setScalar(1/camera.zoom);
     scene.updateMatrixWorld(true);
-    renderer.render(scene, camera);
+    ao.enabled=current?.view!=='orbit'&&stage.clientWidth>760;
+    scene.environmentIntensity=current?.view==='orbit'?0:.25;
+    if(current?.view==='orbit')renderer.render(scene,camera);else {syncOcclusionCamera(ao,camera);composer.render();}
     const rect = stage.getBoundingClientRect(), placed = [];
     for (const entry of labels) {
       const point = entry.object.getWorldPosition(new THREE.Vector3()).project(camera);
@@ -159,7 +141,7 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     if (!width || !height) return;
     const previousSize = renderer.getSize(new THREE.Vector2());
     if (previousSize.x !== width || previousSize.y !== height) labels.forEach(entry=>delete entry.offsetY);
-    renderer.setSize(width,height,false);
+    renderer.setSize(width,height,false);composer.setSize(width,height);
     const aspect = width/height, halfHeight = Math.max(radiusY,radius/aspect);
     camera.left = -halfHeight*aspect; camera.right = halfHeight*aspect; camera.top = halfHeight; camera.bottom = -halfHeight;
     camera.updateProjectionMatrix(); requestRender();
@@ -180,7 +162,6 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     labels.forEach(entry=>delete entry.offsetY);
     const distance = current?.view === 'orbit' ? Math.max(12,radius*3) : 4;
     camera.position.set(0, current?.view === 'orbit' && current.angle === 'tilt' ? -distance*7/12 : 0, distance);
-    if(current?.view==='origins')camera.position.set(2.1,1.15,4);
     camera.up.set(0,1,0); controls.target.set(0,0,0); camera.lookAt(0,0,0); controls.update(); resize();
   }
   function label(object, name, id, pending) {
@@ -246,7 +227,7 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     originals.forEach((original,i) => {
       const object = original.clone(true);
       object.traverse(node => {
-        if (node.isMesh) { node.userData.cached = true; node.material = new THREE.MeshStandardMaterial({color:color().body,roughness:0.95,metalness:0,wireframe:state.wireframe}); }
+        if (node.isMesh) { node.userData.cached = true; node.material = new THREE.MeshStandardMaterial({color:color().body,roughness:0.87,metalness:0,wireframe:state.wireframe}); }
       });
       const scale = state.compare ? (ids[i]==='bennu'?0.492:0.9)*1.55 : 1.5;
       object.scale.multiplyScalar(scale);
@@ -272,7 +253,6 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     return {group,pending,targets:[],radius:state.compare?1.4:0.94,radiusY:state.compare?1.05:0.94};
   }
   async function show(next) {
-    leaveOriginInspection();
     cancelFlight();
     const state = {...next}, ticket = ++version;
     const changed = !current || ['view','material','scope','angle','compare','mineral'].some(key=>current[key]!==state[key]);
@@ -281,14 +261,9 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     if (contextLost) { onError(new Error('WebGL context lost')); return; }
     if (state.view === 'shape') { root.dataset.modelReady = 'loading'; status.hidden = false; status.textContent = 'Loading public shape model...'; }
     try {
-      const volumeData=state.view==='origins'?(await import('./origins-volume-data.js')).originVolume:null;
-      if(!alive||contextLost||ticket!==version)return false;
-      const originScene=volumeData?createOriginsScene(state.material,document.documentElement.dataset.theme==='light',volumeData):null;
-      originScene?.update(state.originProgress,state.originCutaway);
-      const built = originScene ? {group:originScene.group,pending:[],targets:[],radius:2.65,radiusY:2.25} : state.view === 'orbit' ? orbitGroup(state) : state.view === 'minerals' ? {group:createMineralGroup(state.mineral,state.separated),pending:[],targets:[],radius:1.55} : await shapeGroup(state);
+      const built = state.view === 'orbit' ? orbitGroup(state) : state.view === 'minerals' ? {group:createMineralGroup(state.mineral,state.separated),pending:[],targets:[],radius:1.55} : await shapeGroup(state);
       if (!alive || contextLost || ticket !== version) { disposeObject(built.group); return false; }
       current = state;
-      origins=originScene;
       root.dataset.renderState='rendering';
       radius = built.radius;
       radiusY = built.radiusY || radius;
@@ -304,11 +279,10 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
       labelLayer.hidden = false;
       root.querySelector('[data-fallback]').hidden = true;
       renderer.domElement.style.visibility = '';
-      renderer.setClearColor(color().bg);
+      renderer.setClearColor(color().bg);scene.background=new THREE.Color(state.view==='orbit'?color().bg:0x050a0d);
       status.hidden = true;
       root.querySelector('[data-retry]').hidden = true;
-      if (state.view === 'origins') root.dataset.modelReady = 'origins';
-      else if (state.view === 'minerals') root.dataset.modelReady = state.mineral;
+      if (state.view === 'minerals') root.dataset.modelReady = state.mineral;
       else if (state.view === 'shape') root.dataset.modelReady = state.compare ? 'compare' : state.material;
       else delete root.dataset.modelReady;
       if (changed) reset(); else resize();
@@ -318,7 +292,6 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     } catch (error) { if (ticket===version) onError(error); return false; }
   }
   function action(name) {
-    if(name==='reset')leaveOriginInspection();
     cancelFlight();
     if (name==='reset') reset();
     else if (name==='zoom-in' || name==='zoom-out') { camera.zoom = THREE.MathUtils.clamp(camera.zoom*(name==='zoom-in'?1.4:1/1.4),controls.minZoom,controls.maxZoom); camera.updateProjectionMatrix(); requestRender(); }
@@ -331,14 +304,10 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
   let down = null;
   renderer.domElement.addEventListener('pointerdown', e=> {down=[e.clientX,e.clientY];}, {signal});
   renderer.domElement.addEventListener('pointerup', e=> {
-    if (!down || Math.hypot(e.clientX-down[0],e.clientY-down[1])>5 || !['orbit','origins'].includes(current?.view)) return;
+    if (!down || Math.hypot(e.clientX-down[0],e.clientY-down[1])>5 || current?.view!=='orbit') return;
     const r = stage.getBoundingClientRect(), ray = new THREE.Raycaster();
     ray.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,1-(e.clientY-r.top)/r.height*2),camera);
-    if(current.view==='origins') {
-      const target=origins?.inspectionTarget();
-      const hit=target&&ray.intersectObjects(world.children,true).find(hit=>{for(let node=hit.object;node;node=node.parent)if(!node.visible)return false;return true;});
-      if(hit){let node=hit.object;while(node&&node!==target)node=node.parent;if(node===target)onFeature('origin-carbonate');}
-    } else {const hit = ray.intersectObjects(clickable)[0]; if (hit) onSelect(hit.object.userData.id);}
+    const hit = ray.intersectObjects(clickable)[0]; if (hit) onSelect(hit.object.userData.id);
   }, {signal});
   renderer.domElement.addEventListener('webglcontextlost', event=> {
     event.preventDefault(); cancelFlight();contextLost = true; version++;
@@ -349,14 +318,7 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     contextLost = false; setVisible(visible); if (requested) show(requested);
   }, {signal});
   return {
-    show, setVisible, setTouch, action, rotate, setFx, approach, cancelFlight, inspectOrigin,
-    setOrigins(progress,cutaway) {
-      if(current?.view!=='origins'||!origins)return;
-      leaveOriginInspection();
-      current.originProgress=progress;current.originCutaway=cutaway;
-      if(requested?.view==='origins'){requested.originProgress=progress;requested.originCutaway=cutaway;}
-      origins.update(progress,cutaway);requestRender();
-    },
+    show, setVisible, setTouch, action, rotate, setFx, approach, cancelFlight,
     cancelPending() {version++;},
     position: ephemeris.position,
     cameraState() { return {position:camera.position.toArray(),target:controls.target.toArray(),up:camera.up.toArray(),zoom:camera.zoom}; },
@@ -377,10 +339,9 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     highlight(id) { if (current) show({...current,inspected:id}); },
     theme() { if (requested) show(requested); },
     dispose() {
-      originCamera=null;delete root.dataset.originFocus;
       alive = false; cancelFlight();version++; cancelAnimationFrame(frame); resizeObserver.disconnect(); controls.dispose();
       disposeObject(world); for (const promise of cache.values()) promise.then(object=>disposeObject(object,true)).catch(()=>{});
-      cache.clear(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); labelLayer.replaceChildren();
+      cache.clear();ao.dispose();composer.passes.forEach(pass=>{if(pass!==ao)pass.dispose?.();});composer.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); labelLayer.replaceChildren();
     }
   };
 }
