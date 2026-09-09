@@ -1,0 +1,23 @@
+---
+import '../scripts/origins-study/style.css';
+---
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Origins / A Ryugu evolution study</title><link rel="icon" href="data:,">
+
+</head>
+<body>
+<header><a class="brand" href="https://erdwmads.github.io/research.html">Mads LIU Yong <span>RESEARCH / VISUAL STUDY</span></a><button id="evidence" class="icon" aria-label="Scientific context" title="Scientific context"><i data-lucide="book-open"></i></button></header>
+<main>
+  <section class="observatory" aria-label="Interactive early Solar System evolution">
+    <div id="viewport"><canvas id="scene" aria-label="Three-dimensional scientific illustration"></canvas><p id="loading">Preparing the material study...</p></div>
+    <div class="chapter-copy"><span class="eyebrow" id="eyebrow">01 / THE SOLAR NEBULA</span><h1 id="title">Before the planets</h1><p id="description"></p></div>
+    <aside class="scene-note"><span id="scale"></span><p id="environment"></p></aside>
+    <div class="view-tools"><div class="segmented" aria-label="Color mode"><button id="material-mode" aria-pressed="true">Material</button><button id="phase-mode" aria-pressed="false">Process</button></div><button class="icon" id="zoom-in" aria-label="Zoom in" title="Zoom in"><i data-lucide="zoom-in"></i></button><button class="icon" id="zoom-out" aria-label="Zoom out" title="Zoom out"><i data-lucide="zoom-out"></i></button><button class="icon" id="reset" aria-label="Reset view" title="Reset view"><i data-lucide="rotate-ccw"></i></button></div>
+    <div class="legend" id="legend" hidden></div>
+    <div class="transport"><button id="play" class="icon" aria-label="Pause" title="Pause"><i data-lucide="pause"></i></button><span id="moment">Nebular disk</span><input id="progress" type="range" min="0" max="1" step=".001" value=".1" aria-label="Chapter progression"><output id="progress-value">10%</output></div>
+  </section>
+  <nav class="chapters" aria-label="Evolution chapters"><button data-stage="0" aria-current="step"><span>01</span><strong>Dust & ice</strong><small>A cold beginning</small></button><button data-stage="1"><span>02</span><strong>Collision & growth</strong><small>A parent takes shape</small></button><button data-stage="2"><span>03</span><strong>Water & rock</strong><small>An interior transformed</small></button><button data-stage="3"><span>04</span><strong>Breakup & inheritance</strong><small>A smaller world</small></button></nav>
+  <footer><p>Proposed Ryugu-parent evolution <span>/</span> Nakamura et al., 2023</p><p>Conceptual 3D illustration. Geometry, colors and timing are not a measured reconstruction.</p></footer>
+</main>
+<dialog id="sources"><button class="icon close" aria-label="Close scientific context" title="Close"><i data-lucide="x"></i></button><span class="eyebrow">EVIDENCE & INTERPRETATION</span><h2>A model, not a recovered film.</h2><p>The sequence follows the evolution figure on the first page of Nakamura et al. The paper proposes a cold, ice-bearing parent, internal heating and aqueous alteration, followed by disruption and reaccretion.</p><dl><dt>Supported sequence</dt><dd>Accretion of rock and ice; ice melting; water-rock reactions; cooling; a later impact; preservation and reaccretion of less-heated material.</dd><dt>Artist's interpretation</dt><dd>Disk structure, collision paths, light, material colors and internal textures. Early collisions are authored examples, not outputs of the paper's thermal model. Not every real collision produces growth.</dd><dt>Light & color</dt><dd>The external disk view represents scattered light. The cold midplane and interiors use illustrative lighting to make normally obscured material visible. Process colors are categorical overlays, not visible emission or a computed temperature field.</dd><dt>Scale & time</dt><dd>Chapters change scale and compress very different timescales. No measured orbital positions, snow-line radii or mineral proportions are implied.</dd><dt>Orgueil</dt><dd>Orgueil's parent is unknown. This Ryugu-based model is a comparison context, not an identification of Orgueil's parent body.</dd></dl><p class="source-links"><a href="https://doi.org/10.1126/science.abn8671" target="_blank" rel="noopener">Nakamura et al. / Science</a><a href="https://global.jaxa.jp/press/2022/09/20220923-1_e.html" target="_blank" rel="noopener">JAXA / Stone-team results</a><a href="https://www.eso.org/public/news/eso1333/" target="_blank" rel="noopener">ESO / Shielded disk midplanes</a></p></dialog>
+<script>import '../scripts/origins-study/main.js';</script></body></html>
