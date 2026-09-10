@@ -1,3 +1,4 @@
+import {toggleFx} from './display-settings-helper.mjs';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
@@ -9,9 +10,10 @@ try {
   const page = await context.newPage();
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
+  await page.addInitScript(()=>sessionStorage.setItem('mads-cosmic-arrival-v1','done'));
   await page.goto(`${base}/index.html`, { waitUntil: 'networkidle' });
   assert.equal(await page.locator('button[data-polarisation]').count(), 1, 'missing accessible logo controller');
-  if (await page.locator('html').evaluate(el => el.classList.contains('ambient-fx-disabled'))) await page.locator('.ambient-fx-toggle').click();
+  if (await page.locator('html').evaluate(el => el.classList.contains('ambient-fx-disabled'))) await toggleFx(page);
   await page.locator('[data-polarisation]').focus();
   await page.keyboard.down('ArrowRight');
   assert.equal(await page.locator('html').getAttribute('data-polarising'), '');
@@ -42,7 +44,7 @@ try {
   assert.equal(await page.locator('.evidence-atlas[open]').count(), 0);
   assert.ok(await page.locator('.ambient-space-layer').evaluate(el => !el.classList.contains('ambient-paused')), 'background particles did not resume after atlas');
   assert.ok(await page.locator('[data-public-atlas]').evaluate(el => el === document.activeElement));
-  await page.locator('.ambient-fx-toggle').click();
+  await toggleFx(page);
   await page.evaluate(() => { window.traceRan = false; });
   await page.locator('.nav a[href="cv.html"]').click();
   await page.waitForURL('**/cv.html');

@@ -57,49 +57,15 @@ try {
   assert.match(await root.locator('[data-sample-image]').getAttribute('src'),/ryugu-sample/);
   await page.waitForFunction(()=>{const img=document.querySelector('[data-sample-image]');return img.complete&&img.naturalWidth>0;});
   for(const material of ['bennu','ryugu','orgueil']) {
-    await root.locator(`[data-material="${material}"]`).click();
-    await root.locator('[data-action="journey-start"]').click();
-    await page.waitForFunction(()=>!document.querySelector('.planetary').dataset.transitioning);
-    const steps=material==='orgueil'?['sample','minerals']:['orbit','shape','sample','minerals'];
-    assert.equal(await root.getAttribute('data-mode'),steps[0]);
-    assert.equal(await root.getAttribute('data-journey'),'active');
-    for(const view of steps.slice(1)) {
-      await root.locator('[data-action="journey-next"]').click();
-      await page.waitForFunction(view=>{const r=document.querySelector('.planetary');return r.dataset.mode===view&&!r.dataset.transitioning;},view);
+    await root.locator('[data-material="'+material+'"]').click();
+    for(const view of ['orbit','shape','sample','minerals']) {
+      await root.locator('[data-view="'+view+'"]').click();
+      assert.equal(await root.getAttribute('data-mode'),view);
       if(view==='sample')assert.equal(await root.locator('[data-stage]').isVisible(),false);
-      if(view==='shape')assert.equal(await root.getAttribute('data-model-ready'),material);
     }
-    assert.equal(await root.locator('[data-action="journey-next"]').isDisabled(),true);
-    await root.locator('[data-action="journey-prev"]').click();
-    await page.waitForFunction(()=>!document.querySelector('.planetary').dataset.transitioning);
-    assert.equal(await root.getAttribute('data-mode'),'sample');
-    await root.locator('[data-action="journey-end"]').click();
-    assert.equal(await root.getAttribute('data-journey'),'off');
   }
-  await root.locator('[data-material="bennu"]').click();
-  await root.locator('[data-action="journey-start"]').click();
-  await page.waitForFunction(()=>!document.querySelector('.planetary').dataset.transitioning);
-  await root.locator('[data-stage]').scrollIntoViewIfNeeded();
-  await page.waitForTimeout(100);
-  await page.evaluate(()=>{
-    window.__madsPowerState={lowPower:false};
-    window.dispatchEvent(new CustomEvent('mads:fx-state',{detail:{enabled:true}}));
-    document.querySelector('[data-action="journey-next"]').click();
-  });
-  assert.equal(await root.getAttribute('data-focus-fx'),'on');
-  assert.equal(await root.getAttribute('data-transitioning'),'true');
-  await root.dispatchEvent('keydown',{key:'Escape',bubbles:true});
-  assert.equal(await root.getAttribute('data-journey'),'off');
-  await page.waitForTimeout(650);
-  assert.equal(await root.getAttribute('data-mode'),'orbit');
-  assert.equal(await root.getAttribute('data-transitioning'),null);
   await page.emulateMedia({reducedMotion:'reduce'});
-  await root.locator('[data-action="journey-start"]').click();
-  await root.locator('[data-action="journey-next"]').click();
-  await page.waitForFunction(()=>!document.querySelector('.planetary').dataset.transitioning);
-  assert.equal(await root.getAttribute('data-mode'),'shape');
   assert.equal(await root.getAttribute('data-focus-fx'),'off');
-  await root.locator('[data-action="journey-end"]').click();
   await root.locator('[data-view="minerals"]').click();
   await root.locator('[data-mineral="matrix"]').click();
   await root.locator('[data-mineral-detail]').check();
@@ -128,5 +94,5 @@ try {
     }
   }
   assert.deepEqual(errors,[]);
-  console.log('Exploration: focus, questions, orbit/mineral links, sample images, three journeys, interruption, reduced motion and 8 responsive layouts passed.');
+  console.log('Exploration: focus, questions, orbit/mineral links, sample images, direct view switching, reduced motion and 8 responsive layouts passed.');
 } finally {await browser.close();}

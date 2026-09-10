@@ -16105,15 +16105,7 @@ body.mads-soft-nav-active main {
   transition-property: none !important;
 }
 
-html.mads-soft-nav-active .ui2046-layer *,
-body.mads-soft-nav-active .ui2046-layer *,
-html.mads-soft-nav-active .ambient-space-layer *,
-body.mads-soft-nav-active .ambient-space-layer *,
-html.mads-soft-nav-active .ui2046-progress span,
-body.mads-soft-nav-active .ui2046-progress span {
-  animation-play-state: paused !important;
-  transition-property: none !important;
-}
+/* Persistent ambient effects continue while only page content fades. */
 
 /* Paper Shelf filters */
 .paper-shelf-tools {

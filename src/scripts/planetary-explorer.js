@@ -1,4 +1,4 @@
-import { createElement, RotateCcw, ZoomIn, ZoomOut, Hand, Play, Pause, Clock3, Link, Route, ArrowLeft, ArrowRight, X } from 'lucide';
+import { createElement, RotateCcw, ZoomIn, ZoomOut, Hand, Play, Pause, Clock3, Link } from 'lucide';
 import { mineralModels } from './mineral-guide.js';
 import { initResearchQuestions } from './research-questions.js';
 import { encodeObservation, decodeObservation, legacyOriginsDestination } from './planetary-view-link.js';
@@ -7,7 +7,7 @@ import { samplePhotos } from './planetary-samples.js';
 const materials = {
   bennu: { name: 'Bennu', mission: 'OSIRIS-REx', size: 'About 492 m', source: 'https://science.nasa.gov/resource/bennu-3d-model/', photo: '/assets/img/research-scale/bennu-whole.png', shape: 'A small, top-shaped asteroid with an equatorial bulge and a rough, boulder-rich surface.', mineral: 'Returned Bennu material records water-rock interaction. Published analyses describe hydrated silicates, carbonates and other phases; the same-looking grain need not be the same mineral.', citation: 'https://doi.org/10.1111/maps.14227' },
   ryugu: { name: 'Ryugu', mission: 'Hayabusa2', size: 'About 900 m', source: 'https://data.darts.isas.jaxa.jp/pub/hayabusa2/paper/Watanabe_2019/', photo: '/assets/img/research-scale/ryugu-jaxa.jpg', shape: 'A top-shaped asteroid with a prominent equatorial ridge. Its irregular relief comes from the published shape mesh, not a procedurally generated rock.', mineral: 'Ryugu samples have a CI-like chemical composition and preserve aqueous alteration. Comparing their minerals with Orgueil tests similarities without assuming an identical geological history.', citation: 'https://www.isas.jaxa.jp/en/topics/003094.html' },
-  orgueil: { name: 'CI / Orgueil', mission: 'Meteorite specimen', size: 'Specimen, not an asteroid', source: 'https://naturalhistory.si.edu/object/nmnhmineralsciences_1017941', photo: '/assets/img/research-scale/orgueil-smithsonian.jpg', shape: 'Orgueil is a CI1 meteorite, not a known asteroid shape. This Smithsonian specimen photograph is not a 3D scan or the author\'s experimental sample.', mineral: 'The research focus is dolomite in Orgueil: its chemistry, crystal structure and relationship to the surrounding matrix. Mineral textures can constrain alteration processes when supported by analysis.', citation: 'https://www.mnhn.fr/fr/meteorite-d-orgueil' }
+  orgueil: { name: 'CI / Orgueil', mission: 'Meteorite specimen', size: 'Specimen, not an asteroid', source: 'https://naturalhistory.si.edu/object/nmnhmineralsciences_1017941', photo: '/assets/img/research-scale/orgueil-smithsonian.jpg', shape: 'No measured three-dimensional scan of this Orgueil specimen is supplied. Open Samples to view the Smithsonian reference photograph.', mineral: 'The research focus is dolomite in Orgueil: its chemistry, crystal structure and relationship to the surrounding matrix. Mineral textures can constrain alteration processes when supported by analysis.', citation: 'https://www.mnhn.fr/fr/meteorite-d-orgueil' }
 };
 let cleanup = () => {};
 
@@ -25,8 +25,8 @@ function init() {
   const state = {...defaults};
   let pendingObservation=decodeObservation(location.hash),restoreVersion=0,syncingMaterial=false,lastHash=location.hash;
   let renderVersion=0,rendering=false,restoring=false,shareVersion=0;
-  const icons = { reset: RotateCcw, 'zoom-in': ZoomIn, 'zoom-out': ZoomOut, hand: Hand, play: Play, now: Clock3, share: Link, route:Route,previous:ArrowLeft,next:ArrowRight,close:X };
-  root.querySelectorAll('[data-icon]').forEach(host => host.append(createElement(icons[host.dataset.icon], { 'aria-hidden': 'true', width: 20, height: 20 })));
+  const icons = { reset: RotateCcw, 'zoom-in': ZoomIn, 'zoom-out': ZoomOut, hand: Hand, play: Play, now: Clock3, share: Link };
+  root.querySelectorAll('[data-icon]').forEach(host => host.replaceChildren(createElement(icons[host.dataset.icon], { 'aria-hidden': 'true', width: 20, height: 20 })));
   let viewer, data, starting = false, visible = false, timeline, playing = false, live = false, clockFrame = 0, lastFrame = 0, lastText = 0;
   const dayMs = 86400000;
   const lastDay = () => Number(el('timeline').max)/24;
@@ -36,69 +36,19 @@ function init() {
     button.setAttribute('aria-pressed',String(enabled));
     button.title=enabled?'Return to page scrolling':'Enable model rotation and pinch zoom';
     button.setAttribute('aria-label',button.title);
+    button.querySelector('[data-interact-label]').textContent=enabled?'Done':'Explore';
+    root.querySelector('.planetary-interaction-bar>span').textContent=enabled?'Drag to rotate · pinch to zoom':'Swipe to scroll the page';
     el('stage').toggleAttribute('data-touch-active',enabled);viewer?.setTouch(enabled);
   }
   matchMedia('(pointer: coarse)').addEventListener('change',()=>touchMode(false),{signal});
-  let journey=false,journeyVersion=0,fade=null;
-  const journeySteps=()=>state.material==='orgueil'?['sample','minerals']:['orbit','shape','sample','minerals'];
-  const scaleNames={orbit:'Orbital setting',shape:'Asteroid shape',sample:'Specimen photograph',minerals:'Mineral forms'};
-  function shareUI() {el('share').disabled=!viewer || rendering || restoring || !!root.dataset.transitioning || (!el('stage').hidden && root.dataset.renderState==='error');}
-  function journeyUI() {
-    root.dataset.journey=journey?'active':'off';
-    const start=root.querySelector('[data-action="journey-start"]');
-    start.hidden=journey;
-    el('journey-label').textContent=state.material==='orgueil'?'From specimen to minerals':'From asteroid to minerals';
-    start.title=state.material==='orgueil'?'Guided tour: specimen photograph and illustrative mineral forms':'Guided tour: orbits, shapes, samples and illustrative mineral forms';
-    el('journey-controls').hidden=!journey;
-    const steps=journeySteps(),index=steps.indexOf(state.view);
-    el('journey-status').textContent=`${index+1} / ${steps.length} · ${scaleNames[state.view]}`;
-    for(const [action,step,direction] of [['journey-prev',index-1,'Previous'],['journey-next',index+1,'Next']]) {
-      const button=root.querySelector(`[data-action="${action}"]`),destination=steps[step];
-      button.disabled=!destination || !!root.dataset.transitioning;
-      button.title=destination?`${direction}: ${scaleNames[destination]}`:direction==='Next'?'Final step':'First step';
-      button.setAttribute('aria-label',button.title);
-    }
-  }
-  function cancelJourney(end=true) {
-    const returnFocus=end && el('journey-controls').contains(document.activeElement);
-    journeyVersion++;viewer?.cancelFlight();fade?.cancel();fade=null;
-    delete root.dataset.transitioning;
-    if(end)journey=false;
-    journeyUI();
-    shareUI();
-    if(returnFocus)root.querySelector('[data-action="journey-start"]').focus({preventScroll:true});
-  }
+  function shareUI() {el('share').disabled=!viewer || rendering || restoring || (!el('stage').hidden && root.dataset.renderState==='error');}
   function clearShare() {shareVersion++;el('share-link').hidden=true;el('share-status').textContent='';}
-  function interrupt(endJourney=true) {restoreVersion++;pendingObservation=null;restoring=false;cancelJourney(endJourney);clearShare();}
-  async function travel(view) {
-    cancelJourney(false);
-    const ticket=journeyVersion;
-    playing=false;live=false;clockUI();scheduleClock();
-    const animate=root.dataset.focusFx==='on' && visible && !document.hidden;
-    root.dataset.transitioning='true';
-    journeyUI();
-    shareUI();
-    const forward=journeySteps().indexOf(view)>journeySteps().indexOf(state.view);
-    if(animate && forward && viewer && !el('stage').hidden && state.material!=='orgueil' && root.dataset.renderState!=='error') {
-      const completed=await viewer.approach(state.material);
-      if(!completed || ticket!==journeyVersion || signal.aborted) {if(ticket===journeyVersion)cancelJourney(false);return;}
-    }
-    if(ticket!==journeyVersion || signal.aborted)return;
-    state.view=view;state.feature=null;
-    await sync();
-    if(ticket!==journeyVersion || signal.aborted)return;
-    if(animate) {
-      fade=root.querySelector('.planetary-visual').animate([{opacity:.25},{opacity:1}],{duration:220,easing:'ease-out'});
-      try {await fade.finished;} catch {}
-    }
-    if(ticket===journeyVersion) {fade=null;delete root.dataset.transitioning;journeyUI();shareUI();}
-  }
+  function interrupt() {restoreVersion++;pendingObservation=null;restoring=false;shareUI();clearShare();}
   let fxEnabled = !document.documentElement.classList.contains('ambient-fx-disabled');
   function syncFx(event) {
     if (typeof event?.detail?.enabled === 'boolean') fxEnabled = event.detail.enabled;
     const enabled = fxEnabled && !reduced.matches && !window.__madsPowerState?.lowPower;
     root.dataset.focusFx = enabled ? 'on' : 'off';
-    if(!enabled)cancelJourney(false);
     viewer?.setFx(enabled);
   }
   window.addEventListener('mads:fx-state',syncFx,{signal});
@@ -174,7 +124,7 @@ function init() {
       el('evidence').textContent = 'JPL ephemeris · selected UTC time';
       el('scale-note').textContent = 'Heliocentric · distances in AU';
       el('source').href = 'https://ssd.jpl.nasa.gov/horizons/';
-      el('boundary').textContent = 'Markers follow the selected UTC date using interpolated daily ephemerides. Orbit guide curves span about one revolution from September 2026. Marker sizes are exaggerated; current orbits are not formation locations.';
+      el('boundary').textContent = 'Models follow the selected UTC date using interpolated daily ephemerides. Orbit guides span about one revolution from September 2026. Body models are enlarged independently, not to scale; current orbits are not formation locations.';
       if (state.material === 'orgueil') el('boundary').textContent += ' Orgueil has no established parent-body orbit; none is drawn.';
       if (state.inspected === 'orgueil') {
         el('description').textContent = 'Orgueil\'s specific parent body and pre-atmospheric orbit are not established. No CI orbit is drawn.';
@@ -190,7 +140,7 @@ function init() {
         el('interpretation').textContent = 'Orbital proximity does not imply that these bodies formed together. Their mineral records provide an independent line of evidence.';
       }
     } else if (state.view === 'shape') {
-      el('evidence').textContent = state.material === 'orgueil' ? 'Museum specimen · photograph' : 'Public shape model · neutral lighting';
+      el('evidence').textContent = state.material === 'orgueil' ? 'No measured specimen model' : 'Public shape model · neutral lighting';
       el('description').textContent = state.feature === 'equator' && state.material !== 'orgueil' ? `${m.name}'s equatorial profile contributes to its top-shaped outline. The annotation is attached to a vertex in the displayed mesh; it is not a mineral identification or a measured ridge-height estimate.` : m.shape;
       el('scale-note').textContent = state.compare && state.material !== 'orgueil' ? 'Approximate size comparison · common scale' : 'Shape view · display orientation';
       facts([['Context', m.mission], ['Size', m.size]]);
@@ -246,6 +196,7 @@ function init() {
     }
     el('mineral-diagram').hidden = state.view !== 'minerals';
     el('camera-tools').hidden = !renderable;
+    root.querySelector('.planetary-interaction-bar').hidden=!renderable;
     el('orbit-tools').hidden = state.view !== 'orbit';
     el('shape-tools').hidden = state.view !== 'shape' || state.material === 'orgueil';
     el('time-controls').hidden = state.view !== 'orbit';
@@ -253,7 +204,6 @@ function init() {
     el('mineral-detail').checked=state.separated;
     for(const action of ['compare','wireframe']) root.querySelector(`[data-action="${action}"]`).setAttribute('aria-pressed',String(state[action]));
     describe();
-    journeyUI();
     if(!renderable)viewer?.cancelPending();
     const renderRequest = viewer && renderable ? viewer.show(state) : Promise.resolve(true);
     viewer?.setVisible(visible && renderable && !document.hidden);
@@ -270,7 +220,6 @@ function init() {
     finally {syncingMaterial=false;}
   }
   async function restoreObservation(saved) {
-    cancelJourney();
     clearShare();
     const ticket=++restoreVersion;
     restoring=true;shareUI();
@@ -344,10 +293,10 @@ function init() {
       const { createPlanetaryRenderer } = await import('./planetary-renderer.js');
       if (signal.aborted) return;
       viewer = createPlanetaryRenderer(root, data, { signal, onSelect: id => {
-        interrupt(Boolean(materials[id] && id!==state.material));
+        interrupt();
         if (materials[id]) selectMaterial(id);
         else { state.inspected = id; describe(); viewer.highlight(id); }
-      }, onFeature: feature => { interrupt(false);state.feature = feature; describe(); }, onError: failure });
+      }, onFeature: feature => { interrupt();state.feature = feature; describe(); }, onError: failure });
       sync();
       syncFx();
       el('time-controls').disabled = false;
@@ -360,28 +309,14 @@ function init() {
     const button = event.target.closest('button');
     if (!button || button.disabled) return;
     if(button.dataset.view===state.view || button.dataset.material===state.material && state.inspected===state.material || button.dataset.mineral===state.mineral)return;
-    const isJourney=button.dataset.action?.startsWith('journey-');
-    if(!isJourney && button.dataset.action!=='share' && (button.dataset.action || button.dataset.view || button.dataset.material || button.dataset.mineral))interrupt(Boolean(button.dataset.view || button.dataset.material));
+    if(button.dataset.action!=='share' && (button.dataset.action || button.dataset.view || button.dataset.material || button.dataset.mineral))interrupt();
     if (button.dataset.view) { state.view = button.dataset.view; sync(); }
     if (button.dataset.material) selectMaterial(button.dataset.material);
     if (button.dataset.mineral) { state.mineral = button.dataset.mineral; sync(); }
     const action = button.dataset.action;
     if ((action === 'play' || action === 'now') && root.dataset.renderState === 'error') return;
-    if(isJourney) {
-      restoreVersion++;pendingObservation=null;restoring=false;clearShare();
-      if(action==='journey-end') {cancelJourney();root.querySelector('[data-action="journey-start"]').focus();}
-      else if(action==='journey-start') {
-        journey=true;state.inspected=state.material;state.compare=false;state.wireframe=false;
-        const movement=travel(journeySteps()[0]),ticket=journeyVersion;
-        movement.then(()=>{
-          if(!signal.aborted && journey && ticket===journeyVersion && !root.dataset.transitioning && (document.activeElement===button || document.activeElement===document.body)) {
-            root.querySelector('[data-action="journey-next"]').focus({preventScroll:true});
-          }
-        });
-      }
-      else {const steps=journeySteps(),next=steps[steps.indexOf(state.view)+(action==='journey-next'?1:-1)];if(next)travel(next);}
-    }
-    else if (action === 'share') shareObservation();
+    if (action === 'share') shareObservation();
+    else if (action === 'show-sample') { state.view='sample';sync();root.querySelector('[data-view="sample"]').focus({preventScroll:true}); }
     else if (action === 'retry') { if (viewer) sync(); else start(); }
     else if (action === 'play') { playing = !playing; if (playing && state.day>=lastDay()) { state.day=0; live=false; } timeUI(); describe(); clockUI(); scheduleClock(); }
     else if (action === 'now') {
@@ -394,16 +329,16 @@ function init() {
     else if (action === 'interact') touchMode(button.getAttribute('aria-pressed')!=='true');
     else if (action) viewer?.action(action);
   }, { signal });
-  root.addEventListener('input', event => { if (event.target.matches('[data-timeline]')) {interrupt(false);setDay(Number(event.target.value)/24);} }, {signal});
-  el('stage').addEventListener('pointerdown',()=>interrupt(false),{signal});
-  el('stage').addEventListener('wheel',()=>interrupt(false),{signal,passive:true});
+  root.addEventListener('input', event => { if (event.target.matches('[data-timeline]')) {interrupt();setDay(Number(event.target.value)/24);} }, {signal});
+  el('stage').addEventListener('pointerdown',()=>interrupt(),{signal});
+  el('stage').addEventListener('wheel',()=>interrupt(),{signal,passive:true});
   el('sample-image').addEventListener('error',()=>{el('sample-image').hidden=true;el('sample-error').hidden=false;},{signal});
   el('sample-image').addEventListener('load',()=>{el('sample-image').hidden=false;el('sample-error').hidden=true;},{signal});
   root.addEventListener('focusin', event => {
     if (playing && event.target.matches('[data-date],[data-timeline]')) { playing=false; live=false; timeUI(); describe(); clockUI(); scheduleClock(); }
   }, {signal});
   root.addEventListener('change', event => {
-    interrupt(false);
+    interrupt();
     if (event.target.matches('[data-date]')) { setDay((Date.parse(`${event.target.value}Z`)-Date.parse(timeline.start))/dayMs); return; }
     if (event.target.matches('[data-speed]')) { live=false; clockUI(); return; }
     if (event.target.matches('[data-mineral-detail]')) state.separated = event.target.checked;
@@ -424,7 +359,7 @@ function init() {
       event.preventDefault();
       if(state.view!==tabs[index].dataset.view) {interrupt();state.view = tabs[index].dataset.view;sync();}
       tabs[index].focus();
-    } else if (event.target === el('stage') && /^Arrow/.test(event.key)) { event.preventDefault(); interrupt(false);viewer?.rotate(event.key); }
+    } else if (event.target === el('stage') && /^Arrow/.test(event.key)) { event.preventDefault(); interrupt();viewer?.rotate(event.key); }
     else if (event.key === 'Escape') { interrupt();touchMode(false); }
   }, { signal });
   window.addEventListener('mads:material-selected', e => { if (!pendingObservation && !syncingMaterial && e.detail?.origin !== 'explorer') {interrupt();selectMaterial(e.detail?.material, false);} }, { signal });
@@ -442,21 +377,20 @@ function init() {
   window.addEventListener('popstate',restoreHash,{signal});
   const intersection = new IntersectionObserver(entries => {
     visible = entries[0].isIntersecting;
-    if(!visible)cancelJourney(false);
     if (visible) start();
     viewer?.setVisible(visible && !el('stage').hidden && !document.hidden);
     scheduleClock();
   });
   intersection.observe(el('visual') || root.querySelector('.planetary-visual'));
-  document.addEventListener('visibilitychange', () => { if(document.hidden)cancelJourney(false);viewer?.setVisible(visible && !el('stage').hidden && !document.hidden); scheduleClock(); }, { signal });
+  document.addEventListener('visibilitychange', () => { viewer?.setVisible(visible && !el('stage').hidden && !document.hidden); scheduleClock(); }, { signal });
   const theme = new MutationObserver(() => {if(!rendering && !restoring)viewer?.theme();});
   theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-  cleanup = () => { cancelJourney();abort.abort(); cancelAnimationFrame(clockFrame); intersection.disconnect(); theme.disconnect(); viewer?.dispose(); delete root.dataset.initialized; };
+  cleanup = () => { abort.abort(); cancelAnimationFrame(clockFrame); intersection.disconnect(); theme.disconnect(); viewer?.dispose(); delete root.dataset.initialized; };
   sync();
   syncFx();
   if(pendingObservation)start();
 }
-window.addEventListener('mads:soft-nav-start', () => cleanup());
+window.addEventListener('mads:soft-nav-before-swap', () => cleanup());
 window.addEventListener('mads:soft-nav-ready', init);
 window.addEventListener('pagehide', () => cleanup());
 window.addEventListener('pageshow', init);

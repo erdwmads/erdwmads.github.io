@@ -8,16 +8,14 @@ const base=process.env.SITE_TEST_URL||'http://127.0.0.1:4322';
 let release=()=>{};
 try {
   const page=await browser.newPage({viewport:{width:1440,height:1000}});
-  await page.goto(`${base}/research.html`,{waitUntil:'networkidle'});
-  const root=page.locator('.planetary');
-  await root.locator('[data-stage]').scrollIntoViewIfNeeded();
-  await page.waitForFunction(()=>document.querySelector('.planetary').dataset.renderState==='ready');
-  await root.locator('[data-action="zoom-in"]').click();
+  // Orbit view now preloads both asteroid meshes; block the first request.
   const hold=new Promise(resolve=>release=resolve);
   await page.route('**/bennu.glb',async route=>{await hold;await route.continue();});
-  await root.locator('[data-material="bennu"]').click();
+  await page.goto(encodeObservation({material:'bennu',view:'shape'},`${base}/research.html`),{waitUntil:'domcontentloaded'});
+  const root=page.locator('.planetary');
+  await root.locator('[data-stage]').scrollIntoViewIfNeeded();
+  await page.waitForFunction(()=>document.querySelector('.planetary').dataset.modelReady==='loading');
   await root.locator('[data-action="zoom-in"]').click();
-  await root.locator('[data-view="shape"]').click();
   await root.locator('[data-action="wireframe"]').click();
   assert.equal(await root.locator('[data-share]').isDisabled(),true,'Never combine a loading view with an old camera');
   release();
@@ -57,7 +55,7 @@ try {
   await soft.waitForFunction(()=>document.querySelector('[data-share-status]')?.textContent==='Saved observation restored');
   assert.equal(await soft.locator('.planetary').getAttribute('data-mode'),'sample');
   assert.equal(await soft.locator('.planetary').getAttribute('data-active-material'),'ryugu');
-  for(const action of ['theme','journey']) {
+  for(const action of ['theme','view']) {
     const loading=await browser.newPage({reducedMotion:'reduce'});
     const pending=new Promise(resolve=>release=resolve);
     await loading.route('**/bennu.glb',async route=>{await pending;await route.continue();});
@@ -65,14 +63,13 @@ try {
     await loading.goto(url,{waitUntil:'domcontentloaded'});
     await loading.waitForFunction(()=>document.querySelector('.planetary')?.dataset.modelReady==='loading');
     if(action==='theme')await loading.evaluate(()=>document.documentElement.dataset.theme='light');
-    else await loading.locator('[data-action="journey-start"]').click();
+    else await loading.locator('[data-view="sample"]').click();
     release();
     if(action==='theme') {
       await loading.waitForFunction(()=>document.querySelector('[data-share-status]').textContent==='Saved observation restored');
       assert.equal(await loading.locator('.planetary').getAttribute('data-zoom'),'2.0000');
     } else {
-      await loading.waitForFunction(()=>!document.querySelector('.planetary').dataset.transitioning);
-      await loading.locator('[data-action="journey-end"]').click();
+      assert.equal(await loading.locator('.planetary').getAttribute('data-mode'),'sample');
     }
     await loading.waitForFunction(()=>!document.querySelector('[data-share]').disabled);
     await loading.close();

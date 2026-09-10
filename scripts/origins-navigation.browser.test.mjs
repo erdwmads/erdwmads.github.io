@@ -11,7 +11,7 @@ try{for(const width of [1440,390,320]){
  await page.addInitScript(()=>sessionStorage.setItem('mads-cosmic-arrival-v1','done'));
  await page.goto(base+'/research.html');const root=page.locator('.planetary');await root.locator('[data-stage]').scrollIntoViewIfNeeded();
  await page.waitForFunction(()=>document.querySelector('.planetary').dataset.renderState==='ready');
- assert.equal(await page.locator('a[href="/origins-study.html"]').count(),1);
+ assert.equal(await page.locator('.site-header .nav a[href="origins-study.html"]').count(),1);
  assert.deepEqual(await root.locator('[role="tablist"] [data-view]').evaluateAll(es=>es.map(e=>e.dataset.view)),['orbit','shape','sample','minerals']);
  assert.equal(await root.locator('[data-origin-controls],[data-origin-step]').count(),0);
  await root.locator('[data-material="bennu"]').click();
@@ -22,9 +22,11 @@ try{for(const width of [1440,390,320]){
  }
  await root.locator('[data-view="orbit"]').focus();await page.keyboard.press('ArrowRight');assert.equal(await root.locator('[data-view="shape"]').getAttribute('aria-selected'),'true');
  await page.locator('.planetary-heading').screenshot({path:join(tmpdir(),'unified-origins-'+width+'.png')});
- await root.locator('.planetary-origins-link').click();await page.waitForURL('**/origins-study.html');await page.waitForFunction(()=>window.study);
+ if(width<=760)await page.locator('[data-nav-toggle]').click();
+ await page.locator('.site-header .nav a[href="origins-study.html"]').click();await page.waitForURL('**/origins-study.html');await page.waitForFunction(()=>window.study);
  assert.equal(await page.locator('.chapters [data-stage]').count(),4);
- await page.locator('header .brand').click();await page.waitForURL('**/research.html#planetary-title');
+ if(width<=760)await page.locator('[data-nav-toggle]').click();
+ await page.locator('.site-header .nav a[href="research.html"]').click();await page.waitForURL('**/research.html');
  await page.goto(base+'/research.html#observe=1&view=origins&material=ryugu&originProgress=.65&originCutaway=.85');
  await page.waitForURL('**/origins-study.html#stage=2&progress=0.6');await page.waitForFunction(()=>window.study);
  assert.deepEqual(await page.evaluate(()=>({stage:study.state.stage,progress:study.state.progress,playing:study.state.playing})),{stage:2,progress:.6,playing:false});

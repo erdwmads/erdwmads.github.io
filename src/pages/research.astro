@@ -3,13 +3,15 @@ import LegacyShell from "../components/LegacyShell.astro";
 import EvidenceAtlasData from "../components/EvidenceAtlasData.astro";
 import ResearchScaleJourney from "../components/ResearchScaleJourney.astro";
 import PlanetaryExplorer from "../components/PlanetaryExplorer.astro";
+import SampleMissions from "../components/SampleMissions.astro";
 import { getPageScripts } from "../data/site";
 import mainHtml from "../legacy/research-main.html?raw";
+import methodsHtml from "../legacy/research-methods.html?raw";
 
 const scriptHtml = getPageScripts("research");
 ---
 
-<LegacyShell title='Research | Mads LIU Yong' description='Personal academic website of Mads LIU Yong.' current='research' mainClass='main' path="research.html" scriptHtml={scriptHtml}>
+<LegacyShell title='Research | Mads LIU Yong' description='Cosmic mineralogy research on Orgueil CI1 dolomite, with interactive asteroid orbits, sample-return missions and published microscopy.' current='research' mainClass='main' path="research.html" scriptHtml={scriptHtml}>
   <section>
     <p class="eyebrow">Research</p>
     <h1>Cosmic Mineralogy</h1>
@@ -18,8 +20,13 @@ const scriptHtml = getPageScripts("research");
       in extraterrestrial materials, especially primitive Solar System materials.
     </p>
   </section>
+  <nav class="page-outline" aria-label="Research sections">
+    <a href="#research-focus-title">Research focus</a><a href="#missions-title">Sample-return missions</a><a href="#planetary-title">Materials &amp; orbits</a><a href="#research-scale-title">Microscopy</a><a href="#research-methods-title">Methods</a>
+  </nav>
+  <Fragment set:html={mainHtml} />
+  <SampleMissions />
   <PlanetaryExplorer />
   <ResearchScaleJourney />
-  <Fragment set:html={mainHtml} />
+  <Fragment set:html={methodsHtml} />
   <EvidenceAtlasData />
 </LegacyShell>

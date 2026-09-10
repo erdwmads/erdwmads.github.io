@@ -3,6 +3,7 @@
   const AMBIENT_STORAGE_KEY = "madsAmbientFxEnabled";
   const MOBILE_AMBIENT_MEDIA = "(max-width: 760px), (pointer: coarse)";
   const mobileAmbientQuery = window.matchMedia ? window.matchMedia(MOBILE_AMBIENT_MEDIA) : null;
+  let disposeAmbientLayer;
 
   function prefersReducedMotion() {
     return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -40,6 +41,8 @@
   }
 
   function removeAmbientLayer() {
+    disposeAmbientLayer?.();
+    disposeAmbientLayer = undefined;
     const existing = document.querySelector(".ambient-space-layer");
     if (existing) existing.remove();
     document.documentElement.classList.add("ambient-fx-disabled");
@@ -119,6 +122,15 @@
     const layer = document.createElement("div");
     layer.className = "ambient-space-layer";
     document.body.appendChild(layer);
+    const controller = new AbortController();
+    const timeouts = new Set();
+    function scheduleTimeout(callback, delay) {
+      const timer = window.setTimeout(() => {
+        timeouts.delete(timer);
+        if (layer.isConnected) callback();
+      }, delay);
+      timeouts.add(timer);
+    }
 
     function configureDustMotion(el) {
       const isGoldDust = el.classList.contains("is-gold-dust");
@@ -254,11 +266,11 @@
         el.style.transform = "translate3d(" + dx + "px," + dy + "px,0) rotate(" + angle + "deg)";
       });
 
-      window.setTimeout(function () {
+      scheduleTimeout(function () {
         el.style.opacity = "0";
       }, Math.max(500, duration - 260));
 
-      window.setTimeout(function () {
+      scheduleTimeout(function () {
         el.remove();
       }, duration + 420);
     }
@@ -277,7 +289,7 @@
 
     function shouldPauseAmbient() {
       const state = window.__madsPowerState || {};
-      return document.hidden || state.hidden || state.idle || state.lowPower || document.body.classList.contains("mission-lightbox-open") || document.documentElement.classList.contains("mission-lightbox-open") || document.documentElement.classList.contains("mineral-atlas-open");
+      return !layer.isConnected || !isAmbientEnabled() || document.hidden || state.hidden || state.idle || state.lowPower || document.body.classList.contains("mission-lightbox-open") || document.documentElement.classList.contains("mission-lightbox-open") || document.documentElement.classList.contains("mineral-atlas-open");
     }
 
     function spawnMeteorIfVisible() {
@@ -309,17 +321,23 @@
 
     // Make meteors visible after load, then spawn at a slightly calmer cadence.
     let meteorTimer = null;
+    disposeAmbientLayer = () => {
+      stopMeteorTimer();
+      controller.abort();
+      timeouts.forEach(timer => window.clearTimeout(timer));
+      timeouts.clear();
+    };
 
     spawnMeteorIfVisible();
-    setTimeout(spawnMeteorIfVisible, isMobileAmbient ? 900 : 550);
-    setTimeout(spawnMeteorIfVisible, isMobileAmbient ? 1850 : 1200);
+    scheduleTimeout(spawnMeteorIfVisible, isMobileAmbient ? 900 : 550);
+    scheduleTimeout(spawnMeteorIfVisible, isMobileAmbient ? 1850 : 1200);
     startMeteorTimer();
     syncAmbientPowerState();
 
-    document.addEventListener("visibilitychange", syncAmbientPowerState, { passive: true });
-    window.addEventListener("mads:power-state", syncAmbientPowerState);
-    window.addEventListener("pagehide", syncAmbientPowerState, { passive: true });
-    window.addEventListener("pageshow", syncAmbientPowerState, { passive: true });
+    document.addEventListener("visibilitychange", syncAmbientPowerState, { passive: true, signal: controller.signal });
+    window.addEventListener("mads:power-state", syncAmbientPowerState, { signal: controller.signal });
+    window.addEventListener("pagehide", syncAmbientPowerState, { passive: true, signal: controller.signal });
+    window.addEventListener("pageshow", syncAmbientPowerState, { passive: true, signal: controller.signal });
   }
 
   function bootAmbientSystem() {

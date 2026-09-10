@@ -15,6 +15,7 @@ export const siteMetadata = {
 export const navItems = [
   { href: "index.html", label: "Home", key: "home" },
   { href: "research.html", label: "Research", key: "research" },
+  { href: "origins-study.html", label: "Origins", key: "origins" },
   { href: "paper-shelf.html", label: "Paper Shelf", key: "paper-shelf" },
   { href: "cv.html", label: "CV", key: "cv" },
   { href: "photography.html", label: "Photography", key: "photography" },
@@ -31,6 +32,7 @@ export const researchLogGate = {
 export const contentPages = [
   { href: "index.html", title: "Home", key: "home" },
   { href: "research.html", title: "Research", key: "research" },
+  { href: "origins-study.html", title: "Origins", key: "origins" },
   { href: "research-log.html", title: "Research Log", key: "research-log" },
   { href: "paper-shelf.html", title: "Paper Shelf", key: "paper-shelf" },
   { href: "cv.html", title: "CV", key: "cv" },
@@ -38,7 +40,7 @@ export const contentPages = [
   { href: "contact.html", title: "Contact", key: "contact" }
 ] as const;
 
-export const footerItems = ["(c) 2026 Mads LIU Yong", "What was responsible for making diverse planets in the Solar System?"] as const;
+export const footerItems = ["© 2026 Mads LIU Yong", "What was responsible for making diverse planets in the Solar System?"] as const;
 
 type ScriptSpec = {
   src: string;
@@ -46,24 +48,24 @@ type ScriptSpec = {
 };
 
 const commonScripts: ScriptSpec[] = [
-  { src: "assets/js/site-header.js", defer: true },
+  { src: "assets/js/site-header.js?v=20260910-whole-site", defer: true },
   { src: "assets/js/theme.js?v=20260831-stability", defer: true },
-  { src: "assets/js/ambient-space.js?v=20260909-immersive", defer: true },
-  { src: "assets/js/research-coordinates.js", defer: true },
-  { src: "assets/js/research-scale.js?v=20260907-explorer", defer: true }
+  { src: "assets/js/ambient-space.js?v=20260910-responsive-fx", defer: true },
+  { src: "assets/js/research-coordinates.js?v=20260910-whole-site", defer: true }
 ];
 
-const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20260909-arrival", defer: true };
+const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20260910-responsive-fx", defer: true };
 const powerManagerScript: ScriptSpec = { src: "assets/js/power-manager.js" };
-const legacyNavigationScript: ScriptSpec = { src: "assets/js/legacy-navigation.js?v=20260909-modules", defer: true };
+const legacyNavigationScript: ScriptSpec = { src: "assets/js/legacy-navigation.js?v=20260910-whole-site", defer: true };
 
 const pageScripts: Record<string, ScriptSpec[]> = {
-  contact: [...commonScripts, interfaceScript],
+  contact: [...commonScripts, { src: "assets/js/contact.js?v=20260910-whole-site", defer: true }, interfaceScript],
   cv: [...commonScripts, interfaceScript],
   home: [...commonScripts, interfaceScript],
-  "paper-shelf": [...commonScripts, { src: "assets/js/paper-shelf.js", defer: true }, interfaceScript],
+  "paper-shelf": [...commonScripts, { src: "assets/js/paper-shelf.js?v=20260910-whole-site", defer: true }, interfaceScript],
   photography: [...commonScripts, interfaceScript],
   research: [...commonScripts, interfaceScript],
+  origins: [...commonScripts, interfaceScript],
   "research-log": [...commonScripts, interfaceScript],
   // Password-gated public page; keep it out of sitemap contentPages.
   "research-graduation": [
@@ -87,8 +89,8 @@ export function getPageScripts(pageKey: keyof typeof pageScripts | string, inlin
   return [
     renderScript(powerManagerScript),
     scripts.map(renderScript).join("\n"),
-    renderScript({ src: "assets/js/observatory-interactions.js?v=20260910-layout", defer: true }),
-    renderScript({ src: "assets/js/mineral-interactions.js?v=20260910-layout", defer: true }),
+    renderScript({ src: "assets/js/observatory-interactions.js?v=20260910-whole-site", defer: true }),
+    renderScript({ src: "assets/js/mineral-interactions.js?v=20260910-evidence", defer: true }),
     inlineHtml,
     renderScript(legacyNavigationScript)
   ].filter(Boolean).join("\n\n");

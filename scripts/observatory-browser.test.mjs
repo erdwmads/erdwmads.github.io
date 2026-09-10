@@ -1,3 +1,4 @@
+import {toggleFx} from './display-settings-helper.mjs';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 
@@ -19,14 +20,14 @@ try {
   await page.getByLabel('Immersive', { exact: true }).check();
   assert.equal(await page.locator('html').getAttribute('data-fx-intensity'), 'immersive');
   await page.keyboard.press('Escape');
-  await page.locator('.ambient-fx-toggle').click();
+  await toggleFx(page);
   const researchButton = page.locator('main .button').first();
   await researchButton.hover();
   await page.waitForTimeout(100);
   assert.equal(await researchButton.getAttribute('data-edge-active'), '');
-  await page.locator('.ambient-fx-toggle').click();
+  await toggleFx(page);
   assert.equal(await page.locator('[data-edge-active]').count(), 0);
-  await page.locator('.ambient-fx-toggle').click();
+  await toggleFx(page);
   await page.locator('.nav a[href="photography.html"]').hover();
   assert.equal(await page.locator('body').getAttribute('data-orbit-route'), 'photography');
   assert.equal(await page.locator('.ui2046-system-orbit.is-route-active').count(), 1);

@@ -1,6 +1,8 @@
 ---
 import { brand, footerItems, navItems, researchLogGate, siteMetadata } from "../data/site";
 import CosmicArrival from './CosmicArrival.astro';
+import '../scripts/origins-study/style.css';
+import '../scripts/sample-missions/style.css';
 
 interface Props {
   title: string;
@@ -80,24 +82,28 @@ const bodyClass = `site-refined ui-page-${current}`;
     }
   </style>
   <link rel="preload" href="assets/fonts/montserrat-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="assets/css/style.css?v=20260908-stable-controls">
+  <link rel="stylesheet" href="assets/css/style.css?v=20260910-continuous">
   <link rel="stylesheet" href="assets/css/tokens.css">
   <link rel="stylesheet" href="assets/css/shell-evolution.css?v=20260831-stability">
   <link rel="stylesheet" href="assets/css/research-log-evolution.css?v=20260910-layout">
-    <link rel="stylesheet" href="assets/css/observatory.css?v=20260910-layout">
+    <link rel="stylesheet" href="assets/css/observatory.css?v=20260910-navigation">
   <link rel="stylesheet" href="assets/css/observatory-experience.css?v=20260909-hierarchy">
     <link rel="stylesheet" href="assets/css/mineral-interactions.css?v=20260907-workflow">
-    <link rel="stylesheet" href="assets/css/research-scale.css?v=20260907-reading">
-  <link rel="stylesheet" href="assets/css/planetary-explorer.css?v=20260909-evolution">
+    <link rel="stylesheet" href="assets/css/research-scale.css?v=20260910-evidence">
+  <link rel="stylesheet" href="assets/css/planetary-explorer.css?v=20260910-whole-site">
     <link rel="stylesheet" href="assets/css/typography.css?v=20260909-theme-geometry">
+  <link rel="stylesheet" href="assets/css/site-refinement.css?v=20260910-flight-frames">
     <script>
       import '../scripts/planetary-explorer.js';
+      import '../scripts/origins-study/loader.js';
+      import '../scripts/sample-missions/loader.js';
     </script>
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="assets/img/favicon.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 </head>
 <body id="academic-site" class={bodyClass}>
+<a class="site-skip-link" href="#main-content">Skip to content</a>
 <CosmicArrival home={current === 'home'} />
 <header class="site-header">
   <div class="header-inner">
@@ -132,12 +138,13 @@ const bodyClass = `site-refined ui-page-${current}`;
     </div>
   </div>
 </header>
-<main class={mainClass}>
+<main id="main-content" class={mainClass} tabindex="-1">
   <slot />
 </main>
 <footer class="site-footer">
   <div class="footer-inner">
     {footerItems.map((item) => <span>{item}</span>)}
+    <a href="#main-content">Back to top ↑</a>
   </div>
 </footer>
 <Fragment set:html={scriptHtml} />

@@ -1,3 +1,4 @@
+import {buildSectionGeometry} from './section-geometry.js';
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -13,7 +14,7 @@ assert(surface);assert(point.distanceTo(surface.point)<.009,'Ice patch '+i+' is 
 }
 });
 test('the ice shown in the cutout lies in open pores rather than behind the section',()=>{
-const scene=alteration();scene.update(0,false);scene.group.updateWorldMatrix(true,true);
+const scene=alteration(buildSectionGeometry());scene.update(0,false);scene.group.updateWorldMatrix(true,true);
 const rock=scene.group.getObjectByName('alteration-matrix'),ray=new T.Raycaster();let count=0;
 scene.group.traverse(mesh=>{if(mesh.name!=='embedded-ice')return;count++;
 ray.set(new T.Vector3(mesh.position.x,mesh.position.y,2),new T.Vector3(0,0,-1));

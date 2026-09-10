@@ -127,14 +127,16 @@
     dock = document.createElement('div');
     dock.className = 'obs-fx-dock';
     dock.innerHTML = `<button class="obs-fx-settings" type="button" title="Visual effects" aria-label="Visual effects" aria-expanded="false" aria-controls="obs-fx-panel">${icon('settings')}</button>
-      <fieldset id="obs-fx-panel" class="obs-fx-panel" hidden><legend>FX intensity</legend>
+      <fieldset id="obs-fx-panel" class="obs-fx-panel" hidden><legend>Visual effects</legend>
         <label><input type="radio" name="obs-intensity" value="standard"> Standard</label>
         <label><input type="radio" name="obs-intensity" value="immersive"> Immersive</label>
       </fieldset>`;
-    dock.prepend(fx);
     body.appendChild(dock);
     const settings = dock.querySelector('.obs-fx-settings');
     const panel = dock.querySelector('fieldset');
+    panel.querySelector('legend').after(fx);
+    const coordinates = document.querySelector('.research-coordinates');
+    if (coordinates) panel.appendChild(coordinates);
     const closeSettings = () => { panel.hidden = true; settings.setAttribute('aria-expanded', 'false'); };
     const compactDock = matchMedia('(max-width: 760px), (pointer: coarse)');
     const resetSettings = () => {

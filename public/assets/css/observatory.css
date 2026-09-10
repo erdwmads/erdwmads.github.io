@@ -494,3 +494,9 @@ html[data-theme]:is(.mads-page-hidden, .mads-power-idle, .mads-power-low, .missi
   html[data-theme] body#academic-site.ui-page-home .hero .button-row { grid-template-columns: minmax(0, 1fr) !important; flex-direction: column !important; }
   html[data-theme] body#academic-site.ui-page-home .hero .button-row .button { width: 100% !important; }
 }
+
+/* Keep seven navigation destinations readable on narrow desktop/tablet windows. */
+@media (min-width: 761px) and (max-width: 1000px) {
+  html[data-theme] body#academic-site .header-actions { flex-wrap: wrap !important; justify-content: flex-start !important; }
+  html[data-theme] body#academic-site .header-actions .nav { flex: 1 0 100% !important; width: 100% !important; justify-content: flex-start !important; }
+}

@@ -12,11 +12,12 @@ export const papers = [
     "filters": [
       "ci-orgueil",
       "methods"
-    ]
+    ],
+    "url": "https://doi.org/10.1016/j.gca.2015.05.038"
   },
   {
     "status": "Dolomite problem",
-    "title": "Mineralogy, nucleation and growth of dolomite in laboratory and sedimentary environments",
+    "title": "Mineralogy, nucleation and growth of dolomite in the laboratory and sedimentary environment: A review",
     "authors": "Gregg et al. (2015)",
     "summary": "Review paper for dolomite mineralogy, ordering, nucleation, growth, and the difficulty of low-temperature dolomite synthesis.",
     "tags": [
@@ -26,7 +27,8 @@ export const papers = [
     ],
     "filters": [
       "dolomite"
-    ]
+    ],
+    "url": "https://doi.org/10.1111/sed.12202"
   },
   {
     "status": "Ryugu carbonates",
@@ -42,7 +44,8 @@ export const papers = [
       "dolomite",
       "ryugu-bennu",
       "methods"
-    ]
+    ],
+    "url": "https://doi.org/10.1038/s41561-023-01226-y"
   },
   {
     "status": "Carbonate chemistry",
@@ -58,7 +61,8 @@ export const papers = [
       "dolomite",
       "ci-orgueil",
       "methods"
-    ]
+    ],
+    "url": "https://doi.org/10.1016/0016-7037(93)90393-B"
   },
   {
     "status": "CI parent body",
@@ -73,7 +77,8 @@ export const papers = [
     "filters": [
       "dolomite",
       "ci-orgueil"
-    ]
+    ],
+    "url": "https://doi.org/10.1016/0016-7037(95)00399-1"
   },
   {
     "status": "Ryugu formation",
@@ -87,7 +92,8 @@ export const papers = [
     ],
     "filters": [
       "ryugu-bennu"
-    ]
+    ],
+    "url": "https://doi.org/10.1126/science.abn8671"
   },
   {
     "status": "Bennu mineralogy",
@@ -102,11 +108,12 @@ export const papers = [
     "filters": [
       "ryugu-bennu",
       "methods"
-    ]
+    ],
+    "url": "https://doi.org/10.1038/s41561-025-01741-0"
   },
   {
     "status": "Chronology",
-    "title": "Mn–Cr ages of dolomites in CI chondrites and Tagish Lake",
+    "title": "Mn–Cr ages of dolomites in CI chondrites and the Tagish Lake ungrouped carbonaceous chondrite",
     "authors": "Fujiya et al. (2013)",
     "summary": "Chronological constraints on dolomite formation and aqueous alteration in hydrous asteroids.",
     "tags": [
@@ -118,11 +125,12 @@ export const papers = [
       "dolomite",
       "ci-orgueil",
       "chronology"
-    ]
+    ],
+    "url": "https://doi.org/10.1016/j.epsl.2012.11.057"
   },
   {
     "status": "Bennu brines",
-    "title": "Na,Ca carbonates in OSIRIS-REx samples: evidence for low-temperature, Na-bearing brines",
+    "title": "Na,Ca carbonates in OSIRIS-REx samples: Evidence for low-temperature, Na-bearing brines on Bennu’s parent body",
     "authors": "Singerling et al. (2025)",
     "summary": "Nanoscale observations of Na,Ca carbonates in Bennu and implications for low-temperature briny fluids.",
     "tags": [
@@ -133,11 +141,12 @@ export const papers = [
     "filters": [
       "dolomite",
       "ryugu-bennu"
-    ]
+    ],
+    "url": "https://doi.org/10.1016/j.gca.2025.06.028"
   },
   {
     "status": "Comparative samples",
-    "title": "Bennu and Ryugu constituents from samples: IR analyses",
+    "title": "Bennu and Ryugu constituents from samples IR analyses and potential source of terrestrial planets’ ingredients",
     "authors": "Pilorget et al. (2025)",
     "summary": "Near-IR comparison of Bennu and Ryugu samples and their shared phyllosilicate-rich, carbonate-bearing characteristics.",
     "tags": [
@@ -148,11 +157,12 @@ export const papers = [
     "filters": [
       "ryugu-bennu",
       "methods"
-    ]
+    ],
+    "url": "https://doi.org/10.1038/s41467-025-65438-z"
   },
   {
     "status": "Orgueil detail",
-    "title": "Ca-carbonate in the Orgueil CI carbonaceous chondrite",
+    "title": "Ca-carbonate in the Orgueil (CI) carbonaceous chondrite: Mineralogy, microstructure and implications for parent body history",
     "authors": "Lee & Nicholson (2009)",
     "summary": "Microstructure and mineralogical context of Ca-carbonate in Orgueil and implications for parent-body regolith history.",
     "tags": [
@@ -164,6 +174,7 @@ export const papers = [
       "dolomite",
       "ci-orgueil",
       "methods"
-    ]
+    ],
+    "url": "https://doi.org/10.1016/j.epsl.2009.01.038"
   }
 ] as const;

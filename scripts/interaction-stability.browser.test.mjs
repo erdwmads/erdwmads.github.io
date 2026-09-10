@@ -1,3 +1,4 @@
+import {toggleFx} from './display-settings-helper.mjs';
 import assert from 'node:assert/strict';
 import { pathToFileURL } from 'node:url';
 const { chromium } = await import(pathToFileURL(`${process.env.PLAYWRIGHT_MODULE}/index.mjs`).href);
@@ -25,7 +26,7 @@ try {
         await page.goto(`${base}/${route}.html`);
         await page.evaluate(() => document.fonts.ready);
         await page.waitForTimeout(700);
-        if(width>760 && await page.locator('html').evaluate(el=>el.classList.contains('ambient-fx-disabled'))) await page.locator('.ambient-fx-toggle').click();
+        if(width>760 && await page.locator('html').evaluate(el=>el.classList.contains('ambient-fx-disabled'))) await toggleFx(page);
         if (route === 'cv') {
           const cards = page.locator('.cv-edu-card');
           await cards.first().evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
@@ -46,7 +47,7 @@ try {
           await page.evaluate(()=>document.fonts.ready);
           await root.locator('.planetary-navigation').scrollIntoViewIfNeeded();
           await page.waitForTimeout(300);
-          const controls = root.locator('.planetary-toolbar, .planetary-tools, [data-action="zoom-in"], [data-action="share"], [data-action="journey-start"], .planetary-materials button');
+          const controls = root.locator('.planetary-toolbar, .planetary-tools, [data-action="zoom-in"], [data-action="share"], .planetary-materials button');
           const before = await geometry(controls);
           for (const material of ['ryugu','orgueil','bennu']) {
             await root.locator(`[data-material="${material}"]`).click();
@@ -58,11 +59,11 @@ try {
           for(const view of ['orbit','shape','sample','origins']) {
             await root.locator(`[data-view="${view}"]`).click();
             await root.locator('[data-material="bennu"]').click();await page.waitForTimeout(120);
-            const toolbarBefore=await geometry(root.locator('.planetary-toolbar, [data-share], [data-action="journey-start"]'));
+            const toolbarBefore=await geometry(root.locator('.planetary-toolbar, [data-share]'));
             const contentBefore=(await geometry(root.locator('.planetary-layout'))).map(({x,y})=>({x,y}));
             for(const material of ['bennu','ryugu','orgueil']) {
               await root.locator(`[data-material="${material}"]`).click();await page.waitForTimeout(120);
-              same(toolbarBefore,await geometry(root.locator('.planetary-toolbar, [data-share], [data-action="journey-start"]')),`${view} ${material} toolbar`);
+              same(toolbarBefore,await geometry(root.locator('.planetary-toolbar, [data-share]')),`${view} ${material} toolbar`);
               same(contentBefore,(await geometry(root.locator('.planetary-layout'))).map(({x,y})=>({x,y})),`${view} ${material} content origin`);
               const visible=root.locator('.planetary-toolbar button:visible, .planetary-toolbar select:visible, .planetary-origin-controls button:visible');
               const boxes=await geometry(visible);

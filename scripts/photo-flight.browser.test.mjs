@@ -1,3 +1,4 @@
+import {toggleFx} from './display-settings-helper.mjs';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
@@ -8,7 +9,7 @@ try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
   await page.goto(`${base}/photography.html`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(1600);
-  if (await page.locator('html').evaluate(el => el.classList.contains('ambient-fx-disabled'))) await page.locator('.ambient-fx-toggle').click();
+  if (await page.locator('html').evaluate(el => el.classList.contains('ambient-fx-disabled'))) await toggleFx(page);
   const tile = page.locator('[data-photo-index="0"]');
   await tile.scrollIntoViewIfNeeded();
   const y = await page.evaluate(() => scrollY);
@@ -47,7 +48,7 @@ try {
   await page.locator('.obs-present-close').click();
   assert.equal(await page.locator('.obs-presentation[open]').count(), 0);
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  if (!(await page.locator('html').evaluate(el => el.classList.contains('ambient-fx-disabled')))) await page.locator('.ambient-fx-toggle').click();
+  if (!(await page.locator('html').evaluate(el => el.classList.contains('ambient-fx-disabled')))) await toggleFx(page);
   await tile.click();
   assert.equal(await page.locator('.obs-photo-flight').count(), 0, 'FX OFF animated');
   await page.locator('.obs-present-close').click();

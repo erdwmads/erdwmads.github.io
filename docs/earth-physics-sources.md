@@ -1,0 +1,61 @@
+# Earth-flight dimensions, event anchors and explanatory motion
+
+Verified 2026-09-10. Implementation: `src/scripts/sample-missions/earth-physics.js`.
+
+This module supplies physically dimensioned educational motion, **not measured launch/re-entry telemetry, a navigation solution, or a propagated SPICE orbit**. It keeps the Earth, spacecraft, rockets and capsules in kilometres. Published sizes, release distances, entry conditions and event chronology anchor the presentation. Unpublished positions, flight-path shape, attitude, drag, spring separation and camera timing are explicitly explanatory. The separately documented asteroid/flyby ephemerides in `mission-ephemeris-sources.md` retain their own provenance.
+
+## Coordinate and API contract
+
+`earthFlightState(id, kind, p)` accepts mission IDs `hayabusa2` and `osiris-rex`, and kinds `launch`, `separation`, `entry`; existing scene kinds `return` and `landing` are aliases. Finite progress clamps to [0, 1]; non-finite progress selects the start. Unknown IDs/kinds throw.
+
+The local frame is **right-handed east/up/south**, not east/north/up: +X east, +Y up, +Z south (north is -Z). Its origin is the launch/recovery surface locator. The spherical Earth centre is `[0, -6371, 0]` and radius is 6,371 km. This mean-radius Earth omits flattening, terrain and recovery-site elevation. Latitude/longitude and the rounded recovery-region interpretation remain in `locations.js`; these explanatory tracks do not establish surveyed landing coordinates or flown azimuths.
+
+Every state includes:
+
+- `positionKm`, `velocityKmS`, radial `altitudeKm`, unit radial `up`, and unit motion `forward`.
+- `elapsedSeconds`, `durationSeconds`, `vehicle`, `phase`, `label`, `note`, `provenance`, `frame`, `units`.
+- Launch: source event times in `events`, `{core,boosters,upper}` in `engineOn`, and `spacecraftReleased`. Vehicle switches from rocket envelope to spacecraft after release. `positionKm` is the nominal flight reference, at the surface initially; the renderer must place the model's physical bottom on that reference at liftoff, rather than bury a centred mesh.
+- Separation: `capsule` and `spacecraft` branch states, `separated`, `diverting`, and spacecraft `engineOn`. The top-level state follows the capsule. The end of this scene joins entry position and velocity exactly; the mother ship remains outside the atmosphere on its divert branch. The scene ends at capsule entry, before the later extended mission.
+- Entry: `heatShieldDirection` points along velocity; the capsule model's heat-shield face (-Y) should align to it. `parachute` is an inflation fraction, `heat` is an illustrative radiance envelope, and `landed` is true at the end. The capsule stops on the ground; no heat model or reconstructed attitude is claimed.
+
+`p` is **presentation progress, not elapsedSeconds/durationSeconds**. Piecewise-linear time mapping allocates screen time to early liftoff, separation and descent while compressing long coasts. Velocities are derivatives with respect to physical seconds, never video seconds. Dimensions do not depend on progress, altitude, camera or Earth radius. Use `spanKm` for spacecraft scaling and `diameterKm` for capsule scaling; the rocket's `lengthKm` sets its physical height. Screen-space position markers must remain distinguishable from scaled physical meshes.
+
+## Dimensions and source anchors
+
+| Quantity | Value used | Primary source and interpretation |
+| --- | --- | --- |
+| H-IIA height / core diameter | 53 m / 4 m | [JAXA H-IIA vehicle description](https://www.rocket.jaxa.jp/rocket/h2a/). Nominal vehicle envelope. |
+| Atlas V 411 height | 189 ft = 57.6072 m (approximately 58 m) | [ULA OSIRIS-REx mission booklet](https://www.ulalaunch.com/docs/default-source/default-document-library/av_osirisrex_mob.pdf), vehicle configuration. Mission-specific 4-m-class fairing, rather than a generic larger Atlas V variant. |
+| Hayabusa2 deployed array span | 6.0 m | [JAXA spacecraft characteristics](https://global.jaxa.jp/projects/sas/hayabusa2/index.html). Main structure is listed separately; the span is the scaling anchor. |
+| OSIRIS-REx deployed array span / height | 6.2 m / 3.15 m | [NASA 2016 press kit](https://www.nasa.gov/wp-content/uploads/2016/06/osiris-rex_press_kit_0.pdf#page=4), printed p.4. `lengthKm` records vehicle height here; span is the preferred complete-model scale. |
+| Hayabusa2 capsule diameter | 0.40 m | [JAXA MMX capsule engineering interview](https://global.jaxa.jp/activity/pr/jaxas/no088/02.html) explicitly compares the Hayabusa2 40-cm capsule with the newer MMX 60-cm design. |
+| OSIRIS-REx capsule diameter | 0.81 m | [Mission team, Lauretta et al. 2017, NASA-hosted paper](https://hsd.gsfc.nasa.gov/sed/content/uploadFiles/publication_files/Lauretta_2017_SSR_OSIRIS-REx-Mission.pdf), p.939: SRC external envelope. |
+| Hayabusa2 capsule release | approximately 220,000 km altitude; 2020-12-05 14:30 JST | [JAXA completed mission schedule](https://www.hayabusa2.jaxa.jp/en/news/schedule/). |
+| Hayabusa2 spacecraft divert | begins about 1 hour after capsule release; completed-operation window 15:30–16:30 JST | Same [JAXA schedule](https://www.hayabusa2.jaxa.jp/en/news/schedule/). |
+| Hayabusa2 entry / main parachute | 120 km; approximately 12 km/s; main parachute near 10 km | [JAXA 2020-12-04 briefing](https://www.hayabusa2.jaxa.jp/en/enjoy/material/press/Hayabusa2_Press_20201204_ver5_en3.pdf#page=6) gives planned entry at 02:28:27 JST and 120 km, chute range 7–11 km; [JAXA recovery overview](https://www.hayabusa2.jaxa.jp/en/topics/20201204_ts3/) gives 12 km/s and approximately 10 km. Both heat shields separate before parachute descent. |
+| Hayabusa2 landing | around 02:54 JST, 2020-12-06, Woomera | [JAXA completed mission schedule](https://www.hayabusa2.jaxa.jp/en/news/schedule/). Combining the planned entry second with this rounded landing minute yields the **approximate model durations** 43,107 s release-to-entry and 1,533 s entry-to-landing, not precise postflight timings. |
+| OSIRIS-REx release / entry / landing | 102,000 km altitude; about 4 hours to entry; entry at approximately 133 km and 44,500 km/h; approximately 10 minutes to touchdown | [NASA mission FAQ](https://science.nasa.gov/mission/osiris-rex/osiris-rex-faq/), 06:42 / 10:42 / 10:52 EDT on 2023-09-24. The chosen 133-km atmospheric interface is this source's public convention, not an assertion that air begins at a sharp surface. |
+| OSIRIS-REx divert / touchdown speed | about 20 minutes after release; approximately 18 km/h = 5 m/s touchdown | Same [NASA FAQ](https://science.nasa.gov/mission/osiris-rex/osiris-rex-faq/). The modeled 120-s divert burn duration is illustrative, not sourced. |
+| OSIRIS-REx parachute anomaly | drogue retention cut while packed; drogue later deployed and immediately detached near 9,000 ft; main chute completed landing | [NASA postflight investigation, 2023-12-05](https://science.nasa.gov/blogs/osiris-rex/2023/12/05/nasa-finds-likely-cause-of-osiris-rex-parachute-deployment-sequence/). This supersedes nominal preflight two-chute animations and the simplified FAQ wording. The model depicts no sustained attached drogue and starts main descent at 9,000 ft = 2.7432 km as a rounded explanatory transition associated with this event. |
+
+## Launch chronology
+
+[JAXA H-IIA F26 launch success report](https://global.jaxa.jp/press/2014/12/20141203_h2af26.html) supplies postflight quick-review times in seconds from liftoff: booster burnout 93, booster release 107, fairing release 251, first-stage cutoff 396, stage separation 404, upper-stage ignition 414, cutoff 680, restart 5966, final cutoff 6211, spacecraft separation 6441. **Hayabusa2's fairing separates before the first stage.**
+
+[NASA 2016 press kit](https://www.nasa.gov/wp-content/uploads/2016/06/osiris-rex_press_kit_0.pdf#page=5), printed p.5, supplies **nominal** Atlas V event times: booster release 139, first-stage cutoff 242.8, stage separation 248.8, upper-stage ignition 258.8, fairing release 266.8, upper cutoff 742.5, restart 2028.2, final cutoff 2438.6, spacecraft separation 3338.6. NASA's [ascent timeline](https://science.nasa.gov/blogs/osiris-rex/2016/09/08/ascent-timeline/) explains that order. **OSIRIS-REx's fairing separates after the first stage.** The 94-s solid-booster burnout used to stop the display plume is an approximate animation assumption, not identified here as postflight telemetry.
+
+Each launch scene includes 60 additional seconds after spacecraft separation for a physical-unit separation/deployment view. Those extra seconds and any array deployment progression are presentation assumptions. Detailed stage/booster debris paths and motion of individual fairing shells are mechanical illustrations, not trajectories furnished by this module.
+
+## Interpolation assumptions and limitations
+
+Launch altitude and surface-distance knots in `launchAnchors` are deliberately **explanatory**, including the 200-km illustrative parking-orbit radius. Monotone cubic interpolation supplies continuous velocity and a spherical path without underground arcs. The first eight modeled seconds move only vertically; later motion turns downrange and follows Earth's curvature. Neither the local east-going plane, the downrange values, parking-orbit altitude nor injection altitude is a measured mission trajectory. Event source fidelity must not be presented as geographic trajectory fidelity.
+
+Release follows a straight approach interpolant with a smoothly increasing speed. Its starting radius matches published release altitude, its duration matches the rounded public timeline, and its endpoint joins the entry state exactly. This is not a gravitational two-body solution. A 2-m initial mother/capsule displacement and 0.1-m/s initial relative drift illustrate the release; an additional quadratic 1,000-km cross-track displacement after the published divert start illustrates separation of destinations. None of these displacement, relative-speed or final flyby-distance assumptions is measured. The ship is still on its safe inbound bypass at scene end; do not describe that point as its measured closest approach.
+
+Entry uses an illustrative 12-degree downward flight-path angle. Exponential deceleration joins the source entry altitude/speed to main-parachute altitude, with continuous position and velocity. A curved downrange path reaches the recovery origin, then descent is vertical with no modeled wind. Intermediate heating, speed, latitude/longitude and descent timing are not reconstructed. The Hayabusa2 chute transition is at 213 s (within the public briefing's rough timing window); the OSIRIS-REx transition at 240 s is an explanatory choice, not a reported deployment timestamp. Chute inflation takes 8 modeled seconds. Hayabusa2's final 7-m/s descent speed is an illustrative value; OSIRIS-REx's final 5-m/s value follows the NASA public touchdown speed. The instantaneous stop at the surface represents contact without rebound modeling.
+
+Atmospheric-entry altitude and capsule diameter must never be drawn as comparable dimensions. A 0.40-m capsule is 1/15,927,500 of Earth's radius; a 0.81-m capsule is about 1/7,865,432. Close tracking cameras may resolve them, but enlarging them on a whole-Earth view would break physical scale.
+
+## Validation
+
+Run `node --test src/scripts/sample-missions/earth-physics.test.mjs`. Tests cover dimensional anchors, initial vertical launch, spherical clearance, correct mission-specific event order, capsule/spacecraft divergence, exact release-to-entry state continuity, entry speed, inward heat-shield direction, vertical main-chute descent, no fictional sustained OSIRIS-REx drogue, touchdown, clamping, deterministic backward scrubbing, physical-second derivatives, and velocity continuity at the main-chute transition.

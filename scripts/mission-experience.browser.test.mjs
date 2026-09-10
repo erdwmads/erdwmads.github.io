@@ -1,3 +1,4 @@
+import {toggleFx} from './display-settings-helper.mjs';
 import assert from 'node:assert/strict';
 import { createCipheriv, pbkdf2Sync, randomBytes } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
@@ -35,7 +36,7 @@ try {
   await desktop.addInitScript(()=>{sessionStorage.setItem('mads-entry-gate-v1','done');sessionStorage.setItem('mads-cosmic-arrival-v1','done');});
   await desktop.goto(`${base}/index.html`);
   await desktop.evaluate(()=>document.fonts.ready);
-  if (await desktop.locator('html').evaluate(el=>el.classList.contains('ambient-fx-disabled'))) await desktop.locator('.ambient-fx-toggle').click();
+  if (await desktop.locator('html').evaluate(el=>el.classList.contains('ambient-fx-disabled'))) await toggleFx(desktop);
   const control = desktop.locator('main .button').first();
   await control.scrollIntoViewIfNeeded();
   await check('gold and blue edge follows pointer without layout changes',async()=>{
@@ -71,12 +72,12 @@ try {
     await control.hover();
     assert.equal(await desktop.locator('[data-edge-active]').count(),0);
     await desktop.emulateMedia({reducedMotion:'no-preference'});
-    if(!await desktop.locator('html').evaluate(el=>el.classList.contains('ambient-fx-disabled')))await desktop.locator('.ambient-fx-toggle').click();
+    if(!await desktop.locator('html').evaluate(el=>el.classList.contains('ambient-fx-disabled')))await toggleFx(desktop);
     await control.hover();
     assert.equal(await desktop.locator('[data-edge-active]').count(),0);
   });
   await check('touch input on a fine-pointer desktop never creates an edge',async()=>{
-    await desktop.locator('.ambient-fx-toggle').click();
+    await toggleFx(desktop);
     assert(await desktop.evaluate(()=>matchMedia('(pointer: fine)').matches&&!document.documentElement.classList.contains('ambient-fx-disabled')));
     await control.dispatchEvent('pointermove',{pointerType:'touch',clientX:120,clientY:540});
     await desktop.waitForTimeout(100);

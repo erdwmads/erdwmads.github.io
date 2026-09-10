@@ -26,7 +26,11 @@
     let phase = "Dolomite";
     let mode = "Research";
 
-    if (isPaper) {
+    if (location.pathname.includes("origins-study")) {
+      target = "Solar System";
+      phase = "Parent-body evolution";
+      mode = "Origins";
+    } else if (isPaper) {
       target = "Reading Shelf";
       phase = "Carbonates / CI";
       mode = "Literature";
@@ -56,7 +60,7 @@
       <span>Phase: ${phase}</span>
       <span>Mode: ${mode}</span>
     `;
-    document.body.appendChild(panel);
+    (document.getElementById('obs-fx-panel') || document.body).appendChild(panel);
   }
 
   function syncCoordinates() {

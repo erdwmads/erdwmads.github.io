@@ -39,7 +39,9 @@ const filters = [
   </div>
 </section>
 
-<section class="section paper-shelf">
+<div class="paper-results"><p data-paper-count role="status" aria-live="polite">{papers.length} papers</p><button class="button secondary" type="button" data-paper-reset hidden>Clear filters</button></div>
+<p data-paper-empty hidden>No papers match this search. Try a broader term or clear the filters.</p>
+<section class="section paper-shelf" aria-label="Reading list">
   {papers.map((paper, index) => (
     <article
       id={`paper-${index + 1}`}
@@ -49,11 +51,14 @@ const filters = [
       data-paper-filters={paper.filters.join(" ")}
     >
       <div class="paper-status">{paper.status}</div>
-      <h2>{paper.title}</h2>
-      <p class="muted">{paper.authors}</p>
-      <p>{paper.summary}</p>
-      <div class="project-tags">
-        {paper.tags.map((tag) => <span>{tag}</span>)}
+      <div class="paper-card-body">
+        <h2><a href={paper.url} target="_blank" rel="noopener">{paper.title}</a></h2>
+        <p class="muted">{paper.authors}</p>
+        <p>{paper.summary}</p>
+        <a class="paper-source" href={paper.url} target="_blank" rel="noopener" aria-label={`Read paper: ${paper.title} (opens in a new tab)`}>Read paper <span aria-hidden="true">↗</span></a>
+        <div class="project-tags">
+          {paper.tags.map((tag) => <span>{tag}</span>)}
+        </div>
       </div>
     </article>
   ))}

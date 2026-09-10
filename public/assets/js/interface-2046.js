@@ -15,6 +15,7 @@
   }
 
   const isMobileInterfaceView = () => !!mobileInterfaceQuery?.matches;
+  let restoreInterfaceLayers = () => {};
 
   function removeInterfaceLayers() {
     document
@@ -28,6 +29,7 @@
     root.classList.toggle("mads-mobile-lite", mobileLite);
     body.classList.toggle("mads-mobile-lite", mobileLite);
     if (mobileLite) removeInterfaceLayers();
+    else restoreInterfaceLayers();
   }
 
   syncMobileLiteState();
@@ -112,11 +114,6 @@
   body.classList.add(pageClassForKey(initialPage));
   const route = routeForPage(initialPage);
 
-  if (isMobileInterfaceView()) {
-    removeInterfaceLayers();
-    return;
-  }
-
   const orbitData = [
     { name: 'Mercury', label: 'Mercury', years: 0.241, w: 18, h: 11, angle: 26,  size: 2.0, color: 'rgba(180,190,196,.72)', cls: 'inner', alpha: .10, labelMode: 'minor' },
     { name: 'Venus',   label: 'Venus',   years: 0.615, w: 25, h: 16, angle: 142, size: 2.6, color: 'rgba(230,202,154,.68)', cls: 'inner', alpha: .11, labelMode: 'minor' },
@@ -162,7 +159,7 @@
     </aside>
   `;
 
-  body.appendChild(layer);
+  if (!isMobileInterfaceView()) body.appendChild(layer);
   const routeLabel = layer.querySelector('[data-ui2046-route]');
 
   const updateRouteLabel = (pageName) => {
@@ -177,7 +174,7 @@
   progress.className = 'ui2046-progress';
   progress.setAttribute('aria-hidden', 'true');
   progress.innerHTML = '<span></span>';
-  body.appendChild(progress);
+  if (!isMobileInterfaceView()) body.appendChild(progress);
 
   const bar = progress.querySelector('span');
 
@@ -300,6 +297,13 @@
 
   updateProgress();
   syncOrbitalSystem();
+  restoreInterfaceLayers = () => {
+    if (!layer.isConnected) body.appendChild(layer);
+    if (!progress.isConnected) body.appendChild(progress);
+    updateRouteLabel();
+    updateProgress();
+    syncOrbitalSystem();
+  };
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', syncOrbitalSystem, { once: true });

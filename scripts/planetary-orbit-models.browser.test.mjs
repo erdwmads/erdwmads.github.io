@@ -1,0 +1,66 @@
+import assert from 'node:assert/strict';
+import { createRequire } from 'node:module';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+const require = createRequire(import.meta.url);
+const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const browser = await chromium.launch({headless:true,...(process.env.EDGE_EXECUTABLE ? {executablePath:process.env.EDGE_EXECUTABLE} : {})});
+const base = process.env.SITE_TEST_URL || 'http://127.0.0.1:52523';
+try {
+  const page = await browser.newPage({viewport:{width:1440,height:1050}});
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('console', message => { if(message.type()==='error') errors.push(message.text()); });
+  await page.goto(`${base}/research.html`,{waitUntil:'networkidle'});
+  await page.addStyleTag({content:'.obs-fx-settings,astro-dev-toolbar {visibility:hidden!important;}'});
+  const root = page.locator('[data-planetary-explorer]');
+  await root.scrollIntoViewIfNeeded();
+  await page.waitForFunction(()=>document.querySelector('[data-planetary-explorer]').dataset.renderState==='ready');
+  const resources = await page.evaluate(()=>performance.getEntriesByType('resource').map(entry=>entry.name));
+  for(const path of ['/planetary/bennu.glb','/planetary/ryugu.obj','/arrival/earth-day.jpg','/arrival/earth-clouds.png']) {
+    assert.ok(resources.some(name=>name.endsWith(path)),`${path} must be requested`);
+  }
+  const stage = root.locator('[data-stage]');
+  await stage.screenshot({path:join(tmpdir(),'planetary-orbit-models-inner.png')});
+  const earthAnchor = await root.locator('[data-labels]').evaluate(layer => {
+    const index = Array.from(layer.querySelectorAll('.planetary-label')).findIndex(label=>label.dataset.object==='earth');
+    const line = layer.querySelectorAll('line')[index];
+    return {x:Number(line.getAttribute('x1')),y:Number(line.getAttribute('y1'))};
+  });
+  const bounds = await stage.boundingBox();
+  await page.mouse.click(bounds.x+earthAnchor.x,bounds.y+earthAnchor.y);
+  await page.waitForFunction(()=>document.querySelector('[data-planetary-explorer] [data-object-title]').textContent==='Earth');
+  const beforeDrag = await root.locator('canvas').screenshot();
+  await page.mouse.move(bounds.x+earthAnchor.x,bounds.y+earthAnchor.y);
+  await page.mouse.down();
+  await page.mouse.move(bounds.x+earthAnchor.x-80,bounds.y+earthAnchor.y+30,{steps:6});
+  await page.mouse.up();
+  assert.equal(await root.locator('[data-object-title]').innerText(),'Earth','Dragging must not select a different object');
+  assert.notDeepEqual(await root.locator('canvas').screenshot(),beforeDrag,'Dragging must still rotate the orbital view');
+  await root.locator('[data-action="reset"]').click();
+  await page.waitForTimeout(150);
+  await root.locator('[data-action="zoom-in"]').click();
+  await root.locator('[data-action="zoom-in"]').click();
+  await stage.screenshot({path:join(tmpdir(),'planetary-orbit-models-earth.png')});
+  await root.locator('[data-scope]').selectOption('solar');
+  await page.waitForTimeout(250);
+  await stage.screenshot({path:join(tmpdir(),'planetary-orbit-models-solar.png')});
+  await root.locator('[data-scope]').selectOption('inner');
+  await root.locator('[data-material="ryugu"]').click();
+  await root.locator('[data-view="shape"]').click();
+  await page.waitForFunction(()=>document.querySelector('[data-planetary-explorer]').dataset.modelReady==='ryugu');
+  await root.locator('[data-action="wireframe"]').click();
+  await root.locator('[data-action="compare"]').click();
+  await page.waitForFunction(()=>document.querySelector('[data-planetary-explorer]').dataset.modelReady==='compare');
+  assert.equal(await root.locator('[data-action="wireframe"]').getAttribute('aria-pressed'),'true');
+  await root.locator('[data-view="orbit"]').click();
+  await page.waitForFunction(()=>document.querySelector('[data-planetary-explorer]').dataset.renderState==='ready');
+  await root.locator('[data-object="earth"]').click();
+  assert.match(await root.locator('[data-object-title]').innerText(),/Earth/);
+  await page.setViewportSize({width:390,height:844});
+  await stage.scrollIntoViewIfNeeded();
+  await root.locator('[data-action="reset"]').click();
+  await stage.screenshot({path:join(tmpdir(),'planetary-orbit-models-mobile.png')});
+  assert.deepEqual(errors,[]);
+  console.log(`Orbit models: local assets loaded; Earth selection, Shapes cache, wireframe, comparison and mobile render passed. Screenshots: ${join(tmpdir(),'planetary-orbit-models-*.png')}`);
+} finally { await browser.close(); }

@@ -1,0 +1,241 @@
+/* Whole-site reading hierarchy and unobstructed shared controls. */
+html[data-theme] body#academic-site {
+  min-height:100svh;
+  display:flex;
+  flex-direction:column;
+}
+html[data-theme] body#academic-site .main { flex:1 0 auto; }
+html[data-theme] body#academic-site .site-header,
+html[data-theme] body#academic-site .site-footer { flex-shrink:0; }
+html[data-theme] body#academic-site .site-footer { margin-top:auto; }
+html[data-theme] body#academic-site .footer-inner { row-gap:16px; flex-wrap:wrap; }
+html[data-theme] body#academic-site .footer-inner a { color:var(--obs-link); font-size:12px; }
+
+.site-skip-link {
+  position:fixed; z-index:10000; top:12px; left:12px;
+  transform:translateY(-180%); padding:12px 18px; border:1px solid var(--obs-accent);
+  border-radius:8px; background:var(--obs-surface); color:var(--obs-text);
+}
+.site-skip-link:focus { transform:none; }
+html[data-theme] body#academic-site :is(summary,select,textarea,[tabindex="0"]):focus-visible {
+  outline:2px solid var(--obs-accent); outline-offset:4px;
+}
+html[data-theme] body#academic-site main :is(h1,h2,h3,[id]) { scroll-margin-top:28px; }
+html[data-theme] body#academic-site main :is(h2,h3) { text-shadow:none!important; }
+html[data-theme] body#academic-site:not(.ui-page-home)::before { opacity:.16!important; }
+html[data-theme="light"] body#academic-site:not(.ui-page-home)::before { opacity:.045!important; }
+html[data-theme] body#academic-site main .eyebrow { font-size:12px!important; }
+html[data-theme] body#academic-site main .section-label {
+  margin-top:0; font-size:12px!important; font-weight:600!important; line-height:1.6!important;
+}
+html[data-theme] body#academic-site main :is(.card,.paper-card,.cv-edu-card) {
+  border-radius:16px!important;
+  box-shadow:inset 0 1px #ffffff0c,0 6px 18px #0000000a!important;
+}
+@media(hover:hover){
+  html[data-theme] body#academic-site main :is(.card,.paper-card,.cv-edu-card,.pathway-step):not(a):hover {
+    border-color:var(--obs-edge)!important;
+    box-shadow:inset 0 1px #ffffff0c,0 6px 18px #0000000a!important;
+  }
+}
+html[data-theme] body#academic-site .home-card-grid .card p { font-size:14px!important; line-height:1.75; }
+html[data-theme] body#academic-site .home-explore-title { margin:0 0 22px; font-size:22px!important; }
+html[data-theme] body#academic-site .research-title-detail {
+  margin-top:22px; padding-top:16px; border-top:1px solid var(--obs-line);
+}
+html[data-theme] body#academic-site .research-title-detail summary {
+  width:fit-content; min-height:36px; color:var(--obs-link); font-size:13px; cursor:pointer;
+}
+html[data-theme] body#academic-site .research-title-detail p,
+html[data-theme] body#academic-site .research-formal-title { font-size:14px; line-height:1.8; }
+html[data-theme] body#academic-site .page-outline {
+  display:flex; flex-wrap:wrap; gap:4px 8px; padding:14px 0; margin-top:28px;
+  border-block:1px solid var(--obs-line);
+}
+html[data-theme] body#academic-site .page-outline a {
+  display:inline-flex; align-items:center; min-height:44px; padding:8px 12px;
+  border-radius:8px; color:var(--obs-link); text-decoration:none; font-size:13px; line-height:1.4;
+}
+html[data-theme] body#academic-site .page-outline a:hover { background:var(--obs-highlight); }
+html[data-theme] body#academic-site .page-outline+.section { margin-top:26px!important; border-top:0; }
+html[data-theme] body#academic-site .research-log-main {
+  background:linear-gradient(180deg,transparent,var(--obs-reading) 380px)!important;
+}
+
+/* A single settings entry leaves the reading and model canvas unobstructed. */
+html[data-theme] body#academic-site .obs-fx-dock {
+  bottom:max(20px,env(safe-area-inset-bottom)); right:max(20px,env(safe-area-inset-right));
+}
+html[data-theme] body#academic-site .obs-fx-settings { width:44px; height:44px; }
+html[data-theme] body#academic-site .obs-fx-panel { bottom:56px; width:260px; padding:18px; }
+html[data-theme] body#academic-site .obs-fx-panel>.ambient-fx-toggle {
+  display:flex; justify-content:center; width:100%; min-height:44px!important;
+  margin:0 0 12px; border-radius:9px;
+}
+html[data-theme] body#academic-site .research-coordinates {
+  position:static; margin-top:12px; padding:14px 0 0; border:0; border-top:1px solid var(--obs-line);
+  border-radius:0; background:none!important; box-shadow:none; backdrop-filter:none;
+  font-size:12px; color:var(--obs-muted); transform:none!important;
+}
+html[data-theme] body#academic-site> .research-coordinates { display:none; }
+html[data-theme] body#academic-site .obs-fx-panel .research-coordinates { display:grid; }
+@media(max-width:760px),(pointer:coarse){
+  html[data-theme] body#academic-site .obs-fx-panel>.ambient-fx-toggle,
+  html[data-theme] body#academic-site .obs-fx-panel .research-coordinates { display:none!important; }
+  html[data-theme] body#academic-site .obs-fx-dock { right:12px; bottom:calc(12px + env(safe-area-inset-bottom)); }
+}
+@media(max-width:760px){
+  html[data-theme] body#academic-site .page-outline { gap:4px; padding:10px 0; }
+  html[data-theme] body#academic-site .page-outline a { padding:8px 9px; font-size:12px; }
+  html[data-theme] body#academic-site .research-title-detail summary { min-height:44px; }
+  html[data-theme] body#academic-site .footer-inner { padding-bottom:76px; }
+}
+
+
+html[data-theme] body#academic-site .paper-results { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-top:20px; }
+html[data-theme] body#academic-site .paper-results p { font-size:13px; margin:0; color:var(--obs-muted); }
+html[data-theme] body#academic-site .paper-card h2 a { color:inherit; text-decoration:none; }
+html[data-theme] body#academic-site .paper-card h2 a:hover { color:var(--obs-link); text-decoration:underline; text-underline-offset:4px; }
+html[data-theme] body#academic-site .paper-source { display:inline-flex; align-items:center; gap:8px; min-height:44px; margin:4px 0 12px; color:var(--obs-link); font-size:13px; }
+html[data-theme] body#academic-site .paper-card p { font-size:14px!important; }
+html[data-theme] body#academic-site [data-paper-empty] { padding:28px; border:1px solid var(--obs-line); border-radius:12px; }
+html[data-theme] body#academic-site .contact-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:20px; }
+html[data-theme] body#academic-site [data-email-address] { overflow-wrap:anywhere; }
+html[data-theme] body#academic-site [data-email-status] { font-size:13px; color:var(--obs-muted); margin:16px 0 0; }
+html[data-theme] body#academic-site [hidden] { display:none!important; }
+
+@media(prefers-reduced-motion:reduce){html,body { scroll-behavior:auto!important; }}
+html[data-theme] body#academic-site.site-refined main.main :is(h2,h3) { text-shadow:none!important; }
+html[data-theme] body#academic-site .paper-card h2 a { color:var(--obs-text)!important; text-decoration:none!important; }
+html[data-theme] body#academic-site .paper-card h2 a:hover { color:var(--obs-link)!important; text-decoration:underline!important; }
+
+/* Editorial reading surfaces: let dates, subjects and links carry the structure. */
+html[data-theme] body#academic-site main.main .home-card-grid .card,
+html[data-theme] body#academic-site main.main .mini-timeline-item,
+html[data-theme] body#academic-site main.main .cv-edu-card,
+html[data-theme] body#academic-site main.main .paper-card,
+html[data-theme] body#academic-site.ui-page-contact main.main .card,
+html[data-theme] body#academic-site.ui-page-photography main.main .card {
+  background:transparent!important; border:0!important; border-radius:0!important;
+  box-shadow:none!important; backdrop-filter:none!important; transform:none!important;
+}
+html[data-theme] body#academic-site main.main :is(.home-card-grid .card,.mini-timeline-item,.cv-edu-card,.paper-card)::before,
+html[data-theme] body#academic-site main.main :is(.home-card-grid .card,.mini-timeline-item,.cv-edu-card,.paper-card)::after {
+  display:none!important;
+}
+html[data-theme] body#academic-site main.main :is(.home-card-grid,.mini-timeline,.cv-education-cards,.paper-shelf) .obs-edge-light { display:none!important; }
+html[data-theme] body#academic-site main.main .home-card-grid { gap:32px!important; }
+html[data-theme] body#academic-site main.main .home-card-grid .card {
+  padding:22px 0 4px!important; border-top:1px solid var(--obs-line)!important;
+}
+html[data-theme] body#academic-site main.main .home-card-grid .card h3 { margin:0 0 16px; font-size:19px!important; }
+html[data-theme] body#academic-site main.main .home-card-grid .card a { padding-top:10px; min-height:44px; width:fit-content; }
+html[data-theme] body#academic-site main.main .mini-timeline { gap:0!important; }
+html[data-theme] body#academic-site main.main .mini-timeline-item {
+  padding:22px 0!important; border-bottom:1px solid var(--obs-line)!important;
+}
+html[data-theme] body#academic-site main.main .mini-timeline-item:first-child { padding-top:0!important; }
+html[data-theme] body#academic-site main.main .mini-timeline-item span { font-style:normal!important; font-size:12px!important; font-variant-numeric:tabular-nums; }
+
+html[data-theme] body#academic-site main.main .cv-education-cards { gap:0!important; }
+html[data-theme] body#academic-site main.main .cv-edu-card {
+  display:grid; grid-template-columns:154px minmax(0,1fr); gap:26px;
+  padding:30px 0!important; border-bottom:1px solid var(--obs-line)!important;
+}
+html[data-theme] body#academic-site main.main .cv-edu-card:first-child { padding-top:0!important; }
+html[data-theme] body#academic-site main.main .cv-edu-date {
+  display:block; align-self:start; margin:3px 0 0; padding:0!important;
+  border:0!important; border-radius:0!important; background:none!important;
+  box-shadow:none!important; font-size:12px!important; font-weight:600!important;
+  line-height:1.8; letter-spacing:0; font-variant-numeric:tabular-nums;
+}
+html[data-theme] body#academic-site main.main .cv-edu-body { min-width:0; }
+html[data-theme] body#academic-site main.main .cv-edu-body h3 { margin:0 0 14px; font-size:20px!important; line-height:1.45; }
+html[data-theme] body#academic-site main.main .cv-edu-body p { font-size:15px!important; line-height:1.8; margin:12px 0 0; }
+
+html[data-theme] body#academic-site main.main .paper-shelf-tools { display:grid!important; grid-template-columns:1fr!important; padding:24px 0 0!important; margin-bottom:0!important; gap:16px!important; }
+html[data-theme] body#academic-site main.main .paper-results { margin-top:18px; min-height:44px; }
+html[data-theme] body#academic-site main.main .paper-shelf {
+  display:block!important; margin-top:14px!important; padding-top:0!important; border-top:0!important;
+}
+html[data-theme] body#academic-site main.main .paper-card {
+  display:grid; grid-template-columns:172px minmax(0,1fr); column-gap:32px;
+  padding:30px 0!important; border-top:1px solid var(--obs-line)!important;
+}
+html[data-theme] body#academic-site main.main .paper-status {
+  align-self:start; justify-self:start; max-width:100%; margin:4px 0 0; padding:0!important;
+  border:0!important; background:transparent!important; box-shadow:none!important;
+  color:var(--obs-accent)!important; font-size:11px!important; line-height:1.8;
+  white-space:normal; text-transform:uppercase; letter-spacing:.06em;
+}
+html[data-theme] body#academic-site main.main .paper-card-body { min-width:0; max-width:850px; }
+html[data-theme] body#academic-site main.main .paper-card h2 { margin:0 0 10px; font-size:22px!important; line-height:1.45; }
+html[data-theme] body#academic-site main.main .paper-card p { margin:10px 0; max-width:78ch; line-height:1.8; }
+html[data-theme] body#academic-site main.main .paper-card .paper-source { margin:0 0 6px; }
+html[data-theme] body#academic-site main.main .paper-card .project-tags { margin-top:4px; gap:12px; }
+html[data-theme] body#academic-site main.main .paper-card .project-tags span {
+  padding:0!important; background:transparent!important; border:0!important;
+  box-shadow:none!important; color:var(--obs-muted)!important; font-size:11px!important;
+}
+html[data-theme] body#academic-site main.main .reading-constellation-section {
+  padding:28px 0 0!important; background:transparent!important;
+  border:0!important; border-top:1px solid var(--obs-line)!important;
+  border-radius:0!important; box-shadow:none!important;
+}
+html[data-theme] body#academic-site main.main .reading-constellation { display:flex!important; flex-wrap:wrap; gap:12px 28px!important; }
+html[data-theme] body#academic-site main.main .reading-constellation div {
+  padding:8px 0!important; border:0!important; border-radius:0!important;
+  background:none!important; box-shadow:none!important; font-size:13px!important;
+}
+
+html[data-theme] body#academic-site.ui-page-contact main.main .contact-email .callout {
+  padding:30px!important; background:var(--obs-surface)!important;
+  border:1px solid var(--obs-line)!important; box-shadow:none!important; border-radius:12px!important;
+}
+html[data-theme] body#academic-site.ui-page-contact main.main .card { padding:0!important; }
+html[data-theme] body#academic-site.ui-page-contact main.main .card p { margin-bottom:0; line-height:1.85; }
+html[data-theme] body#academic-site.ui-page-photography main.main .photo-experience { margin-top:28px!important; padding-top:20px!important; }
+html[data-theme] body#academic-site.ui-page-photography main.main .card { padding:0!important; max-width:720px; }
+@media(max-width:1000px){
+  html[data-theme] body#academic-site main.main .cv-edu-card { grid-template-columns:1fr; gap:12px; }
+  html[data-theme] body#academic-site main.main .paper-card { grid-template-columns:140px minmax(0,1fr); gap:24px; }
+}
+@media(max-width:760px){
+  html[data-theme] body#academic-site main.main .home-card-grid { gap:24px!important; }
+  html[data-theme] body#academic-site main.main .paper-card { grid-template-columns:1fr; gap:10px; padding:24px 0!important; }
+  html[data-theme] body#academic-site main.main .paper-card h2 { font-size:20px!important; }
+  html[data-theme] body#academic-site main.main .paper-status { margin:0; }
+  html[data-theme] body#academic-site main.main .cv-edu-card { padding:24px 0!important; }
+  html[data-theme] body#academic-site main.main .cv-edu-body h3 { font-size:19px!important; }
+  html[data-theme] body#academic-site.ui-page-contact main.main .contact-email .callout { padding:22px!important; }
+  html[data-theme] body#academic-site main.main .reading-constellation { gap:6px 22px!important; }
+}
+
+/* Tablet navigation must wrap its layout container, not only its flex children. */
+@media(min-width:761px) and (max-width:1000px){
+  html[data-theme] body#academic-site .site-header .header-actions {
+    display:flex!important; flex-wrap:wrap!important; justify-content:flex-start!important;
+  }
+  html[data-theme] body#academic-site .site-header .header-actions .nav {
+    flex:1 0 100%!important; width:100%!important; justify-content:flex-start!important;
+  }
+}
+/* Reserve the footer's right edge for the fixed display-settings control. */
+html[data-theme] body#academic-site .site-footer .footer-inner { padding-right:96px!important; }
+@media(max-width:760px){
+  html[data-theme] body#academic-site .site-footer .footer-inner { padding-right:20px!important; padding-bottom:76px!important; }
+}
+/* Keep the bibliography's explicit source action a usable touch target. */
+html[data-theme] body#academic-site main.main .paper-card .paper-source {
+  display:inline-flex!important; align-items:center!important; min-height:44px!important;
+  padding:8px 0!important; line-height:1.4!important;
+}
+
+/* Restore the original CV photograph with its full landscape composition. */
+html[data-theme] body#academic-site .cv-intro { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); align-items:center; gap:40px; }
+html[data-theme] body#academic-site .cv-intro .cv-photo { width:100%!important; max-width:480px!important; margin:0!important; justify-self:end; }
+html[data-theme] body#academic-site .cv-intro .cv-photo img { display:block; width:100%; height:auto!important; aspect-ratio:auto!important; }
+@media(max-width:760px) {
+  html[data-theme] body#academic-site .cv-intro { grid-template-columns:1fr; gap:24px; }
+  html[data-theme] body#academic-site .cv-intro .cv-photo { justify-self:start; }
+}

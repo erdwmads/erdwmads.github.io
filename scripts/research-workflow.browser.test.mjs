@@ -33,11 +33,8 @@ try {
   assert.equal(await step('Material').getAttribute('aria-selected'), 'true');
   assert.equal(await panel.getAttribute('role'), 'tabpanel');
   assert.equal(await panel.getAttribute('aria-labelledby'), await step('Material').getAttribute('id'));
-  const material = panel.locator('img[src$="/orgueil-smithsonian.jpg"]');
-  await material.evaluate(img => img.decode());
-  assert.ok(await material.evaluate(img => img.naturalWidth > 0));
-  assert.match(await material.getAttribute('alt'), /Orgueil/);
-  assert.match(await panel.innerText(), /not.*experimental sample/i);
+  assert.equal(await panel.locator('img').count(),0);
+  assert.match(await panel.locator('a[href*="view=sample"]').getAttribute('href'),/material=orgueil/);
   await step('Question').click();
   assert.match(await panel.innerText(), /How did dolomite form in Orgueil\?/);
   assert.match(await panel.innerText(), /clay|water/i);
@@ -55,7 +52,7 @@ try {
   assert.ok(await panel.locator('a[href^="paper-shelf.html#paper-"]').count() > 0);
   assert.equal(await panel.locator('a[href="research-graduation.html"]').count(), 1);
   assert.equal(await atlas.locator('img[src*="mission-log"], table, [data-private-atlas]').count(), 0);
-  console.log('PASS public content: four steps, specimen image, questions, four methods and evidence boundary');
+  console.log('PASS public content: four steps, specimen destination, questions, four methods and evidence boundary');
 
   await step('Material').focus();
   await page.keyboard.press('ArrowDown');

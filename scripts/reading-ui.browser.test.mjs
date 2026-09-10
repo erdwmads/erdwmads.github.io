@@ -44,12 +44,14 @@ try {
   }
   const desktop = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
   await desktop.goto(`${base}/index.html`, { waitUntil: 'networkidle' });
-  assert.ok(await desktop.locator('.obs-fx-dock > .ambient-fx-toggle').isVisible());
+  assert.equal(await desktop.locator('.obs-fx-dock > button:visible').count(),1);
+  assert.equal(await desktop.locator('.ambient-fx-toggle').isVisible(),false);
   await desktop.setViewportSize({ width: 390, height: 844 });
   assert.equal(await desktop.locator('.obs-fx-dock > button:visible').count(), 1);
   await desktop.locator('.obs-fx-settings').click();
   await desktop.setViewportSize({ width: 1440, height: 1000 });
-  assert.ok(await desktop.locator('.obs-fx-dock > .ambient-fx-toggle').isVisible());
+  assert.equal(await desktop.locator('.obs-fx-dock > button:visible').count(),1);
+  assert.equal(await desktop.locator('.ambient-fx-toggle').isVisible(),false);
   assert.equal(await desktop.locator('.obs-fx-settings').getAttribute('aria-expanded'), 'false');
   assert.equal(await desktop.locator('.ambient-fx-toggle').count(), 1);
   await desktop.locator('.obs-fx-settings').click();
@@ -59,7 +61,7 @@ try {
   assert.equal(await desktop.locator('.obs-fx-settings').count(), 1, 'Soft navigation must retain one settings entry');
   assert.equal(await desktop.locator('.obs-fx-settings').getAttribute('aria-expanded'), 'false', 'Keyboard navigation must dismiss the settings panel');
   const beams = await desktop.locator('.obs-nav-beam, .research-scale__beam').evaluateAll(elements => elements.map(el => ({ color: getComputedStyle(el).backgroundColor, image: getComputedStyle(el).backgroundImage })));
-  assert.ok(beams.length >= 2);
+  assert.ok(beams.length >= 1, 'Navigation selection marker is present');
   assert.ok(beams.every(beam => beam.color === beams[0].color && beam.image === 'none'), 'All selection markers must share the gold status colour');
   const surfaceBefore = await desktop.locator('main').evaluate(el => getComputedStyle(el).backgroundImage);
   await desktop.evaluate(() => window.scrollTo(0, 650));

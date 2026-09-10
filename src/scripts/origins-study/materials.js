@@ -1,9 +1,15 @@
+import {MeshBVH,acceleratedRaycast} from 'three-mesh-bvh';
 import * as T from 'three';
 import {ImprovedNoise} from 'three/addons/math/ImprovedNoise.js';
 import {TessellateModifier} from 'three/addons/modifiers/TessellateModifier.js';
-import {mergeVertices} from 'three/addons/utils/BufferGeometryUtils.js';
+import {mergeVertices,toCreasedNormals} from 'three/addons/utils/BufferGeometryUtils.js';
 export const noise=new ImprovedNoise();
 export function rng(seed=1234){return()=>{seed=(Math.imul(seed,1664525)+1013904223)|0;return(seed>>>0)/4294967296;};}
+function materialOrigin(geometry,origin){
+  const values=new Float32Array(geometry.attributes.position.count*3);
+  for(let i=0;i<values.length;i+=3)values.set(origin,i);
+  geometry.setAttribute('rockOffset',new T.BufferAttribute(values,3));return geometry;
+}
 export function stoneGeometry(seed=1,detail=3){
   const g=new T.IcosahedronGeometry(1,detail),p=g.attributes.position;
   for(let i=0;i<p.count;i++){
@@ -13,7 +19,7 @@ export function stoneGeometry(seed=1,detail=3){
     const r=1+a*.26+b*.045+fine*.013;
     p.setXYZ(i,x*r,y*r*(.88+.06*Math.sin(seed)),z*r*.92);
   }
-  g.deleteAttribute('normal');g.deleteAttribute('uv');const merged=mergeVertices(g);merged.computeVertexNormals();return merged;
+  g.deleteAttribute('normal');g.deleteAttribute('uv');const merged=mergeVertices(g);merged.computeVertexNormals();return materialOrigin(merged,[seed*.713,seed*.371,seed*.193]);
 }
 // Unequal fracture planes and chipped edges, rather than a displaced sphere.
 export function clastGeometry(seed=1,detail=18){
@@ -22,15 +28,20 @@ export function clastGeometry(seed=1,detail=18){
   for(let i=0;i<p.count;i++){
     v.fromBufferAttribute(p,i).normalize();let radius=1;
     for(const plane of planes){const d=v.dot(plane.normal);if(d>0)radius=Math.min(radius,plane.offset/d);}
-    radius+=.035*noise.noise(v.x*7+seed,v.y*7,v.z*7)+.013*noise.noise(v.x*23+seed,v.y*23,v.z*23);
+    radius+=.07*noise.noise(v.x*4.5+seed,v.y*4.5,v.z*4.5)+.045*noise.noise(v.x*11+seed,v.y*11,v.z*11)+.015*noise.noise(v.x*31+seed,v.y*31,v.z*31);
     p.setXYZ(i,v.x*radius,v.y*radius*.78,v.z*radius*.93);
   }
-  geometry.deleteAttribute('normal');geometry.deleteAttribute('uv');const merged=mergeVertices(geometry);merged.computeVertexNormals();return merged;
+  geometry.deleteAttribute('normal');geometry.deleteAttribute('uv');const merged=mergeVertices(geometry);merged.computeVertexNormals();return materialOrigin(merged,[seed*.713,seed*.371,seed*.193]);
 }
 export function rockMaterial(color=0x8d8b80){
-  const m=new T.MeshStandardMaterial({color,roughness:.98,metalness:0});
+  const m=new T.MeshStandardMaterial({color,roughness:.91,metalness:0});
+  m.defaultAttributeValues={rockOffset:[0,0,0]};
   m.onBeforeCompile=(shader)=>{
-    shader.vertexShader=shader.vertexShader.replace('#include <common>',`#include <common>\nvarying vec3 vStone;`).replace('#include <begin_vertex>',`#include <begin_vertex>\nvStone=position;`);
+    shader.vertexShader=shader.vertexShader.replace('#include <common>',`#include <common>\nattribute vec3 rockOffset;varying vec3 vStone;`).replace('#include <begin_vertex>',`#include <begin_vertex>\nvStone=position+rockOffset;
+#ifdef USE_INSTANCING_COLOR
+vStone+=instanceColor*37.17;
+#endif
+`);
     shader.fragmentShader=shader.fragmentShader.replace('#include <common>',`#include <common>
       varying vec3 vStone;
       float hash31(vec3 p){p=fract(p*.1031);p+=dot(p,p.yzx+33.33);return fract((p.x+p.y)*p.z);}
@@ -38,35 +49,41 @@ export function rockMaterial(color=0x8d8b80){
     `).replace('#include <color_fragment>',`#include <color_fragment>
       float coarse=grainNoise(vStone*8.);
       float medium=grainNoise(vStone*43.);
-      float fine=grainNoise(vStone*210.);
-      float pits=smoothstep(.58,.81,medium)*smoothstep(.42,.65,coarse);
+      float resolution=length(fwidth(vStone))*210.;
+      float fine=mix(grainNoise(vStone*210.),.5,smoothstep(.6,2.,resolution));
+      float pits=smoothstep(.60,.81,medium)*smoothstep(.42,.65,coarse);
+      vec3 lithology=vStone*10.+vec3(coarse,grainNoise(vStone*4.+11.),grainNoise(vStone*4.-7.))*.65;
+      float clasts=smoothstep(.62,.79,grainNoise(lithology+vec3(23.)));
       float flecks=smoothstep(.78,.9,fine);
       float strata=grainNoise(vStone*3.5+vec3(0.,grainNoise(vStone*6.)*2.,0.));
-      diffuseColor.rgb*=.42+coarse*.48+fine*.23-pits*.34;
-      diffuseColor.rgb*=mix(vec3(.78,.86,.93),vec3(1.15,1.04,.88),strata);
-      diffuseColor.rgb*=1.+flecks*.035;
+      diffuseColor.rgb*=.55+coarse*.34+fine*.12-pits*.16;
+      diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*1.38,clasts*.65);
+      diffuseColor.rgb*=mix(vec3(.91,.96,1.02),vec3(1.05,1.02,.97),strata);
+      diffuseColor.rgb*=1.+flecks*.10;
+    `).replace('#include <roughnessmap_fragment>',`#include <roughnessmap_fragment>
+      roughnessFactor=clamp(roughnessFactor+grainNoise(vStone*31.)*.18-clasts*.16,.62,.98);
     `).replace('#include <normal_fragment_maps>',`#include <normal_fragment_maps>
-      float relief=grainNoise(vStone*43.)*.16+grainNoise(vStone*210.)*.025;
+      float relief=grainNoise(vStone*12.)*.19+grainNoise(vStone*43.)*.105+fine*.012-pits*.035;
       vec3 q0=dFdx(-vViewPosition),q1=dFdy(-vViewPosition);
       vec3 r1=cross(q1,normal),r2=cross(normal,q0);
       float determinant=dot(q0,r1);
       vec3 grad=sign(determinant)*(dFdx(relief)*r1+dFdy(relief)*r2);
-      normal=normalize(abs(determinant)*normal-grad*.035);
+      normal=normalize(abs(determinant)*normal-grad*.055);
     `);
   };return m;
 }
 export function rubble(seed=1,radius=1,material=rockMaterial()){
   const group=new T.Group(),random=rng(seed);
-  const core=new T.Mesh(clastGeometry(seed,22),material);group.add(core);
-  const small=new T.InstancedMesh(clastGeometry(seed+7,2),material,75),o=new T.Object3D(),ray=new T.Raycaster();
+  const core=new T.Mesh(clastGeometry(seed,22),material);core.geometry.boundsTree=new MeshBVH(core.geometry,{targetLeafSize:10});core.raycast=acceleratedRaycast;group.add(core);
+  const small=new T.InstancedMesh(clastGeometry(seed+7,2),material,160),o=new T.Object3D(),ray=new T.Raycaster();ray.firstHitOnly=true;
   core.updateMatrixWorld(true);
-  for(let i=0;i<75;i++){
+  for(let i=0;i<160;i++){
     const z=random()*2-1,a=random()*Math.PI*2,r=Math.sqrt(1-z*z);
-    const direction=new T.Vector3(r*Math.cos(a),z,r*Math.sin(a)),size=.018+random()**2*.09;
+    const direction=new T.Vector3(r*Math.cos(a),z,r*Math.sin(a)),size=.012+random()**3*.15;
     ray.set(direction.clone().multiplyScalar(3),direction.clone().negate());
     const hit=ray.intersectObject(core,false)[0];
     o.position.copy(hit.point).addScaledVector(hit.face.normal,-size*.35);
-    o.rotation.set(random()*6,random()*6,random()*6);o.scale.setScalar(size);o.updateMatrix();small.setMatrixAt(i,o.matrix);
+    o.rotation.set(random()*6,random()*6,random()*6);o.scale.set(size*(.7+random()*.6),size*(.45+random()*.5),size);o.updateMatrix();small.setMatrixAt(i,o.matrix);small.setColorAt(i,new T.Color().setScalar(.66+random()*.5));
   }
   group.add(small);group.scale.setScalar(radius);return group;
 }
@@ -93,10 +110,25 @@ export function dustCloud(count=450,seed=5){
 // Morphing exposes the relief during separation, while the intact body stays closed.
 export function fractureRelief(source,center){
   const geometry=new TessellateModifier(.13,5).modify(source),rough=geometry.clone(),p=rough.attributes.position;
+  source.computeBoundingBox();const size=source.boundingBox.getSize(new T.Vector3()),amplitude=Math.min(1,Math.min(size.x,size.y,size.z)/.4);
   for(let i=0;i<p.count;i++){
     const x=p.getX(i)+center.x,y=p.getY(i)+center.y,z=p.getZ(i)+center.z;
-    const strength=.045;
-    p.setXYZ(i,p.getX(i)+strength*noise.noise(x*12+73,y*12,z*12),p.getY(i)+strength*noise.noise(x*12,y*12+19,z*12),p.getZ(i)+strength*noise.noise(x*12,y*12,z*12+47));
+    const strength=.062*amplitude;
+    p.setXYZ(i,p.getX(i)+strength*noise.noise(x*7+73,y*7,z*7)+.035*amplitude*noise.noise(x*23+11,y*23,z*23),p.getY(i)+strength*noise.noise(x*7,y*7+19,z*7)+.035*amplitude*noise.noise(x*23,y*23+31,z*23),p.getZ(i)+strength*noise.noise(x*7,y*7,z*7+47)+.035*amplitude*noise.noise(x*23,y*23,z*23+57));
   }
-  rough.computeVertexNormals();geometry.morphAttributes.position=[rough.attributes.position];geometry.morphAttributes.normal=[rough.attributes.normal];rough.dispose();return geometry;
+  rough.deleteAttribute('normal');const welded=mergeVertices(rough);welded.computeVertexNormals();const smooth=welded.toNonIndexed();
+  geometry.morphAttributes.position=[rough.attributes.position];geometry.morphAttributes.normal=[smooth.attributes.normal];rough.dispose();welded.dispose();smooth.dispose();return materialOrigin(geometry,center.toArray());
+}
+
+// Real relief on the illustrative section lets grazing light reveal the matrix.
+export function sectionRelief(source){
+  const geometry=new TessellateModifier(.085,7).modify(source),p=geometry.attributes.position;
+  for(let i=0;i<p.count;i++){
+    const x=p.getX(i),y=p.getY(i),z=p.getZ(i);
+    const weight=Math.exp(-Math.pow((z-.14)/.09,2));
+    p.setZ(i,z+weight*(noise.noise(x*5+41,y*5,z*5)*.029+noise.noise(x*22+13,y*22,z*22)*.009));
+  }
+  geometry.deleteAttribute('normal');geometry.deleteAttribute('uv');
+  const merged=mergeVertices(geometry),creased=toCreasedNormals(merged,.7);
+  geometry.dispose();merged.dispose();return creased;
 }

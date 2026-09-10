@@ -28,7 +28,7 @@
   }, { signal });
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
+    if (event.key === "Escape" && toggle.getAttribute("aria-expanded") === "true") {
       close();
       toggle.focus();
     }
@@ -41,6 +41,6 @@
   window.addEventListener("resize", syncNavigationMode, { signal });
   collapsibleNavigationMedia.addEventListener("change", syncNavigationMode, { signal });
   window.addEventListener("pageshow", close, { signal });
-  document.addEventListener("mads:soft-nav-ready", close, { signal });
+  window.addEventListener("mads:soft-nav-ready", close, { signal });
   close();
 })();

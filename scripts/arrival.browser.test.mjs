@@ -1,3 +1,4 @@
+import {toggleFx} from './display-settings-helper.mjs';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 const require=createRequire(import.meta.url);
@@ -45,7 +46,7 @@ try{
    assert.equal(await page.locator('.ambient-fx-toggle').getAttribute('aria-pressed'),'true');
    await page.locator('.obs-fx-settings').click();
    await page.locator('input[value="standard"]').check();
-   await page.locator('.ambient-fx-toggle').click();
+   await toggleFx(page);
    await page.reload();
    assert.equal(await page.locator('html').getAttribute('data-fx-intensity'),'standard','Explicit lower intensity is retained');
    assert.equal(await page.locator('.ambient-fx-toggle').getAttribute('aria-pressed'),'false','Explicit FX off is retained');

@@ -176,18 +176,10 @@
     detail.replaceChildren(element('p', 'atlas-kicker', group.kind), element('h3', '', group.title));
     if (group.text) detail.append(element('p', 'atlas-description', group.text));
     if (group.id === 'material' && !privateAtlas) {
-      const figure = element('figure', 'atlas-specimen');
-      const img = element('img');
-      img.src = 'assets/img/research-scale/orgueil-smithsonian.jpg';
-      img.alt = 'Orgueil meteorite specimen USNM 388 in the Smithsonian collection.';
-      img.width = 1200;
-      img.height = 800;
-      const caption = element('figcaption', '', 'Orgueil, USNM 388. Chip Clark / Smithsonian, CC0. A reference specimen, not the author\'s experimental sample. ');
-      const credit = element('a', '', 'Specimen record');
-      credit.href = 'https://naturalhistory.si.edu/object/nmnhmineralsciences_1017941';
-      caption.append(credit);
-      figure.append(img, caption);
-      detail.append(figure);
+      const specimenLink = element('a', 'atlas-source-button', 'View Orgueil specimen in Samples');
+      specimenLink.href = 'research.html#observe=1&view=sample&material=orgueil';
+      specimenLink.addEventListener('click', closeAtlas);
+      detail.append(specimenLink);
     }
     for (const item of group.items || []) {
       const row = element('article', 'atlas-source');

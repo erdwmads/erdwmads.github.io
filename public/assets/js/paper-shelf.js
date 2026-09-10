@@ -29,9 +29,12 @@
       if (visible) visibleCount += 1;
     });
 
-    document.documentElement.classList.toggle("paper-filter-empty", visibleCount === 0);
+    document.querySelector("[data-paper-count]").textContent = `${visibleCount} of ${cards.length} papers`;
+    document.querySelector("[data-paper-empty]").hidden = visibleCount !== 0;
+    document.querySelector("[data-paper-reset]").hidden = !query && !activeFilter;
   }
 
+  document.querySelector("[data-paper-reset]").addEventListener("click",()=>{search.value="";activeFilter="";filters.forEach(button=>button.setAttribute("aria-pressed",String(!button.dataset.paperFilter)));sync();search.focus();});
   search.addEventListener("input", sync, { passive: true });
 
   filters.forEach((button) => {

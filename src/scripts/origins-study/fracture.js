@@ -9,7 +9,8 @@ export function fracturedBody(seed=65,count=28){
   const shell=new ConvexGeometry(vertices);surface.dispose();
   const positions=shell.attributes.position,faces=[];
   for(let i=0;i<positions.count;i+=3)faces.push([0,1,2].map(j=>new T.Vector3().fromBufferAttribute(positions,i+j)));
-  const seeds=Array.from({length:count},()=>{const z=random()*2-1,a=random()*Math.PI*2,r=Math.sqrt(1-z*z),s=.12+Math.cbrt(random())*1.12;return new T.Vector3(Math.cos(a)*r,z*.87,Math.sin(a)*r*.92).multiplyScalar(s);});
+  // Denser partition near the illustrated impact, with larger remote fragments.
+  const seeds=Array.from({length:count},(_,i)=>{const z=random()*2-1,a=random()*Math.PI*2,r=Math.sqrt(1-z*z),s=.12+Math.cbrt(random())*1.12;const point=new T.Vector3(Math.cos(a)*r,z*.87,Math.sin(a)*r*.92).multiplyScalar(s);if(i>count*.4)point.multiplyScalar(.48).add(new T.Vector3(.68,.06,0));return point;});
   const cells=seeds.map((site,i)=>{
     let polygons=faces.map(face=>face.map(v=>v.clone()));
     seeds.forEach((other,j)=>{

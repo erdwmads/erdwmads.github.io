@@ -1,0 +1,74 @@
+---
+import {missions} from '../scripts/sample-missions/data.js';
+const first=missions.hayabusa2,stage=first.stages[0];
+---
+<section class="sample-missions" data-sample-missions aria-labelledby="missions-title">
+  <header class="mission-heading">
+    <p class="eyebrow">Sample-return missions</p>
+    <h2 id="missions-title">How asteroid samples reach Earth</h2>
+    <p>Follow two spacecraft from launch to sample recovery. Explore the flight, examine the sampling mechanism, and see what returns to Earth.</p>
+  </header>
+  <div class="mission-selector" role="tablist" aria-label="Sample-return mission">
+    {Object.values(missions).map((mission,i)=><button type="button" role="tab" data-mission={mission.id} id={'mission-tab-'+mission.id} aria-controls="mission-player" aria-selected={i===0?'true':'false'} tabindex={i===0?0:-1}><span class="mission-agency">{mission.agency}</span><strong>{mission.title}</strong><span>{mission.target} <span aria-hidden="true">·</span> {mission.years}</span></button>)}
+  </div>
+  <div class="mission-player" id="mission-player" role="tabpanel" aria-labelledby="mission-tab-hayabusa2">
+    <div class="mission-chapters" data-mission-chapters role="group" aria-label="Mission chapters">
+      {first.stages.map((s,i)=><button type="button" data-mission-stage={i} aria-current={i===0?'step':undefined}><span>{String(i+1).padStart(2,'0')}</span>{s.label}</button>)}
+    </div>
+    <header class="mission-stage-heading">
+      <div><span class="mission-stage-number" data-mission-number>01 / {String(first.stages.length).padStart(2,'0')}</span><time data-mission-date>{stage.date}</time></div>
+      <h3 data-mission-title>{stage.title}</h3>
+    </header>
+    <div class="mission-body">
+
+      <div class="mission-scene">
+        <div class="mission-context" data-mission-context>
+          <div class="mission-location"><a data-mission-location href="https://www.isas.jaxa.jp/en/missions/spacecraft/current/hayabusa2.html" target="_blank" rel="noopener">Tanegashima Space Center · Japan</a><small data-mission-location-note>Launch-site locator</small></div>
+          <div role="group" aria-label="View scale"><button type="button" data-mission-action="earth" aria-pressed="true">Earth overview</button><button type="button" data-mission-action="detail" aria-pressed="false">Vehicle close-up</button></div>
+        </div>
+        <div class="mission-context mission-physical" data-mission-physical hidden>
+          <div class="mission-location"><strong data-mission-range></strong><details class="mission-orbit-details"><summary>Dimensions &amp; orbit source</summary><small data-mission-dimensions></small><a data-mission-trajectory-source target="_blank" rel="noopener"></a></details></div>
+          <div role="group" aria-label="Camera framing"><button type="button" data-mission-action="both" aria-pressed="true">Distance overview</button><button type="button" data-mission-action="asteroid" aria-pressed="false">Target close-up</button><button type="button" data-mission-action="spacecraft" aria-pressed="false">Spacecraft close-up</button></div>
+        </div>
+        <div class="mission-scene-bar"><span data-mission-scene>Launch sequence</span><span>3D mission study</span></div>
+        <div class="mission-viewport" data-mission-viewport tabindex="0" role="group" aria-label="Interactive mission model">
+          <div class="mission-labels" data-mission-labels aria-hidden="true"></div>
+          <div class="mission-inset" data-mission-inset hidden><b data-inset-target>Earth</b><b data-inset-vehicle>Vehicle</b><span>Earth context</span></div>
+          <div class="mission-legend" data-mission-legend hidden><span>● Position marker</span><span>— Travelled</span><span>··· Ahead</span></div>
+          <div class="mission-loading" data-mission-loading><span>Preparing the mission model…</span><button type="button" data-mission-action="retry" hidden>Retry 3D view</button></div>
+          <span class="mission-view-hint" data-mission-hint>Drag to orbit · Ctrl/⌘ + scroll to zoom</span>
+        </div>
+        <div class="mission-camera-tools">
+          <p data-mission-status role="status">Ready to explore</p>
+          <div role="group" aria-label="Mission camera">
+            <button type="button" data-mission-action="touch" class="mission-touch" aria-pressed="false" aria-label="Enable model rotation and pinch zoom"><span data-mission-icon="hand"></span><span data-mission-touch-label>Explore</span></button>
+            <button type="button" data-mission-action="zoom-in" aria-label="Zoom in" title="Zoom in"><span data-mission-icon="zoom-in"></span></button>
+            <button type="button" data-mission-action="zoom-out" aria-label="Zoom out" title="Zoom out"><span data-mission-icon="zoom-out"></span></button>
+            <button type="button" data-mission-action="reset" aria-label="Reset camera" title="Reset camera"><span data-mission-icon="reset"></span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mission-transport">
+      <button type="button" data-mission-action="play" aria-pressed="false"><span data-mission-icon="play"></span><span data-mission-play-label>Play mission</span><span data-mission-play-short aria-hidden="true">Play</span></button>
+      <button type="button" data-mission-action="previous" aria-label="Previous mission chapter" disabled><span data-mission-icon="previous"></span></button>
+      <label class="mission-scrubber"><span>Chapter progress <span data-mission-percent-short aria-hidden="true">0%</span></span><input data-mission-progress type="range" min="0" max="1000" step="1" value="0" aria-label="Chapter progress" /></label>
+      <output data-mission-percent>0%</output>
+      <button type="button" data-mission-action="next" aria-label="Next mission chapter"><span data-mission-icon="next"></span></button>
+    </div>
+    <aside class="mission-copy"><div class="mission-copy-content">
+        <p data-mission-description>{stage.description}</p>
+        <a data-mission-source href={stage.source} target="_blank" rel="noopener">{stage.sourceLabel}</a></div><div class="mission-explanation">
+        <span>What happens</span><p data-mission-detail>{stage.detail}</p>
+
+      </div></aside>
+  </div>
+  <div class="mission-footnote"><p>Earth and asteroid-proximity views preserve physical vehicle sizes. Orbit vectors anchor flyby, rendezvous and departure; event times anchor launch and return. Playback compresses time. Solar-system views and local sampling scenes are illustrative.</p><a data-mission-samples href="#observe=1&amp;view=sample&amp;material=ryugu">Inspect the returned samples <span aria-hidden="true">→</span></a></div>
+  <details class="mission-sources"><summary>Mission sources &amp; model fidelity</summary>
+    <p>Both missions entered heliocentric cruise before returning near Earth about a year later for gravity assist. This was a circuit around the Sun, not a full orbit around Earth. Orbit sources distinguish navigation solutions, reconstructed approach data and mission predictions. The displayed UTC and range follow those vectors. Five-minute samples are interpolated. Launch and return paths interpolate published events, altitudes and entry speeds; they are explanatory paths rather than flight telemetry. Hayabusa2 launch times follow the postflight report; OSIRIS-REx launch times follow the nominal ascent timeline. Spacecraft attitudes, local terrain and recovery-region markers are illustrative.</p>
+    <p>The Hayabusa2 return illustration uses its cruciform parachute; its displayed span is illustrative. OSIRIS-REx uses a triconic main parachute with a published nominal diameter of 7.3 m. The return sequence reflects the reported drogue deployment anomaly.</p>
+    <p>Hayabusa2 uses a sampler horn and projectile; OSIRIS-REx uses nitrogen-assisted TAGSAM collection. Only the sample capsules land on Earth. The spacecraft continue into space.</p>
+    <div class="mission-source-columns">{Object.values(missions).map(mission=><div><h3>{mission.agency} · {mission.title}</h3><ul>{mission.sources.map(source=><li><a href={source.href} target="_blank" rel="noopener">{source.label}</a></li>)}</ul></div>)}</div>
+    <p>OSIRIS-REx spacecraft: NASA / Christopher R. Meaney. Hayabusa2 geometry, deployed TAGSAM movement, local terrain, launch vehicles and parachutes are authored illustrations. The Ryugu and Bennu shapes reuse the public JAXA and NASA meshes used below; added boulders and surface shading are illustrative, not measured surface maps. Earth maps come from the Three.js examples. <a href="/assets/data/missions/SPACECRAFT-CREDITS.md">Spacecraft model credits</a> · <a href="/assets/img/arrival/ASSET-CREDITS.md">Earth map credits</a>.</p>
+  </details>
+</section>

@@ -105,8 +105,8 @@ try {
   assert.match(await root.locator('[data-boundary]').innerText(),/Orgueil has no established/);
   await root.locator('[data-material="bennu"]').click();
   await root.locator('[data-object="earth"]').click();
-  await page.locator('#research-material-tab-bennu').click();
-  assert.equal(await root.locator('[data-object-title]').innerText(),'Bennu','External selection must restore material inspection after inspecting a planet');
+  await root.locator('[data-material="bennu"]').click();
+  assert.equal(await root.locator('[data-object-title]').innerText(),'Bennu','Material selection must restore inspection after inspecting a planet');
   await root.locator('[data-view="minerals"]').click();
   assert.ok(await root.locator('[data-mineral-diagram]').isVisible());
   for (const theme of ['space','light']) {
@@ -127,7 +127,7 @@ try {
       previous=solid;
     }
   }
-  await page.locator('#research-material-tab-bennu').click();
+  await root.locator('[data-material="bennu"]').click();
   assert.equal(await root.locator('[data-material="bennu"]').getAttribute('aria-pressed'), 'true');
   await page.locator('.nav a[href="contact.html"]').click();
   await page.waitForURL('**/contact.html');

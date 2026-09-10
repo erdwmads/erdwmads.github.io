@@ -10,13 +10,14 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { createEphemeris } from './planetary-ephemeris.js';
 import { createMineralGroup } from './planetary-minerals.js';
+import { createOrbitBody } from './planetary-orbit-bodies.js';
 
 export function disposeObject(object, includeCached = false) {
   object.traverse(node => {
     if(node.isInstancedMesh)node.dispose();
     if (!node.userData.cached || includeCached) node.geometry?.dispose();
     for (const material of [node.material].flat().filter(Boolean)) {
-      for (const value of Object.values(material)) if (value?.isTexture) { value.dispose(); value.image?.close?.(); }
+      for (const value of Object.values(material)) if (value?.isTexture && (!value.userData.cached || includeCached)) { value.dispose(); value.image?.close?.(); }
       material.dispose();
     }
   });
@@ -35,6 +36,7 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
   scene.environment=studioMap.texture;scene.environmentIntensity=.25;
   signal.addEventListener('abort',()=>studioMap.dispose(),{once:true});
   const camera = new THREE.OrthographicCamera(-2,2,2,-2,0.001,2000);
+  stage.addEventListener('wheel',event=>{if(!event.ctrlKey&&!event.metaKey)event.stopImmediatePropagation();},{capture:true,passive:true,signal});
   const controls = new OrbitControls(camera, stage);
   const composer=new EffectComposer(renderer);composer.addPass(new RenderPass(scene,camera));
   const ao=new SSAOPass(scene,camera,1,1);ao.kernelRadius=10;ao.minDistance=.001;ao.maxDistance=.08;composer.addPass(ao);composer.addPass(new OutputPass());
@@ -48,37 +50,13 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
   controls.enablePan = false;
   const coarse = matchMedia('(pointer: coarse)');
   let alive = true, visible = false, contextLost = false, touch = false, frame = 0, version = 0, current = null, world = new THREE.Group(), labels = [], clickable = [], radius = 2.1, radiusY = 2.1;
-  const cache = new Map();
-  let focusFx = true, flightFrame = 0, finishFlight = null, requested = null;
-  function cancelFlight() {
-    cancelAnimationFrame(flightFrame);flightFrame=0;
-    finishFlight?.(false);finishFlight=null;
-  }
-  function approach(id) {
-    cancelFlight();
-    if (!alive || !visible || contextLost || document.hidden) return Promise.resolve(false);
-    const target = current?.view==='orbit' ? new THREE.Vector3(...ephemeris.position(id,current.day)) : controls.target.clone();
-    const startTarget=controls.target.clone(),startPosition=camera.position.clone(),startZoom=camera.zoom;
-    const endZoom=Math.min(controls.maxZoom,startZoom*(current?.view==='orbit'?3:1.2));
-    const started=performance.now();
-    return new Promise(resolve=>{
-      finishFlight=resolve;
-      function step(now) {
-        const t=Math.min(1,(now-started)/360),e=t*t*(3-2*t);
-        controls.target.lerpVectors(startTarget,target,e);
-        camera.position.copy(startPosition).add(controls.target.clone().sub(startTarget));
-        camera.zoom=THREE.MathUtils.lerp(startZoom,endZoom,e);
-        camera.lookAt(controls.target);controls.update();camera.updateProjectionMatrix();requestRender();
-        if(t<1)flightFrame=requestAnimationFrame(step);
-        else {flightFrame=0;finishFlight=null;resolve(true);}
-      }
-      flightFrame=requestAnimationFrame(step);
-    });
-  }
+  const cache = new Map(), orbitTextures = new Map();
+  let focusFx = true, requested = null;
   const hemisphere=new THREE.HemisphereLight(0xe6f2ff,0x394350,1.2);scene.add(world,hemisphere);
   const key = new THREE.DirectionalLight(0xffffff,2.4); key.position.set(3,5,6); scene.add(key);
   const fill = new THREE.DirectionalLight(0xabc9ec,0.7); fill.position.set(-4,0,2); scene.add(fill);
   const originRim = new THREE.DirectionalLight(0x75cddd,1.6);originRim.position.set(-3,1,-3);originRim.visible=false;scene.add(originRim);
+  const sunlight = new THREE.PointLight(0xfff4e5,3,0,0); sunlight.visible=false; scene.add(sunlight);
 
   function color() { return document.documentElement.dataset.theme === 'light' ? { bg:0xe8f0f4, line:0x9caeb7, blue:0x287e9c, gold:0x99731f, body:0x626f79 } : { bg:0x091219, line:0x41535e, blue:0x8ed4e9, gold:0xe6c77b, body:0x737b82 }; }
   function halo(size) {
@@ -87,16 +65,17 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     glow.addColorStop(0,'rgba(255,255,255,0.65)'); glow.addColorStop(0.4,'rgba(255,255,255,0.18)'); glow.addColorStop(1,'rgba(255,255,255,0)');
     context.fillStyle = glow; context.fillRect(0,0,64,64);
     const sprite = new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(canvas),color:color().gold,transparent:true,depthWrite:false,depthTest:false}));
-    sprite.scale.setScalar(size); sprite.userData.focusHalo = true;
+    sprite.scale.setScalar(size); sprite.userData.focusHalo = true; sprite.raycast = () => {};
     return sprite;
   }
   function setFx(value) {
     focusFx = value;
     originRim.visible=['shape','minerals'].includes(current?.view)&&value;
-    key.intensity=current?.view==='orbit'?2.4:2.8;fill.intensity=current?.view==='orbit'?.7:.2;hemisphere.intensity=current?.view==='orbit'?1.2:.55;
+    sunlight.visible=current?.view==='orbit';
+    key.intensity=current?.view==='orbit'?0:2.8;fill.intensity=current?.view==='orbit'?.12:.2;hemisphere.intensity=current?.view==='orbit'?.42:.55;
     world.traverse(node => {
       if (node.userData.focusHalo) node.visible = value;
-      if (node.isMesh && node.material?.emissive) { node.material.emissive.setHex(color().gold); node.material.emissiveIntensity = value ? 0.035 : 0; }
+      if (current?.view!=='orbit' && node.isMesh && node.material?.emissive) { node.material.emissive.setHex(color().gold); node.material.emissiveIntensity = value ? 0.035 : 0; }
     });
     requestRender();
   }
@@ -108,7 +87,7 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
   function draw() {
     frame = 0;
     if (!alive || contextLost || !visible || document.hidden) return;
-    for (const marker of world.userData.markers || []) marker.scale.setScalar(1/camera.zoom);
+    for (const marker of world.userData.markers || []) marker.scale.setScalar(1/Math.sqrt(camera.zoom));
     scene.updateMatrixWorld(true);
     ao.enabled=current?.view!=='orbit'&&stage.clientWidth>760;
     scene.environmentIntensity=current?.view==='orbit'?0:.25;
@@ -121,7 +100,8 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
       if (back || point.z < -1 || point.z > 1 || x < 0 || x > rect.width || y < 0 || y > rect.height) { entry.element.hidden = true; entry.leader.style.display = 'none'; continue; }
       entry.element.hidden = false;
       const width = entry.element.offsetWidth, height = entry.element.offsetHeight;
-      const left = Math.max(4,Math.min(rect.width-width-4,x+9));
+      const bodyPadding = entry.object.userData.labelRadius ? entry.object.userData.labelRadius*entry.object.scale.x*camera.zoom*rect.width/(camera.right-camera.left)+7 : 9;
+      const left = Math.max(4,Math.min(rect.width-width-4,x+bodyPadding));
       let top = Math.max(4,Math.min(rect.height-height-4,y-10+(entry.offsetY || 0)));
       // Reserve label offsets once per layout, not on every camera frame.
       if (entry.offsetY === undefined) {
@@ -148,11 +128,10 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
   }
   const resizeObserver = new ResizeObserver(resize); resizeObserver.observe(stage);
   controls.addEventListener('change', requestRender);
-  controls.addEventListener('start',cancelFlight);
   function setVisible(value) {
     visible = value;
     controls.enabled = value && !contextLost && (!coarse.matches || touch);
-    if (!value) { cancelFlight();cancelAnimationFrame(frame); frame = 0; }
+    if (!value) { cancelAnimationFrame(frame); frame = 0; }
     else { resize(); requestRender(); }
   }
   function setTouch(value) { touch = value; controls.enabled = visible && !contextLost && (!coarse.matches || touch); }
@@ -178,7 +157,23 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     const leader = document.createElementNS('http://www.w3.org/2000/svg','line');
     pending.push({ object, element: button, leader, surface: id==='equator' });
   }
-  function orbitGroup(state) {
+  async function orbitTexture(name) {
+    if (!orbitTextures.has(name)) {
+      const pending = new THREE.TextureLoader().loadAsync(`/assets/img/arrival/${name}`).then(texture => {
+        if (!alive) { texture.dispose(); throw new DOMException('Viewer disposed','AbortError'); }
+        texture.colorSpace = name.endsWith('.jpg') ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+        texture.anisotropy = Math.min(4,renderer.capabilities.getMaxAnisotropy());
+        texture.userData.cached = true;
+        return texture;
+      });
+      orbitTextures.set(name,pending);
+      pending.catch(() => orbitTextures.delete(name));
+    }
+    return orbitTextures.get(name);
+  }
+  async function orbitGroup(state) {
+    const [bennu,ryugu,day,clouds] = await Promise.all([model('bennu'),model('ryugu'),orbitTexture('earth-day.jpg'),orbitTexture('earth-clouds.png')]);
+    const shapes = {bennu,ryugu};
     const group = new THREE.Group(), pending = [], targets = [], colors = color();
     const extent = state.scope === 'solar' ? 34 : 2.05;
     const outer = ['jupiter','saturn','uranus','neptune'];
@@ -189,12 +184,15 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
       const tint = selected ? colors.gold : asteroid || body.id === 'earth' ? colors.blue : colors.line;
       const geometry = new THREE.BufferGeometry().setFromPoints(body.points.map(p=>new THREE.Vector3(...p)));
       group.add(new THREE.Line(geometry,new THREE.LineBasicMaterial({color:tint,transparent:true,opacity:selected ? 1 : asteroid ? 0.55 : 0.42})));
-      const mesh = new THREE.Mesh(new THREE.SphereGeometry(extent*(asteroid?0.012:0.009),12,8),new THREE.MeshBasicMaterial({color:tint}));
+      // At solar-system extent, keep the inner bodies small enough to sit behind
+      // the central Sun marker; zooming reveals them at their unchanged positions.
+      const bodyExtent = state.scope==='solar' && !outer.includes(body.id) ? 2.05 : extent;
+      const mesh = createOrbitBody(body.id,bodyExtent,{shape:shapes[body.id],day,clouds});
       mesh.position.set(...ephemeris.position(body.id,state.day)); mesh.userData.id = body.id; group.add(mesh); targets.push(mesh);
       if (selected) mesh.add(halo(extent*0.12));
       if (state.scope !== 'solar' || outer.includes(body.id)) label(mesh,body.id[0].toUpperCase()+body.id.slice(1),body.id,pending);
     }
-    const sun = new THREE.Mesh(new THREE.SphereGeometry(extent*0.018,20,12),new THREE.MeshBasicMaterial({color:colors.gold})); group.add(sun);
+    const sun = createOrbitBody('sun',extent); group.add(sun);
     label(sun,state.scope==='solar'?'Inner solar system':'Sun',state.scope==='solar'?'inner':'sun',pending);
     group.userData.markers = [...targets,sun];
     const axis = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-extent,0,0),new THREE.Vector3(extent,0,0),new THREE.Vector3(0,-extent,0),new THREE.Vector3(0,extent,0)]);
@@ -253,7 +251,7 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     return {group,pending,targets:[],radius:state.compare?1.4:0.94,radiusY:state.compare?1.05:0.94};
   }
   async function show(next) {
-    cancelFlight();
+
     const state = {...next}, ticket = ++version;
     const changed = !current || ['view','material','scope','angle','compare','mineral'].some(key=>current[key]!==state[key]);
     requested = state;
@@ -261,7 +259,7 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     if (contextLost) { onError(new Error('WebGL context lost')); return; }
     if (state.view === 'shape') { root.dataset.modelReady = 'loading'; status.hidden = false; status.textContent = 'Loading public shape model...'; }
     try {
-      const built = state.view === 'orbit' ? orbitGroup(state) : state.view === 'minerals' ? {group:createMineralGroup(state.mineral,state.separated),pending:[],targets:[],radius:1.55} : await shapeGroup(state);
+      const built = state.view === 'orbit' ? await orbitGroup(state) : state.view === 'minerals' ? {group:createMineralGroup(state.mineral,state.separated),pending:[],targets:[],radius:1.55} : await shapeGroup(state);
       if (!alive || contextLost || ticket !== version) { disposeObject(built.group); return false; }
       current = state;
       root.dataset.renderState='rendering';
@@ -292,25 +290,28 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     } catch (error) { if (ticket===version) onError(error); return false; }
   }
   function action(name) {
-    cancelFlight();
+
     if (name==='reset') reset();
     else if (name==='zoom-in' || name==='zoom-out') { camera.zoom = THREE.MathUtils.clamp(camera.zoom*(name==='zoom-in'?1.4:1/1.4),controls.minZoom,controls.maxZoom); camera.updateProjectionMatrix(); requestRender(); }
   }
   function rotate(key) {
-    cancelFlight();
+
     const axis = key==='ArrowLeft'||key==='ArrowRight' ? new THREE.Vector3(0,1,0) : new THREE.Vector3(1,0,0);
     camera.position.sub(controls.target).applyAxisAngle(axis,(key==='ArrowLeft'||key==='ArrowUp'?1:-1)*0.14).add(controls.target); camera.lookAt(controls.target); controls.update(); requestRender();
   }
   let down = null;
   renderer.domElement.addEventListener('pointerdown', e=> {down=[e.clientX,e.clientY];}, {signal});
-  renderer.domElement.addEventListener('pointerup', e=> {
-    if (!down || Math.hypot(e.clientX-down[0],e.clientY-down[1])>5 || current?.view!=='orbit') return;
+  // OrbitControls captures pointers on the stage, so pointerup is retargeted there.
+  stage.addEventListener('pointerup', e=> {
+    const start = down; down = null;
+    if (!start || Math.hypot(e.clientX-start[0],e.clientY-start[1])>5 || current?.view!=='orbit') return;
     const r = stage.getBoundingClientRect(), ray = new THREE.Raycaster();
     ray.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,1-(e.clientY-r.top)/r.height*2),camera);
-    const hit = ray.intersectObjects(clickable)[0]; if (hit) onSelect(hit.object.userData.id);
+    const hit = ray.intersectObjects(clickable,true)[0]; if (hit) onSelect(hit.object.userData.id);
   }, {signal});
+  stage.addEventListener('pointercancel',()=> { down = null; },{signal});
   renderer.domElement.addEventListener('webglcontextlost', event=> {
-    event.preventDefault(); cancelFlight();contextLost = true; version++;
+    event.preventDefault(); contextLost = true; version++;
     cancelAnimationFrame(frame); frame = 0; controls.enabled = false;
     onError(new Error('WebGL context lost'));
   }, {signal});
@@ -318,7 +319,7 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     contextLost = false; setVisible(visible); if (requested) show(requested);
   }, {signal});
   return {
-    show, setVisible, setTouch, action, rotate, setFx, approach, cancelFlight,
+    show, setVisible, setTouch, action, rotate, setFx,
     cancelPending() {version++;},
     position: ephemeris.position,
     cameraState() { return {position:camera.position.toArray(),target:controls.target.toArray(),up:camera.up.toArray(),zoom:camera.zoom}; },
@@ -330,6 +331,7 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
       camera.lookAt(controls.target);controls.update();camera.updateProjectionMatrix();requestRender();
     },
     setTime(day) {
+      if (requested) requested.day = day;
       if (!current) return;
       current.day = day;
       if (current.view !== 'orbit') return;
@@ -339,9 +341,9 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     highlight(id) { if (current) show({...current,inspected:id}); },
     theme() { if (requested) show(requested); },
     dispose() {
-      alive = false; cancelFlight();version++; cancelAnimationFrame(frame); resizeObserver.disconnect(); controls.dispose();
+      alive = false; version++; cancelAnimationFrame(frame); resizeObserver.disconnect(); controls.dispose();
       disposeObject(world); for (const promise of cache.values()) promise.then(object=>disposeObject(object,true)).catch(()=>{});
-      cache.clear();ao.dispose();composer.passes.forEach(pass=>{if(pass!==ao)pass.dispose?.();});composer.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); labelLayer.replaceChildren();
+      cache.clear(); for (const promise of orbitTextures.values()) promise.then(texture=>texture.dispose()).catch(()=>{}); orbitTextures.clear();ao.dispose();composer.passes.forEach(pass=>{if(pass!==ao)pass.dispose?.();});composer.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); labelLayer.replaceChildren();
     }
   };
 }

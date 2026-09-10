@@ -20,7 +20,7 @@ import { photographs } from "../data/photography";
         class:list={["photo-tile", { "photo-tile--wide": photo.width / photo.height > 2.3 }]}
         href={photo.full}
         data-photo-index={index}
-        aria-label={`Open photograph ${photo.number}`}
+        aria-label={`Open photograph ${photo.number}: ${photo.alt}`}
       >
         <img
           src={photo.thumb}

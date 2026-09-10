@@ -4,9 +4,8 @@ import ResearchQuestions from './ResearchQuestions.astro';
 <section class="planetary" data-planetary-explorer aria-labelledby="planetary-title">
   <header class="planetary-heading">
     <p class="eyebrow">Planetary field guide</p>
-    <h2 id="planetary-title">Different worlds. Shared questions.</h2>
-    <p>Compare orbits, public shape models, sample photographs and mineral forms.</p>
-    <p><a class="planetary-origins-link" href="/origins-study.html">Origins · Explore formation &amp; evolution →</a></p>
+    <h2 id="planetary-title">Compare materials and observations</h2>
+    <p>Choose a material, then compare its orbital context, external shape, sample photographs and illustrative mineral forms.</p>
   </header>
   <ResearchQuestions />
   <div class="planetary-navigation">
@@ -24,15 +23,6 @@ import ResearchQuestions from './ResearchQuestions.astro';
   </div>
   <div id="planetary-panel" role="tabpanel" aria-labelledby="planetary-orbit" tabindex="0">
     <div class="planetary-toolbar">
-    <div class="planetary-journey">
-      <button type="button" data-action="journey-start"><span data-icon="route"></span><span data-journey-label>From asteroid to minerals</span></button>
-      <div data-journey-controls hidden>
-        <button type="button" data-action="journey-prev" aria-label="Previous step" title="Previous step"><span data-icon="previous"></span></button>
-        <output data-journey-status aria-live="polite"></output>
-        <button type="button" data-action="journey-next" aria-label="Next step" title="Next step"><span data-icon="next"></span></button>
-        <button type="button" data-action="journey-end" aria-label="Exit guided tour" title="Exit guided tour"><span data-icon="close"></span></button>
-      </div>
-    </div>
       <div data-orbit-tools class="planetary-options">
         <select data-scope aria-label="Solar system extent"><option value="inner">Inner solar system</option><option value="solar">Solar system</option></select>
         <select data-angle aria-label="Orbital viewing angle"><option value="plan">Top view</option><option value="tilt">Inclined view</option></select>
@@ -42,7 +32,7 @@ import ResearchQuestions from './ResearchQuestions.astro';
         <button type="button" data-action="compare" aria-pressed="false">Compare sizes</button>
       </div>
       <div class="planetary-tools" data-camera-tools>
-        <button type="button" data-action="interact" aria-label="Enable model rotation and pinch zoom" title="Enable model rotation and pinch zoom" aria-pressed="false" class="planetary-touch"><span data-icon="hand"></span></button>
+
         <button type="button" data-action="zoom-in" aria-label="Zoom in" title="Zoom in"><span data-icon="zoom-in"></span></button>
         <button type="button" data-action="zoom-out" aria-label="Zoom out" title="Zoom out"><span data-icon="zoom-out"></span></button>
         <button type="button" data-action="reset" aria-label="Reset view" title="Reset view"><span data-icon="reset"></span></button>
@@ -62,16 +52,19 @@ import ResearchQuestions from './ResearchQuestions.astro';
     </fieldset>
     <div class="planetary-layout">
       <div class="planetary-visual">
+        <div class="planetary-interaction-bar"><span>Swipe to scroll the page</span><button type="button" data-action="interact" aria-label="Enable model rotation and pinch zoom" title="Enable model rotation and pinch zoom" aria-pressed="false" class="planetary-touch"><span data-icon="hand"></span><span data-interact-label>Explore</span></button></div>
         <div class="planetary-stage" data-stage tabindex="0" role="group" aria-label="Interactive solar system, asteroid and mineral models">
           <div class="planetary-labels" data-labels></div>
           <img class="planetary-fallback" data-fallback hidden alt="Public reference image of the selected material" />
           <p class="planetary-status" data-status role="status">Loading orbital data...</p>
           <button type="button" data-retry data-action="retry" hidden>Retry view</button>
         </div>
-        <figure class="planetary-ci" data-ci-figure hidden>
-          <img src="/assets/img/research-scale/orgueil-smithsonian.jpg" width="1200" height="800" alt="Orgueil meteorite specimen USNM 388 photographed by Chip Clark at the Smithsonian." loading="lazy" />
-          <figcaption>Orgueil, USNM 388 · Chip Clark / Smithsonian · CC0<br />A photographed specimen, not a three-dimensional reconstruction.</figcaption>
-        </figure>
+        <div class="planetary-ci" data-ci-figure hidden>
+          <p class="eyebrow">CI / Orgueil</p>
+          <h3>No measured 3D shape available</h3>
+          <p>Orgueil is a meteorite specimen. A photograph cannot establish its unseen geometry.</p>
+          <button type="button" data-action="show-sample">View specimen in Samples</button>
+        </div>
         <figure class="planetary-sample" data-sample-figure hidden>
           <img data-sample-image alt="" />
           <figcaption data-sample-credit></figcaption>
@@ -98,13 +91,14 @@ import ResearchQuestions from './ResearchQuestions.astro';
         <a data-mindat hidden target="_blank" rel="noopener">Specimen photographs on Mindat</a>
       </aside>
     </div>
-    <p class="planetary-boundary" data-boundary>Positions at the stated epoch. Trajectory traces span approximately one revolution per body. Body markers are enlarged; present orbits are not formation locations.</p>
+    <p class="planetary-boundary" data-boundary>Positions at the stated epoch. Trajectory traces span approximately one revolution per body. Body models are enlarged independently, not to scale; present orbits are not formation locations.</p>
     <details class="planetary-sources">
       <summary>Sources &amp; model conventions</summary>
       <p>Orbits: <a href="https://ssd.jpl.nasa.gov/horizons/">NASA/JPL Horizons</a>, Sun-centred geometric vectors, J2000 ecliptic / ICRF, astronomical units. Moving positions use linear interpolation of daily UTC vectors from 2025-01-01 to 2031-01-01; the current-clock view is an ephemeris estimate, not live telemetry or navigation-grade data. <a href="/assets/data/planetary/timeline.json">Download time-series data and provenance</a>. Orbit guide curves use approximately one revolution from 2026-09-07 TDB and are not spacecraft flight paths. <a href="/assets/data/planetary/orbits.json">Orbit guide data</a>.</p>
       <p>Shapes: <a href="https://science.nasa.gov/resource/bennu-3d-model/">Bennu: NASA VTAD</a>; <a href="https://data.darts.isas.jaxa.jp/pub/hayabusa2/paper/Watanabe_2019/">Ryugu: ISAS/JAXA, Watanabe et al. (2019), shape-model team</a>. Public meshes are recentered, oriented for display and rendered with neutral lighting. Comparison rescales their longest dimensions to approximately 492 m and 900 m; it is an illustrative size comparison, not metrology. Mesh resolutions differ, so displayed roughness is not directly comparable. Lighting, orientation and wireframe colours are not measured albedo, spin state or mineral composition. <a href="https://www.isas.jaxa.jp/en/researchers/data-policy/">JAXA data policy</a>.</p>
+      <p>Orbital body appearance: Earth day and cloud textures reuse the <a href="https://github.com/mrdoob/three.js/tree/dev/examples/textures/planets">Three.js planet examples</a> under the MIT license; <a href="/assets/img/arrival/ASSET-CREDITS.md">local asset credits</a>. The Sun and other planetary surfaces are procedural illustrations. Body display sizes, spin orientations and surface appearances are illustrative, not measured scale or spin states. Use Shapes for the separate asteroid size comparison.</p>
       <p>Mineral interpretation: <a href="https://www.isas.jaxa.jp/en/topics/003094.html">Ryugu initial chemical analysis</a>; <a href="https://doi.org/10.1111/maps.14227">Lauretta, Connolly et al. (2024), Bennu sample analysis</a>. Orgueil photograph: <a href="https://naturalhistory.si.edu/object/nmnhmineralsciences_1017941">Chip Clark / Smithsonian, USNM 388, CC0</a>. This specimen is not the author's experimental sample. No CI parent-body orbit or specimen scan is asserted.</p>
-      <p>Sample photographs: <a href="https://www.nasa.gov/image-detail/osiris-rex-pe-examination-5/">Bennu: NASA / Erika Blumenfeld &amp; Joseph Aebersold</a>; <a href="https://www.hayabusa2.jaxa.jp/en/topics/20201225_samples/">Ryugu chamber A: JAXA</a>, unchanged published image, used for scientific education under the <a href="https://global.jaxa.jp/policy.html">JAXA site policy</a>. The scale journey connects different evidence types, not continuous magnifications of one specimen.</p>
+      <p>Sample photographs: <a href="https://www.nasa.gov/image-detail/osiris-rex-pe-examination-5/">Bennu: NASA / Erika Blumenfeld &amp; Joseph Aebersold</a>; <a href="https://www.hayabusa2.jaxa.jp/en/topics/20201225_samples/">Ryugu chamber A: JAXA</a>, unchanged published image, used for scientific education under the <a href="https://global.jaxa.jp/policy.html">JAXA site policy</a>. These views show different evidence types, not continuous magnifications of one specimen.</p>
     </details>
   </div>
 </section>
