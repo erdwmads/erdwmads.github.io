@@ -28,10 +28,10 @@ html[data-theme] body#academic-site button.affiliation-emblem:focus-visible { ou
 html[data-theme] body#academic-site button.affiliation-emblem[aria-pressed="true"] { cursor: grabbing; }
 html[data-theme] body#academic-site .nav,
 html[data-theme] body#academic-site .hero-card { position: relative; }
-html[data-theme] body#academic-site :is(.header-actions .nav, .hero-card, main .button) {
+html[data-theme] body#academic-site :is(.header-actions .nav, main .button) {
   transition: outline-color 180ms ease-out, box-shadow 180ms ease-out;
 }
-html[data-polarising] body#academic-site :is(.header-actions .nav, .hero-card, main .button) {
+html[data-polarising] body#academic-site :is(.header-actions .nav, main .button) {
   outline: 1px solid var(--mineral-colour);
   outline-offset: 2px;
   box-shadow: 0 0 18px color-mix(in srgb, var(--mineral-colour) 26%, transparent) !important;
