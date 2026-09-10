@@ -26,9 +26,11 @@ try {
   await root.locator('canvas').scrollIntoViewIfNeeded();
   const box = await root.locator('canvas').boundingBox();
   await page.mouse.move(box.x+box.width/2,box.y+box.height/2);
+  await page.keyboard.down('Control');
   await page.mouse.wheel(0,-400);
+  await page.keyboard.up('Control');
   await page.waitForTimeout(150);
-  assert.ok(Number(await root.getAttribute('data-zoom'))>1.1,'Wheel zoom must change camera magnification');
+  assert.ok(Number(await root.getAttribute('data-zoom'))>1.1,'Ctrl + wheel must change camera magnification');
   await root.locator('[data-action="reset"]').click();
   assert.equal(Number(await root.getAttribute('data-zoom')),1);
   await root.locator('[data-action="zoom-out"]').click();

@@ -2,12 +2,18 @@ import * as T from 'three';
 import {ConvexGeometry} from 'three/addons/geometries/ConvexGeometry.js';
 import {ImprovedNoise} from 'three/addons/math/ImprovedNoise.js';
 import {rng} from '../origins-study/materials.js';
-import {smooth} from './motion.js';
+import {smooth,samplingSink,sciLayout,sciFlight} from './motion.js';
 
 // An illustrative local sampling site, not a reconstruction of measured topography.
-function surfaceMaterial(color,grain){
+function surfaceMaterial(color,grain,ejecta=null){
  const material=new T.MeshStandardMaterial({color,roughness:.97,metalness:0,vertexColors:true});
+ if(ejecta)material.userData.sciEjecta=ejecta;
  material.onBeforeCompile=shader=>{
+  if(ejecta){
+   shader.uniforms.sciEjecta=ejecta;
+   shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nattribute float sciDeposit; varying float vSciDeposit;').replace('#include <begin_vertex>','#include <begin_vertex>\nvSciDeposit=sciDeposit;');
+   shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nuniform float sciEjecta; varying float vSciDeposit;').replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb*=1.-.45*vSciDeposit*sciEjecta;');
+  }
   shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vRegolith;')
    .replace('#include <project_vertex>',`#include <project_vertex>
     vec4 terrainWorld=vec4(transformed,1.);
@@ -41,7 +47,7 @@ function surfaceMaterial(color,grain){
     vec3 gradient=sign(determinant)*(dFdx(relief)*r1+dFdy(relief)*r2);
     normal=normalize(abs(determinant)*normal-gradient*.55);`);
  };
- material.customProgramCacheKey=()=>`sampling-regolith-${grain}`;
+ material.customProgramCacheKey=()=>`sampling-regolith-${grain}-${Boolean(ejecta)}`;
  return material;
 }
 
@@ -100,6 +106,15 @@ export function createSamplingTerrain(id){
   const r=Math.hypot(x,z),contact=smooth((r-1.1)/1.15);
   return contact*(n(x,z,.17,2)*.68+n(x,z,.63,7)*.18+n(x,z,2.3,19)*.045-r*r*.0062);
  };
+ const markers={samplingTarget:new T.Vector3(),sciImpact:new T.Vector3(sciLayout.crater[0],height(sciLayout.crater[0],sciLayout.crater[2]),sciLayout.crater[2])};
+ // Illustrative ray pattern: JAXA observed darkened deposits, preferentially NW,
+ // reaching the northern C01-Cb target. This is not a measured reflectivity map.
+ const deposit=(x,z)=>{
+  z-=sciLayout.crater[2];const r=Math.hypot(x,z),R=sciLayout.rimRadius,angle=Math.atan2(x,-z);
+  const northwest=Math.max(0,(-x-z)/Math.max(.001,r*Math.SQRT2));
+  const rays=.48+.52*Math.pow(.5+.5*Math.cos(angle*9+Math.sin(angle*3)),3);
+  return smooth((r-R*.65)/(R*.5))*(1-smooth((r-R)/(R*3)))*(.2+.8*northwest)*rays;
+ };
  const segments=160,rings=128,radius=42,vertices=[0,0,0],colors=[.9,.9,.9],indices=[];
  for(let ring=1;ring<=rings;ring++){
   const r=radius*(ring/rings)**1.65;
@@ -117,16 +132,20 @@ export function createSamplingTerrain(id){
  const geometry=new T.BufferGeometry();
  geometry.setAttribute('position',new T.Float32BufferAttribute(vertices,3));
  geometry.setAttribute('color',new T.Float32BufferAttribute(colors,3));
+ if(ryugu)geometry.setAttribute('sciDeposit',new T.Float32BufferAttribute(Array.from({length:vertices.length/3},(_,i)=>deposit(vertices[i*3],vertices[i*3+2])),1));
  geometry.setIndex(indices);geometry.computeVertexNormals();
- // Both bowls are prepared once; GPU morph weights make scrubbing reversible.
+ // Excavation shapes are prepared once; GPU morph weights make scrubbing reversible.
  geometry.morphTargetsRelative=true;geometry.morphAttributes.position=[];geometry.morphAttributes.normal=[];
- for(const [cx,cz] of [[0,0],[-3.5,-1.8]]){
+ for(const [cx,cz,tag] of (ryugu?[[0,sciLayout.crater[2]],[0,sciLayout.crater[2]]]:[[0,0],[-3.5,-1.8],[0,0,true]])){
   const crater=geometry.clone(),position=crater.attributes.position,delta=new Float32Array(position.count*3);
   for(let i=0;i<position.count;i++){
    const x=position.getX(i)-cx,z=position.getZ(i)-cz,r=Math.hypot(x,z);
    const edge=r*(1+n(x,z,2.1,44)*.055);
    const bowl=-.76*Math.exp(-((edge/1.02)**4)),rim=.27*Math.exp(-(((edge-1.48)/.27)**2));
-   const depth=bowl+rim;
+   const R=sciLayout.apparentRadius,craterBowl=-1.7*sciLayout.unitsPerMeter*Math.exp(-((edge/R)**4));
+   const craterRim=.4*sciLayout.unitsPerMeter*Math.exp(-(((edge-sciLayout.rimRadius)/(R*.12))**2));
+   const southBoundary=1-smooth((z+R*.15)/(R*.5));
+   const depth=tag?-.27*(1-smooth((r-.14)/.35)):ryugu?(craterBowl+craterRim)*southBoundary:bowl+rim;
    delta[i*3+1]=depth;position.setY(i,position.getY(i)+depth);
   }
   crater.computeVertexNormals();
@@ -136,10 +155,30 @@ export function createSamplingTerrain(id){
   geometry.morphAttributes.normal.push(new T.BufferAttribute(normalDelta,3));crater.dispose();
  }
  geometry.computeBoundingSphere();
- const ground=new T.Mesh(geometry,surfaceMaterial(ryugu?0x555650:0x545554,8));
+ const ejecta={value:0},ground=new T.Mesh(geometry,surfaceMaterial(ryugu?0x555650:0x545554,8,ryugu?ejecta:null));
  ground.name='sampling-surface';ground.receiveShadow=true;group.add(ground);
+ // Ejecta endpoints are queried once; cached triangle weights remain valid as
+ // excavation changes only Y. Subsequent frames require no terrain raycasts.
+ const endpointHeights=new Map(),baseSurface=new T.Mesh(geometry,ground.material);
+ function heightAt(x,z){
+  const key=`${x},${z}`;
+  if(!endpointHeights.has(key)){
+   const hit=new T.Raycaster(new T.Vector3(x,10,z),new T.Vector3(0,-1,0)).intersectObject(baseSurface,false)[0];
+   const indices=[hit.face.a,hit.face.b,hit.face.c],points=indices.map(i=>new T.Vector3().fromBufferAttribute(geometry.attributes.position,i));
+   const weights=T.Triangle.getBarycoord(hit.point,...points,new T.Vector3()).toArray();
+   endpointHeights.set(key,{base:hit.point.y,deltas:geometry.morphAttributes.position.map(attribute=>indices.reduce((sum,index,i)=>sum+attribute.getY(index)*weights[i],0))});
+  }
+  const entry=endpointHeights.get(key);
+  return entry.base+entry.deltas.reduce((sum,delta,i)=>sum+delta*ground.morphTargetInfluences[i],0);
+ }
+ // Contact must match the rendered triangles rather than the continuous noise function.
+ if(ryugu){
+  ground.updateMatrixWorld(true);
+  const hit=new T.Raycaster(new T.Vector3(markers.sciImpact.x,10,markers.sciImpact.z),new T.Vector3(0,-1,0)).intersectObject(ground,false)[0];
+  markers.sciImpact.y=hit.point.y;
+ }
  const rockMaterial=surfaceMaterial(ryugu?0x686960:0x626561,5),dummy=new T.Object3D(),color=new T.Color();
- const clear=(x,z,s)=>Math.hypot(x,z)>1.18+s*1.15&&Math.hypot(x+3.5,z+1.8)>1.82+s*1.15;
+ const clear=(x,z,s)=>Math.hypot(x,z)>1.18+s*1.15&&(!ryugu||Math.hypot(x-markers.sciImpact.x,z-markers.sciImpact.z)>sciLayout.rimRadius+1+s*1.15);
  for(let variant=0;variant<8;variant++)for(let layer=0;layer<2;layer++){
   const shape=fracturedRock(seed+variant*131,ryugu?variant%3!==0:variant%4===0,layer===0);
   const count=layer===0?30:120,rocks=new T.InstancedMesh(shape,rockMaterial,count);
@@ -169,8 +208,11 @@ export function createSamplingTerrain(id){
   rocks.castShadow=true;rocks.receiveShadow=true;rocks.computeBoundingSphere();group.add(rocks);
  }
  function update(kind,p,stageId){
-  ground.morphTargetInfluences[0]=kind==='impact'?smooth((p-.4)/.16):0;
+  ground.castShadow=ryugu&&(kind==='impact'||stageId==='touchdown-2');
+  ground.morphTargetInfluences[0]=kind==='impact'?sciFlight(p).excavation:0;
   ground.morphTargetInfluences[1]=kind!=='impact'&&stageId==='touchdown-2'?1:0;
+  ejecta.value=kind==='impact'?sciFlight(p).excavation:stageId==='touchdown-2'?1:0;
+  if(!ryugu)ground.morphTargetInfluences[2]=kind==='sample'?samplingSink(p)/.27:0;
  }
- return {group,update};
+ return {group,update,markers,heightAt};
 }

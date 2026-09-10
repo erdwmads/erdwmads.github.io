@@ -6,15 +6,18 @@ import {rockMaterial,stoneGeometry,rng} from '../origins-study/materials.js';
 import {createSpacecraft,createCapsule} from './spacecraft.js';
 import {createLaunchVehicle} from './launch.js';
 import {physicalSizes,physicalScale,sampleTrack,isProximity} from './proximity.js';
-import {transferState,transferTiming,earthOrbitRadius} from './transfer.js';
+import {transferState,transferPath,flybyFrameState} from './transfer.js';
 import {hasEarthContext} from './locations.js';
 import {createEarthFlightScene} from './earth-scene.js';
+import {earthInertialOrientation} from './earth-inertial.js';
 import {earthGroundMaterial} from './earth-ground.js';
+import {createSciProjectile} from './sci.js';
 import {createSamplingTerrain} from './terrain.js';
 import {createRecoveryCanopy} from './recovery.js';
 import {createCorona,createEntryWake} from './atmosphere.js';
 import {augmentAsteroid} from './asteroid-detail.js';
-import {samplingClearance,smooth,mix} from './motion.js';
+import {normalizeAsteroid} from '../asteroid-scale.js';
+import {samplingClearance,samplingState,collectedGrain,phaseLabel,smooth,mix,sciFlight} from './motion.js';
 
 export function disposeGraph(root){
  const geometries=new Set(),materials=new Set(),textures=new Set();
@@ -55,24 +58,21 @@ async function asteroid(id,signal){
  const response=await fetch('/assets/data/planetary/'+(id==='ryugu'?'ryugu.obj':'bennu.glb'),{signal});
  if(!response.ok)throw Error('Asteroid model unavailable');
  const object=id==='ryugu'?new OBJLoader().parse(await response.text()):(await new GLTFLoader().parseAsync(await response.arrayBuffer(),'')).scene;
- if(id==='ryugu')object.rotation.x=-Math.PI/2;
- object.updateMatrixWorld(true);
- const box=new T.Box3().setFromObject(object),size=box.getSize(new T.Vector3());object.position.sub(box.getCenter(new T.Vector3()));
- const unit=new T.Group();unit.add(object);object.scale.multiplyScalar(1/Math.max(...size.toArray()));object.position.multiplyScalar(1/Math.max(...size.toArray()));
+ const unit=normalizeAsteroid(object,id);
  object.traverse(o=>{if(o.isMesh){for(const m of [o.material].flat())m?.dispose();o.material=rockMaterial(id==='ryugu'?0x454846:0x474542);o.castShadow=true;o.receiveShadow=true;}});
  augmentAsteroid(unit,id);return unit;
 }
 export async function createMissionScene(id,signal){
  const loader=new T.TextureLoader();
- const results=await Promise.allSettled([createSpacecraft(id),asteroid(id==='hayabusa2'?'ryugu':'bennu',signal),loader.loadAsync('/assets/img/arrival/earth-day.jpg'),loader.loadAsync('/assets/img/arrival/earth-clouds.png'),fetch('/assets/data/missions/ephemeris.json',{signal}).then(r=>{if(!r.ok)throw Error('Mission trajectory unavailable');return r.json();})]);
+ const results=await Promise.allSettled([createSpacecraft(id),asteroid(id==='hayabusa2'?'ryugu':'bennu',signal),loader.loadAsync('/assets/img/arrival/earth-day.jpg'),loader.loadAsync('/assets/img/arrival/earth-clouds.png'),fetch('/assets/data/missions/ephemeris.json',{signal}).then(r=>{if(!r.ok)throw Error('Mission trajectory unavailable');return r.json();}),fetch('/assets/data/missions/journey.json',{signal}).then(r=>{if(!r.ok)throw Error('Solar journey unavailable');return r.json();})]);
  if(signal.aborted||results.some(r=>r.status==='rejected')){
   for(const r of results)if(r.status==='fulfilled'){if(r.value?.isTexture)r.value.dispose();else disposeGraph(r.value.group||r.value);}
   throw results.find(r=>r.status==='rejected')?.reason||new DOMException('Disposed','AbortError');
  }
- const [craft,body,day,clouds,ephemeris]=results.map(r=>r.value);day.colorSpace=T.SRGBColorSpace;
+ const [craft,body,day,clouds,ephemeris,journeyData]=results.map(r=>r.value);day.colorSpace=T.SRGBColorSpace;
  const group=new T.Group(),earth=makeEarth(day,clouds),sun=new T.Group(),launch=createLaunchVehicle(id),capsule=createCapsule(id),canopy=createRecoveryCanopy(id),chute=canopy.group,terrain=createSamplingTerrain(id),ground=terrain.group,desert=new T.Group(),route=new T.Group(),stars=new T.Group();
- const sizes=physicalSizes[id],craftSpan=new T.Box3().setFromObject(craft.group).getSize(new T.Vector3()),bodySpan=new T.Box3().setFromObject(body).getSize(new T.Vector3());
- const craftPhysicalScale=physicalScale(Math.max(...craftSpan.toArray()),sizes.spanM),bodyPhysicalScale=physicalScale(Math.max(...bodySpan.toArray()),sizes.diameterM);
+ const sizes=physicalSizes[id],craftSpan=new T.Box3().setFromObject(craft.group).getSize(new T.Vector3());
+ const craftPhysicalScale=physicalScale(Math.max(...craftSpan.toArray()),sizes.spanM),bodyPhysicalScale=body.userData.kilometersPerUnit;
  const proximityRoutes={},proximityTrails={},proximityViews={};
  for(const kind of ['rendezvous','depart','flyby']){
   const raw=ephemeris[id][kind==='flyby'?'earthFlyby':kind],track={...raw,samples:raw.samples.slice(raw.playbackStartIndex||0)},rotation=new T.Quaternion().setFromUnitVectors(new T.Vector3(...track.samples[0].position).normalize(),new T.Vector3(.92,.15,.36).normalize());
@@ -87,7 +87,7 @@ export async function createMissionScene(id,signal){
  sun.add(createCorona());
  const random=rng(618),noise=new ImprovedNoise();
  const dummy=new T.Object3D();
- const impactor=mesh(new T.SphereGeometry(.08,16,10),new T.MeshStandardMaterial({color:0xb97242,metalness:.8,roughness:.38}),group);
+ const impactor=createSciProjectile();group.add(impactor);
  const projectile=mesh(new T.SphereGeometry(.018,12,8),new T.MeshStandardMaterial({color:0xc8c5b2,metalness:.7,roughness:.4}),group);
  const particles=new T.InstancedMesh(stoneGeometry(80,1),new T.MeshStandardMaterial({color:0x626059,roughness:1}),96);group.add(particles);
  const seeds=Array.from({length:96},()=>({a:random()*Math.PI*2,v:.4+random()*2,h:.5+random()*1.7,s:.004+random()**3*.035}));
@@ -96,55 +96,86 @@ export async function createMissionScene(id,signal){
  const desertMaterial=earthGroundMaterial(id==='hayabusa2'?0x947452:0xb6a78b);desertMaterial.transparent=true;
  mesh(desertGeometry,desertMaterial,desert).castShadow=false;
  const entryWake=createEntryWake(),heat=entryWake.group;group.add(heat);
- const pathPoints=Array.from({length:351},(_,i)=>new T.Vector3(...transferState(i/350,id).craft)),path=line(pathPoints,0x83b8c7,.32),trail=line(pathPoints,0xe8c782,.95);route.add(path,trail);
- const earthGuide=line(Array.from({length:121},(_,i)=>new T.Vector3(Math.cos(i*Math.PI/60)*earthOrbitRadius,0,Math.sin(i*Math.PI/60)*earthOrbitRadius)),0x577581,.24);route.add(earthGuide);
+ const solarRoutes={};
+ for(const kind of ['cruise','outbound']){
+  const points=transferPath(id,kind,journeyData).map(p=>new T.Vector3(...p)),path=line(points,0x83b8c7,.35),trail=line(points,0xe8c782,.95);
+  const earthPath=line(transferPath(id,kind,journeyData,'earth').map(p=>new T.Vector3(...p)),0x7cb9e5,.3),targetPath=line(transferPath(id,kind,journeyData,'target').map(p=>new T.Vector3(...p)),0xc3aa81,.3);
+  const chapter=new T.Group();chapter.add(path,trail,earthPath,targetPath);route.add(chapter);solarRoutes[kind]={group:chapter,trail};
+ }
+ // Flyby positions share the same time and orientation in both reference frames.
+ const flybySunPoints=[],flybyEarthPoints=[];
+ for(let i=0;i<ephemeris[id].earthFlyby.samples.length;i++){
+  const f=flybyFrameState(id,i/(ephemeris[id].earthFlyby.samples.length-1),ephemeris,journeyData),rotation=proximityViews.flyby.rotation;
+  flybySunPoints.push(new T.Vector3(...f.heliocentricOffsetKm).applyQuaternion(rotation));flybyEarthPoints.push(new T.Vector3(...f.earthOffsetKm).applyQuaternion(rotation));
+ }
+ const flybySunRoute=line(flybySunPoints,0x83b8c7,.4),flybySunTrail=line(flybySunPoints,0xe8c782,.95),flybyEarthRoute=line(flybyEarthPoints,0x7cb9e5,.5);group.add(flybySunRoute,flybySunTrail,flybyEarthRoute);
+ const sunFrameBox=new T.Box3().setFromPoints([...flybySunPoints,...flybyEarthPoints]);
+ const flybyEnds=[0,1].map(p=>flybyFrameState(id,p,ephemeris,journeyData));
+ let journeyState=null,frameState=null;
  const starPoints=new Float32Array(450*3);for(let i=0;i<450;i++){const a=random()*Math.PI*2,z=random()*2-1,r=Math.sqrt(1-z*z);starPoints.set([Math.cos(a)*r*35,z*35,Math.sin(a)*r*35],i*3);}
  const sg=new T.BufferGeometry();sg.setAttribute('position',new T.BufferAttribute(starPoints,3));stars.add(new T.Points(sg,new T.PointsMaterial({size:.038,color:0xc6d9e5,transparent:true,opacity:.65,sizeAttenuation:true,depthWrite:false})));
  const earthFlight=createEarthFlightScene(id,{group,earth,craft,launch,capsule,canopy,desert,heat,entryWake});
  let labels=[],currentKind;
  function addLabel(text,point){labels.push({text,point:point.clone()});}
- function update(kind,p,stageId,context='detail',focus='both'){
-  currentKind=kind;labels=[];proximityState=null;locators.visible=false;Object.values(proximityRoutes).forEach(r=>r.visible=false);Object.values(proximityTrails).forEach(r=>r.visible=false);stars.scale.setScalar(1);earthFlight.hide();
+ function update(kind,p,stageId,context='detail',focus='both',reference='earth',cutaway=false){
+  currentKind=kind;labels=[];proximityState=null;journeyState=null;frameState=null;flybySunRoute.visible=flybySunTrail.visible=flybyEarthRoute.visible=false;locators.visible=false;Object.values(proximityRoutes).forEach(r=>r.visible=false);Object.values(proximityTrails).forEach(r=>r.visible=false);stars.scale.setScalar(1);earthFlight.hide();
   for(const o of [craft.group,body,earth,sun,launch.group,capsule,chute,ground,desert,route,impactor,projectile,particles,heat]){o.visible=false;o.rotation.set(0,0,0);o.position.set(0,0,0);o.scale.setScalar(1);}
   earth.rotation.set(.12,2,.15);earth.children[0].material.opacity=1;earth.children[1].material.opacity=.85;earth.children[2].material.uniforms.opacity.value=.55;
-  craft.capsule.visible=true;craft.setSampling(false);craft.setSolarDeployment(1);
+  craft.capsule.visible=true;craft.setSampling(false);craft.setSolarDeployment(1);craft.setHornDeployment?.(1);craft.setSamplingCutaway?.(false);
   if(id==='osiris-rex'&&(['depart','return','landing'].includes(kind)))craft.setStowage(1);
   stars.visible=kind!=='landing';
   terrain.update(kind,p,stageId);
   if(hasEarthContext(kind)){
    labels=earthFlight.update(kind,p,context);const flight=earthFlight.state();stars.visible=flight.altitudeKm>40;stars.scale.setScalar(Math.max(1000,new T.Vector3(...flight.positionKm).length()/10));
   }else if(kind==='cruise'||kind==='outbound'){
-   const journey=kind==='cruise'?p*transferTiming.approach:transferTiming.departure+p*(1-transferTiming.departure),transfer=transferState(journey,id);sun.visible=earth.visible=body.visible=route.visible=craft.group.visible=true;earth.scale.setScalar(.22);earth.position.set(...transfer.earth);body.scale.setScalar(.20);body.position.set(...transfer.asteroid);
-   craft.group.position.set(...transfer.craft);craft.group.scale.setScalar(.10);craft.group.rotation.y=-p*2;
-   trail.geometry.setDrawRange(0,Math.max(2,Math.round(journey*351)));addLabel(transfer.phase==='earth-assist'?'Earth · gravity assist':'Earth · solar orbit',earth.position);addLabel(id==='hayabusa2'?'Ryugu':'Bennu',body.position);
+   const transfer=transferState(p,id,journeyData,kind);journeyState=transfer;
+   sun.visible=earth.visible=body.visible=route.visible=craft.group.visible=true;sun.scale.setScalar(.24);earth.scale.setScalar(.075);earth.position.set(...transfer.earth);body.scale.setScalar(.07);body.position.set(...transfer.asteroid);
+   craft.group.position.set(...transfer.craft);craft.group.scale.setScalar(.035);
+   Object.entries(solarRoutes).forEach(([name,r])=>r.group.visible=name===kind);solarRoutes[kind].trail.geometry.setDrawRange(0,Math.max(1,transfer.travelledCount));
+   addLabel('Earth',earth.position);addLabel(sizes.target,body.position);addLabel(id==='hayabusa2'?'Hayabusa2':'OSIRIS-REx',craft.group.position);
   }else if(isProximity(kind)){
    const view=proximityViews[kind],sample=sampleTrack(view.track,p),position=new T.Vector3(...sample.position).applyQuaternion(view.rotation),velocity=new T.Vector3(...sample.velocity).applyQuaternion(view.rotation);
    const target=kind==='flyby'?'Earth':sizes.target,diameterM=kind==='flyby'?12742000:sizes.diameterM;
-   body.visible=kind!=='flyby';earth.visible=kind==='flyby';if(earth.visible){earth.scale.setScalar(6371);earth.rotation.set(0,0,0);}craft.group.visible=true;body.scale.setScalar(bodyPhysicalScale);craft.group.scale.setScalar(craftPhysicalScale);craft.group.position.copy(position);craft.group.quaternion.setFromUnitVectors(new T.Vector3(0,-1,0),position.clone().negate().normalize());
-   const route=proximityRoutes[kind],travelled=proximityTrails[kind];route.visible=travelled.visible=locators.visible=focus==='both';travelled.geometry.setDrawRange(0,Math.max(1,Math.floor(p*(view.track.samples.length-1))+1));stars.scale.setScalar(Math.max(1,view.extent/10));
-   locatorGeometry.attributes.position.setXYZ(1,position.x,position.y,position.z);locatorGeometry.attributes.position.needsUpdate=true;locatorGeometry.computeBoundingSphere();
-   proximityState={position:position.toArray(),velocity:velocity.toArray(),rangeKm:position.length(),extent:view.extent,center:view.center,diameterKm:diameterM/1000,spanKm:sizes.spanM/1000,kind,time:sample.time,source:view.track.source,sourceLabel:view.track.sourceLabel,dataKind:view.track.dataKind,target};
-   addLabel(target+(kind==='flyby'?' · 12,742 km':' · ~'+diameterM+' m'),new T.Vector3());
+   let targetPosition=new T.Vector3(),extent=view.extent,center=view.center;
+   if(kind==='flyby'){frameState={...flybyFrameState(id,p,ephemeris,journeyData),endpoints:flybyEnds.map(f=>({time:f.time,speedEarthKmS:f.speedEarthKmS,speedSunKmS:f.speedSunKmS}))};if(reference==='sun'){position.set(...frameState.heliocentricOffsetKm).applyQuaternion(view.rotation);velocity.set(...frameState.heliocentricVelocityKmS).applyQuaternion(view.rotation);targetPosition.set(...frameState.earthOffsetKm).applyQuaternion(view.rotation);extent=sunFrameBox.getSize(new T.Vector3()).length();center=sunFrameBox.getCenter(new T.Vector3()).toArray();}}
+   body.visible=kind!=='flyby';earth.visible=kind==='flyby';if(earth.visible){earth.scale.setScalar(6371);earth.quaternion.copy(earthInertialOrientation(sample.time,view.rotation));}craft.group.visible=true;body.scale.setScalar(bodyPhysicalScale);craft.group.scale.setScalar(craftPhysicalScale);craft.group.position.copy(position);earth.position.copy(targetPosition);craft.group.quaternion.setFromUnitVectors(new T.Vector3(0,-1,0),targetPosition.clone().sub(position).normalize());
+   const route=proximityRoutes[kind],travelled=proximityTrails[kind];route.visible=travelled.visible=focus==='both'&&reference!=='sun';locators.visible=focus==='both';if(kind==='flyby'&&reference==='sun'){flybySunRoute.visible=flybySunTrail.visible=flybyEarthRoute.visible=focus==='both';flybySunTrail.geometry.setDrawRange(0,Math.max(1,Math.floor(p*(view.track.samples.length-1))+1));}travelled.geometry.setDrawRange(0,Math.max(1,Math.floor(p*(view.track.samples.length-1))+1));stars.scale.setScalar(Math.max(1,view.extent/10));
+   locatorGeometry.attributes.position.setXYZ(0,...targetPosition.toArray());locatorGeometry.attributes.position.setXYZ(1,position.x,position.y,position.z);locatorGeometry.attributes.position.needsUpdate=true;locatorGeometry.computeBoundingSphere();
+   proximityState={position:position.toArray(),velocity:velocity.toArray(),rangeKm:Math.hypot(...sample.position),rangeRateKmS:sample.position.reduce((sum,x,i)=>sum+x*sample.velocity[i],0)/Math.hypot(...sample.position),targetPosition:targetPosition.toArray(),extent,center,diameterKm:diameterM/1000,spanKm:sizes.spanM/1000,kind,time:sample.time,rangeHistory:view.track.samples.map(s=>Math.hypot(...s.position)),source:view.track.source,sourceLabel:view.track.sourceLabel,dataKind:view.track.dataKind,target};
+   addLabel(target+(kind==='flyby'?' · 12,742 km':' · ~'+diameterM+' m'),targetPosition);
    addLabel((id==='hayabusa2'?'Hayabusa2':'OSIRIS-REx')+' · '+sizes.spanM+' m span',position);
   }else if(kind==='sample'){
-   ground.visible=craft.group.visible=true;craft.setSampling(true);
-   const scale=.9,tip=craft.samplerTip;craft.group.scale.setScalar(scale);craft.group.position.set(-tip.x*scale,samplingClearance(p)-tip.y*scale,-tip.z*scale);
+   ground.visible=craft.group.visible=true;craft.setSampling(true);craft.setSamplingCutaway?.(cutaway);
+   const scale=.9,tip=craft.samplerTip;craft.group.scale.setScalar(scale);craft.group.position.set(-tip.x*scale,samplingClearance(p,id)-tip.y*scale,-tip.z*scale);
    const contact=p>=.46&&p<=.57;
    addLabel(contact?(id==='hayabusa2'?'Sampler horn contact':'TAGSAM contact'):'Sampling target',new T.Vector3(0,.2,0));
    addLabel(id==='hayabusa2'?'Hayabusa2':'OSIRIS-REx',craft.group.position);
-   projectile.visible=id==='hayabusa2'&&p>=.46&&p<.51;projectile.position.set(0,mix(.8,0,smooth((p-.46)/.05)),0);
-   const burst=Math.max(0,(p-.5)*5);particles.visible=p>.5&&p<.92;
-   for(let i=0;i<seeds.length;i++){const s=seeds[i],r=burst*s.v;dummy.position.set(Math.cos(s.a)*r,Math.max(.02,burst*s.h-burst*burst*.38),Math.sin(s.a)*r);dummy.scale.set(s.s,s.s*.48,s.s*.73);dummy.rotation.set(i,p+i,i*.2);dummy.updateMatrix();particles.setMatrixAt(i,dummy.matrix);}
+   const sampling=samplingState(p,id);projectile.visible=sampling.projectileVisible;projectile.position.set(0,sampling.projectileY,0);
+   const burst=sampling.ejecta,surface=samplingClearance(id==='hayabusa2'?.51:.49,id);particles.visible=burst>0&&p<.92;
+   for(let i=0;i<seeds.length;i++){
+    const s=seeds[i],r=burst*s.v;
+    if(i<24){const grain=collectedGrain(p,id,s,i),size=grain.visible?Math.min(s.s,.012):0;dummy.position.set(...grain.position);dummy.scale.set(size,size*.65,size*.8);}
+    else{dummy.position.set(Math.cos(s.a)*r,surface+Math.max(.02,burst*s.h-burst*burst*.38),Math.sin(s.a)*r);dummy.scale.set(s.s,s.s*.48,s.s*.73);}
+    dummy.rotation.set(i,p+i,i*.2);dummy.updateMatrix();particles.setMatrixAt(i,dummy.matrix);
+   }
    particles.instanceMatrix.needsUpdate=true;
   }else if(kind==='impact'){
    ground.visible=true;
-   impactor.visible=p<.4;impactor.position.set(0,mix(6,0,smooth(p/.4)),0);
+   const impact=sciFlight(p),origin=terrain.markers.sciImpact;impactor.visible=impact.visible;impactor.position.copy(origin).add(new T.Vector3(0,impact.height+impactor.userData.contactOffset,0));
    const burst=Math.max(0,(p-.4)*7);particles.visible=p>.4;
-   for(let i=0;i<seeds.length;i++){const s=seeds[i],r=burst*s.v;dummy.position.set(Math.cos(s.a)*r,Math.max(.02,burst*s.h-burst*burst*.24),Math.sin(s.a)*r);dummy.scale.set(s.s*1.5,s.s*.65,s.s*.9);dummy.rotation.set(i,burst+i,i*.2);dummy.updateMatrix();particles.setMatrixAt(i,dummy.matrix);}particles.instanceMatrix.needsUpdate=true;
-   addLabel(p<.4?'SCI copper impactor':'Artificial crater',p<.4?impactor.position:new T.Vector3(0,.3,0));
+   for(let i=0;i<seeds.length;i++){
+    const s=seeds[i],northward=i<28,a=northward?-Math.PI/2+(s.a/Math.PI/2-.5)*.8:s.a;
+    // Ejecta follow ballistic arcs; the northern fan reaches the off-crater site.
+    const t=Math.max(0,(p-.4)/.6),distance=northward?14+(i%7)*.65:3+s.v*3,flight=Math.min(1,t/(northward?.82:.65));
+    const endX=origin.x+Math.cos(a)*distance,endZ=origin.z+Math.sin(a)*distance,groundY=terrain.heightAt(endX,endZ);dummy.position.set(mix(origin.x,endX,flight),mix(origin.y,groundY,flight)+.02+(northward?6:3)*4*flight*(1-flight),mix(origin.z,endZ,flight));dummy.scale.set(s.s*1.5,s.s*.65,s.s*.9);dummy.rotation.set(i,burst+i,i*.2);dummy.updateMatrix();particles.setMatrixAt(i,dummy.matrix);
+   }particles.instanceMatrix.needsUpdate=true;
+   addLabel(p<.4?'SCI copper projectile · 13 cm':'SCI crater · ejecta source',p<.4?impactor.position:origin);addLabel('Second touchdown · 20 m north',terrain.markers.samplingTarget);
   }else if(kind==='stow'){
    craft.group.visible=true;craft.setStowage(p);craft.group.rotation.y=-.2+p*.25;craft.group.updateMatrix();
-   addLabel(p<.57?'Head moves into capsule':p<.64?'Head seated':p<.82?'Arm withdraws':'Sample secured',new T.Vector3(0,.365,0).applyMatrix4(craft.group.matrix));
+   craft.group.updateMatrixWorld(true);
+   const anchor=p>=.16&&p<.64?(craft.samplingHead||craft.group.getObjectByName('tagsam-collector-head')):p>=.64&&p<.82?craft.group.getObjectByName('tagsam-wrist'):craft.capsule;
+   const point=anchor===craft.capsule?new T.Vector3(0,.365,0).applyMatrix4(craft.group.matrix):anchor.getWorldPosition(new T.Vector3());
+   addLabel(phaseLabel('stow',p,id),point);
   }
   group.updateMatrixWorld(true);
  }
@@ -155,5 +186,5 @@ export async function createMissionScene(id,signal){
   m.fragmentShader='#include <logdepthbuf_pars_fragment>\n'+m.fragmentShader.replace(/void main\(\)\s*{/, 'void main(){\n#include <logdepthbuf_fragment>\n');
  }
  update('launch',0,'launch');
- return {group,update,labels:()=>labels,kind:()=>currentKind,proximity:()=>proximityState,earth:()=>earthFlight.state(),contextHelpers(visible){if(earthFlight.state())earthFlight.helpers(visible);if(proximityState){proximityRoutes[currentKind].visible=proximityTrails[currentKind].visible=locators.visible=visible;}}};
+ return {group,update,labels:()=>labels,kind:()=>currentKind,proximity:()=>proximityState,journey:()=>journeyState,flyby:()=>frameState,earth:()=>earthFlight.state(),contextHelpers(visible){if(earthFlight.state())earthFlight.helpers(visible);if(proximityState){proximityRoutes[currentKind].visible=proximityTrails[currentKind].visible=locators.visible=visible;}}};
 }

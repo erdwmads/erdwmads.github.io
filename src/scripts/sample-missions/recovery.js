@@ -4,14 +4,14 @@ const smooth=x=>{x=T.MathUtils.clamp(x,0,1);return x*x*(3-2*x);};
 const GORES=16,RINGS=20,WIDTH=8,TAU=Math.PI*2;
 
 function wovenFabric(){
- const size=64,data=new Uint8Array(size*size*4);
+ const size=128,data=new Uint8Array(size*size*4);
  for(let y=0;y<size;y++)for(let x=0;x<size;x++){
   const i=(y*size+x)*4,value=150+Math.round(30*Math.sin(x*Math.PI/2)+25*Math.sin(y*Math.PI/2)+9*Math.sin((x+y)*2.3));
   data[i]=data[i+1]=data[i+2]=value;data[i+3]=255;
  }
  const texture=new T.DataTexture(data,size,size,T.RGBAFormat);
  texture.wrapS=texture.wrapT=T.RepeatWrapping;texture.repeat.set(3,5);
- texture.magFilter=T.LinearFilter;texture.minFilter=T.LinearMipmapLinearFilter;texture.generateMipmaps=true;texture.needsUpdate=true;
+ texture.anisotropy=8;texture.magFilter=T.LinearFilter;texture.minFilter=T.LinearMipmapLinearFilter;texture.generateMipmaps=true;texture.needsUpdate=true;
  return texture;
 }
 
@@ -34,7 +34,7 @@ export function createRecoveryCanopy(id){
  }
  geometry.setAttribute('position',new T.BufferAttribute(positions,3).setUsage(T.DynamicDrawUsage));
  geometry.setAttribute('color',new T.BufferAttribute(colors,3));geometry.setAttribute('uv',new T.BufferAttribute(uvs,2));geometry.setIndex(indices);
- const fabric=new T.MeshStandardMaterial({vertexColors:true,roughness:.94,metalness:0,side:T.DoubleSide,bumpMap:wovenFabric(),bumpScale:.003});
+ const fabric=new T.MeshStandardMaterial({vertexColors:true,roughness:.94,metalness:0,side:T.DoubleSide,bumpMap:wovenFabric(),bumpScale:.0003});
  const cloth=new T.Mesh(geometry,fabric);cloth.name=cruciform?'cruciform-fabric-canopy':'sixteen-fabric-gores';cloth.castShadow=true;cloth.receiveShadow=true;group.add(cloth);
  const seamCount=GORES*RINGS+GORES*WIDTH*2;
  const seamPositions=new Float32Array(seamCount*6),seamGeometry=new T.BufferGeometry();

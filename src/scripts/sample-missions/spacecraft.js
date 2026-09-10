@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { mergeStaticDetails } from './static-geometry.js';
-import { hingeNasaArrays } from './spacecraft-mechanics.js';
+import { hingeNasaArrays, partitionMesh } from './spacecraft-mechanics.js';
 
 // Display models, not engineering reconstructions. Sources and modifications:
 // /assets/data/missions/SPACECRAFT-CREDITS.md
@@ -213,6 +213,22 @@ export function createCapsule(id) {
   return group;
 }
 
+// Illustrative load-bearing attachment, not a recovered flight-interface drawing.
+function launchMount(parent, radius, baseY, deckY, m) {
+  const mount = new THREE.Group();
+  mount.name = 'launch-mount';
+  parent.add(mount);
+  const rim = mesh(mount, new THREE.TorusGeometry(radius, .009, 8, 48), m.silver, [0, baseY + .009, 0]);
+  rim.rotation.x = Math.PI / 2;
+  rim.name = 'launch-mount-ring';
+  for (let i = 0; i < 4; i++) {
+    const angle = Math.PI / 4 + i * Math.PI / 2;
+    const x = Math.cos(angle), z = Math.sin(angle);
+    rod(mount, [x * radius, baseY + .018, z * radius], [x * .43, deckY, z * .43], .014, m.silver);
+  }
+  return V(0, baseY, 0);
+}
+
 function createHayabusa2() {
   const group = new THREE.Group();
   group.name = 'hayabusa2-spacecraft';
@@ -253,7 +269,7 @@ function createHayabusa2() {
   const engines = new THREE.Group();
   engines.name = 'ion-engine-cluster';
   engines.position.set(0, -0.04, -0.52);
-  engines.rotation.x = Math.PI / 2;
+  engines.rotation.x = -Math.PI / 2;
   group.add(engines);
   box(engines, [0.47, 0.035, 0.36], m.dark, [0, 0, 0]);
   for (const x of [-0.126, 0.126]) {
@@ -272,24 +288,45 @@ function createHayabusa2() {
     cylinder(group, r, r, 0.012, m.lens, [x, -0.53, z]);
   }
   foilBox(group, [0.24, 0.17, 0.19], m.foil, [0.34, -0.46, -0.27]);
-  // Sampler horn stays deployed throughout asteroid operations.
+  // JAXA's launch photographs show the horn stowed; it deploys after separation.
+  // The hinge pose is illustrative. The asteroid-operation contact stays fixed.
   const horn = new THREE.Group();
   horn.name = 'sampler-horn';
-  group.add(horn);
-  cylinder(horn, 0.065, 0.065, 0.68, m.silver, [0, -0.75, 0.05]);
-  for (let i = 0; i < 17; i += 1) ring(horn, 0.066, 0.007, m.dark, [0, -0.47 - i * 0.032, 0.05]);
-  cylinder(horn, 0.065, 0.115, 0.37, m.silver, [0, -1.225, 0.05]);
-  cylinder(horn, 0.115, 0.115, 0.018, m.dark, [0, -1.419, 0.05]);
+  const hornHinge = new THREE.Group();
+  hornHinge.position.set(0, -.49, .05);
+  group.add(hornHinge); hornHinge.add(horn);
+  horn.position.set(0, .49, -.05);
+  const hornWall = m.silver.clone(); hornWall.side = THREE.DoubleSide;
+  const hornFront = new THREE.Group(), hornBack = new THREE.Group();
+  hornFront.name = 'sampler-horn-cutaway'; horn.add(hornFront, hornBack);
+  // Two open-ended half shells leave the intake and central bore unobstructed.
+  for (const [half, start] of [[hornBack, Math.PI / 2], [hornFront, -Math.PI / 2]]) {
+    mesh(half, new THREE.CylinderGeometry(.065, .065, .68, 40, 1, true, start, Math.PI), hornWall, [0, -.75, .05]);
+    mesh(half, new THREE.CylinderGeometry(.065, .115, .37, 40, 1, true, start, Math.PI), hornWall, [0, -1.225, .05]);
+  }
+  for (const [half, angle] of [[hornBack, Math.PI], [hornFront, 0]]) {
+    for (let i = 0; i < 17; i++) {
+      const fold = mesh(half, new THREE.TorusGeometry(.066, .007, 6, 24, Math.PI), m.dark, [0, -.47 - i * .032, .05]);
+      fold.rotation.set(Math.PI / 2, 0, angle);
+    }
+    const lip = mesh(half, new THREE.TorusGeometry(.106, .009, 8, 32, Math.PI), m.dark, [0, -1.419, .05]);
+    lip.rotation.set(Math.PI / 2, 0, angle);
+  }
+  const samplingHead = new THREE.Object3D(); samplingHead.position.set(0, -1.428, .05); horn.add(samplingHead);
+  const setSamplingCutaway = enabled => { hornFront.visible = !enabled; };
+  const setHornDeployment = amount => { hornHinge.rotation.x = -(1 - THREE.MathUtils.clamp(amount, 0, 1)) * Math.PI / 2; };
+  const mount = launchMount(group, .4 / (6 / 4.658), -.65, -.405, m);
   const capsule = createCapsule('hayabusa2');
   // Solar-paddle outer frame span is 4.658 display units = JAXA's 6 m.
   capsule.scale.setScalar((4.658 / 6) * .4 / .35);
   capsule.position.set(0.34, 0.14, 0.52);
   capsule.rotation.x = Math.PI / 2;
   group.add(capsule);
-  group.userData.staticBatch = mergeStaticDetails(group,{excludeRoots:[capsule],excludeMaterials:[m.foil]});
+  group.userData.staticBatch = mergeStaticDetails(group,{excludeRoots:[capsule,hornHinge,group.getObjectByName('launch-mount')],excludeMaterials:[m.foil]});
   group.userData.modelCredit = 'Authored illustrative geometry based on JAXA Hayabusa2 diagrams';
   return {
-    group, capsule, samplerTip: V(0, -1.428, 0.05), setSampling() {},
+    group, capsule, samplingHead, launchMount: mount, samplerTip: V(0, -1.428, 0.05),
+    setHornDeployment, setSamplingCutaway, setSampling: setSamplingCutaway,
     setSolarDeployment(amount) {
       const fold = (1 - THREE.MathUtils.clamp(amount, 0, 1)) * Math.PI / 2;
       solarHinges[0].rotation.z = -fold;
@@ -304,7 +341,9 @@ function deployedTagsam(m) {
   const arm = new THREE.Group();
   arm.name = 'illustrative-deployed-tagsam';
   const extended = [[0, -0.15, 0.54], [0, -0.78, 0.73], [0, -1.44, 0.57], [0, -1.84, 0.57]].map(p => V(...p));
-  const folded = [[0, -0.15, 0.54], [0, 0.18, 0.61], [0, -0.07, 0.51], [0, 0.29, 0.38]].map(p => V(...p));
+  const lengths = extended.slice(1).map((point, index) => point.distanceTo(extended[index]));
+  const foldedAngles = [.5, -2.85, .4];
+  const extendedAngles = extended.slice(1).map((point, index) => Math.atan2(point.z - extended[index].z, point.y - extended[index].y));
   const links = [], cables = [], joints = [];
   for (let i = 0; i < extended.length - 1; i += 1) {
     links.push(cylinder(arm, 0.034, 0.034, 1, m.dark));
@@ -342,7 +381,12 @@ function deployedTagsam(m) {
   }
   function setDeployment(amount) {
     if (head.parent !== arm) arm.add(head);
-    for (let i = 0; i < points.length; i += 1) points[i].copy(folded[i]).lerp(extended[i], amount);
+    amount = THREE.MathUtils.clamp(amount, 0, 1);
+    points[0].copy(extended[0]);
+    for (let i = 0; i < lengths.length; i++) {
+      const angle = THREE.MathUtils.lerp(foldedAngles[i], extendedAngles[i], amount);
+      points[i + 1].copy(points[i]).add(V(0, Math.cos(angle) * lengths[i], Math.sin(angle) * lengths[i]));
+    }
     updateLinks();
     head.position.copy(points[3]);
     head.rotation.set((1 - amount) * Math.PI / 2, 0, 0);
@@ -482,7 +526,17 @@ export function assembleOsirisRex(model) {
   });
   // Preserve world transforms while moving the source capsule into one hideable group.
   for (const part of capsuleParts) capsule.attach(part);
+  // Suppress only the static plate and central detail that obstruct the animated
+  // collector. Their precise flight-hardware identity is not inferred from the mesh.
+  // Keep every source triangle owned for inspection/disposal; other grey fittings remain.
+  const retired = new THREE.Group(); retired.name = 'source-stowed-sampler-hardware'; retired.visible = false; group.add(retired);
+  const sourceMeshes = []; model.traverse(object => { if (object.isMesh && object.material.name === 'Grey-nofoil-fl.001') sourceMeshes.push(object); });
+  for (const object of sourceMeshes) for (const [obsolete, part] of partitionMesh(object, point => point.y > .35 && point.y < .4 && Math.abs(point.x) < .17 && Math.abs(point.z) < .2)) {
+    if (obsolete) retired.attach(part);
+  }
   const m = materials();
+  const nativeSpan = new THREE.Box3().setFromObject(group).getSize(V()).x;
+  const mount = launchMount(group, .5 / (6.2 / nativeSpan), -.8, -.46, m);
   const { arm, head, setDeployment, pointWristAt } = deployedTagsam(m);
   group.add(arm);
   const setSolarDeployment = hingeNasaArrays(model, group);
@@ -529,6 +583,8 @@ export function assembleOsirisRex(model) {
   return {
     group,
     capsule,
+    samplingHead: head,
+    launchMount: mount,
     samplerTip: V(0, -1.925, 0.57),
     setSolarDeployment,
     setStowage,

@@ -11,6 +11,7 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { createEphemeris } from './planetary-ephemeris.js';
 import { createMineralGroup } from './planetary-minerals.js';
 import { createOrbitBody } from './planetary-orbit-bodies.js';
+import { normalizeAsteroid } from './asteroid-scale.js';
 
 export function disposeObject(object, includeCached = false) {
   object.traverse(node => {
@@ -24,6 +25,8 @@ export function disposeObject(object, includeCached = false) {
 }
 
 export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeature, onError, onReady }) {
+  const lifetime = new AbortController();
+  signal = AbortSignal.any([signal,lifetime.signal]);
   const stage = root.querySelector('[data-stage]'), labelLayer = root.querySelector('[data-labels]'), status = root.querySelector('[data-status]');
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
@@ -206,12 +209,7 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
         if (!response.ok) throw new Error('Shape model unavailable');
         const object = id === 'ryugu' ? new OBJLoader().parse(await response.text()) : (await new GLTFLoader().parseAsync(await response.arrayBuffer(),'')).scene;
         if (!alive) { disposeObject(object,true); throw new DOMException('Viewer disposed','AbortError'); }
-        if (id === 'ryugu') object.rotation.x = -Math.PI/2;
-        object.updateMatrixWorld(true);
-        const box = new THREE.Box3().setFromObject(object), size = box.getSize(new THREE.Vector3()), center = box.getCenter(new THREE.Vector3());
-        object.position.sub(center);
-        const unit = new THREE.Group(); unit.add(object); unit.scale.setScalar(1/Math.max(size.x,size.y,size.z));
-        return unit;
+        return normalizeAsteroid(object,id);
       })();
       cache.set(id,pending);
       pending.catch(() => cache.delete(id));
@@ -227,12 +225,12 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
       object.traverse(node => {
         if (node.isMesh) { node.userData.cached = true; node.material = new THREE.MeshStandardMaterial({color:color().body,roughness:0.87,metalness:0,wireframe:state.wireframe}); }
       });
-      const scale = state.compare ? (ids[i]==='bennu'?0.492:0.9)*1.55 : 1.5;
+      const scale = state.compare ? object.userData.kilometersPerUnit*1.55 : 1.5;
       object.scale.multiplyScalar(scale);
       object.position.x = state.compare ? (i===0?-0.75:0.6) : 0;
       group.add(object);
       const anchor = new THREE.Object3D(); anchor.position.set(object.position.x,-scale*0.6,0); group.add(anchor);
-      if (state.compare) label(anchor,`${ids[i]==='bennu'?'Bennu · ~492 m':'Ryugu · ~900 m'}`,ids[i],pending);
+      if (state.compare) label(anchor,`${ids[i]==='bennu'?'Bennu · mean ~492 m':'Ryugu · mean ~900 m'}`,ids[i],pending);
       else {
         // Anchor the annotation to an actual front-facing vertex near the display equator.
         object.updateMatrixWorld(true);
@@ -248,12 +246,13 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
         if (equator) { const marker = new THREE.Object3D(); marker.position.copy(equator); group.add(marker); label(marker,'Equatorial profile','equator',pending); }
       }
     });
-    return {group,pending,targets:[],radius:state.compare?1.4:0.94,radiusY:state.compare?1.05:0.94};
+    const bounds=new THREE.Box3().setFromObject(group);
+    return {group,pending,targets:[],radius:state.compare?Math.max(Math.abs(bounds.min.x),Math.abs(bounds.max.x))*1.16:0.94,radiusY:state.compare?1.05:0.94};
   }
   async function show(next) {
 
     const state = {...next}, ticket = ++version;
-    const changed = !current || ['view','material','scope','angle','compare','mineral'].some(key=>current[key]!==state[key]);
+    const changed = !current || ['view','scope','angle','compare','mineral'].some(key=>current[key]!==state[key]) || state.view !== 'orbit' && current.material !== state.material;
     requested = state;
     controls.maxZoom = state.view === 'orbit' ? 64 : 8;
     if (contextLost) { onError(new Error('WebGL context lost')); return; }
@@ -341,7 +340,8 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     highlight(id) { if (current) show({...current,inspected:id}); },
     theme() { if (requested) show(requested); },
     dispose() {
-      alive = false; version++; cancelAnimationFrame(frame); resizeObserver.disconnect(); controls.dispose();
+      if(!alive)return;
+      alive = false; lifetime.abort(); version++; cancelAnimationFrame(frame); resizeObserver.disconnect(); controls.dispose();
       disposeObject(world); for (const promise of cache.values()) promise.then(object=>disposeObject(object,true)).catch(()=>{});
       cache.clear(); for (const promise of orbitTextures.values()) promise.then(texture=>texture.dispose()).catch(()=>{}); orbitTextures.clear();ao.dispose();composer.passes.forEach(pass=>{if(pass!==ao)pass.dispose?.();});composer.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); labelLayer.replaceChildren();
     }

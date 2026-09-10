@@ -121,3 +121,25 @@ html[data-theme] body#academic-site .mission-context [aria-pressed=true]{border-
 .mission-orbit-details summary:focus-visible{outline:2px solid var(--obs-accent);outline-offset:3px;}
 .mission-orbit-details[open] small,.mission-orbit-details[open] a{display:block;margin-top:5px;}
 @media(max-width:760px){.mission-physical>div:last-child{grid-template-columns:repeat(3,minmax(0,1fr));}.mission-physical button{padding:8px!important;min-width:0;line-height:1.4;}}
+.mission-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Mission purpose, measured motion and frame comparison. */
+.mission-purpose{max-width:80ch;margin:10px 0 0;color:var(--obs-muted,#a9bbc6);font-size:14px;line-height:1.65;}
+.mission-journey-info,.mission-frame{padding:18px 22px;background:#101d27;border-bottom:1px solid #34434c;color:#d7e3ea;}
+.mission-journey-info strong,.mission-journey-info time{display:block;font-size:13px;line-height:1.7;}.mission-journey-info p,.mission-journey-info a{font-size:12px;line-height:1.6;margin:6px 0;}
+.mission-frame{display:grid;grid-template-columns:minmax(240px,1fr) 220px 170px;gap:18px;align-items:center;}.mission-frame[hidden],.mission-journey-info[hidden],.mission-site-map[hidden]{display:none;}
+.mission-frame-tabs{display:flex;gap:8px;}.mission-frame-tabs button{font-size:12px;min-height:40px;padding:8px 12px;}.mission-frame p{font-size:12px;line-height:1.7;margin:10px 0 0;}.mission-frame-summary{color:#dfcb8a;}
+.mission-vector-triangle svg{width:100%;height:auto;display:block;overflow:visible;}.mission-vector-triangle svg>path{fill:none;stroke-width:2;}.mission-vector-triangle small{display:block;text-align:center;font-size:10px;color:#a9bbc6;}
+.mission-speeds{margin:0;display:grid;gap:9px;}.mission-speeds div{border-left:2px solid #8cbedb;padding-left:10px;}.mission-speeds div:nth-child(2){border-color:#efd082;}.mission-speeds div:nth-child(3){border-color:#9ad4b0;}.mission-speeds dt{font-size:11px;}.mission-speeds dd{margin:2px 0 0;font-size:14px;font-variant-numeric:tabular-nums;}
+.mission-site-map{position:absolute;top:12px;left:12px;width:175px;border:1px solid #637888;border-radius:8px;background:#09141deb;z-index:2;pointer-events:none;}.mission-site-map svg{width:100%;height:auto;display:block;}.mission-site-map text{fill:#d8e4eb;font:10px sans-serif;}.mission-site-map span{display:block;padding:6px 8px;font-size:10px;line-height:1.4;color:#d8e4eb;border-top:1px solid #34434c;}
+@media(max-width:760px){.mission-frame{grid-template-columns:1fr 1fr;padding:14px;gap:12px;}.mission-frame>div:first-child{grid-column:1/-1;}.mission-frame-tabs button{flex:1;}.mission-vector-triangle{max-width:200px;}.mission-site-map{width:116px;}.mission-site-map span{font-size:9px;}.mission-purpose{font-size:12px;}.mission-camera-tools [data-mission-action=cutaway]{font-size:10px;padding:7px;}}
+
+.mission-range-chart{display:grid;grid-template-columns:minmax(220px,1fr) minmax(160px,360px);gap:3px 20px;align-items:center;padding:14px 22px;background:#111f29;border-bottom:1px solid #34434c;color:#d8e4eb;}.mission-range-chart[hidden]{display:none;}.mission-range-chart strong,.mission-range-chart small{display:block;font-size:12px;line-height:1.8;}.mission-range-chart small{color:#a9bbc6;font-size:10px;}.mission-range-chart svg{display:block;width:100%;height:auto;}.mission-range-chart>small{grid-column:2;}@media(max-width:760px){.mission-range-chart{grid-template-columns:1fr;gap:6px;padding:12px 14px;}.mission-range-chart>small{grid-column:1;}.mission-range-chart svg{max-height:60px;}}
+
+html[data-theme] body#academic-site .mission-frame-tabs button{font-size:12px;background:#172731!important;color:#d8e4eb!important;border-color:#405663!important;box-shadow:none!important;}
+html[data-theme] body#academic-site .mission-frame-tabs [aria-pressed=true],html[data-theme] body#academic-site .mission-camera-tools [data-mission-action=cutaway][aria-pressed=true]{border-color:#d7be81!important;background:#2a3d42!important;}
+html[data-theme] body#academic-site .mission-frame p,html[data-theme] body#academic-site .mission-journey-info p{font-size:12px!important;line-height:1.7!important;color:#c6d4dc!important;}
+
+html[data-theme] body#academic-site .mission-stage-heading .mission-purpose{font-size:14px!important;line-height:1.65!important;color:var(--obs-muted)!important;}
+html[data-theme] body#academic-site .mission-camera-tools [data-mission-action=cutaway]{font-size:11px;}
+@media(max-width:760px){html[data-theme] body#academic-site .mission-stage-heading .mission-purpose{font-size:12px!important;}.mission-camera-tools>div{flex-wrap:wrap;max-width:100%;}}

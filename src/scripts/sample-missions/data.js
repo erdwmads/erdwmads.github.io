@@ -82,7 +82,7 @@ export const missions = {
         "date": "5 Apr 2019",
         "title": "Reaching beneath the surface",
         "description": "A separate Small Carry-on Impactor fires a copper projectile into Ryugu while Hayabusa2 shelters away from the impact site.",
-        "detail": "The impact excavates a crater; a detached camera records the ejecta.",
+        "detail": "The SCI shapes a roughly 13 cm hollow copper projectile travelling near 2 km/s. Its final flight and excavation are slowed here to make them visible; the model does not brake before impact. DCAM3 recorded the ejecta.",
         "source": "https://www.hayabusa2.jaxa.jp/en/topics/20200320_science/",
         "sourceLabel": "JAXA · SCI experiment"
       },
@@ -93,7 +93,7 @@ export const missions = {
         "date": "11 Jul 2019 JST",
         "title": "A second collection",
         "description": "Hayabusa2 touches down near the artificial crater, collecting material from an area reached by the impact ejecta.",
-        "detail": "The sampler horn and a second tantalum projectile collect another sample.",
+        "detail": "C01-Cb lies about 20 m north of the artificial crater. The sampler collects subsurface material deposited as ejecta on this safer surface; the spacecraft does not descend into the crater.",
         "source": "https://www.hayabusa2.jaxa.jp/en/topics/20190711e_PPTD_ImageBulletin/",
         "sourceLabel": "JAXA · Second touchdown"
       },

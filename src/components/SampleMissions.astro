@@ -18,6 +18,7 @@ const first=missions.hayabusa2,stage=first.stages[0];
     <header class="mission-stage-heading">
       <div><span class="mission-stage-number" data-mission-number>01 / {String(first.stages.length).padStart(2,'0')}</span><time data-mission-date>{stage.date}</time></div>
       <h3 data-mission-title>{stage.title}</h3>
+      <p class="mission-purpose" data-mission-purpose></p>
     </header>
     <div class="mission-body">
 
@@ -27,11 +28,20 @@ const first=missions.hayabusa2,stage=first.stages[0];
           <div role="group" aria-label="View scale"><button type="button" data-mission-action="earth" aria-pressed="true">Earth overview</button><button type="button" data-mission-action="detail" aria-pressed="false">Vehicle close-up</button></div>
         </div>
         <div class="mission-context mission-physical" data-mission-physical hidden>
-          <div class="mission-location"><strong data-mission-range></strong><details class="mission-orbit-details"><summary>Dimensions &amp; orbit source</summary><small data-mission-dimensions></small><a data-mission-trajectory-source target="_blank" rel="noopener"></a></details></div>
+          <div class="mission-location"><strong data-mission-range></strong><small data-mission-utc></small><details class="mission-orbit-details"><summary>Dimensions &amp; orbit source</summary><small data-mission-dimensions></small><a data-mission-trajectory-source target="_blank" rel="noopener"></a></details></div>
           <div role="group" aria-label="Camera framing"><button type="button" data-mission-action="both" aria-pressed="true">Distance overview</button><button type="button" data-mission-action="asteroid" aria-pressed="false">Target close-up</button><button type="button" data-mission-action="spacecraft" aria-pressed="false">Spacecraft close-up</button></div>
         </div>
+        <div class="mission-range-chart" data-mission-range-chart hidden><div><strong data-mission-range-direction></strong><small data-mission-range-summary></small></div><svg viewBox="0 0 360 70" role="img" aria-label="Source distance from asteroid centre through this chapter"><path d="M12 5 V60 H348" stroke="#536673" fill="none"/><path data-mission-range-line fill="none" stroke="#d9c17c" stroke-width="2"/><circle data-mission-range-dot r="4" fill="#d9c17c"/></svg><small>Range from centre · left to right: chapter time</small></div>
+        <div class="mission-journey-info" data-mission-journey-info hidden><strong data-mission-journey-range></strong><time data-mission-journey-time></time><p data-mission-journey-note></p><a href="/assets/data/missions/JOURNEY-SOURCES.md" target="_blank" rel="noopener">Trajectory sources &amp; chapter boundaries</a></div>
+        <div class="mission-frame" data-mission-frame hidden>
+          <div><div class="mission-frame-tabs" role="group" aria-label="Flyby reference frame"><button type="button" data-mission-action="frame-earth" aria-pressed="true">Relative to Earth</button><button type="button" data-mission-action="frame-sun" aria-pressed="false">Relative to the Sun</button></div>
+          <p data-mission-frame-explanation>Earth bends the relative velocity. Adding Earth's solar velocity changes the speed relative to the Sun.</p><p class="mission-frame-summary" data-mission-frame-summary></p></div>
+          <div class="mission-vector-triangle"><svg viewBox="0 0 230 130" role="img" aria-label="Velocity vector addition at the displayed time"><defs><marker id="velocity-earth-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6" fill="#8cbedb" /></marker><marker id="velocity-relative-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6" fill="#efd082" /></marker><marker id="velocity-sun-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6" fill="#9ad4b0" /></marker></defs><path data-mission-vector-earth marker-end="url(#velocity-earth-arrow)" stroke="#8cbedb"/><path data-mission-vector-relative marker-end="url(#velocity-relative-arrow)" stroke="#efd082"/><path data-mission-vector-sun marker-end="url(#velocity-sun-arrow)" stroke="#9ad4b0"/></svg><small>Velocity addition · common scale</small></div>
+          <dl class="mission-speeds"><div><dt>Earth / Sun</dt><dd data-mission-speed-earth></dd></div><div><dt>Probe / Earth</dt><dd data-mission-speed-relative></dd></div><div><dt>Probe / Sun</dt><dd data-mission-speed-sun></dd></div></dl>
+        </div>
         <div class="mission-scene-bar"><span data-mission-scene>Launch sequence</span><span>3D mission study</span></div>
-        <div class="mission-viewport" data-mission-viewport tabindex="0" role="group" aria-label="Interactive mission model">
+        <div class="mission-viewport" data-mission-viewport tabindex="0" role="group" aria-label="Interactive mission model. Arrow keys rotate; Space plays or pauses; Escape stops playback.">
+          <aside class="mission-site-map" data-mission-site-map hidden aria-label="Second touchdown location relative to the artificial crater"><svg viewBox="0 0 190 155" role="img" aria-label="C01-Cb sampling site 20 metres north of SCI crater"><path d="M25 42V15m-5 8 5-8 5 8" fill="none" stroke="#b7cad4"/><text x="21" y="10">N</text><circle cx="88" cy="40" r="8" fill="#dfcb8a"/><circle cx="88" cy="111" r="26" fill="#273743" stroke="#b7cad4"/><path d="M126 40V111m-4-71h8m-8 71h8" stroke="#dfcb8a"/><text x="134" y="79">20 m</text><text x="40" y="27">C01-Cb</text><text x="67" y="115">SCI</text></svg><span>Sample the ejecta north of the crater</span></aside>
           <div class="mission-labels" data-mission-labels aria-hidden="true"></div>
           <div class="mission-inset" data-mission-inset hidden><b data-inset-target>Earth</b><b data-inset-vehicle>Vehicle</b><span>Earth context</span></div>
           <div class="mission-legend" data-mission-legend hidden><span>● Position marker</span><span>— Travelled</span><span>··· Ahead</span></div>
@@ -39,8 +49,9 @@ const first=missions.hayabusa2,stage=first.stages[0];
           <span class="mission-view-hint" data-mission-hint>Drag to orbit · Ctrl/⌘ + scroll to zoom</span>
         </div>
         <div class="mission-camera-tools">
-          <p data-mission-status role="status">Ready to explore</p>
+          <p data-mission-status role="status">Ready to explore</p><span class="mission-sr-only" data-mission-announcement role="status"></span>
           <div role="group" aria-label="Mission camera">
+            <button type="button" data-mission-action="cutaway" aria-pressed="false" hidden>Sampler cutaway</button>
             <button type="button" data-mission-action="touch" class="mission-touch" aria-pressed="false" aria-label="Enable model rotation and pinch zoom"><span data-mission-icon="hand"></span><span data-mission-touch-label>Explore</span></button>
             <button type="button" data-mission-action="zoom-in" aria-label="Zoom in" title="Zoom in"><span data-mission-icon="zoom-in"></span></button>
             <button type="button" data-mission-action="zoom-out" aria-label="Zoom out" title="Zoom out"><span data-mission-icon="zoom-out"></span></button>
@@ -63,9 +74,10 @@ const first=missions.hayabusa2,stage=first.stages[0];
 
       </div></aside>
   </div>
-  <div class="mission-footnote"><p>Earth and asteroid-proximity views preserve physical vehicle sizes. Orbit vectors anchor flyby, rendezvous and departure; event times anchor launch and return. Playback compresses time. Solar-system views and local sampling scenes are illustrative.</p><a data-mission-samples href="#observe=1&amp;view=sample&amp;material=ryugu">Inspect the returned samples <span aria-hidden="true">→</span></a></div>
+  <div class="mission-footnote"><p>Earth and asteroid-proximity views preserve physical vehicle sizes. Orbit vectors anchor flyby, rendezvous and departure; event times anchor launch and return. Playback compresses time. Solar-system paths use heliocentric navigation vectors with enlarged bodies and spacecraft; local sampling scenes are illustrative.</p><a data-mission-samples href="#observe=1&amp;view=sample&amp;material=ryugu">Inspect the returned samples <span aria-hidden="true">→</span></a></div>
   <details class="mission-sources"><summary>Mission sources &amp; model fidelity</summary>
     <p>Both missions entered heliocentric cruise before returning near Earth about a year later for gravity assist. This was a circuit around the Sun, not a full orbit around Earth. Orbit sources distinguish navigation solutions, reconstructed approach data and mission predictions. The displayed UTC and range follow those vectors. Five-minute samples are interpolated. Launch and return paths interpolate published events, altitudes and entry speeds; they are explanatory paths rather than flight telemetry. Hayabusa2 launch times follow the postflight report; OSIRIS-REx launch times follow the nominal ascent timeline. Spacecraft attitudes, local terrain and recovery-region markers are illustrative.</p>
+    <p>During Earth flybys, the globe rotates with the displayed UTC and shares the orbit vectors' inertial frame. Its orientation uses <a href="https://gssc.esa.int/navipedia/index.php/CEP_to_ITRF" target="_blank" rel="noopener">mean sidereal rotation</a> and <a href="https://gssc.esa.int/navipedia/index.php/ICRF_to_CEP" target="_blank" rel="noopener">IAU 1976 precession</a>. UTC approximates UT1; nutation, polar motion and Earth flattening are omitted. This gives geographic context, not a precise ground track.</p>
     <p>The Hayabusa2 return illustration uses its cruciform parachute; its displayed span is illustrative. OSIRIS-REx uses a triconic main parachute with a published nominal diameter of 7.3 m. The return sequence reflects the reported drogue deployment anomaly.</p>
     <p>Hayabusa2 uses a sampler horn and projectile; OSIRIS-REx uses nitrogen-assisted TAGSAM collection. Only the sample capsules land on Earth. The spacecraft continue into space.</p>
     <div class="mission-source-columns">{Object.values(missions).map(mission=><div><h3>{mission.agency} · {mission.title}</h3><ul>{mission.sources.map(source=><li><a href={source.href} target="_blank" rel="noopener">{source.label}</a></li>)}</ul></div>)}</div>

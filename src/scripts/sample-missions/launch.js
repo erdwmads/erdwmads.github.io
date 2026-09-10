@@ -97,6 +97,11 @@ export function createLaunchVehicle(id){
   interior:new T.MeshStandardMaterial({color:0xc3ba9a,roughness:.87,metalness:.08,side:T.BackSide}),
   gold:new T.MeshStandardMaterial({color:0xc29a4b,roughness:.43,metalness:.76}),
  };
+ // Interface radii are authored mounting illustrations; full vehicle dimensions
+ // remain sourced separately. Match the spacecraft's structural attachment ring.
+ const airframeHeight=japanese?4.72:4.70,heightM=japanese?53:189*.3048;
+ const radialScale=japanese?(airframeHeight/53*4/.44):(airframeHeight/189*12.5/.44);
+ const mountRadiusM=japanese?.4:.5,mountRadius=mountRadiusM/(heightM/airframeHeight)/radialScale;
  const core=new T.Group();core.name='first-stage';group.add(core);
  cylinder(core,materials.tank,.22,-1.34,.77);
  cylinder(core,materials.white,.225,-1.47,-1.25);
@@ -123,9 +128,9 @@ export function createLaunchVehicle(id){
  engine(upper,materials,.82,japanese?.11:.12,.21);
  const upperPlume=exhaust(upper,{y:.815,radius:.095,length:1.5});
  // Payload adapter and its braces are revealed when the shells depart.
- mesh(lathe([[.19,1.64],[.19,1.67],[.12,1.83],[.12,1.88]]),materials.gold,upper);
- for(let i=0;i<8;i++){const a=i*Math.PI/4;tube(upper,materials.frame,[[Math.sin(a)*.19,1.66,Math.cos(a)*.19],[Math.sin(a)*.12,1.86,Math.cos(a)*.12]],.005);}
- ring(upper,materials.dark,.126,1.885,.018);bolts(upper,materials.metal,.13,1.891,16);
+ mesh(lathe([[.19,1.64],[.19,1.67],[mountRadius,1.83],[mountRadius,1.88]]),materials.gold,upper);
+ for(let i=0;i<8;i++){const a=i*Math.PI/4;tube(upper,materials.frame,[[Math.sin(a)*.19,1.66,Math.cos(a)*.19],[Math.sin(a)*mountRadius,1.86,Math.cos(a)*mountRadius]],.005);}
+ ring(upper,materials.dark,mountRadius,1.885,.018);bolts(upper,materials.metal,mountRadius,1.891,16);
  const fairingRadius=japanese?.232:.251;
  const fairings=[fairingHalf(group,materials,1,fairingRadius),fairingHalf(group,materials,-1,fairingRadius)];
  const boosters=[];
@@ -148,15 +153,17 @@ export function createLaunchVehicle(id){
  }
  // Keep the established vertical/payload anchors while correcting the overly
  // wide schematic airframes to JAXA's 53 m / 4 m and ULA's 189 ft / 12.5 ft.
- const airframeHeight=japanese?4.72:4.70;
- const radialScale=japanese?(airframeHeight/53*4/.44):(airframeHeight/189*12.5/.44);
  for(const component of group.children){component.scale.x*=radialScale;component.scale.z*=radialScale;}
  group.userData.airframeLength=airframeHeight;
+ group.userData.payloadMountRadiusM=mountRadiusM;
  group.userData.baseY=japanese?-1.73:-1.71;
  group.userData.coreDiameterDisplay=.44*radialScale;
  group.userData.heightM=japanese?53:189*.3048;
  function payloadPosition(p,physicsState){
   const release=physicsState?ease((physicsState.elapsedSeconds-physicsState.events.spacecraftSeparation)/60):ease((p-.8)/.2);return new T.Vector3(.65*radialScale*release,2.03+.9*release,.1*radialScale*release);
+ }
+ function payloadMountPosition(p,physicsState){
+  const point=payloadPosition(p,physicsState);point.y+=1.894-2.03;return point;
  }
  function update(p,physicsState){
   p=T.MathUtils.clamp(p,0,1);
@@ -187,5 +194,5 @@ export function createLaunchVehicle(id){
   corePlumes.forEach(plume=>plume.update(p,physicsState?Number(physicsState.engineOn.core):1-ease((p-.57)/.055)));
   upperPlume.update(p,physicsState?Number(physicsState.engineOn.upper):ease((p-.62)/.06)*(1-ease((p-.79)/.07)));
  }
- update(0);return {group,update,payloadPosition};
+ update(0);return {group,update,payloadPosition,payloadMountPosition};
 }

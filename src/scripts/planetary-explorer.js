@@ -23,6 +23,8 @@ function init() {
   const el = name => root.querySelector(`[data-${name}]`);
   const defaults = { view: 'orbit', material: 'bennu', inspected: 'bennu', scope: 'inner', angle: 'plan', compare: false, wireframe: false, mineral: 'carbonate', separated: false, day: 0 };
   const state = {...defaults};
+  const needsRenderer = observation => observation.view === 'orbit' || observation.view === 'minerals' || observation.view === 'shape' && observation.material !== 'orgueil';
+  let observationTime = false;
   let pendingObservation=decodeObservation(location.hash),restoreVersion=0,syncingMaterial=false,lastHash=location.hash;
   let renderVersion=0,rendering=false,restoring=false,shareVersion=0;
   const icons = { reset: RotateCcw, 'zoom-in': ZoomIn, 'zoom-out': ZoomOut, hand: Hand, play: Play, now: Clock3, share: Link };
@@ -41,7 +43,7 @@ function init() {
     el('stage').toggleAttribute('data-touch-active',enabled);viewer?.setTouch(enabled);
   }
   matchMedia('(pointer: coarse)').addEventListener('change',()=>touchMode(false),{signal});
-  function shareUI() {el('share').disabled=!viewer || rendering || restoring || (!el('stage').hidden && root.dataset.renderState==='error');}
+  function shareUI() {el('share').disabled=rendering || restoring || (needsRenderer(state) && (!viewer || root.dataset.renderState==='error'));}
   function clearShare() {shareVersion++;el('share-link').hidden=true;el('share-status').textContent='';}
   function interrupt() {restoreVersion++;pendingObservation=null;restoring=false;shareUI();clearShare();}
   let fxEnabled = !document.documentElement.classList.contains('ambient-fx-disabled');
@@ -145,7 +147,7 @@ function init() {
       el('scale-note').textContent = state.compare && state.material !== 'orgueil' ? 'Approximate size comparison · common scale' : 'Shape view · display orientation';
       facts([['Context', m.mission], ['Size', m.size]]);
       el('interpretation').textContent = state.material === 'orgueil' ? 'A single photograph cannot supply unseen geometry. The Minerals view presents a separate, explicitly conceptual explanation.' : 'The mesh describes external geometry. It does not reveal the internal structure or identify surface minerals. The lighting is illustrative, not measured reflectance.';
-      el('boundary').textContent = state.material === 'orgueil' ? 'CI is a meteorite class, not a single body with a standard shape.' : 'Original public mesh; display orientation and neutral material applied. Comparison uses approximate reported sizes (Bennu 492 m; Ryugu 900 m), not precision dimensional measurements.';
+      el('boundary').textContent = state.material === 'orgueil' ? 'CI is a meteorite class, not a single body with a standard shape.' : 'Original public mesh; display orientation and neutral material applied. Comparison preserves source dimensions on a common scale. Labels give approximate mean diameters (Bennu 492 m; Ryugu 900 m), not maximum widths or precision measurements.';
     } else if (state.view === 'sample') {
       const photo=samplePhotos[state.material];
       el('object-title').textContent=photo.title;
@@ -184,7 +186,7 @@ function init() {
     root.querySelector('#planetary-panel').setAttribute('aria-labelledby', `planetary-${state.view}`);
     root.querySelectorAll('[data-material]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.material === state.material)));
     root.querySelectorAll('[data-mineral]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mineral === state.mineral)));
-    const renderable = state.view==='orbit' || state.view==='minerals' || state.view==='shape' && state.material!=='orgueil';
+    const renderable = needsRenderer(state);
     if (root.dataset.renderState === 'error') el('fallback').src = materials[state.material].photo;
     el('stage').hidden = !renderable;
     el('ci-figure').hidden = state.view !== 'shape' || state.material !== 'orgueil';
@@ -206,6 +208,7 @@ function init() {
     describe();
     if(!renderable)viewer?.cancelPending();
     const renderRequest = viewer && renderable ? viewer.show(state) : Promise.resolve(true);
+    if(renderable && !viewer && visible)start();
     viewer?.setVisible(visible && renderable && !document.hidden);
     scheduleClock();
     const ready=await renderRequest;
@@ -226,8 +229,9 @@ function init() {
     playing=false;live=false;
     const {camera,...publicState}=saved;
     Object.assign(state,defaults,publicState,{feature:null});
+    observationTime = Object.hasOwn(saved,'day');
     if (saved.material && !saved.inspected) state.inspected=saved.material;
-    state.day=Math.min(lastDay(),state.day);
+    if(timeline)state.day=Math.min(lastDay(),state.day);
     const ready=await sync();
     if(signal.aborted || ticket!==restoreVersion)return;
     if(ready && camera)viewer?.restoreCamera(camera);
@@ -235,6 +239,7 @@ function init() {
     timeUI();clockUI();notifyMaterial();
     el('share-status').textContent='Saved observation restored';
     root.querySelector('.planetary-visual').scrollIntoView({block:'center',behavior:'instant'});
+    return ready;
   }
   async function shareObservation() {
     if(el('share').disabled)return;
@@ -279,17 +284,21 @@ function init() {
     root.dataset.renderState = 'loading';
     el('status').textContent = 'Loading orbital data...';
     try {
-      const response = await fetch('/assets/data/planetary/orbits.json', { signal });
-      if (!response.ok) throw new Error('Orbital data unavailable');
-      data = await response.json();
-      const timeResponse = await fetch('/assets/data/planetary/timeline.json',{signal});
-      if (!timeResponse.ok) throw new Error('Timeline unavailable');
-      timeline = await timeResponse.json();
-      data.timeline = timeline;
-      const max = (Date.parse(timeline.end)-Date.parse(timeline.start))/dayMs;
-      el('timeline').max = max*24;
-      el('date').min = `${timeline.start}T00:00`; el('date').max = `${timeline.end}T00:00`;
-      state.day = Math.max(0,Math.min(max,(Date.now()-Date.parse(timeline.start))/dayMs));
+      if(!data) {
+        const response = await fetch('/assets/data/planetary/orbits.json', { signal });
+        if (!response.ok) throw new Error('Orbital data unavailable');
+        data = await response.json();
+      }
+      if(!timeline) {
+        const timeResponse = await fetch('/assets/data/planetary/timeline.json',{signal});
+        if (!timeResponse.ok) throw new Error('Timeline unavailable');
+        timeline = await timeResponse.json();
+        data.timeline = timeline;
+        const max = (Date.parse(timeline.end)-Date.parse(timeline.start))/dayMs;
+        el('timeline').max = max*24;
+        el('date').min = `${timeline.start}T00:00`; el('date').max = `${timeline.end}T00:00`;
+        state.day = Math.max(0,Math.min(max,observationTime ? state.day : (Date.now()-Date.parse(timeline.start))/dayMs));
+      }
       const { createPlanetaryRenderer } = await import('./planetary-renderer.js');
       if (signal.aborted) return;
       viewer = createPlanetaryRenderer(root, data, { signal, onSelect: id => {
@@ -297,13 +306,28 @@ function init() {
         if (materials[id]) selectMaterial(id);
         else { state.inspected = id; describe(); viewer.highlight(id); }
       }, onFeature: feature => { interrupt();state.feature = feature; describe(); }, onError: failure });
-      sync();
+      viewer.setTouch(root.querySelector('[data-action="interact"]').getAttribute('aria-pressed')==='true');
+      let ready;
+      if(pendingObservation) {const saved=pendingObservation;pendingObservation=null;ready=await restoreObservation(saved);}
+      else ready=await sync();
       syncFx();
       el('time-controls').disabled = false;
       timeUI(); clockUI();
-      if(pendingObservation) {const saved=pendingObservation;pendingObservation=null;await restoreObservation(saved);}
+      return ready;
     } catch (error) { failure(error); }
     finally { starting = false; }
+  }
+  async function retryView() {
+    if(starting)return;
+    const camera=viewer?.cameraState(),ticket=restoreVersion;
+    restoring=true;shareUI();
+    viewer?.dispose();viewer=undefined;
+    try {
+      const ready=await start();
+      if(ready && ticket===restoreVersion && camera)viewer?.restoreCamera(camera);
+    } finally {
+      if(ticket===restoreVersion){restoring=false;shareUI();}
+    }
   }
   root.addEventListener('click', event => {
     const button = event.target.closest('button');
@@ -317,7 +341,7 @@ function init() {
     if ((action === 'play' || action === 'now') && root.dataset.renderState === 'error') return;
     if (action === 'share') shareObservation();
     else if (action === 'show-sample') { state.view='sample';sync();root.querySelector('[data-view="sample"]').focus({preventScroll:true}); }
-    else if (action === 'retry') { if (viewer) sync(); else start(); }
+    else if (action === 'retry') retryView();
     else if (action === 'play') { playing = !playing; if (playing && state.day>=lastDay()) { state.day=0; live=false; } timeUI(); describe(); clockUI(); scheduleClock(); }
     else if (action === 'now') {
       const day = (Date.now()-Date.parse(timeline.start))/dayMs;
@@ -371,13 +395,13 @@ function init() {
     if(destination){location.replace(destination);return;}
     const saved=decodeObservation(location.hash);
     if(!saved)return;
-    if(viewer)restoreObservation(saved);else {pendingObservation=saved;start();}
+    if(viewer || !needsRenderer({...defaults,...saved}))restoreObservation(saved);else {pendingObservation=saved;start();}
   }
   window.addEventListener('hashchange',restoreHash,{signal});
   window.addEventListener('popstate',restoreHash,{signal});
   const intersection = new IntersectionObserver(entries => {
     visible = entries[0].isIntersecting;
-    if (visible) start();
+    if (visible && needsRenderer(state)) start();
     viewer?.setVisible(visible && !el('stage').hidden && !document.hidden);
     scheduleClock();
   });
@@ -386,7 +410,9 @@ function init() {
   const theme = new MutationObserver(() => {if(!rendering && !restoring)viewer?.theme();});
   theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   cleanup = () => { abort.abort(); cancelAnimationFrame(clockFrame); intersection.disconnect(); theme.disconnect(); viewer?.dispose(); delete root.dataset.initialized; };
-  sync();
+  if(pendingObservation && !needsRenderer({...defaults,...pendingObservation})) {
+    const saved=pendingObservation;pendingObservation=null;restoreObservation(saved);
+  } else sync();
   syncFx();
   if(pendingObservation)start();
 }

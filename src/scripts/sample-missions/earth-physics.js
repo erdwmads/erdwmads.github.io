@@ -155,13 +155,17 @@ function separation(profile, p) {
   const speed = initialSpeed+(finalSpeed-initialSpeed)*exponential;
   const capsule = { ...vectorState(add(entry.positionKm,direction,-distance),direction.map(v=>v*speed)),
     vehicle: { ...profile.capsule } };
-  // A metre-scale release grows into a safe Earth-divert branch. No measured delta-v is asserted.
-  const q = clamp((elapsedSeconds-delay)/(duration-delay));
-  const offset = .002 + .0001*elapsedSeconds + 1000*q*q;
-  const offsetSpeed = .0001 + (q>0 ? 2000*q/(duration-delay) : 0);
-  const spacecraft = { ...vectorState(add(capsule.positionKm,entry.up,offset),
-    add(capsule.velocityKmS,entry.up,offsetSpeed)), vehicle: { ...profile.spacecraft } };
-  return { ...capsule, capsule, spacecraft, elapsedSeconds, durationSeconds: duration,
+  // A constant spring drift sends the capsule ahead along the inbound path.
+  // The explanatory avoidance burn has smooth acceleration only within its
+  // stated burn window; after cutoff the branch coasts at constant relative velocity.
+  const drift = .002 + .0001 * elapsedSeconds, burn = profile.divertDurationSeconds;
+  const age = Math.max(0, elapsedSeconds - delay), q = clamp(age / burn);
+  const deltaV = 1000 / (duration - delay - burn / 2);
+  const diversion = deltaV * (age < burn ? burn * (q*q*q - .5*q*q*q*q) : age - burn / 2);
+  const diversionSpeed = deltaV * q*q*(3-2*q);
+  const spacecraft = { ...vectorState(add(add(capsule.positionKm,direction,-drift),entry.up,diversion),
+    add(add(capsule.velocityKmS,direction,-.0001),entry.up,diversionSpeed)), vehicle: { ...profile.spacecraft } };
+  return { ...capsule, capsule, spacecraft, approachDirection: [...direction], elapsedSeconds, durationSeconds: duration,
     separated: true, diverting: elapsedSeconds >= delay,
     engineOn: { spacecraft: elapsedSeconds >= delay && elapsedSeconds < delay+profile.divertDurationSeconds },
     phase: elapsedSeconds < delay ? 'Capsule released' : 'Spacecraft Earth-avoidance maneuver',
@@ -182,5 +186,6 @@ export function earthFlightState(id, kind, p) {
   else if (kind === 'entry') state = entryAt(profile, timeline(p,
     [[0,0],[.12,15],[.48,90],[.64,profile.chuteSeconds],[1,profile.entryDurationSeconds]]));
   else throw new RangeError(`Unknown Earth-flight phase: ${kind}`);
+  if (kind === 'entry') state.approachDirection = entryAt(profile, 0).forward;
   return { ...state, provenance, frame: 'local east/up/south', units: { distance: 'km', velocity: 'km/s', time: 's' } };
 }
