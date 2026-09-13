@@ -178,7 +178,7 @@
     }
   };
 
-  const onSoftNavigation = () => teardown();
+  const onSoftNavigation = () => invalidateAccess();
 
   const onPageHide = (event) => {
     if (event.persisted) invalidateAccess();
@@ -189,12 +189,14 @@
     invalidateAccess();
     form.removeEventListener('submit', onSubmit);
     window.removeEventListener('mads:soft-nav-start', onSoftNavigation);
+    window.removeEventListener('mads:soft-nav-before-swap', teardown);
     window.removeEventListener('pagehide', onPageHide);
     if (window[cleanupKey] === teardown) delete window[cleanupKey];
   };
 
   form.addEventListener('submit', onSubmit);
   window.addEventListener('mads:soft-nav-start', onSoftNavigation);
+  window.addEventListener('mads:soft-nav-before-swap', teardown);
   window.addEventListener('pagehide', onPageHide);
   window[cleanupKey] = teardown;
 })();

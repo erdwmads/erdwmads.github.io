@@ -12,8 +12,8 @@ import { photographs } from "../data/photography";
   </p>
 </section>
 
-<section class="section photo-experience" aria-label="Photographs">
-  <div class="obs-photo-tools"><button class="button secondary obs-present-launch" type="button" data-present-photos>Present photographs</button></div>
+<section class="section photo-experience" data-photo-experience aria-label="Photographs">
+  <div class="obs-photo-tools"><div class="photo-layout-switch" data-photo-layout-controls role="group" aria-label="Photograph layout" hidden><button type="button" data-photo-layout="gallery" aria-pressed="true">Gallery</button><button type="button" data-photo-layout="contact" aria-pressed="false">Contact sheet</button></div><button class="button secondary obs-present-launch" type="button" data-present-photos hidden>Present photographs</button></div>
   <div class="photo-wall">
     {photographs.map((photo, index) => (
       <a
@@ -36,6 +36,7 @@ import { photographs } from "../data/photography";
           decoding="async"
           fetchpriority={index === 0 ? "high" : "auto"}
         />
+        <span class="photo-index-label" aria-hidden="true"><b>{photo.number}</b><span>{photo.alt}</span></span>
       </a>
     ))}
   </div>

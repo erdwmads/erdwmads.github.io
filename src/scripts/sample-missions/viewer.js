@@ -27,11 +27,12 @@ export function createViewer(host,{signal,onTick,onReady,onError}){
  controls.enableDamping=false;controls.dampingFactor=.12;controls.enablePan=false;controls.minDistance=3;controls.maxDistance=32;controls.maxPolarAngle=Math.PI*.86;
  const presentation=createPresentation(renderer,scene,camera);renderer.info.autoReset=false;
  const coarse=matchMedia('(pointer:coarse)');controls.enabled=!coarse.matches;
+ let compiling=0,released=false;
  let alive=true,visible=true,frame=0,last=0,playing=false,world,mission='hayabusa2',stage=0,progress=0,context='earth',focus='both',version=0,autoCamera=true,contextLost=false,frames=0,reference='earth',cutaway=false;
  const insetCamera=new T.PerspectiveCamera(40,1,.1,1000000),inset=host.querySelector('[data-mission-inset]'),legend=host.querySelector('[data-mission-legend]');
- const cache=new Map(),labelLayer=host.querySelector('[data-mission-labels]'),labelElements=Array.from({length:3},()=>{const s=document.createElement('span');labelLayer.append(s);return s;});
+ const cache=new Map(),labelLayer=host.querySelector('[data-mission-labels]'),labelElements=Array.from({length:4},()=>{const s=document.createElement('span');labelLayer.append(s);return s;});
  const leaderElements=labelElements.map(()=>{const line=document.createElement('i');line.className='mission-leader';labelLayer.prepend(line);return line;});
- let width=0,height=0;
+ let width=0,height=0,ending=0;
  const resize=()=>{const r=host.getBoundingClientRect();if(!r.width||!r.height||width===r.width&&height===r.height)return;width=r.width;height=r.height;renderer.setSize(width,height,false);presentation.resize(width,height);camera.aspect=width/height;camera.updateProjectionMatrix();request();};
  const observer=new ResizeObserver(resize);observer.observe(host);
  function request(){if(alive&&visible&&!document.hidden&&!contextLost&&!frame)frame=requestAnimationFrame(draw);}
@@ -69,24 +70,24 @@ export function createViewer(host,{signal,onTick,onReady,onError}){
   controls.maxPolarAngle=Math.PI*(context==='detail'&&['sample','impact','landing'].includes(s.kind)?.495:.94);
  }
  function setStage(index,p=0,transition=true){
-  if(!world)return;if(transition)presentation.capture();stage=Math.max(0,Math.min(missions[mission].stages.length-1,index));progress=clampProgress(p);autoCamera=true;focus=['rendezvous','depart'].includes(missions[mission].stages[stage].kind)?'spacecraft':'both';context='detail';reference='earth';cutaway=false;
+  if(!world)return;if(transition)presentation.capture();stage=Math.max(0,Math.min(missions[mission].stages.length-1,index));progress=clampProgress(p);autoCamera=true;focus='both';context=missions[mission].stages[stage].kind==='return'?'earth':'detail';reference='earth';cutaway=false;ending=0;
   setScene();positionCamera(true);controls.update();last=0;request();
  }
  function drawInset(){
-  const f=world?.earth(),physical=world?.proximity(),active=!!f&&context==='detail'||!!physical&&focus!=='both';inset.hidden=!active;legend.hidden=!(physical&&focus==='both');if(!active)return;
-  inset.querySelector('span').textContent=f?'Earth context':focus==='spacecraft'?'Target · separate close-up':'Probe · separate close-up';
-  const shot=f?earthFlightShot(f,'earth',1):proximityShot(physical,focus==='spacecraft'?'asteroid':'spacecraft',1);insetCamera.position.set(...shot.position);insetCamera.near=shot.near;insetCamera.far=shot.far;insetCamera.fov=shot.fov;insetCamera.up.set(...(shot.up||[0,1,0]));insetCamera.lookAt(new T.Vector3(...shot.target));insetCamera.updateProjectionMatrix();insetCamera.updateMatrixWorld();
+  const f=world?.earth(),physical=world?.proximity(),active=!!f||!!physical&&physical.kind!=='flyby';inset.hidden=!active;legend.hidden=!(physical&&focus==='both');if(!active)return;
+  inset.querySelector('span').textContent=f?(context==='earth'?'Capsule · separate close-up':'Earth context'):focus==='spacecraft'?'Target · separate close-up':'Probe · separate close-up';
+  const shot=f?earthFlightShot(f,context==='earth'?'detail':'earth',1):proximityShot(physical,focus==='spacecraft'?'asteroid':'spacecraft',1);insetCamera.position.set(...shot.position);insetCamera.near=shot.near;insetCamera.far=shot.far;insetCamera.fov=shot.fov;insetCamera.up.set(...(shot.up||[0,1,0]));insetCamera.lookAt(new T.Vector3(...shot.target));insetCamera.updateProjectionMatrix();insetCamera.updateMatrixWorld();
   const anchors=f?[[0,-6371,0],f.positionKm]:[physical.targetPosition||[0,0,0],physical.position];
-  ['target','vehicle'].forEach((name,i)=>{const label=inset.querySelector('[data-inset-'+name+']'),point=new T.Vector3(...anchors[i]).project(insetCamera);label.hidden=!f;label.textContent=i===0?(f?'Earth':physical.kind==='flyby'?'Earth':missions[mission].target):'Vehicle';label.style.left=Math.max(4,Math.min((point.x*.5+.5)*inset.clientWidth-14,inset.clientWidth-40))+'px';label.style.top=Math.max(4,Math.min((-point.y*.5+.5)*inset.clientHeight+7,inset.clientHeight-34))+'px';});
-  const r=inset.getBoundingClientRect(),h=host.getBoundingClientRect(),savedViewport=new T.Vector4();renderer.getViewport(savedViewport);const fog=scene.fog,background=scene.background.clone();scene.fog=null;scene.background.set('#050d15');if(f)world.contextHelpers(true);
-  renderer.setScissorTest(true);renderer.setScissor(r.left-h.left,h.bottom-r.bottom,r.width,r.height);renderer.setViewport(r.left-h.left,h.bottom-r.bottom,r.width,r.height);renderer.clear();const updateShadows=renderer.shadowMap.autoUpdate;renderer.shadowMap.autoUpdate=false;renderer.render(scene,insetCamera);renderer.shadowMap.autoUpdate=updateShadows;renderer.setScissorTest(false);renderer.setViewport(savedViewport);scene.fog=fog;scene.background.copy(background);if(f)world.contextHelpers(false);
+  ['target','vehicle'].forEach((name,i)=>{const label=inset.querySelector('[data-inset-'+name+']'),point=new T.Vector3(...anchors[i]).project(insetCamera);label.hidden=!f||context==='earth';label.textContent=i===0?(f?'Earth':physical.kind==='flyby'?'Earth':missions[mission].target):'Vehicle';label.style.left=Math.max(4,Math.min((point.x*.5+.5)*inset.clientWidth-14,inset.clientWidth-40))+'px';label.style.top=Math.max(4,Math.min((-point.y*.5+.5)*inset.clientHeight+7,inset.clientHeight-34))+'px';});
+  const r=inset.getBoundingClientRect(),h=host.getBoundingClientRect(),savedViewport=new T.Vector4();renderer.getViewport(savedViewport);const fog=scene.fog,background=scene.background.clone();scene.fog=null;scene.background.set('#050d15');if(f||physical)world.contextHelpers(f?context==='detail':false);
+  renderer.setScissorTest(true);renderer.setScissor(r.left-h.left,h.bottom-r.bottom,r.width,r.height);renderer.setViewport(r.left-h.left,h.bottom-r.bottom,r.width,r.height);renderer.clear();const updateShadows=renderer.shadowMap.autoUpdate;renderer.shadowMap.autoUpdate=false;renderer.render(scene,insetCamera);renderer.shadowMap.autoUpdate=updateShadows;renderer.setScissorTest(false);renderer.setViewport(savedViewport);scene.fog=fog;scene.background.copy(background);if(f||physical)world.contextHelpers(f?context==='earth':focus==='both');
  }
  function draw(now){
   frame=0;if(!alive||!visible||document.hidden||contextLost)return;
   const seconds=last?Math.min(Math.max(0,now-last)/1000,.1):1/60;
   if(playing&&world){
-   if(last)progress+=(Math.min(now-last,100)/1000)/(durations[missions[mission].stages[stage].kind]||14);
-   if(progress>=1){if(stage<missions[mission].stages.length-1)setStage(stage+1,0);else {progress=1;playing=false;}}
+   if(progress<1){if(last)progress+=(Math.max(0,now-last)/1000)/(durations[missions[mission].stages[stage].kind]||14);progress=Math.min(1,progress);}
+   else{ending+=last?Math.max(0,now-last)/1000:0;if(ending>=1){if(stage<missions[mission].stages.length-1)setStage(stage+1,0);else playing=false;}}
    setScene();onTick({mission,stage,progress,playing});
   }
   last=now;
@@ -94,9 +95,9 @@ export function createViewer(host,{signal,onTick,onReady,onError}){
   controls.dampingFactor=cameraDamping(seconds);
   controls.update();renderer.info.reset();presentation.render(now);drawInset();frames++;
   const labels=world?.labels()||[],rect=host.getBoundingClientRect(),occupied=[];
-  if(!inset.hidden){const r=inset.getBoundingClientRect();occupied.push({x:r.left-rect.left,y:r.top-rect.top,width:r.width,height:r.height});}
+  for(const overlay of host.querySelectorAll('[data-mission-inset],[data-mission-flight-cue],[data-mission-solar-context],[data-mission-legend]'))if(!overlay.hidden){const r=overlay.getBoundingClientRect();occupied.push({x:r.left-rect.left,y:r.top-rect.top,width:r.width,height:r.height});}
   labels.forEach((entry,i)=>{
-   if(i>=3)return;
+   if(i>=4)return;
    const point=entry.point.clone().project(camera),label=labelElements[i],leader=leaderElements[i],kind=world.kind();
    label.textContent=entry.text;const x=(point.x*.5+.5)*rect.width,y=(-point.y*.5+.5)*rect.height;
    const outside=point.z>1||point.z<-1||x<0||x>rect.width||y<0||y>rect.height;
@@ -115,7 +116,7 @@ export function createViewer(host,{signal,onTick,onReady,onError}){
    const endX=right?lx:lx+lw,endY=ly+lh*.5,dx=endX-x,deltaY=endY-y;
    leader.style.left=x+'px';leader.style.top=y+'px';leader.style.width=Math.hypot(dx,deltaY)+'px';leader.style.transform='rotate('+Math.atan2(deltaY,dx)+'rad)';
   });
-  for(let i=labels.length;i<3;i++)labelElements[i].hidden=leaderElements[i].hidden=true;
+  for(let i=labels.length;i<4;i++)labelElements[i].hidden=leaderElements[i].hidden=true;
   if(playing||presentation.transitioning||cameraMoving)request();
  }
  function manual(){autoCamera=false;playing=false;last=0;onTick({mission,stage,progress,playing});}
@@ -126,23 +127,32 @@ export function createViewer(host,{signal,onTick,onReady,onError}){
  reduced.addEventListener('change',()=>{last=0;request();},{signal:combined});
  renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();contextLost=true;version++;playing=false;cancelAnimationFrame(frame);frame=0;onError(new Error('The 3D context was interrupted. Retry the view.'));},{signal:combined});
  async function load(id){
-  if(contextLost)return;const ticket=++version;playing=false;last=0;
+  if(!alive||contextLost)return;const ticket=++version;playing=false;last=0;
   if(!cache.has(id))cache.set(id,createMissionScene(id,combined));
+  const pending=cache.get(id);let next;
   try{
-   const next=await cache.get(id);if(!alive||contextLost||ticket!==version)return;
-   await renderer.compileAsync(next.group,camera,scene);if(!alive||contextLost||ticket!==version)return;
+   next=await pending;if(!alive||contextLost||ticket!==version)return;
+   compiling++;
+   try{await renderer.compileAsync(next.group,camera,scene);}
+   finally{compiling--;if(!alive&&!compiling)releaseResources();}
+   if(!alive||contextLost||ticket!==version)return;
    if(world){presentation.capture();scene.remove(world.group);}world=next;mission=id;scene.add(world.group);setStage(0,0,false);resize();onReady();
-  }catch(error){cache.delete(id);if(alive&&ticket===version)onError(error);}
+  }catch(error){if(!next&&cache.get(id)===pending)cache.delete(id);if(alive&&ticket===version)onError(error);}
  }
  resize();
+ function releaseResources(){
+  if(released||compiling)return;released=true;
+  cache.forEach(p=>p.then(w=>disposeGraph(w.group)).catch(()=>{}));cache.clear();
+  environment.dispose();key.shadow.map?.dispose();renderer.dispose();renderer.forceContextLoss();
+ }
  return {load,select:setStage,
   rotate(key){manual();if(key==='ArrowLeft'||key==='ArrowRight')controls.rotateLeft((key==='ArrowLeft'?1:-1)*.14);else controls.rotateUp((key==='ArrowUp'?1:-1)*.14);request();},
-  progress(p){progress=clampProgress(p);playing=false;last=0;setScene();request();},
+  progress(p){progress=clampProgress(p);playing=false;last=0;ending=0;setScene();request();},
   play(value){playing=Boolean(value)&&!!world;if(playing&&stage===missions[mission].stages.length-1&&progress>=1)setStage(0,0);last=0;request();},
   visible(value){visible=value;last=0;if(!value){cancelAnimationFrame(frame);frame=0;}else request();},
   touch(value){controls.enabled=!coarse.matches||value;renderer.domElement.style.touchAction=value?'none':'pan-y';},
   action(action){if(action==='cutaway'){cutaway=!cutaway;setScene();request();onTick({mission,stage,progress,playing});return;}if(action==='frame-earth'||action==='frame-sun'){reference=action==='frame-sun'?'sun':'earth';presentation.capture();focus='both';autoCamera=true;setScene();positionCamera(true);controls.update();request();onTick({mission,stage,progress,playing});return;}if(['both','asteroid','spacecraft'].includes(action)){if(!isProximity(missions[mission].stages[stage].kind)||focus===action)return;presentation.capture();focus=action;autoCamera=true;setScene();positionCamera(true);controls.update();request();onTick({mission,stage,progress,playing});return;}if(action==='earth'||action==='detail'){if(!hasEarthContext(missions[mission].stages[stage].kind)||context===action)return;presentation.capture();context=action;autoCamera=true;setScene();positionCamera(true);controls.update();request();onTick({mission,stage,progress,playing});return;}if(action==='reset'){autoCamera=true;positionCamera(true);}else{zoom(action==='zoom-in'?.8:1.25);}controls.update();request();},
-  get state(){return {mission,stage,progress,playing,context,focus,reference,cutaway,journey:world?.journey(),flyby:world?.flyby(),proximity:world?.proximity(),earth:world?.earth(),ready:!!world,visible,frames,transitioning:presentation.transitioning,camera:{position:camera.position.toArray(),target:controls.target.toArray(),automatic:autoCamera,up:camera.up.toArray(),minDistance:controls.minDistance,maxDistance:controls.maxDistance},calls:renderer.info.render.calls,triangles:renderer.info.render.triangles};},
-  dispose(){if(!alive)return;alive=false;lifetime.abort();cancelAnimationFrame(frame);observer.disconnect();controls.dispose();presentation.dispose();cache.forEach(p=>p.then(w=>disposeGraph(w.group)).catch(()=>{}));cache.clear();environment.dispose();key.shadow.map?.dispose();renderer.dispose();renderer.forceContextLoss();renderer.domElement.remove();labelLayer.replaceChildren();}
+  get state(){return {mission,stage,progress,playing,context,focus,reference,cutaway,journey:world?.journey(),flyby:world?.flyby(),proximity:world?.proximity(),earth:world?.earth(),ready:!!world,visible,frames,transitioning:presentation.transitioning,camera:{fov:camera.fov,near:camera.near,far:camera.far,position:camera.position.toArray(),target:controls.target.toArray(),automatic:autoCamera,up:camera.up.toArray(),minDistance:controls.minDistance,maxDistance:controls.maxDistance},calls:renderer.info.render.calls,triangles:renderer.info.render.triangles};},
+  dispose(){if(!alive)return;alive=false;lifetime.abort();cancelAnimationFrame(frame);observer.disconnect();controls.dispose();presentation.dispose();if(!compiling)releaseResources();renderer.domElement.remove();labelLayer.replaceChildren();}
  };
 }

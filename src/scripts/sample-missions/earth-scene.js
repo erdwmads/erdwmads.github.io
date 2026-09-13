@@ -2,7 +2,7 @@ import * as T from 'three';
 import {earthFlightState,EARTH_RADIUS_KM as R,EARTH_FLIGHT_PROFILES} from './earth-physics.js';
 import {earthPoint,locationFor} from './geography.js';
 import {physicalScale,physicalSizes} from './proximity.js';
-import {earthGroundMaterial,createRecoveryGround} from './earth-ground.js';
+import {createLaunchGround,createRecoveryGround} from './earth-ground.js';
 const up=new T.Vector3(0,1,0),down=new T.Vector3(0,-1,0),center=new T.Vector3(0,-R,0);
 const bounds=o=>new T.Box3().setFromObject(o),span=o=>Math.max(...bounds(o).getSize(new T.Vector3()).toArray());
 function releaseFrame(state){
@@ -19,7 +19,7 @@ export function earthFlightShot(state,context,aspect=1.9){
  let target,offset,size,cameraUp=up.clone();
  if(context==='earth'){
   if(state.kind==='return'){
-   target=position.clone().add(center).multiplyScalar(.5);size=position.distanceTo(center)+R*2;
+   target=new T.Vector3(...(state.overview?.center||position.clone().add(center).multiplyScalar(.5).toArray()));size=state.overview?.extent||position.distanceTo(center)+R*2;
    offset=new T.Vector3(.18,.25,1.55).multiplyScalar(size*portrait);
   }else {target=center.clone();size=R*2;offset=new T.Vector3(.28,1.35,.78).multiplyScalar(size*portrait);}
  }else{
@@ -42,7 +42,7 @@ export function earthFlightShot(state,context,aspect=1.9){
   }
   offset.multiplyScalar(size*portrait);
  }
- return {target:target.toArray(),position:target.clone().add(offset).toArray(),up:cameraUp.toArray(),fov:40,near:Math.max(.0000005,size*.005),far:Math.max(40000,position.distanceTo(center)*4),minDistance:size*.8,maxDistance:Math.max(50000,size*8)};
+ return {target:target.toArray(),position:target.clone().add(offset).toArray(),up:cameraUp.toArray(),fov:40,near:Math.max(.0000005,size*.005),far:Math.max(40000,position.distanceTo(center)*4,size*8),minDistance:size*.8,maxDistance:Math.max(50000,size*8)};
 }
 export function createEarthFlightScene(id,{group,earth,craft,launch,capsule,canopy,desert,heat,entryWake}){
  const profile=EARTH_FLIGHT_PROFILES[id],craftScale=physicalScale(span(craft.group),physicalSizes[id].spanM),capsuleScale=profile.capsule.diameterKm/bounds(capsule).getSize(new T.Vector3()).x,capsuleBottom=bounds(capsule).min.y,capsuleTop=bounds(capsule).max.y;
@@ -52,7 +52,7 @@ export function createEarthFlightScene(id,{group,earth,craft,launch,capsule,cano
  launch.group.updateMatrixWorld(true);
  upperStage.traverse(o=>{if(o.isMesh&&!o.material?.uniforms?.power)upperBounds.union(bounds(o));});
  const upperCenter=launch.group.worldToLocal(upperBounds.getCenter(new T.Vector3())),upperSpan=Math.max(...upperBounds.getSize(new T.Vector3()).toArray());
- const local=new T.Group(),land=new T.Mesh(new T.PlaneGeometry(1.2,1.2,48,48).rotateX(-Math.PI/2),earthGroundMaterial(0x405f45));local.add(land);land.receiveShadow=true;
+ const local=createLaunchGround();
  const pad=new T.Mesh(new T.BoxGeometry(.07,.00015,.085),new T.MeshStandardMaterial({color:0x8c9496,roughness:1}));pad.position.y=.000075;local.add(pad);pad.receiveShadow=true;
  const trench=new T.Mesh(new T.BoxGeometry(.008,.0002,.12),new T.MeshStandardMaterial({color:0x313d40,roughness:1}));trench.position.set(0,.0001,.036);local.add(trench);group.add(local);
  const recoveryGround=createRecoveryGround(id);group.add(recoveryGround);
@@ -63,16 +63,20 @@ export function createEarthFlightScene(id,{group,earth,craft,launch,capsule,cano
  smokeMaterial.onBeforeCompile=shader=>{shader.fragmentShader=shader.fragmentShader.replace('void main() {','void main() {\nfloat cloudRadius=length(gl_PointCoord-vec2(.5))*2.;if(cloudRadius>1.)discard;').replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.a*=pow(1.-cloudRadius,1.6);');};
  const smoke=new T.Points(smokeGeometry,smokeMaterial);group.add(smoke);
  const routes={};for(const kind of ['launch','return','landing']){const positions=Array.from({length:241},(_,i)=>new T.Vector3(...earthFlightState(id,kind,i/240).positionKm)),route=new T.Line(new T.BufferGeometry().setFromPoints(positions),new T.LineBasicMaterial({color:0x84bfd0,transparent:true,opacity:.45}));group.add(route);routes[kind]=route;}
+ const returnPoints=Array.from({length:241},(_,i)=>earthFlightState(id,'return',i/240)),returnBox=new T.Box3().setFromPoints([center.clone().addScalar(-R),center.clone().addScalar(R),...returnPoints.flatMap(s=>[new T.Vector3(...s.positionKm),new T.Vector3(...s.spacecraft.positionKm)])]);
+ const returnOverview={center:returnBox.getCenter(new T.Vector3()).toArray(),extent:returnBox.getSize(new T.Vector3()).length()};
+ const diversionRoute=new T.Line(new T.BufferGeometry().setFromPoints(returnPoints.map(s=>new T.Vector3(...s.spacecraft.positionKm))),new T.LineBasicMaterial({color:0x9ad4b0,transparent:true,opacity:.65}));group.add(diversionRoute);
  let current,state,labels=[];
- function helpers(visible){markers.visible=visible;for(const [kind,r] of Object.entries(routes))r.visible=visible&&kind===current;}
+ function helpers(visible){diversionRoute.visible=visible&&current==='return';markers.visible=visible;for(const [kind,r] of Object.entries(routes))r.visible=visible&&kind===current;}
  function hide(){smoke.visible=false;local.visible=false;recoveryGround.visible=false;helpers(false);state=null;}
  function update(kind,p,context){
   // Reserve the last two playback seconds for fabric settling after touchdown.
-  current=kind;state={...earthFlightState(id,kind,kind==='landing'?Math.min(1,p/.92):p),kind};smoke.visible=kind==='launch'&&state.elapsedSeconds<35;labels=[];local.visible=kind==='launch'&&state.altitudeKm<5;helpers(context==='earth');
+  current=kind;state={...earthFlightState(id,kind,kind==='landing'?Math.min(1,p/.92):p),kind};smoke.visible=kind==='launch'&&state.elapsedSeconds<35;labels=[];local.visible=context!=='earth'&&kind==='launch'&&state.altitudeKm<5;helpers(context==='earth');
   earth.visible=true;earth.scale.setScalar(R);earth.position.copy(center);earth.quaternion.copy(earthOrientation(locationFor(id,kind)));
   earth.children[0].material.opacity=1;earth.children[1].material.opacity=.45;earth.children[2].material.uniforms.opacity.value=.32;
   desert.visible=false;recoveryGround.visible=kind==='landing'&&state.altitudeKm<80;
   capsule.userData.setRecovery?.(0);const radial=new T.Vector3(...state.up),forward=new T.Vector3(...state.forward);
+  if(kind==='return')state.overview=returnOverview;
   if(kind==='launch'){
    const t=state.elapsedSeconds,sp=smokeGeometry.attributes.position;for(let i=0;i<30;i++){const age=Math.max(0,t-i*.3),angle=i*2.39996,r=.0006*age+Math.sqrt(i)*.001;sp.setXYZ(i,Math.cos(angle)*r,.002+age*.00015,Math.sin(angle)*r+.0004*age);}sp.needsUpdate=true;smokeGeometry.computeBoundingSphere();smokeMaterial.opacity=Math.min(.36,t*.09)*Math.max(0,1-t/35);smokeMaterial.size=.012+.0006*Math.min(t,25);
    launch.update(p,state);launch.group.visible=true;launch.group.scale.setScalar(launchScale);launch.group.quaternion.setFromUnitVectors(up,forward);launch.group.position.copy(new T.Vector3(...state.positionKm)).addScaledVector(radial,.00015-(launch.group.userData.baseY??(id==='hayabusa2'?-1.73:-1.71))*launchScale);launch.group.updateMatrixWorld(true);

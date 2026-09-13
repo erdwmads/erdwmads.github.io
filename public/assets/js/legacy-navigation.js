@@ -74,6 +74,7 @@
     const detail = { url };
     document.documentElement.classList.add("mads-soft-nav-active");
     document.body.classList.add("mads-soft-nav-active");
+    document.querySelector('main')?.setAttribute('aria-busy', 'true');
     dispatchSoftNavEvent("mads:soft-nav-start", detail);
     return token;
   }
@@ -84,9 +85,30 @@
         if (token !== softNavToken) return;
         document.documentElement.classList.remove("mads-soft-nav-active");
         document.body.classList.remove("mads-soft-nav-active");
+        document.querySelector('main')?.removeAttribute('aria-busy');
+        history.replaceState({...history.state,madsScrollY:scrollY}, '', location.href);
         dispatchSoftNavEvent("mads:soft-nav-end", detail);
       });
     });
+  }
+
+  function restorePosition(url, savedY) {
+    const hash = new URL(url, location.href).hash;
+    if (savedY !== undefined) { window.scrollTo({top:savedY,behavior:'instant'}); return; }
+    let target;
+    try { target = hash.startsWith('#mission-view=') ? document.getElementById('missions-title') : hash && !hash.startsWith('#observe=') ? document.getElementById(decodeURIComponent(hash.slice(1))) : null; } catch {}
+    if (target) target.scrollIntoView({block:'start',behavior:'instant'});
+    else if (!hash.startsWith('#observe=')) window.scrollTo({top:0,behavior:'instant'});
+  }
+
+  function cancelPendingNavigation() {
+    softNavToken += 1;
+    stopContentAnimation();
+    const main = document.querySelector('main');
+    if (main) { main.style.opacity = '1'; main.removeAttribute('aria-busy'); }
+    document.documentElement.classList.remove('mads-soft-nav-active');
+    document.body.classList.remove('mads-soft-nav-active');
+    dispatchSoftNavEvent('mads:soft-nav-end', {url:location.href,pageName:pageNameFromUrl(location.href)});
   }
 
   function pageNameFromUrl(url) {
@@ -164,6 +186,8 @@
         return;
       }
 
+      await fadeContent(currentMain, 0, 140);
+      if (token !== softNavToken) return;
       document.title = nextDoc.title || document.title;
       for(const selector of ['link[rel="canonical"]','meta[property^="og:"]','meta[name^="twitter:"]']) {
         nextDoc.querySelectorAll(selector).forEach(next=>{const key=next.getAttribute('property')||next.getAttribute('name');const current=key?document.head.querySelector('meta['+(next.hasAttribute('property')?'property':'name')+'="'+key+'"]'):document.head.querySelector(selector);if(current)current.replaceWith(next.cloneNode(true));});
@@ -174,8 +198,6 @@
         currentDescription.setAttribute("content", nextDescription.getAttribute("content") || "");
       }
 
-      await fadeContent(currentMain, 0, 140);
-      if (token !== softNavToken) return;
       dispatchSoftNavEvent("mads:soft-nav-before-swap", { url, pageName });
       nextMain.style.opacity = "0";
       currentMain.replaceWith(nextMain);
@@ -187,10 +209,8 @@
         history.pushState({ madsSoftNav: true }, "", url);
       }
       runPageScripts(nextDoc);
-      const hash=new URL(url).hash;
-      let target;try{target=hash&&!hash.startsWith('#observe=')?document.getElementById(decodeURIComponent(hash.slice(1))):null;}catch{}
-      window.scrollTo({ top: restoreY ?? 0, behavior: "instant" });
-      if(pushState&&target)target.scrollIntoView({block:'start',behavior:'instant'});
+      dispatchSoftNavEvent("mads:soft-nav-content", { url, pageName });
+      restorePosition(url, restoreY);
       const heading=nextMain.querySelector('h1')||nextMain;heading.setAttribute('tabindex','-1');heading.focus({preventScroll:true});
       dispatchSoftNavEvent("mads:soft-nav-ready", { url, pageName });
       await fadeContent(nextMain, 1, 260);
@@ -212,7 +232,14 @@
     if (!target.pathname.endsWith(".html") && target.pathname !== "/" && target.pathname !== window.location.pathname) return;
 
     if(documentKey(target.href)===renderedDocument){
-      if(!target.hash){event.preventDefault();window.scrollTo({top:0,behavior:reducedMotion.matches?'instant':'smooth'});}
+      cancelPendingNavigation();
+      if(!target.hash){
+        event.preventDefault();
+        if(location.hash) history.pushState({madsSoftNav:true,madsScrollY:0},'',target.href);
+        window.scrollTo({top:0,behavior:reducedMotion.matches?'instant':'smooth'});
+        const heading=document.querySelector('main h1');
+        heading?.setAttribute('tabindex','-1');heading?.focus({preventScroll:true});
+      }
       return;
     }
     if(!pageClassMap[pageNameFromUrl(target.href)])return;
@@ -223,16 +250,10 @@
 
   window.addEventListener("popstate", (event) => {
     if (documentKey(window.location.href) === renderedDocument) {
-      softNavToken += 1;
-      stopContentAnimation();
-      const main = document.querySelector("main");
-      if (main) main.style.opacity = "1";
-      if(!location.hash.startsWith("#observe="))window.scrollTo({top:event.state?.madsScrollY ?? 0,behavior:"instant"});
-      document.documentElement.classList.remove("mads-soft-nav-active");
-      document.body.classList.remove("mads-soft-nav-active");
-      dispatchSoftNavEvent("mads:soft-nav-end", { url: location.href, pageName: pageNameFromUrl(location.href) });
+      cancelPendingNavigation();
+      restorePosition(location.href,event.state?.madsScrollY);
       return;
     }
-    navigate(window.location.href, false, event.state?.madsScrollY ?? 0);
+    navigate(window.location.href, false, event.state?.madsScrollY);
   });
 })();

@@ -1,21 +1,23 @@
 import * as T from 'three';
+import {diskRotationGLSL} from './disk-motion.js';
 
 // Qualitative dust extinction and single-scattering illustration, not radiative-transfer data.
 export function diskVolume(){
- const material=new T.ShaderMaterial({side:T.BackSide,transparent:true,depthWrite:false,uniforms:{time:{value:0},phase:{value:0},steps:{value:innerWidth<760?36:56}},
+ const material=new T.ShaderMaterial({side:T.BackSide,transparent:true,depthWrite:false,uniforms:{time:{value:0},phase:{value:0},steps:{value:(globalThis.innerWidth||1200)<760?36:56}},
  vertexShader:`varying vec3 worldPoint;void main(){vec4 p=modelMatrix*vec4(position,1.);worldPoint=p.xyz;gl_Position=projectionMatrix*viewMatrix*p;}`,
  fragmentShader:`
  varying vec3 worldPoint;uniform float time;uniform float phase;uniform int steps;
  float hash(vec3 p){p=fract(p*.1031);p+=dot(p,p.yxz+31.32);return fract((p.x+p.y)*p.z);}
  float n3(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(mix(hash(i),hash(i+vec3(1,0,0)),f.x),mix(hash(i+vec3(0,1,0)),hash(i+vec3(1,1,0)),f.x),f.y),mix(mix(hash(i+vec3(0,0,1)),hash(i+vec3(1,0,1)),f.x),mix(hash(i+vec3(0,1,1)),hash(i+vec3(1,1,1)),f.x),f.y),f.z);}
+ ${diskRotationGLSL}
  float density(vec3 p){
    float r=length(p.xz),h=.065+.30*pow(r/6.,1.3);
-   float angle=time*.045/pow(r+.45,1.5);mat2 spin=mat2(cos(angle),-sin(angle),sin(angle),cos(angle));
+   float angle=orbitalAngle(r,time);mat2 spin=mat2(cos(angle),-sin(angle),sin(angle),cos(angle));
    vec2 q=spin*p.xz;vec3 v=vec3(q.x,p.y*3.,q.y);
    float f=n3(v*2.)*.60+n3(v*5.1)*.26+n3(v*13.)*.14;
    float vertical=exp(-pow(p.y/h,2.)*1.6);
    float inner=smoothstep(.25,.55,r),outer=1.-smoothstep(5.,6.7,r);
-   return vertical*inner*outer*(.18+pow(f,2.)*3.)*1.4;
+   return vertical*inner*outer*(.10+pow(f,3.)*6.)*(.85+.35*sin(atan(q.y,q.x)*3.+r*.7))*1.4;
  }
  void main(){
    vec3 rd=normalize(worldPoint-cameraPosition),ro=cameraPosition;
@@ -38,5 +40,5 @@ export function diskVolume(){
    #include <colorspace_fragment>
  }`});
  const mesh=new T.Mesh(new T.BoxGeometry(14,3,14),material);mesh.renderOrder=1;
- return{mesh,update(t,phase){material.uniforms.time.value=t*24;material.uniforms.phase.value=phase?1:0;}};
+ return{mesh,update(t,phase){material.uniforms.time.value=t;material.uniforms.phase.value=phase?1:0;}};
 }

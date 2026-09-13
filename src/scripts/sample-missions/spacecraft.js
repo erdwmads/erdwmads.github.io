@@ -538,6 +538,11 @@ export function assembleOsirisRex(model) {
   const nativeSpan = new THREE.Box3().setFromObject(group).getSize(V()).x;
   const mount = launchMount(group, .5 / (6.2 / nativeSpan), -.8, -.46, m);
   const { arm, head, setDeployment, pointWristAt } = deployedTagsam(m);
+  // Mission specification: 30.5 cm head diameter at the 6.2 m deployed span.
+  // https://asteroidmission.org/objectives/spacecraft/
+  // Preserve the authored vertical envelope and touchdown/stowage anchors.
+  const headWidthScale = (.305 * nativeSpan / 6.2) / .27;
+  head.scale.set(headWidthScale, 1, headWidthScale);
   group.add(arm);
   const setSolarDeployment = hingeNasaArrays(model, group);
   const lid = new THREE.Group();
@@ -548,9 +553,11 @@ export function assembleOsirisRex(model) {
   for (const part of capsuleParts) if (/SRC-RTop/.test(part.material.name)) lid.attach(part);
   const captureRing = ring(capsule, .137, .009, m.silver, [0, .29, 0]);
   captureRing.name = 'src-capture-ring';
+  // The torus is rotated onto XZ, so its local Z retains the vertical thickness.
+  captureRing.scale.set(headWidthScale, headWidthScale, 1);
   for (let i = 0; i < 3; i++) {
     const angle = i * Math.PI * 2 / 3;
-    box(capsule, [.025, .03, .025], m.dark, [Math.cos(angle) * .143, .304, Math.sin(angle) * .143], 'src-capture-latch');
+    box(capsule, [.025 * headWidthScale, .03, .025 * headWidthScale], m.dark, [Math.cos(angle) * .143 * headWidthScale, .304, Math.sin(angle) * .143 * headWidthScale], 'src-capture-latch');
   }
   const seat = V(0, .365, 0), waypoint = new THREE.Vector3();
   const smooth = (value, start, end) => THREE.MathUtils.smoothstep(value, start, end);

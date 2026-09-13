@@ -41,3 +41,13 @@ export function flybyFrameState(id,p,ephemeris,journey){
   heliocentricOffsetKm:subtract(heliocentricPositionKm,origin),earthOffsetKm:subtract(earth.position,origin),sunFrameOriginKm:origin,
   speedEarthKmS:length(relative.velocity),speedSunKmS:length(heliocentricVelocityKmS),rangeKm:length(relative.position),source:track.source,earthSource:'https://ssd.jpl.nasa.gov/horizons/',formula:'v spacecraft/Sun = v spacecraft/Earth + v Earth/Sun'};
 }
+
+// Two-body osculating ellipse at the chapter's epoch, not a flown spacecraft path.
+export function referenceOrbit(mission,body,time){
+ const {position:r,velocity:v}=sampleJourneyBody(mission,body,time),mu=132712440041.9394;
+ const dot=(a,b)=>a.reduce((n,x,i)=>n+x*b[i],0),cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+ const radius=length(r),h=cross(r,v),hLength=length(h),ev=cross(v,h).map((x,i)=>x/mu-r[i]/radius),e=length(ev);
+ const a=1/(2/radius-dot(v,v)/mu),u=ev.map(x=>x/e),normal=h.map(x=>x/hLength),w=cross(normal,u);
+ const points=Array.from({length:360},(_,i)=>{const angle=i*Math.PI/180,rr=a*(1-e*e)/(1+e*Math.cos(angle));return toSolarScene(u.map((x,j)=>rr*(x*Math.cos(angle)+w[j]*Math.sin(angle))));});
+ points.push([...points[0]]);return points;
+}

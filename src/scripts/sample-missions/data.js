@@ -49,7 +49,7 @@ export const missions = {
         "date": "2015–2018",
         "title": "Onward to Ryugu",
         "description": "After the Earth gravity assist, Hayabusa2 continues toward Ryugu on a changed heliocentric trajectory.",
-        "detail": "The view returns to the Solar System scale. Continued cruise and navigation lead to the later rendezvous; this is an illustrative transfer.",
+        "detail": "The path interpolates heliocentric navigation vectors toward rendezvous. Body sizes and spacecraft attitude are illustrative.",
         "source": "https://www.hayabusa2.jaxa.jp/topics/20151214_02_e/",
         "sourceLabel": "JAXA · Earth swing-by"
       },
@@ -230,7 +230,7 @@ export const missions = {
         "date": "2017–2018",
         "title": "Onward to Bennu",
         "description": "After the Earth gravity assist, OSIRIS-REx continues toward Bennu on a changed heliocentric trajectory.",
-        "detail": "The view returns to the Solar System scale. Continued cruise and navigation lead to the later rendezvous; this is an illustrative transfer.",
+        "detail": "The path interpolates heliocentric navigation vectors toward rendezvous. Body sizes and spacecraft attitude are illustrative.",
         "source": "https://science.nasa.gov/mission/osiris-rex/in-depth/",
         "sourceLabel": "NASA · Mission overview"
       },
@@ -274,7 +274,7 @@ export const missions = {
         "date": "10 May 2021",
         "title": "Leaving Bennu",
         "description": "OSIRIS-REx begins its return journey with Bennu's rocks and dust secured aboard.",
-        "detail": "At the departure maneuver, OSIRIS-REx was already about 359.5 km from Bennu. This mission prediction shows the changing range over six hours, rather than an oversized spacecraft sliding beside the surface.",
+        "detail": "At the departure maneuver, OSIRIS-REx was already about 359.5 km from Bennu. This mission prediction shows the changing range over six hours, with the spacecraft and asteroid at their physical relative sizes.",
         "source": "https://science.nasa.gov/mission/osiris-rex/in-depth/",
         "sourceLabel": "NASA · Mission overview"
       },

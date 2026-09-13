@@ -371,6 +371,7 @@ function init() {
     sync();
   }, { signal });
   root.addEventListener('keydown', event => {
+    if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
     const tab = event.target.closest('[data-view]');
     if (tab) {
       const tabs = [...root.querySelectorAll('[data-view]')];

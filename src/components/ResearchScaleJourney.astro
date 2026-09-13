@@ -5,8 +5,28 @@
     <p>After comparing whole bodies and samples above, this published Bennu figure shows the textures studied with optical and electron microscopy.</p>
   </header>
       <figure class="research-scale__figure">
-        <div class="research-scale__media">
-          <img src="/assets/img/research-scale/bennu-microstructure.jpg" width="1536" height="1120" loading="lazy" decoding="async" alt="Published four-panel Bennu figure: an optical view of a phosphate-bearing particle and three scanning electron microscope views of a fragment, with original scale bars." />
+        <div class="image-inspector" data-image-inspector>
+          <div class="inspector-topline"><span>Image observation desk</span><span>Published Bennu figure</span></div>
+          <div class="inspector-layout">
+            <div class="inspector-stage" data-inspector-stage tabindex="0" role="group" aria-label="Published figure. Zoom with the controls; arrow keys pan when enlarged. Home resets the full figure.">
+              <img data-inspector-image src="/assets/img/research-scale/bennu-microstructure.jpg" width="1536" height="1120" loading="lazy" decoding="async" draggable="false" alt="Published four-panel Bennu figure: optical view at upper left, SEM overview at upper right, and two SEM detail views below. Original scale bars are retained." />
+              <span class="inspector-stage-note" data-inspector-hint hidden>Enlarge, then drag to explore</span>
+            </div>
+            <div class="inspector-controls" data-inspector-controls hidden>
+              <label class="inspector-zoom-label" for="bennu-display-zoom">Display zoom <output data-inspector-output>1.0×</output></label>
+              <input id="bennu-display-zoom" data-inspector-zoom type="range" min="1" max="4" step="0.1" value="1" aria-label="Display zoom" />
+              <div class="inspector-regions" role="group" aria-label="Frame a part of the figure">
+                <button type="button" data-inspector-region="all" aria-pressed="true">Full figure</button>
+                <button type="button" data-inspector-region="optical" aria-pressed="false"><span>01</span> Optical view</button>
+                <button type="button" data-inspector-region="sem-overview" aria-pressed="false"><span>02</span> SEM overview</button>
+                <button type="button" data-inspector-region="sem-fragment" aria-pressed="false"><span>03</span> SEM fragment</button>
+                <button type="button" data-inspector-region="sem-detail" aria-pressed="false"><span>04</span> SEM detail</button>
+              </div>
+              <button class="inspector-touch" data-inspector-touch type="button" aria-pressed="false">Move image</button>
+              <p class="inspector-note">Image enlargement only. Full figure restores the original scale-bar context.</p>
+            </div>
+          </div>
+          <p class="inspector-status" data-inspector-status role="status">Published optical and SEM views · Original figure and scale bars retained.</p>
         </div>
         <figcaption class="research-scale__caption">
           <p class="research-scale__eyebrow">Bennu / grain and microstructure</p>
@@ -16,6 +36,7 @@
             <div><dt>Observation</dt><dd>Optical microscopy + SEM</dd></div>
             <div><dt>Research question</dt><dd>How do texture, chemistry and crystal structure connect?</dd></div>
           </dl>
+          <p><a href="/assets/img/research-scale/bennu-microstructure.jpg" target="_blank" rel="noopener">Open full-resolution figure ↗</a></p>
           <p class="research-scale__credit">Figure: Lauretta &amp; Connolly et al. (2024), unchanged NASA rendition.<br /><a href="https://www.nasa.gov/missions/osiris-rex/surprising-phosphate-finding-in-nasas-osiris-rex-asteroid-sample/">NASA source</a> &middot; <a href="https://doi.org/10.1111/maps.14227">Paper</a> &middot; <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></p>
         </figcaption>
       </figure>

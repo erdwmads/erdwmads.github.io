@@ -1,0 +1,23 @@
+---
+interface Props { current: string }
+const {current}=Astro.props;
+const destinations={
+  research:{href:'research.html',label:'Research',detail:'Questions, methods and the mineral record'},
+  origins:{href:'origins-study.html',label:'Origins',detail:'Explore how a smaller world takes shape'},
+  'paper-shelf':{href:'paper-shelf.html',label:'Paper Shelf',detail:'Read the sources behind the questions'},
+  photography:{href:'photography.html',label:'Photography',detail:'Observations beyond the laboratory'},
+  cv:{href:'cv.html',label:'CV',detail:'Academic background and experience'},
+  contact:{href:'contact.html',label:'Contact',detail:'Continue the conversation'},
+  'research-log':{href:'research-log.html',label:'Research Log',detail:'Follow the work as it develops'}
+};
+const routes:Record<string,(keyof typeof destinations)[]>={
+  home:['research','origins'],research:['origins','paper-shelf'],origins:['research','paper-shelf'],
+  'paper-shelf':['research','research-log'],photography:['research','contact'],cv:['research','contact'],
+  contact:['cv','photography'],'research-log':['research','paper-shelf']
+};
+const links=(routes[current]||[]).map(key=>destinations[key]);
+---
+{links.length>0&&<nav class="continue-reading" aria-label="Continue exploring">
+  <p class="continue-reading-label">Continue exploring</p>
+  <div>{links.map((link,i)=><a href={link.href}><span class="continue-reading-number" aria-hidden="true">0{i+1}</span><span><strong>{link.label}</strong><small>{link.detail}</small></span><span class="continue-reading-arrow" aria-hidden="true">↗</span></a>)}</div>
+</nav>}

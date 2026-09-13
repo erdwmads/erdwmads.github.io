@@ -1,0 +1,99 @@
+/* The section guide supplies the reading offset; do not also reserve a second header. */
+html[data-research-reading] { scroll-padding-top: 0; }
+/* Research reading structure shares the site's theme tokens and native links. */
+html[data-theme] body#academic-site .research-intro { max-width: 860px; }
+html[data-theme] body#academic-site .research-guide {
+  display: flex; align-items: center; gap: 16px; margin: 30px 0 36px; padding: 8px 12px;
+  background: var(--obs-surface); border: 1px solid var(--obs-line); border-radius: 12px;
+}
+html[data-theme] body#academic-site .research-guide[data-ready] { position: sticky; top: 12px; z-index: 40; }
+html[data-theme] body#academic-site .research-guide-label {
+  padding: 0 6px; color: var(--obs-muted); font-size: 11px; font-weight: 600; white-space: nowrap;
+}
+html[data-theme] body#academic-site .research-guide ol {
+  display: flex; flex: 1; justify-content: space-between; gap: 4px; padding: 0; margin: 0; list-style: none;
+}
+html[data-theme] body#academic-site .research-guide li { padding: 0; margin: 0; min-width: 0; }
+html[data-theme] body#academic-site .research-guide a {
+  display: flex !important; align-items: center; gap: 8px; min-height: 44px !important; padding: 8px 10px !important; border-radius: 7px !important;
+  color: var(--obs-text) !important; font-size: 12px !important; line-height: 1.5 !important; font-weight: 600 !important; text-decoration: none !important;
+  transition: background-color .18s ease, color .18s ease;
+}
+html[data-theme] body#academic-site .research-guide a > span { font-size: 10px !important; color: var(--obs-muted) !important; }
+html[data-theme] body#academic-site .research-guide a:hover { background: var(--obs-surface-hover) !important; }
+html[data-theme] body#academic-site .research-guide a[aria-current] {
+  background: var(--obs-highlight) !important; color: var(--obs-accent) !important; box-shadow: inset 0 -2px var(--obs-accent) !important;
+}
+html[data-theme] body#academic-site .research-guide a:focus-visible,
+html[data-theme] body#academic-site [data-research-guide-toggle]:focus-visible { outline: 2px solid var(--obs-accent); outline-offset: 3px; }
+html[data-theme] body#academic-site [data-research-guide-toggle] { display: none; }
+html[data-theme] body#academic-site main :is(#research-focus-title,#research-methods-title,#missions-title,#planetary-title,#research-scale-title) {
+  scroll-margin-top: var(--research-guide-offset, 104px);
+}
+html[data-theme] body#academic-site .research-question {
+  display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr); align-items: start; gap: clamp(24px,4vw,60px); padding: 4px 0 42px;
+}
+html[data-theme] body#academic-site .research-question-copy h2 { max-width: 24ch; margin-top: 12px; }
+html[data-theme] body#academic-site .research-question-copy > p { max-width: 65ch; }
+html[data-theme] body#academic-site .research-question .research-record-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+html[data-theme] body#academic-site .research-question .research-record-note { font-size: 12px; color: var(--obs-muted); margin-top: 14px; line-height: 1.7; }
+html[data-theme] body#academic-site .research-context-card {
+  border: 1px solid var(--obs-line); border-radius: 16px; padding: 22px 26px; background: var(--obs-reading);
+}
+html[data-theme] body#academic-site .research-context-label { color: var(--obs-accent); font-size: 11px; font-weight: 700; margin: 0 0 18px; text-transform: uppercase; letter-spacing: .08em; }
+html[data-theme] body#academic-site .research-context-card dl { margin: 0; }
+html[data-theme] body#academic-site .research-context-card dl > div { padding: 12px 0; border-top: 1px solid var(--obs-line); }
+html[data-theme] body#academic-site .research-context-card dt { font-size: 11px; color: var(--obs-muted); margin-bottom: 4px; }
+html[data-theme] body#academic-site .research-context-card dd { margin: 0; color: var(--obs-text); font-size: 15px; font-weight: 600; }
+html[data-theme] body#academic-site .research-context-card dd span { display: block; font-size: 12px; font-weight: 400; color: var(--obs-muted); margin-top: 2px; }
+html[data-theme] body#academic-site .research-context-card > p:last-child { font-size: 12px; line-height: 1.75; margin-bottom: 0; }
+html[data-theme] body#academic-site .research-methods { border-top: 1px solid var(--obs-line); padding: 32px 0 12px; }
+html[data-theme] body#academic-site .research-methods-heading { max-width: 800px; }
+html[data-theme] body#academic-site .research-workflow {
+  display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); margin: 28px 0 18px; padding: 0; gap: 1px;
+  list-style: none; border: 1px solid var(--obs-line); border-radius: 16px; overflow: hidden; background: var(--obs-line);
+}
+html[data-theme] body#academic-site .research-workflow li { margin: 0; padding: 22px; background: var(--obs-surface); }
+html[data-theme] body#academic-site .research-step-number { display: inline-block; font-size: 12px; font-weight: 600; color: var(--obs-accent); margin-bottom: 10px; }
+html[data-theme] body#academic-site .research-workflow h3 { font-size: 16px; line-height: 1.5; margin: 0 0 10px; text-shadow: none; }
+html[data-theme] body#academic-site .research-workflow p { margin: 0; color: var(--obs-muted); font-size: 13px; line-height: 1.8; }
+html[data-theme] body#academic-site .research-methods-reading { max-width: 85ch; font-size: 13px; line-height: 1.8; }
+html[data-theme] body#academic-site .study-project-context { max-width: 78ch; font-size: 13px; line-height: 1.8; margin-top: 14px; }
+html[data-theme] body#academic-site .research-reading-context { max-width: 900px; }
+@media (max-width: 1080px) {
+  html[data-theme] body#academic-site .research-guide-label { display: none; }
+  html[data-theme] body#academic-site .research-guide a { padding: 8px !important; font-size: 11px !important; gap: 5px; }
+}
+@media (max-width: 760px) {
+  html[data-theme] body#academic-site .research-guide { display: block; margin-block: 24px; padding: 6px; border-radius: 10px; }
+  html[data-theme] body#academic-site .research-guide[data-ready] { top: 0; }
+  html[data-theme] body#academic-site .research-guide ol { display: grid; grid-template-columns: 1fr; gap: 3px; }
+  html[data-theme] body#academic-site .research-guide a { font-size: 13px !important; min-height: 46px !important; padding: 8px 12px !important; }
+  html[data-theme] body#academic-site .research-guide[data-ready] [data-research-guide-toggle] {
+    display: flex; width: 100%; align-items: center; justify-content: space-between; min-height: 52px; padding: 6px 10px;
+    border: 0; border-radius: 6px; background: transparent; box-shadow: none; color: var(--obs-text); text-align: left; cursor: pointer;
+  }
+  html[data-theme] body#academic-site [data-research-guide-toggle] small { display: block; font-size: 10px; font-weight: 400; color: var(--obs-muted); }
+  html[data-theme] body#academic-site [data-research-guide-toggle] strong { display: block; font-size: 13px; line-height: 1.6; font-weight: 600; }
+  html[data-theme] body#academic-site .research-guide[data-ready]:not([data-open]) ol { display: none; }
+  html[data-theme] body#academic-site .research-guide[data-open] svg { transform: rotate(180deg); }
+  html[data-theme] body#academic-site .research-question { grid-template-columns: minmax(0,1fr); gap: 24px; padding-bottom: 28px; }
+  html[data-theme] body#academic-site .research-context-card { padding: 18px; }
+  html[data-theme] body#academic-site .research-context-card dl { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); column-gap: 16px; }
+  html[data-theme] body#academic-site .research-context-card dl > div:last-child { grid-column: 1 / -1; }
+  html[data-theme] body#academic-site .research-workflow { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  html[data-theme] body#academic-site .research-workflow li { padding: 16px; }
+}
+@media (max-width: 440px) {
+  html[data-theme] body#academic-site .research-workflow { grid-template-columns: 1fr; }
+  html[data-theme] body#academic-site .research-workflow li { display: grid; grid-template-columns: 24px minmax(0,1fr); gap: 4px 12px; }
+  html[data-theme] body#academic-site .research-step-number { grid-row: span 2; margin-top: 3px; }
+  html[data-theme] body#academic-site .research-workflow h3 { margin: 0; }
+  html[data-theme] body#academic-site .research-workflow p { grid-column: 2; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme] body#academic-site .research-guide a { transition: none; }
+}
+@media print {
+  html[data-theme] body#academic-site .research-guide { display: none; }
+}

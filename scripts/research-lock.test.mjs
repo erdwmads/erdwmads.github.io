@@ -338,7 +338,7 @@ test("duplicate submits start only one decrypt attempt", async () => {
 });
 
 test("navigation lifecycle events clear data and prevent late decrypts from unlocking", async () => {
-  for (const eventType of ["mads:soft-nav-start", "pagehide"]) {
+  for (const eventType of ["mads:soft-nav-start", "mads:soft-nav-before-swap", "pagehide"]) {
     let fetchCount = 0;
     let resolveFetch;
     let fetchSignal;
@@ -383,15 +383,17 @@ test("reinitialization replaces stale listeners and allows a fresh unlock", asyn
   page.initialize();
   assert.equal(page.form.listenerCount("submit"), 1);
   assert.equal(page.window.listenerCount("mads:soft-nav-start"), 1);
+  assert.equal(page.window.listenerCount("mads:soft-nav-before-swap"), 1);
   assert.equal(page.window.listenerCount("pagehide"), 1);
 
   page.input.value = password;
   await page.form.emit("submit");
   assert.equal(fetchCount, 1);
 
-  page.window.emit("mads:soft-nav-start");
+  page.window.emit("mads:soft-nav-before-swap");
   assert.equal(page.form.listenerCount("submit"), 0);
   assert.equal(page.window.listenerCount("mads:soft-nav-start"), 0);
+  assert.equal(page.window.listenerCount("mads:soft-nav-before-swap"), 0);
   assert.equal(page.window.listenerCount("pagehide"), 0);
 
   page.initialize();
@@ -399,4 +401,57 @@ test("reinitialization replaces stale listeners and allows a fresh unlock", asyn
   await page.form.emit("submit");
   assert.equal(fetchCount, 2);
   assert.deepEqual(archiveState(page), { entries });
+});
+
+test("cancelled departure relocks immediately and allows a fresh unlock on the retained page", async () => {
+  const page = bootLock(async () => responseFor(validPayload));
+  page.input.value = password;
+  await page.form.emit("submit");
+
+  page.window.emit("mads:soft-nav-start");
+  assert.equal(page.window.MadsProtectedArchive, undefined);
+  assert.equal(page.content.innerHTML, page.lockedMarkup);
+  assert.equal(page.content.hidden, true);
+  assert.equal(page.gate.hidden, false);
+  assert.equal(page.input.value, "");
+  assert.equal(page.document.documentElement.classList.contains("research-unlocked"), false);
+
+  page.window.emit("mads:soft-nav-end");
+  assert.equal(page.window.MadsProtectedArchive, undefined);
+  assert.equal(page.form.listenerCount("submit"), 1);
+  page.input.value = password;
+  await page.form.emit("submit");
+  assert.deepEqual(archiveState(page), { entries });
+  assert.equal(page.gate.hidden, true);
+});
+
+test("cancelled departure invalidates a late attempt without disrupting a fresh attempt", async () => {
+  const pending = [];
+  const page = bootLock((url, options) => new Promise((resolve) => {
+    pending.push({ resolve, signal: options.signal });
+  }));
+  page.input.value = password;
+  const staleAttempt = page.form.emit("submit");
+  page.window.emit("mads:soft-nav-start");
+  assert.equal(pending[0].signal.aborted, true);
+  assert.equal(page.input.value, "");
+  page.window.emit("mads:soft-nav-end");
+
+  page.input.value = password;
+  const freshAttempt = page.form.emit("submit");
+  assert.equal(pending.length, 2);
+  assert.equal(pending[1].signal.aborted, false);
+  pending[0].resolve(responseFor(validPayload));
+  await staleAttempt;
+  assert.equal(page.window.MadsProtectedArchive, undefined);
+  assert.equal(page.gate.hidden, false);
+  assert.equal(page.form.getAttribute("aria-busy"), "true");
+  assert.equal(page.form.button.disabled, true);
+  assert.equal(page.error.hidden, true);
+
+  pending[1].resolve(responseFor(validPayload));
+  await freshAttempt;
+  assert.deepEqual(archiveState(page), { entries });
+  assert.equal(page.form.getAttribute("aria-busy"), null);
+  assert.equal(page.form.button.disabled, false);
 });

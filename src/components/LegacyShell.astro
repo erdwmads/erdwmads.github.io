@@ -1,6 +1,7 @@
 ---
 import { brand, footerItems, navItems, researchLogGate, siteMetadata } from "../data/site";
 import CosmicArrival from './CosmicArrival.astro';
+import ContinueReading from './ContinueReading.astro';
 import '../scripts/origins-study/style.css';
 import '../scripts/sample-missions/style.css';
 
@@ -93,10 +94,18 @@ const bodyClass = `site-refined ui-page-${current}`;
   <link rel="stylesheet" href="assets/css/planetary-explorer.css?v=20260910-whole-site">
     <link rel="stylesheet" href="assets/css/typography.css?v=20260909-theme-geometry">
   <link rel="stylesheet" href="assets/css/site-refinement.css?v=20260910-flight-frames">
+  <link rel="stylesheet" href="assets/css/review-refinement.css?v=20260913-mobile">
+  <link rel="stylesheet" href="assets/css/research-reading.css?v=20260913-flow">
+  <link rel="stylesheet" href="assets/css/experimental-folio.css?v=20260913-hundred">
+  <link rel="stylesheet" href="assets/css/image-inspector.css?v=20260913-hundred">
+  <link rel="stylesheet" href="assets/css/quiet-observatory.css?v=20260914-workspaces">
     <script>
       import '../scripts/planetary-explorer.js';
       import '../scripts/origins-study/loader.js';
       import '../scripts/sample-missions/loader.js';
+      import '../scripts/research-guide.js';
+      import '../scripts/image-inspector.js';
+      import '../scripts/photo-layout.js';
     </script>
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="assets/img/favicon.png">
@@ -140,6 +149,7 @@ const bodyClass = `site-refined ui-page-${current}`;
 </header>
 <main id="main-content" class={mainClass} tabindex="-1">
   <slot />
+  <ContinueReading current={current} />
 </main>
 <footer class="site-footer">
   <div class="footer-inner">
@@ -150,4 +160,3 @@ const bodyClass = `site-refined ui-page-${current}`;
 <Fragment set:html={scriptHtml} />
 </body>
 </html>
-

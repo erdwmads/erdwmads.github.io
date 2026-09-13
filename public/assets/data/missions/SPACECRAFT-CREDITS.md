@@ -9,7 +9,7 @@ The source spacecraft mesh is **NASA / Christopher R. Meaney**, distributed by N
 - Retrieved: 2026-09-10
 - Local file: `osiris-rex-nasa.glb` (original compressed model, unchanged).
 
-Display modifications in `src/scripts/sample-missions/spacecraft.js`: material roughness/metalness, authored solar-cell grids on the front surfaces, spatially restricted thermal-foil shading, coordinate rotation and scale, return-capsule grouping, and an authored illustrative animated TAGSAM arm and head. The original sampling-head material primitives are hidden to allow continuous deployment. Other stowed-arm detail remains embedded in NASA's shared spacecraft meshes. The animation depicts the concept of TAGSAM deployment; it does not reconstruct joint telemetry or engineering kinematics. No NASA endorsement is implied.
+Display modifications in `src/scripts/sample-missions/spacecraft.js`: material roughness/metalness, authored solar-cell grids on the front surfaces, spatially restricted thermal-foil shading, coordinate rotation and scale, return-capsule grouping, and an authored illustrative animated TAGSAM arm and head. The original sampling-head material primitives are hidden to allow continuous deployment. Selected obstructing source triangles are suppressed around the articulated assembly; other stowed-arm detail remains embedded in NASA's shared spacecraft meshes. The animation depicts the concept of TAGSAM deployment; it does not reconstruct joint telemetry or engineering kinematics. No NASA endorsement is implied.
 
 ## Hayabusa2 and return-capsule illustrations
 
@@ -20,7 +20,7 @@ Geometry authored for this website from JAXA's public spacecraft diagrams and co
 - JAXA Hayabusa2 antennas FAQ: https://global.jaxa.jp/projects/sat/hayabusa2/faq.html
 - JAXA sampler-horn photographs: https://www.hayabusa2.jaxa.jp/en/galleries/spacecraft/pages/samplerhorn.html
 
-The model distinguishes Hayabusa2's two flat high-gain antennas, twin solar-array paddles, four ion thrusters and permanently deployed sampler horn. Capsule geometries are authored illustrations; the attached OSIRIS-REx capsule remains the NASA source mesh.
+The model distinguishes Hayabusa2's two flat high-gain antennas, twin solar-array paddles, four ion thrusters and sampler horn, stowed for launch and deployed for operations. Capsule geometries are authored illustrations; the attached OSIRIS-REx capsule remains the NASA source mesh.
 
 Capsule outer height/diameter proportions follow JAXA's 400 × 200 mm Hayabusa2 envelope and NASA's 810 × 500 mm OSIRIS-REx envelope. Hayabusa2's attached capsule is scaled to 0.4 m relative to the 6 m deployed array span. The NASA source capsule is preserved, including its source proportions (approximately 0.816 m diameter when the full source span is calibrated to 6.2 m). The standalone capsule is an authored substitute, not a detached copy of the NASA mesh. Hayabusa2's recovered instrument module replaces both shed heatshields during parachute descent; its small fittings and internal envelope are illustrative.
 

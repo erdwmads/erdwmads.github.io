@@ -172,18 +172,28 @@
       <button class="obs-present-close" type="button" title="Close presentation" aria-label="Close presentation">${icon('close')}</button>
     </div>
     <button class="obs-present-prev" type="button" title="Previous image" aria-label="Previous image">${icon('prev')}</button>
-    <figure><div class="obs-presentation-stage"><img alt="" decoding="async"></div>
+    <figure><div class="obs-presentation-stage"><img alt="" decoding="async">
+      <div class="obs-presentation-feedback" hidden><span class="obs-image-status" role="status"></span>
+        <button class="obs-present-retry" type="button" hidden>Retry image</button>
+        <a class="obs-present-original" target="_blank" rel="noopener">Open original image</a>
+      </div></div>
       <figcaption aria-live="polite"><span class="obs-presentation-caption"></span><span class="obs-presentation-counter"></span></figcaption>
     </figure>
     <button class="obs-present-next" type="button" title="Next image" aria-label="Next image">${icon('next')}</button></div>`;
   body.appendChild(dialog);
   const surface = dialog.querySelector('.obs-presentation-surface');
-  const image = dialog.querySelector('img');
+  let image = dialog.querySelector('img');
   image.draggable = false;
   const caption = dialog.querySelector('.obs-presentation-caption');
   const counter = dialog.querySelector('.obs-presentation-counter');
   const fullscreen = dialog.querySelector('.obs-present-fullscreen');
   const fullscreenStatus = dialog.querySelector('.obs-fullscreen-status');
+  const feedback = dialog.querySelector('.obs-presentation-feedback');
+  const imageStatus = dialog.querySelector('.obs-image-status');
+  const retryImage = dialog.querySelector('.obs-present-retry');
+  const originalImage = dialog.querySelector('.obs-present-original');
+  let imageRequest = 0;
+  let imageReady = false;
   let images = [];
   let imageIndex = 0;
   let origin = null;
@@ -242,7 +252,8 @@
     return true;
   }
   function requestClosePresentation() {
-    if (!closingPhoto && origin?.hasAttribute('data-photo-index')) {
+    imageRequest += 1;
+    if (imageReady && !closingPhoto && origin?.hasAttribute('data-photo-index')) {
       const tile = images[imageIndex]?.tile;
       if (tile?.isConnected) origin = tile;
       if (flyPhoto(tile, true)) return;
@@ -265,16 +276,62 @@
     if (!images.length) return;
     imageIndex = (index + images.length) % images.length;
     const item = images[imageIndex];
-    image.src = item.src;
-    image.alt = item.caption;
-    caption.textContent = item.caption;
-    counter.textContent = `${String(imageIndex + 1).padStart(2, '0')} / ${String(images.length).padStart(2, '0')}`;
+    const request = ++imageRequest;
+    const version = presentationVersion;
+    const count = `${String(imageIndex + 1).padStart(2, '0')} / ${String(images.length).padStart(2, '0')}`;
+    imageReady = false;
+    image.style.opacity = '0';
+    image.alt = '';
+    caption.textContent = '';
+    counter.textContent = '';
+    feedback.hidden = false;
+    imageStatus.textContent = `Loading image ${imageIndex + 1} of ${images.length}…`;
+    retryImage.hidden = true;
+    originalImage.href = item.original || item.src;
+    const pending = new Image();
+    pending.alt = item.caption;
+    pending.decoding = 'async';
+    pending.draggable = false;
+    const current = () => dialog.open && request === imageRequest && version === presentationVersion;
+    pending.onload = async () => {
+      if (!current()) return;
+      try {
+        if (typeof pending.decode === 'function') await pending.decode();
+      } catch {
+        pending.onerror?.();
+        return;
+      }
+      if (!current()) return;
+      pending.onload = pending.onerror = null;
+      // Replace the image and its description together once this request is decoded.
+      if (photoFlight) pending.style.visibility = 'hidden';
+      image.replaceWith(pending);
+      image = pending;
+      imageReady = true;
+      caption.textContent = item.caption;
+      counter.textContent = count;
+      feedback.hidden = true;
+      imageStatus.textContent = '';
+    };
+    pending.onerror = () => {
+      if (!current()) return;
+      pending.onload = pending.onerror = null;
+      stopPhotoFlight();
+      imageStatus.textContent = 'This image could not be loaded. Retry or open the original image.';
+      retryImage.hidden = false;
+    };
+    pending.src = item.src;
     dialog.querySelector('.obs-present-prev').disabled = images.length < 2;
     dialog.querySelector('.obs-present-next').disabled = images.length < 2;
   }
   function purgePresentation() {
     stopPhotoFlight();
     presentationVersion += 1;
+    imageRequest += 1;
+    imageReady = false;
+    feedback.hidden = true;
+    imageStatus.textContent = '';
+    originalImage.removeAttribute('href');
     const version = presentationVersion;
     const returnTarget = origin;
     if (document.fullscreenElement === surface || (ownsFullscreen && document.fullscreenElement)) {
@@ -307,6 +364,7 @@
     const nodes = [...scope.querySelectorAll(mission ? '.mission-photo-grid figure img' : '.photo-tile img')];
     images = nodes.map(img => ({
       src: (!desktop.matches && img.dataset.mobileFullSrc) || img.dataset.fullSrc || img.currentSrc || img.src,
+      original: img.dataset.fullSrc || img.currentSrc || img.src,
       tile: mission ? null : img.closest('[data-photo-index]'),
       caption: img.closest('figure')?.querySelector('figcaption')?.textContent.trim() || img.alt
     })).filter(item => item.src);
@@ -322,6 +380,7 @@
     dialog.querySelector('.obs-present-close').focus();
     if (button.hasAttribute('data-photo-index')) flyPhoto(button);
   }
+  retryImage.addEventListener('click', () => showImage(imageIndex));
   dialog.querySelector('.obs-present-close').addEventListener('click', requestClosePresentation);
   dialog.addEventListener('cancel', event => { event.preventDefault(); requestClosePresentation(); });
   dialog.addEventListener('close', () => { if (!dialog.open && images.length) purgePresentation(); });
@@ -383,6 +442,7 @@
   document.addEventListener('click', event => {
     const button = event.target.closest('[data-present-photos], [data-present-mission], [data-photo-index]');
     if (!button || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (typeof dialog.showModal !== 'function') return;
     event.preventDefault();
     present(button);
   });
@@ -404,6 +464,7 @@
     }
     document.querySelectorAll('[data-present-photos]').forEach(button => {
       if (!button.querySelector('svg')) button.insertAdjacentHTML('afterbegin', icon('present'));
+      button.hidden = typeof dialog.showModal !== 'function';
     });
   }
   let entrance;

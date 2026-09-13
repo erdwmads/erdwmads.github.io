@@ -14,6 +14,28 @@ export function earthGroundMaterial(color){
  return new T.MeshStandardMaterial({color,map,bumpMap:grain,bumpScale:.000003,roughness:1});
 }
 
+// Match the analytical launch radius locally, then bury the distant perimeter
+// below the coarse globe facets (their chord error is several kilometres).
+// This is illustrative ground, not a coastline or a surveyed launch-site map.
+export function createLaunchGround(){
+ const group=new T.Group();group.name='launch-ground';group.userData.units='km';
+ group.userData.provenance='Illustrative curved launch-region ground; not site imagery or measured topography.';
+ const radialSteps=160,sectors=192,positions=[],uvs=[],indices=[];
+ for(let row=0;row<=radialSteps;row++){
+  const radius=.008*Math.expm1(row/radialSteps*Math.log1p(320/.008));
+  const curve=-radius*radius/(6371+Math.sqrt(6371*6371-radius*radius));
+  const height=curve*T.MathUtils.smoothstep(radius,.12,.3)-5*T.MathUtils.smoothstep(radius,160,320);
+  for(let col=0;col<=sectors;col++){
+   const angle=col/sectors*Math.PI*2,x=radius*Math.cos(angle),z=radius*Math.sin(angle);
+   positions.push(x,height,z);uvs.push(x/1.2+.5,z/1.2+.5);
+   if(row<radialSteps&&col<sectors){const a=row*(sectors+1)+col,b=a+sectors+1;indices.push(a,a+1,b,a+1,b+1,b);}
+  }
+ }
+ const geometry=new T.BufferGeometry();geometry.setAttribute('position',new T.Float32BufferAttribute(positions,3));geometry.setAttribute('uv',new T.Float32BufferAttribute(uvs,2));geometry.setIndex(indices);geometry.computeVertexNormals();
+ const surface=new T.Mesh(geometry,earthGroundMaterial(0x405f45));surface.name='launch-surface';surface.receiveShadow=true;group.add(surface);
+ return group;
+}
+
 const recoveryNoise=new ImprovedNoise();
 // Region characteristics follow recovery photographs, not surveyed landing imagery:
 // NASA: https://science.nasa.gov/blogs/osiris-rex/2023/09/24/osiris-rex-sample-capsule-released-for-landing-on-earth/

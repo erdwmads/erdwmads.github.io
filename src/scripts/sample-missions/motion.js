@@ -45,4 +45,4 @@ export function phaseLabel(kind,p,id){
  if(kind==='outbound')return 'Onward transfer to '+(id==='hayabusa2'?'Ryugu':'Bennu');
  return {rendezvous:'Surveying the asteroid',depart:'Leaving with samples'}[kind]||'';
 }
-export const durations={launch:28,cruise:12,flyby:18,outbound:10,rendezvous:14,sample:16,impact:14,stow:12,depart:12,return:22,landing:26};
+export const durations={launch:18,cruise:10,flyby:12,outbound:10,rendezvous:9,sample:9,impact:8,stow:9,depart:9,return:12,landing:12};

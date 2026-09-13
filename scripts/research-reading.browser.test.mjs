@@ -1,0 +1,54 @@
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+const require=createRequire(import.meta.url),{chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const browser=await chromium.launch({headless:true,executablePath:process.env.EDGE_EXECUTABLE});
+const base=process.env.SITE_TEST_URL||'http://127.0.0.1:52523';
+try {
+ const page=await browser.newPage({viewport:{width:1440,height:950},reducedMotion:'reduce'});page.setDefaultTimeout(12000);
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(base+'/research.html');
+ await page.locator('[data-research-guide][data-ready]').waitFor();
+ const ids=await page.locator('main h2[id]').evaluateAll(es=>es.map(e=>e.id));
+ assert.ok(ids.indexOf('research-methods-title')<ids.indexOf('missions-title'),'Methods belong next to the project question');
+ const nav=page.locator('[data-research-guide]');
+ await nav.locator('a[href="#research-methods-title"]').click();
+ await page.waitForFunction(()=>document.querySelector('[data-research-guide] a[aria-current="location"]')?.hash==='#research-methods-title');
+ assert.ok(page.url().endsWith('#research-methods-title'));
+ const aligned=await page.evaluate(()=>{const n=document.querySelector('[data-research-guide]').getBoundingClientRect(),h=document.getElementById('research-methods-title').getBoundingClientRect();return {nav:n.top,bottom:n.bottom,heading:h.top};});
+ assert.ok(aligned.nav>=0&&aligned.nav<25,JSON.stringify(aligned));
+ assert.ok(aligned.heading>=aligned.bottom&&aligned.heading<aligned.bottom+100,JSON.stringify(aligned));
+ const hash=await page.evaluate(()=>location.hash);
+ await page.locator('#research-scale-title').evaluate(e=>e.scrollIntoView());
+ await page.waitForFunction(()=>document.querySelector('[data-research-guide] a[aria-current="location"]')?.hash==='#research-scale-title');
+ assert.equal(await page.evaluate(()=>location.hash),hash,'Reading tracking must not rewrite navigation history');
+ await page.locator('.nav a[href="origins-study.html"]').click();await page.waitForURL('**/origins-study.html');
+ await page.locator('.study-project-context a').click();await page.waitForURL('**/research.html#research-focus-title');
+ await page.locator('[data-research-guide][data-ready]').waitFor();assert.equal(await page.locator('[data-research-guide]').count(),1);
+ await nav.locator('a').first().focus();
+ await page.setViewportSize({width:390,height:844});
+ await page.waitForFunction(()=>document.activeElement.hasAttribute('data-research-guide-toggle'));
+ await page.setViewportSize({width:1440,height:950});
+ await page.waitForFunction(()=>document.activeElement.matches('[data-research-guide] a'));
+ const desktopCount=await page.locator('[data-research-guide] a[aria-current]').count();assert.equal(desktopCount,1);
+ for(const width of [320,390,760]) {
+  await page.setViewportSize({width,height:844});await page.goto(base+'/research.html');
+  const toggle=page.locator('[data-research-guide-toggle]');await toggle.waitFor({state:'visible'});
+  assert.equal(await toggle.getAttribute('aria-expanded'),'false');assert.equal(await page.locator('#research-guide-links').isVisible(),false);
+  await toggle.click();assert.equal(await page.locator('#research-guide-links').isVisible(),true);
+  await page.locator('[data-research-guide] a[href="#research-methods-title"]').click();
+  assert.equal(await toggle.getAttribute('aria-expanded'),'false');
+  assert.equal(await page.evaluate(()=>document.activeElement.id),'research-methods-title');
+  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  await toggle.click();await page.keyboard.press('Escape');assert.equal(await toggle.getAttribute('aria-expanded'),'false');assert.ok(await toggle.evaluate(e=>document.activeElement===e));
+ }
+ await page.setViewportSize({width:390,height:844});
+ await page.goto(base+'/origins-study.html');await page.locator('.study-project-context a').click();
+ await page.waitForURL('**/research.html#research-focus-title');await page.locator('[data-research-guide][data-ready]').waitFor();
+ await page.waitForFunction(()=>!document.documentElement.classList.contains('mads-soft-nav-active'));
+ const mobileAligned=await page.evaluate(()=>({heading:document.getElementById('research-focus-title').getBoundingClientRect().top,bottom:document.querySelector('[data-research-guide]').getBoundingClientRect().bottom}));
+ assert.ok(mobileAligned.heading>=mobileAligned.bottom&&mobileAligned.heading<mobileAligned.bottom+100,JSON.stringify(mobileAligned));
+ const nojs=await browser.newPage({javaScriptEnabled:false,viewport:{width:320,height:844}});await nojs.goto(base+'/research.html');
+ assert.equal(await nojs.locator('[data-research-guide] a:visible').count(),5);assert.equal(await nojs.locator('[data-research-guide-toggle]').isVisible(),false);
+ assert.ok(await nojs.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+ assert.deepEqual(errors,[]);console.log('Research reading order, sticky location tracking, mobile keyboard navigation, Origins handoff and no-JS links passed.');
+} finally {await browser.close();}

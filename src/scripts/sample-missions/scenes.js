@@ -6,7 +6,7 @@ import {rockMaterial,stoneGeometry,rng} from '../origins-study/materials.js';
 import {createSpacecraft,createCapsule} from './spacecraft.js';
 import {createLaunchVehicle} from './launch.js';
 import {physicalSizes,physicalScale,sampleTrack,isProximity} from './proximity.js';
-import {transferState,transferPath,flybyFrameState} from './transfer.js';
+import {transferState,transferPath,flybyFrameState,referenceOrbit,sampleJourneyBody,toSolarScene} from './transfer.js';
 import {hasEarthContext} from './locations.js';
 import {createEarthFlightScene} from './earth-scene.js';
 import {earthInertialOrientation} from './earth-inertial.js';
@@ -99,8 +99,12 @@ export async function createMissionScene(id,signal){
  const solarRoutes={};
  for(const kind of ['cruise','outbound']){
   const points=transferPath(id,kind,journeyData).map(p=>new T.Vector3(...p)),path=line(points,0x83b8c7,.35),trail=line(points,0xe8c782,.95);
-  const earthPath=line(transferPath(id,kind,journeyData,'earth').map(p=>new T.Vector3(...p)),0x7cb9e5,.3),targetPath=line(transferPath(id,kind,journeyData,'target').map(p=>new T.Vector3(...p)),0xc3aa81,.3);
-  const chapter=new T.Group();chapter.add(path,trail,earthPath,targetPath);route.add(chapter);solarRoutes[kind]={group:chapter,trail};
+  const mission=journeyData.missions[id],epoch=mission[kind].start;
+  const earthPath=line(referenceOrbit(mission,'earth',epoch).map(p=>new T.Vector3(...p)),0x7cb9e5,.55),targetPath=line(referenceOrbit(mission,'target',epoch).map(p=>new T.Vector3(...p)),0xc3aa81,.48);
+  earthPath.name='earth-reference-orbit';targetPath.name='target-reference-orbit';path.name=kind+'-flight-path';
+  const destination=transferState(1,id,journeyData,kind),destinationPoint=new T.Vector3(...(kind==='cruise'?destination.earth:destination.asteroid));
+  const arrival=new T.Mesh(new T.RingGeometry(.085,.105,40),new T.MeshBasicMaterial({color:0xe8c782,side:T.DoubleSide,transparent:true,opacity:.8}));arrival.rotation.x=-Math.PI/2;arrival.position.copy(destinationPoint);arrival.name='chapter-destination';
+  const chapter=new T.Group();chapter.add(path,trail,earthPath,targetPath,arrival);route.add(chapter);solarRoutes[kind]={group:chapter,trail};
  }
  // Flyby positions share the same time and orientation in both reference frames.
  const flybySunPoints=[],flybyEarthPoints=[];
@@ -111,6 +115,9 @@ export async function createMissionScene(id,signal){
  const flybySunRoute=line(flybySunPoints,0x83b8c7,.4),flybySunTrail=line(flybySunPoints,0xe8c782,.95),flybyEarthRoute=line(flybyEarthPoints,0x7cb9e5,.5);group.add(flybySunRoute,flybySunTrail,flybyEarthRoute);
  const sunFrameBox=new T.Box3().setFromPoints([...flybySunPoints,...flybyEarthPoints]);
  const flybyEnds=[0,1].map(p=>flybyFrameState(id,p,ephemeris,journeyData));
+ const orbitMission=journeyData.missions[id],orbitEpoch=orbitMission.flyby.start,solarContext={earthOrbit:referenceOrbit(orbitMission,'earth',orbitEpoch),targetOrbit:referenceOrbit(orbitMission,'target',orbitEpoch)};
+ const velocityArrows=[0x8cbedb,0xefd082,0x9ad4b0].map(color=>{const arrow=new T.ArrowHelper(new T.Vector3(1,0,0),new T.Vector3(),1,color);group.add(arrow);return arrow;});
+ const rangeLink=new T.Line(new T.BufferGeometry().setFromPoints([new T.Vector3(),new T.Vector3()]),new T.LineDashedMaterial({color:0x8098a6,transparent:true,opacity:.35,dashSize:1,gapSize:.65}));group.add(rangeLink);
  let journeyState=null,frameState=null;
  const starPoints=new Float32Array(450*3);for(let i=0;i<450;i++){const a=random()*Math.PI*2,z=random()*2-1,r=Math.sqrt(1-z*z);starPoints.set([Math.cos(a)*r*35,z*35,Math.sin(a)*r*35],i*3);}
  const sg=new T.BufferGeometry();sg.setAttribute('position',new T.BufferAttribute(starPoints,3));stars.add(new T.Points(sg,new T.PointsMaterial({size:.038,color:0xc6d9e5,transparent:true,opacity:.65,sizeAttenuation:true,depthWrite:false})));
@@ -118,7 +125,7 @@ export async function createMissionScene(id,signal){
  let labels=[],currentKind;
  function addLabel(text,point){labels.push({text,point:point.clone()});}
  function update(kind,p,stageId,context='detail',focus='both',reference='earth',cutaway=false){
-  currentKind=kind;labels=[];proximityState=null;journeyState=null;frameState=null;flybySunRoute.visible=flybySunTrail.visible=flybyEarthRoute.visible=false;locators.visible=false;Object.values(proximityRoutes).forEach(r=>r.visible=false);Object.values(proximityTrails).forEach(r=>r.visible=false);stars.scale.setScalar(1);earthFlight.hide();
+  currentKind=kind;labels=[];velocityArrows.forEach(a=>a.visible=false);rangeLink.visible=false;proximityState=null;journeyState=null;frameState=null;flybySunRoute.visible=flybySunTrail.visible=flybyEarthRoute.visible=false;locators.visible=false;Object.values(proximityRoutes).forEach(r=>r.visible=false);Object.values(proximityTrails).forEach(r=>r.visible=false);stars.scale.setScalar(1);earthFlight.hide();
   for(const o of [craft.group,body,earth,sun,launch.group,capsule,chute,ground,desert,route,impactor,projectile,particles,heat]){o.visible=false;o.rotation.set(0,0,0);o.position.set(0,0,0);o.scale.setScalar(1);}
   earth.rotation.set(.12,2,.15);earth.children[0].material.opacity=1;earth.children[1].material.opacity=.85;earth.children[2].material.uniforms.opacity.value=.55;
   craft.capsule.visible=true;craft.setSampling(false);craft.setSolarDeployment(1);craft.setHornDeployment?.(1);craft.setSamplingCutaway?.(false);
@@ -126,20 +133,28 @@ export async function createMissionScene(id,signal){
   stars.visible=kind!=='landing';
   terrain.update(kind,p,stageId);
   if(hasEarthContext(kind)){
-   labels=earthFlight.update(kind,p,context);const flight=earthFlight.state();stars.visible=flight.altitudeKm>40;stars.scale.setScalar(Math.max(1000,new T.Vector3(...flight.positionKm).length()/10));
+   labels=earthFlight.update(kind,p,context);const flight=earthFlight.state();stars.visible=flight.altitudeKm>40;stars.scale.setScalar(Math.max(1000,(flight.overview?.extent||new T.Vector3(...flight.positionKm).length())/6));
   }else if(kind==='cruise'||kind==='outbound'){
    const transfer=transferState(p,id,journeyData,kind);journeyState=transfer;
    sun.visible=earth.visible=body.visible=route.visible=craft.group.visible=true;sun.scale.setScalar(.24);earth.scale.setScalar(.075);earth.position.set(...transfer.earth);body.scale.setScalar(.07);body.position.set(...transfer.asteroid);
    craft.group.position.set(...transfer.craft);craft.group.scale.setScalar(.035);
    Object.entries(solarRoutes).forEach(([name,r])=>r.group.visible=name===kind);solarRoutes[kind].trail.geometry.setDrawRange(0,Math.max(1,transfer.travelledCount));
-   addLabel('Earth',earth.position);addLabel(sizes.target,body.position);addLabel(id==='hayabusa2'?'Hayabusa2':'OSIRIS-REx',craft.group.position);
+   addLabel('Sun',sun.position);addLabel(kind==='cruise'?'Earth · return for flyby':'Earth · flyby completed',earth.position);addLabel(sizes.target+(kind==='outbound'?' · destination':''),body.position);addLabel(id==='hayabusa2'?'Hayabusa2':'OSIRIS-REx',craft.group.position);
   }else if(isProximity(kind)){
    const view=proximityViews[kind],sample=sampleTrack(view.track,p),position=new T.Vector3(...sample.position).applyQuaternion(view.rotation),velocity=new T.Vector3(...sample.velocity).applyQuaternion(view.rotation);
    const target=kind==='flyby'?'Earth':sizes.target,diameterM=kind==='flyby'?12742000:sizes.diameterM;
    let targetPosition=new T.Vector3(),extent=view.extent,center=view.center;
-   if(kind==='flyby'){frameState={...flybyFrameState(id,p,ephemeris,journeyData),endpoints:flybyEnds.map(f=>({time:f.time,speedEarthKmS:f.speedEarthKmS,speedSunKmS:f.speedSunKmS}))};if(reference==='sun'){position.set(...frameState.heliocentricOffsetKm).applyQuaternion(view.rotation);velocity.set(...frameState.heliocentricVelocityKmS).applyQuaternion(view.rotation);targetPosition.set(...frameState.earthOffsetKm).applyQuaternion(view.rotation);extent=sunFrameBox.getSize(new T.Vector3()).length();center=sunFrameBox.getCenter(new T.Vector3()).toArray();}}
+   if(kind==='flyby'){frameState={...flybyFrameState(id,p,ephemeris,journeyData),solarContext:{...solarContext,earth:toSolarScene(sampleJourneyBody(orbitMission,'earth',sample.time).position),target:toSolarScene(sampleJourneyBody(orbitMission,'target',sample.time).position)},endpoints:flybyEnds.map(f=>({time:f.time,speedEarthKmS:f.speedEarthKmS,speedSunKmS:f.speedSunKmS}))};if(reference==='sun'){position.set(...frameState.heliocentricOffsetKm).applyQuaternion(view.rotation);velocity.set(...frameState.heliocentricVelocityKmS).applyQuaternion(view.rotation);targetPosition.set(...frameState.earthOffsetKm).applyQuaternion(view.rotation);extent=sunFrameBox.getSize(new T.Vector3()).length();center=sunFrameBox.getCenter(new T.Vector3()).toArray();}}
    body.visible=kind!=='flyby';earth.visible=kind==='flyby';if(earth.visible){earth.scale.setScalar(6371);earth.quaternion.copy(earthInertialOrientation(sample.time,view.rotation));}craft.group.visible=true;body.scale.setScalar(bodyPhysicalScale);craft.group.scale.setScalar(craftPhysicalScale);craft.group.position.copy(position);earth.position.copy(targetPosition);craft.group.quaternion.setFromUnitVectors(new T.Vector3(0,-1,0),targetPosition.clone().sub(position).normalize());
-   const route=proximityRoutes[kind],travelled=proximityTrails[kind];route.visible=travelled.visible=focus==='both'&&reference!=='sun';locators.visible=focus==='both';if(kind==='flyby'&&reference==='sun'){flybySunRoute.visible=flybySunTrail.visible=flybyEarthRoute.visible=focus==='both';flybySunTrail.geometry.setDrawRange(0,Math.max(1,Math.floor(p*(view.track.samples.length-1))+1));}travelled.geometry.setDrawRange(0,Math.max(1,Math.floor(p*(view.track.samples.length-1))+1));stars.scale.setScalar(Math.max(1,view.extent/10));
+   const route=proximityRoutes[kind],travelled=proximityTrails[kind];route.visible=travelled.visible=focus==='both'&&reference!=='sun';locators.visible=focus==='both';if(kind==='flyby'&&reference==='sun'){flybySunRoute.visible=flybySunTrail.visible=flybyEarthRoute.visible=focus==='both';flybySunTrail.geometry.setDrawRange(0,Math.max(1,Math.floor(p*(view.track.samples.length-1))+1));}travelled.geometry.setDrawRange(0,Math.max(1,Math.floor(p*(view.track.samples.length-1))+1));stars.scale.setScalar(Math.max(1,extent/6));
+   if(focus==='both'&&kind==='flyby'){
+    const vectors=[frameState.earthVelocityKmS,frameState.relativeVelocityKmS,frameState.heliocentricVelocityKmS],scale=extent*.008;
+    // Free velocity vectors share one scale. In the Sun frame, draw the
+    // Earth and Earth-relative components head-to-tail beside the probe.
+    velocityArrows.forEach((arrow,i)=>{arrow.visible=reference==='sun'||i===1;if(!arrow.visible)return;const v=new T.Vector3(...vectors[i]).applyQuaternion(view.rotation);arrow.position.copy(position);if(reference==='sun'&&i===1)arrow.position.addScaledVector(new T.Vector3(...vectors[0]).applyQuaternion(view.rotation),scale);arrow.setDirection(v.clone().normalize());arrow.setLength(v.length()*scale,extent*.012,extent*.006);});
+   }else if(focus==='both'){
+    rangeLink.visible=true;const a=rangeLink.geometry.attributes.position;a.setXYZ(0,...targetPosition.toArray());a.setXYZ(1,...position.toArray());a.needsUpdate=true;rangeLink.geometry.computeBoundingSphere();rangeLink.material.dashSize=view.extent*.012;rangeLink.material.gapSize=view.extent*.008;rangeLink.computeLineDistances();
+   }
    locatorGeometry.attributes.position.setXYZ(0,...targetPosition.toArray());locatorGeometry.attributes.position.setXYZ(1,position.x,position.y,position.z);locatorGeometry.attributes.position.needsUpdate=true;locatorGeometry.computeBoundingSphere();
    proximityState={position:position.toArray(),velocity:velocity.toArray(),rangeKm:Math.hypot(...sample.position),rangeRateKmS:sample.position.reduce((sum,x,i)=>sum+x*sample.velocity[i],0)/Math.hypot(...sample.position),targetPosition:targetPosition.toArray(),extent,center,diameterKm:diameterM/1000,spanKm:sizes.spanM/1000,kind,time:sample.time,rangeHistory:view.track.samples.map(s=>Math.hypot(...s.position)),source:view.track.source,sourceLabel:view.track.sourceLabel,dataKind:view.track.dataKind,target};
    addLabel(target+(kind==='flyby'?' · 12,742 km':' · ~'+diameterM+' m'),targetPosition);
@@ -186,5 +201,5 @@ export async function createMissionScene(id,signal){
   m.fragmentShader='#include <logdepthbuf_pars_fragment>\n'+m.fragmentShader.replace(/void main\(\)\s*{/, 'void main(){\n#include <logdepthbuf_fragment>\n');
  }
  update('launch',0,'launch');
- return {group,update,labels:()=>labels,kind:()=>currentKind,proximity:()=>proximityState,journey:()=>journeyState,flyby:()=>frameState,earth:()=>earthFlight.state(),contextHelpers(visible){if(earthFlight.state())earthFlight.helpers(visible);if(proximityState){proximityRoutes[currentKind].visible=proximityTrails[currentKind].visible=locators.visible=visible;}}};
+ return {group,update,labels:()=>labels,kind:()=>currentKind,proximity:()=>proximityState,journey:()=>journeyState,flyby:()=>frameState,earth:()=>earthFlight.state(),contextHelpers(visible){if(earthFlight.state())earthFlight.helpers(visible);if(proximityState){proximityRoutes[currentKind].visible=proximityTrails[currentKind].visible=locators.visible=visible;rangeLink.visible=visible&&currentKind!=='flyby';}}};
 }

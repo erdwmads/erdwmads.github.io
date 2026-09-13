@@ -1,6 +1,3 @@
-import {loadSectionGeometry} from './section-asset.js';
-import {descriptions} from './descriptions.js';
-import {studyLocation} from './navigation.js';
 import {syncOcclusionCamera} from './occlusion.js';
 import {createIcons, BookOpen, ZoomIn, ZoomOut, RotateCcw, Pause, Play, X} from 'lucide';
 const lucide={createIcons:()=>createIcons({icons:{BookOpen,ZoomIn,ZoomOut,RotateCcw,Pause,Play,X}})};
@@ -13,14 +10,14 @@ import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
 import {nebula,accretion,alteration,inheritance} from './scenes.js';
 
-export function mountStudy(root,recovery){
+export function mountStudy(root,reader){
   const abort=new AbortController();
   let disposed=false,released=false,compiling=false,frameId=0,visible=false,contextLost=false,requestFrame=()=>{},resizeObserver,intersectionObserver,api;
   const on=(target,event,listener)=>target.addEventListener(event,listener,{signal:abort.signal});
   root.dataset.renderState='loading';
   const $=s=>root.querySelector(s),viewport=$('#viewport');
   const canvas=$('#scene').cloneNode(false);$('#scene').replaceWith(canvas);
-  const studyControls=root.querySelectorAll('.observatory button:not(#retry-scene),.observatory input,[data-stage]');
+  const studyControls=root.querySelectorAll('.observatory button:not(#retry-scene),.observatory input');
   studyControls.forEach(control=>control.disabled=true);
   const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'high-performance'});
   renderer.info.autoReset=false;
@@ -34,7 +31,20 @@ export function mountStudy(root,recovery){
   const coarse=matchMedia('(pointer:coarse)');let exploring=false;
   function setExploring(value){exploring=value;controls.enabled=!coarse.matches||value;canvas.style.touchAction=coarse.matches&&!value?'pan-y':'none';$('#explore').textContent=value?'Done':'Explore';$('#explore').setAttribute('aria-pressed',String(value));$('#explore').setAttribute('aria-label',value?'Return to page scrolling':'Enable model rotation and pinch zoom');viewport.toggleAttribute('data-exploring',value);}
   on($('#explore'),'click',()=>setExploring(!exploring));on(coarse,'change',()=>setExploring(false));setExploring(false);
-  on(canvas,'keydown',e=>{if(e.code==='Space'){e.preventDefault();setPlaying(!playing);}else if(e.key==='Escape'){setExploring(false);$('#explore').focus();}});
+  on(canvas,'keydown',e=>{
+    if(disposed||contextLost||root.dataset.renderState!=='ready'||e.altKey||e.ctrlKey||e.metaKey)return;
+    if(e.code==='Space'){e.preventDefault();setPlaying(!playing);}
+    else if(e.key==='Escape'){setExploring(false);$('#explore').focus();}
+    else if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){
+      e.preventDefault();manualCamera=true;
+      const angle=Math.PI/36;
+      if(e.key==='ArrowLeft')controls.rotateLeft(angle);
+      else if(e.key==='ArrowRight')controls.rotateLeft(-angle);
+      else if(e.key==='ArrowUp')controls.rotateUp(angle);
+      else controls.rotateUp(-angle);
+      requestFrame();
+    }
+  });
   const ambient=new T.HemisphereLight(0x9eb3bf,0x282623,.6);world.add(ambient);
   const key=new T.DirectionalLight(0xfff1df,2.7);key.position.set(-3,5,4);world.add(key);
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
@@ -76,7 +86,7 @@ export function mountStudy(root,recovery){
     animation.finished.then(()=>{if(dissolveCanvas===snapshot)clearDissolve();}).catch(()=>{});
   }
   let stage=0,progress=.08,playing=!reducedMotion.matches,phase=false,last=performance.now(),hold=0,dirty=true;
-  controls.addEventListener('change',()=>dirty=true);
+  controls.addEventListener('change',()=>{dirty=true;requestFrame();});
   const scenes=[];
   lucide.createIcons();
   function icon(button,name){button.innerHTML=`<i data-lucide="${name}"></i>`;lucide.createIcons();}
@@ -86,52 +96,54 @@ export function mountStudy(root,recovery){
   }
   function resize(){
     const w=viewport.clientWidth,h=viewport.clientHeight;renderer.setSize(w,h,false);composer.setSize(w,h);camera.aspect=w/h;
-    camera.clearViewOffset();camera.updateProjectionMatrix();resetCamera();
+    camera.clearViewOffset();camera.updateProjectionMatrix();resetCamera();dirty=true;requestFrame();
   }
   function showStage(index,initial=.05){
     const changing=index!==stage;
     if(changing)captureDissolve();
     setExploring(false);manualCamera=false;stage=index;progress=initial;hold=0;scenes.forEach((s,i)=>s.group.visible=i===index);
-    const data=descriptions[index];for(const key of['eyebrow','title','description','scale','environment'])$('#'+key).textContent=data[key];
-    root.querySelectorAll('[data-stage]').forEach(b=>{if(Number(b.dataset.stage)===index)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current');});
-    $('#scene-counter').textContent=String(index+1).padStart(2,'0')+' / 04';
     if(changing)animateChapter();
-    $('#legend').innerHTML=data.legend.map(([color,label])=>`<span><i style="--swatch:${color}"></i>${label}</span>`).join('');
+    key.shadow.normalBias=index===2?.0015:.025;ao.kernelRadius=index===2?2:5;
     ao.enabled=index!==0 && viewport.clientWidth>760;key.intensity=index===0?2.7:3.2;rim.intensity=index===0?2.1:1.4;fill.intensity=index===0?.3:.5;ambient.intensity=index===0?.6:.55;world.environmentIntensity=index===0?.22:.24;resetCamera();sync();if(changing)startDissolve();
   }
   function sync(){
-    dirty=true;
+    dirty=true;requestFrame();
     root.style.setProperty('--chapter-progress',progress);
+    const guide=$('#fragment-guide');if(guide)guide.hidden=stage!==3||!phase||progress<=.25||progress>=.96;
+    const steps=$('#reaction-sequence');if(steps){steps.hidden=stage!==2;steps.querySelectorAll('li').forEach((node,i)=>{const active=i===scenes[stage].process?.(progress);if(active)node.setAttribute('aria-current','step');else node.removeAttribute('aria-current');});}
+    for(const [id,index] of [['growth-sequence',1],['inheritance-sequence',3]]){const list=$('#'+id);if(list){list.hidden=stage!==index;list.querySelectorAll('li').forEach((node,i)=>{if(i===scenes[stage].process?.(progress))node.setAttribute('aria-current','step');else node.removeAttribute('aria-current');});}}
     $('#progress').value=progress;$('#progress').setAttribute('aria-valuetext',Math.round(progress*100)+'% · '+scenes[stage].moment(progress));$('#progress-value').textContent=Math.round(progress*100)+'%';$('#moment').textContent=scenes[stage].moment(progress);
     scenes[stage].update(progress,phase);if(scenes[stage].cameraAt&&!manualCamera)resetCamera();
   }
-  function setPlaying(value){playing=value;$('#play').setAttribute('aria-label',value?'Pause':'Play');$('#play').title=value?'Pause':'Play';$('#play').setAttribute('aria-pressed',String(value));icon($('#play'),value?'pause':'play');last=performance.now();}
+  function setPlaying(value){playing=value;$('#play').setAttribute('aria-label',value?'Pause':'Play');$('#play').title=value?'Pause':'Play';$('#play').setAttribute('aria-pressed',String(value));icon($('#play'),value?'pause':'play');last=performance.now();requestFrame();}
   function setPhase(value){phase=value;$('#phase-mode').setAttribute('aria-pressed',value);$('#material-mode').setAttribute('aria-pressed',!value);$('#legend').hidden=!value;$('#material-note').hidden=value;sync();}
   on($('#play'),'click',()=>{if(progress>=1)progress=0;setPlaying(!playing);});
   on($('#progress'),'input',e=>{progress=Number(e.target.value);hold=0;setPlaying(false);sync();});
+  root.querySelectorAll('[data-process-progress]').forEach(button=>on(button,'click',()=>{
+    progress=Number(button.dataset.processProgress);hold=0;setPlaying(false);sync();
+  }));
   on($('#reset'),'click',()=>{manualCamera=false;resetCamera();});
   function zoom(factor){manualCamera=true;const v=camera.position.clone().sub(controls.target);v.setLength(T.MathUtils.clamp(v.length()*factor,controls.minDistance,controls.maxDistance));camera.position.copy(controls.target).add(v);controls.update();}
   on($('#zoom-in'),'click',()=>zoom(.8));on($('#zoom-out'),'click',()=>zoom(1.25));
   on($('#material-mode'),'click',()=>setPhase(false));on($('#phase-mode'),'click',()=>setPhase(true));
-  root.querySelectorAll('[data-stage]').forEach(b=>on(b,'click',()=>showStage(Number(b.dataset.stage))));
   on(document,'visibilitychange',()=>{last=performance.now();if(document.hidden){cancelAnimationFrame(frameId);frameId=0;}else requestFrame();});
-  on(canvas,'webglcontextlost',e=>{e.preventDefault();contextLost=true;cancelAnimationFrame(frameId);frameId=0;setPlaying(false);root.dataset.renderState='error';$('#loading').hidden=false;$('#loading').textContent='The graphics context was interrupted. Retry the scene to continue.';$('#retry-scene').hidden=false;});
+  on(canvas,'webglcontextlost',e=>{e.preventDefault();contextLost=true;cancelAnimationFrame(frameId);frameId=0;setPlaying(false);reader.fallback(api?{stage,progress,phase,paused:true}:reader.state);root.dataset.renderState='error';$('#loading').hidden=false;$('#loading').textContent='The graphics context was interrupted. Retry the scene to continue.';$('#retry-scene').hidden=false;dispose();});
   // Build once per visit; a superseded visit stops between chapters.
   async function initialize(){
   try{
-    for(const build of[nebula,accretion,alteration,inheritance]){await new Promise(resolve=>requestAnimationFrame(resolve));if(disposed)return;const geometry=build===alteration?await loadSectionGeometry():undefined;if(disposed){geometry?.dispose();return;}const s=build(geometry);s.group.traverse(node=>{if(node.isMesh&&node.material?.isMeshStandardMaterial&&!node.material.transparent){node.castShadow=node.material.side!==T.BackSide;node.receiveShadow=node.material.side!==T.BackSide;}});scenes.push(s);world.add(s.group);s.group.visible=false;}
+    for(const build of[nebula,accretion,alteration,inheritance]){await new Promise(resolve=>requestAnimationFrame(resolve));if(disposed)return;const s=build();s.group.traverse(node=>{if(node.isMesh&&node.material?.isMeshStandardMaterial&&!node.material.transparent){node.castShadow=node.material.side!==T.BackSide;node.receiveShadow=node.material.side!==T.BackSide;}});scenes.push(s);world.add(s.group);s.group.visible=false;}
     resize();scenes.forEach(s=>s.group.visible=true);compiling=true;try{await renderer.compileAsync(world,camera);}finally{compiling=false;if(disposed)releaseResources();}if(disposed)return;
-    const initial=recovery||studyLocation(location.hash);showStage(initial.stage,initial.progress);setPhase(initial.phase||false);setPlaying(initial.paused?false:playing);$('#loading').hidden=true;
+    const initial=reader.state;showStage(initial.stage,initial.progress);setPhase(initial.phase||false);setPlaying(initial.paused?false:playing);$('#loading').hidden=true;
     studyControls.forEach(control=>control.disabled=false);
     resizeObserver=new ResizeObserver(resize);resizeObserver.observe(viewport);
     intersectionObserver=new IntersectionObserver(entries=>{visible=entries.some(entry=>entry.isIntersecting);root.dataset.inView=String(visible);last=performance.now();if(visible){dirty=true;requestFrame();}else{cancelAnimationFrame(frameId);frameId=0;}});intersectionObserver.observe(viewport);
-    api={select:showStage,setProgress(t){progress=t;setPlaying(false);sync();},setPhase,get state(){return{stage,progress,playing,phase,camera:camera.position.toArray(),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles};}};
-    window.study=api;root.dataset.renderState="ready";
-    function frame(now){frameId=0;if(disposed||!visible||document.hidden||contextLost)return;frameId=requestAnimationFrame(frame);const dt=Math.min((now-last)/1000,.06);last=now;if(document.hidden)return;
-      if(playing){if(progress<1){progress=Math.min(1,progress+dt/[32,42,38,40][stage]);sync();}else{hold+=dt;if(hold>2)setPlaying(false);}}
-      controls.update();if(dirty){renderer.info.reset();syncOcclusionCamera(ao,camera);composer.render();dirty=false;}
+    api={select:reader.select,setProgress(t){progress=t;setPlaying(false);sync();},setPhase,get state(){return{stage,progress,playing,phase,camera:camera.position.toArray(),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles};}};
+    window.study=api;reader.connect(showStage);root.dataset.renderState="ready";
+    function frame(now){frameId=0;if(disposed||!visible||document.hidden||contextLost)return;const dt=Math.max(0,(now-last)/1000);last=now;if(document.hidden)return;
+      if(playing){if(progress<1){progress=Math.min(1,progress+dt/[32,14,14,14][stage]);sync();}else{hold+=dt;if(hold>2)setPlaying(false);}}
+      controls.update();if(dirty){renderer.info.reset();syncOcclusionCamera(ao,camera);composer.render();dirty=false;}if(playing)requestFrame();
     }requestFrame=()=>{if(!frameId&&!disposed&&visible&&!document.hidden&&!contextLost)frameId=requestAnimationFrame(frame);};requestFrame();
-  }catch(error){if(!disposed){console.error(error);root.dataset.renderState='error';$('#loading').textContent='This study could not initialize its 3D scene. The scientific context remains available.';$('#retry-scene').hidden=false;dispose();}}
+  }catch(error){if(!disposed){console.error(error);reader.fallback();root.dataset.renderState='error';$('#loading').hidden=false;$('#loading').textContent='This study could not initialize its 3D scene. The scientific context remains available.';$('#retry-scene').hidden=false;dispose();}}
   }
 
   function releaseResources(){

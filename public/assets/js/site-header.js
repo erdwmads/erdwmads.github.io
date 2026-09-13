@@ -1,5 +1,6 @@
 (function () {
   const COLLAPSIBLE_NAVIGATION_MEDIA = "(max-width: 760px)";
+  document.documentElement.removeAttribute("data-nav-ready");
   window.__madsSiteHeaderAbort?.abort();
   const controller = new AbortController();
   const signal = controller.signal;
@@ -11,6 +12,9 @@
   const collapsibleNavigationMedia = window.matchMedia(COLLAPSIBLE_NAVIGATION_MEDIA);
 
   function close() {
+    if (collapsibleNavigationMedia.matches && navigation.contains(document.activeElement)) {
+      toggle.focus({ preventScroll: true });
+    }
     document.documentElement.classList.remove("mobile-nav-open");
     toggle.setAttribute("aria-expanded", "false");
     toggle.setAttribute("aria-label", "Open navigation");
@@ -24,7 +28,10 @@
   }, { signal });
 
   navigation.addEventListener("click", (event) => {
-    if (event.target.closest("a")) close();
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const link = event.target.closest("a");
+    if (!link || link.hasAttribute("download") || (link.target && link.target !== "_self")) return;
+    close();
   }, { signal });
 
   document.addEventListener("keydown", (event) => {
@@ -43,4 +50,5 @@
   window.addEventListener("pageshow", close, { signal });
   window.addEventListener("mads:soft-nav-ready", close, { signal });
   close();
+  document.documentElement.setAttribute("data-nav-ready", "");
 })();

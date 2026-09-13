@@ -55,7 +55,21 @@ const filters = [
         <h2><a href={paper.url} target="_blank" rel="noopener">{paper.title}</a></h2>
         <p class="muted">{paper.authors}</p>
         <p>{paper.summary}</p>
-        <a class="paper-source" href={paper.url} target="_blank" rel="noopener" aria-label={`Read paper: ${paper.title} (opens in a new tab)`}>Read paper <span aria-hidden="true">↗</span></a>
+        <div class="paper-reference-actions">
+          <a class="paper-source" href={paper.url} target="_blank" rel="noopener" aria-label={`Read paper: ${paper.title} (opens in a new tab)`}>Read paper <span aria-hidden="true">↗</span></a>
+          <button
+            class="button secondary"
+            type="button"
+            data-paper-copy
+            data-paper-reference={`${paper.authors}. ${paper.title}. ${paper.url}`}
+            aria-label={`Copy reference: ${paper.title}`}
+          >Copy reference</button>
+        </div>
+        <p class="muted paper-reference-status" data-paper-copy-status role="status" aria-live="polite" aria-atomic="true"></p>
+        <div class="paper-reference-fallback" data-paper-copy-fallback hidden>
+          <label for={`paper-reference-${index + 1}`}>Reference — author, title, and DOI link</label>
+          <textarea id={`paper-reference-${index + 1}`} data-paper-reference-text readonly rows="4"></textarea>
+        </div>
         <div class="project-tags">
           {paper.tags.map((tag) => <span>{tag}</span>)}
         </div>
@@ -64,15 +78,9 @@ const filters = [
   ))}
 </section>
 
-<section class="section reading-constellation-section">
-  <p class="eyebrow">Reading Constellation</p>
-  <h2>How the references connect</h2>
-  <div class="reading-constellation">
-    <div class="reading-core">Dolomite Problem</div>
-    <div>CI carbonates</div>
-    <div>Orgueil / Ivuna</div>
-    <div>Ryugu / Bennu</div>
-    <div>Aqueous alteration</div>
-    <div>Analytical mineralogy</div>
-  </div>
+<section class="section research-reading-context" aria-labelledby="reading-context-title">
+  <p class="eyebrow">Reading in context</p>
+  <h2 id="reading-context-title">How the references connect</h2>
+  <p>Dolomite-growth studies frame the formation question; CI and Orgueil mineralogy provides the material context. Ryugu and Bennu offer returned-sample comparisons for aqueous alteration.</p>
+  <p>Nakamura et al.’s proposed Ryugu history is illustrated in <a href="origins-study.html">Origins</a>. Together, these references inform the <a href="research.html#research-methods-title">analytical pathway of my Orgueil research</a>.</p>
 </section>

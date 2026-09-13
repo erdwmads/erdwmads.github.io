@@ -1,0 +1,234 @@
+/* A quiet shared frame: content carries the detail; controls keep one visual grammar. */
+html[data-theme] body#academic-site.site-refined {
+  .site-header .brand strong, main :is(h1,h2,h3) { text-shadow:none!important; }
+  .site-header .nav { border-radius:6px!important;box-shadow:none!important;background:color-mix(in srgb,var(--obs-paper) 92%,transparent)!important;border:1px solid var(--obs-line)!important; }
+  .site-header .nav__links a { border-radius:3px!important;box-shadow:none!important;text-shadow:none!important; }
+  :is(.button,.theme-toggle,.nav-log-gate,.sample-missions button,.planetary button,.paper-filter) { box-shadow:none!important;text-shadow:none!important;border-radius:6px!important; }
+  :is(.button,.theme-toggle,.nav-log-gate) { background:var(--obs-surface)!important;border-color:var(--obs-line)!important; }
+  :is(.button,.theme-toggle,.nav-log-gate):hover { border-color:var(--obs-accent)!important;background:var(--obs-highlight)!important; }
+  .button.primary { background:var(--obs-highlight)!important; }
+  .button::before,.button::after { box-shadow:none!important; }
+  :is(.mission-player,.planetary-stage) { border-radius:8px!important;box-shadow:none!important; }
+  .mission-player :is(.mission-chapters,.mission-transport) { background:var(--obs-surface)!important; }
+  .origins-study {
+    .study-intro { align-items:flex-start;gap:32px;margin-bottom:36px; }
+    .study-intro .lead { font-size:clamp(17px,1.8vw,22px);line-height:1.6;max-width:58ch; }
+    .study-project-context { font-size:12px;line-height:1.8;max-width:80ch;margin-top:16px;color:var(--obs-muted); }
+    .study-panel { padding:0;border-radius:8px;box-shadow:none;background:var(--obs-paper);overflow:hidden; }
+    .chapters { gap:0;margin:0;padding:0;border:0;border-bottom:1px solid var(--obs-line); }
+    .chapters button { padding:20px 22px 25px;border:0;border-right:1px solid var(--obs-line);border-radius:0!important;background:transparent;transform:none!important; }
+    .chapters button:last-child { border-right:0; }
+    .chapters button>span { width:auto;height:auto;display:block;border:0;border-radius:0;margin:0 0 9px;font-variant-numeric:tabular-nums;letter-spacing:.1em;font-size:10px; }
+    .chapters button:after { display:none; }
+    .chapters button[aria-current=step] { background:var(--obs-highlight); }
+    .chapters button[aria-current=step]:before { left:0;right:0;bottom:0;height:2px; }
+    .chapters strong { font-size:13px; }
+    .chapters small { font-size:11px; }
+    .observatory { grid-template-areas:"scene copy" "tools copy" "transport copy";grid-template-columns:minmax(0,1fr) minmax(280px,30%);grid-template-rows:minmax(440px,1fr) max-content max-content;gap:0; }
+    :is(.chapter-copy,.scene-frame,.scene-controls,.transport) { border-radius:0;border:0;box-shadow:none;background:var(--obs-paper); }
+    .chapter-copy { padding:28px 24px;gap:22px;border-left:1px solid var(--obs-line); }
+    .chapter-heading .eyebrow { border:0;padding:0;border-radius:0;font-size:9px;letter-spacing:.07em; }
+    .chapter-copy h2 { font-size:clamp(23px,2vw,29px);font-weight:500;letter-spacing:-.035em;line-height:1.2;margin-top:14px; }
+    .chapter-description { padding:0;border:0; }
+    .chapter-description p { font-size:14px;line-height:1.8; }
+    .scene-note { padding:18px 0 0;border:0;border-top:1px solid var(--obs-line);border-radius:0;background:none; }
+    .scene-note .region-label { display:none; }
+    .scene-note strong { font-size:9px;letter-spacing:.05em; }
+    .scene-note p { font-size:12px;line-height:1.7; }
+    .scene-frame { background:#080d10; }
+    .scene-frame-bar { background:#0c161c;border-bottom:1px solid #263239;letter-spacing:.045em; }
+    .scene-frame-bar i { box-shadow:none; }
+    .scene-controls { padding:15px 20px;border-top:1px solid var(--obs-line); }
+    .view-tools>.region-label { display:none; }
+    .view-tools { justify-content:space-between; }
+    .view-key { margin-top:10px;padding-top:10px;min-height:0; }
+    .segmented,.segmented:before,.icon { border-radius:5px;box-shadow:none!important; }
+    .icon { background:transparent; }
+    .camera-tools { border:0; }
+    .transport { padding:18px 22px;border-top:1px solid var(--obs-line); }
+    .transport-copy { width:240px; }
+    .transport output { border:0;padding:0; }
+    .transport input { background-size:100% 3px; }
+    .reaction-sequence { list-style:none;margin:0;padding:0; }
+    .reaction-sequence li { display:block;margin:0;padding:0;border-bottom:1px solid var(--obs-line);color:var(--obs-muted);transition:color .3s; }
+    .reaction-sequence button>span { font-size:9px;line-height:1.8;font-variant-numeric:tabular-nums; }
+    .reaction-sequence strong { display:block;font-size:12px;line-height:1.6;font-weight:600; }
+    .reaction-sequence small { display:block;font-size:11px;line-height:1.6; }
+    .reaction-sequence [aria-current=step] { color:var(--obs-accent); }
+    .reaction-sequence [aria-current=step] strong:after { content:' ·'; }
+    .reaction-sequence button { display:flex;align-items:flex-start;gap:11px;text-align:left;width:100%;min-height:54px;padding:11px 8px;border:0;border-radius:3px;background:transparent;color:inherit;font:inherit;cursor:pointer; }
+    .reaction-sequence button { box-shadow:none!important;background:transparent!important;border:0!important;border-radius:0!important;transform:none!important; }
+    .reaction-sequence button:hover,.reaction-sequence li[aria-current=step] button { background:var(--obs-highlight)!important; }
+    .reaction-sequence button:focus-visible { outline:2px solid var(--obs-accent);outline-offset:2px; }
+    .reaction-sequence button:disabled { cursor:wait;opacity:.5; }
+  }
+}
+@media(max-width:1050px) {
+ html[data-theme] body#academic-site.site-refined .origins-study {
+   .observatory { grid-template-columns:minmax(0,1fr) 280px;grid-template-rows:minmax(460px,1fr) max-content max-content; }
+   .chapter-copy { padding:24px 18px; }
+   .chapters button { padding:16px 14px 22px; }
+ }
+}
+@media(max-width:760px) {
+ html[data-theme] body#academic-site.site-refined .origins-study {
+   .study-panel { border-radius:6px; }
+   .study-intro { gap:18px; }
+   .chapters { grid-template-columns:repeat(2,minmax(0,1fr)); }
+   .chapters button { min-height:64px;gap:8px;padding:12px;border-bottom:1px solid var(--obs-line); }
+   .chapters button>span { margin:0; }
+   .chapters strong { font-size:11px; }
+   .observatory { grid-template-columns:minmax(0,1fr);grid-template-rows:360px auto auto auto;grid-template-areas:'scene' 'tools' 'transport' 'copy'; }
+   .chapter-copy { border:0;border-top:1px solid var(--obs-line);padding:24px 20px; }
+   .chapter-description p { font-size:13px; }
+   .scene-controls { padding:14px; }
+   .view-tools { display:flex;flex-wrap:wrap;gap:10px; }
+   .view-tools .segmented { width:auto;flex:1; }
+   .camera-tools { display:flex;gap:5px;padding:0; }
+   .camera-tools .icon { width:44px; }
+   .segmented button { min-width:60px;padding:0 7px; }
+   .transport { padding:14px;gap:12px; }
+   .transport-copy { width:calc(100% - 56px); }
+   .scene-hint { font-size:9px; }
+   .reaction-sequence { display:grid;grid-template-columns:1fr 1fr;gap:0 18px; }
+ }
+}
+@media(prefers-reduced-motion:reduce) { html[data-theme] body#academic-site.site-refined .reaction-sequence li {transition:none;} }
+
+html[data-theme] body#academic-site.site-refined .paper-filter {background:var(--obs-surface)!important;}
+html[data-theme] body#academic-site.site-refined .paper-filter[aria-pressed=true] {background:var(--obs-highlight)!important;border-color:var(--obs-accent)!important;}
+
+/* Sample-specific proportions belong beside the animation, in both color modes. */
+.origins-study .mineral-budget{grid-column:1/-1;padding:24px 28px;border-top:1px solid var(--line);background:var(--panel);min-width:0}
+.origins-study .mineral-budget[hidden]{display:none}
+.origins-study .mineral-budget-heading{display:flex;align-items:end;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.origins-study .mineral-budget h3{margin:6px 0 0;font-size:1.2rem;text-shadow:none}
+.origins-study .mineral-budget a{font-size:.83rem}
+.origins-study .mineral-budget-bar{display:flex;height:10px;border-radius:5px;overflow:hidden;margin:20px 0 16px}
+.origins-study .mineral-budget-bar span{background:var(--phase-color)}
+.origins-study .mineral-budget-values{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin:0}
+.origins-study .mineral-budget-values dt{font-size:.77rem;color:var(--muted);font-weight:400}
+.origins-study .mineral-budget-values dd{margin:4px 0 0;font-size:1.28rem;font-variant-numeric:tabular-nums}
+.origins-study .mineral-budget-values dd small{font-size:.75rem;margin-left:3px}
+.origins-study .mineral-budget p{max-width:100ch;font-size:.82rem;line-height:1.65;color:var(--muted);margin:16px 0 0}
+.origins-study .mineral-budget details{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+.origins-study .mineral-budget summary{font-size:.85rem;cursor:pointer}
+@media(max-width:600px){.origins-study .mineral-budget{padding:20px 16px}.origins-study .mineral-budget-values{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 10px}.origins-study .mineral-budget-heading{align-items:start}}
+
+.origins-study .fragment-guide{position:absolute;inset:18px 18px auto;z-index:2;display:flex;justify-content:space-between;gap:16px;pointer-events:none;font-size:11px;letter-spacing:.02em;color:#c2ced1}
+.origins-study .fragment-guide[hidden]{display:none}
+.origins-study .fragment-guide span{padding:7px 10px;background:#091117d9;border-left:2px solid #b8c6ca;border-radius:2px}
+.origins-study .fragment-guide span:last-child{color:#c5a779;border-color:#c5a779}
+@media(max-width:600px){.origins-study .fragment-guide{inset:12px 8px auto;font-size:9px;gap:8px}.origins-study .fragment-guide span{padding:5px 6px}}
+
+/* A shared observation workspace: the visual and its timeline stay together. */
+html[data-theme] body#academic-site.site-refined {
+ .mission-heading { max-width:none;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(260px,.85fr);column-gap:48px;align-items:end;margin-bottom:24px; }
+ .mission-heading>.eyebrow { grid-column:1/-1; }
+ .mission-heading h2 { margin:0;max-width:20ch; }
+ .mission-heading>p:last-child { margin:0;font-size:14px;line-height:1.8;max-width:52ch;color:var(--obs-muted); }
+ .mission-selector { margin-bottom:20px;gap:12px; }
+ .mission-selector button { padding:16px 20px;min-height:96px;text-align:left;align-items:start; }
+ .mission-stage-heading { padding:20px 24px; }
+ .mission-stage-heading h3 { font-size:24px;line-height:1.3;margin:8px 0 0; }
+ .mission-stage-heading .mission-purpose { margin:8px 0 0;font-size:13px;max-width:80ch; }
+ .mission-workspace { display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,29%);align-items:start;gap:0; }
+ .mission-visual { min-width:0;background:#080d10; }
+ .mission-viewport { min-height:420px;aspect-ratio:1.48; }
+ .mission-scene-bar { padding:12px 18px;font-size:11px; }
+ .mission-notebook { min-width:0;align-self:stretch;border:0;border-left:1px solid var(--obs-line);background:var(--obs-paper); }
+ .mission-notebook>summary { display:none; }
+ .mission-notebook-content { padding:22px 20px; }
+ .mission-notebook { --vector-earth:#8cbedb;--vector-relative:#efd082;--vector-sun:#9ad4b0;color:var(--obs-text); }
+ .mission-notebook :is(.mission-frame,.mission-journey-info,.mission-range-chart,.mission-location strong) { color:var(--obs-text); }
+ .mission-notebook :is(.mission-frame p,.mission-journey-info p) { color:var(--obs-muted)!important;font-size:13px!important;line-height:1.8!important; }
+ .mission-notebook :is(.mission-location small,.mission-orbit-details,.mission-vector-triangle small,.mission-range-chart small) { color:var(--obs-muted); }
+ .mission-notebook .mission-frame-summary { color:var(--obs-accent)!important; }
+ .mission-notebook .mission-frame-tabs button { background:var(--obs-surface)!important;color:var(--obs-text)!important;border-color:var(--obs-line)!important; }
+ .mission-notebook .mission-frame-tabs [aria-pressed=true] { background:var(--obs-highlight)!important;border-color:var(--obs-accent)!important; }
+ .mission-notebook [data-mission-vector-earth] { stroke:var(--vector-earth); }
+ .mission-notebook [data-mission-vector-relative] { stroke:var(--vector-relative); }
+ .mission-notebook [data-mission-vector-sun] { stroke:var(--vector-sun); }
+ .mission-notebook #velocity-earth-arrow path { fill:var(--vector-earth); }
+ .mission-notebook #velocity-relative-arrow path { fill:var(--vector-relative); }
+ .mission-notebook #velocity-sun-arrow path { fill:var(--vector-sun); }
+ .mission-notebook .mission-speeds>div { border-color:var(--vector-earth); }
+ .mission-notebook .mission-speeds>div:nth-child(2) { border-color:var(--vector-relative); }
+ .mission-notebook .mission-speeds>div:nth-child(3) { border-color:var(--vector-sun); }
+ .mission-notebook [data-mission-range-line] { stroke:var(--obs-accent); }
+ .mission-notebook [data-mission-range-dot] { fill:var(--obs-accent); }
+ .mission-notebook-title { margin:0 0 22px;text-transform:uppercase;font-size:10px!important;letter-spacing:.12em;color:var(--obs-accent); }
+ .mission-notebook :is(.mission-context,.mission-journey-info,.mission-frame,.mission-range-chart,.mission-copy) { display:block;padding:0 0 20px;margin:0 0 20px;border:0;border-bottom:1px solid var(--obs-line);background:none!important;box-shadow:none; }
+ .mission-notebook [hidden] { display:none!important; }
+ .mission-notebook .mission-location { margin-bottom:14px;min-width:0; }
+ .mission-notebook .mission-location>a { font-size:13px;line-height:1.6; }
+ .mission-notebook .mission-location strong { font-size:16px;line-height:1.5; }
+ .mission-notebook .mission-context [role=group],.mission-notebook .mission-frame-tabs { display:flex;flex-wrap:wrap;gap:6px; }
+ .mission-notebook button { flex:1 1 auto;min-height:42px;padding:8px 10px;font-size:11px; }
+ .mission-notebook :is(.mission-journey-info p,.mission-frame p,.mission-copy p) { font-size:13px;line-height:1.8;margin:12px 0; }
+ .mission-notebook :is(.mission-copy a,.mission-journey-info a) { font-size:11px;line-height:1.7;display:inline-block; }
+ .mission-notebook .mission-vector-triangle { margin:14px 0; }
+ .mission-notebook .mission-speeds { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0 0; }
+ .mission-notebook .mission-speeds dt { font-size:9px; }
+ .mission-notebook .mission-speeds dd { font-size:14px;margin:6px 0 0; }
+ .mission-notebook .mission-range-chart svg { width:100%;height:auto;margin:12px 0 4px; }
+ .mission-notebook .mission-copy { border:0;margin:0;padding:0; }
+ .mission-notebook .mission-explanation { border-left:0;padding-left:0;border-top:1px solid var(--obs-line);padding-top:18px;margin-top:18px; }
+ .mission-visual .mission-transport { padding:16px 18px;gap:10px;grid-template-columns:auto 40px minmax(80px,1fr) 36px 40px; }
+ .mission-visual [data-mission-play-label] { display:none; }
+ .mission-visual [data-mission-play-short] { display:inline; }
+ .mission-visual .mission-camera-tools { padding:12px 18px; }
+ .mission-visual .mission-camera-tools>p { font-size:11px; }
+ .mission-share { border-top:1px solid var(--obs-line); }
+ .continue-reading { margin:80px 0 20px;padding-top:22px;border-top:1px solid var(--obs-line); }
+ .continue-reading-label { font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--obs-muted);margin:0 0 24px; }
+ .continue-reading>div { display:grid;grid-template-columns:1fr 1fr;gap:40px; }
+ main.main .continue-reading a { display:grid!important;grid-template-columns:24px 1fr 28px;align-items:start;gap:16px;padding:18px 0 24px!important;text-decoration:none!important;color:var(--obs-text)!important;border-bottom:1px solid var(--obs-line)!important;background:transparent!important;box-shadow:none!important; }
+ .continue-reading-number { color:var(--obs-accent);font-size:10px;padding-top:7px;font-variant-numeric:tabular-nums; }
+ .continue-reading strong { display:block;font-size:clamp(22px,2.4vw,34px);line-height:1.2;font-weight:500;letter-spacing:-.035em; }
+ .continue-reading small { display:block;font-size:12px;color:var(--obs-muted);line-height:1.7;margin-top:12px; }
+ .continue-reading-arrow { font-size:24px;color:var(--obs-muted);transition:transform .2s,color .2s; }
+ .continue-reading a:hover .continue-reading-arrow { transform:translate(3px,-3px);color:var(--obs-accent); }
+ .continue-reading a:focus-visible { outline:2px solid var(--obs-accent);outline-offset:6px; }
+}
+@media(max-width:960px) {
+ html[data-theme] body#academic-site.site-refined {
+  .mission-heading { display:block; }
+  .mission-heading>p:last-child { margin-top:16px;max-width:65ch; }
+  .mission-workspace { grid-template-columns:minmax(0,1fr); }
+  .mission-notebook { border-left:0;border-top:1px solid var(--obs-line); }
+  .mission-notebook>summary { display:list-item;padding:18px 20px;font-size:13px;cursor:pointer; }
+  .mission-notebook-title { display:none; }
+  .mission-notebook-content { padding:0 20px 24px; }
+  .mission-notebook .mission-context [role=group] { justify-content:start; }
+  .mission-notebook .mission-vector-triangle { max-width:280px; }
+  .mission-viewport { aspect-ratio:1.65; }
+ }
+}
+@media(max-width:600px) {
+ html[data-theme] body#academic-site.site-refined {
+  .mission-selector button { padding:14px 12px;min-height:100px; }
+  .mission-stage-heading { padding:18px 16px; }
+  .mission-stage-heading h3 { font-size:21px; }
+  .mission-viewport { min-height:360px;aspect-ratio:1; }
+  .mission-visual .mission-transport { padding:14px 12px;grid-template-columns:auto 40px minmax(0,1fr) 40px;gap:8px; }
+  .mission-visual .mission-transport>output { display:none; }
+  .mission-visual .mission-camera-tools { padding:12px; }
+  .continue-reading { margin-top:56px; }
+  .continue-reading>div { grid-template-columns:1fr;gap:10px; }
+  .continue-reading a { gap:12px; }
+ }
+}
+@media(prefers-reduced-motion:reduce) {
+ html[data-theme] body#academic-site.site-refined .continue-reading-arrow { transition:none; }
+}
+
+html[data-theme="light"] body#academic-site.site-refined .mission-notebook {
+ --vector-earth:#216a92;--vector-relative:#916b14;--vector-sun:#247145;
+}
+@media(min-width:961px) {
+ html[data-theme] body#academic-site.site-refined .mission-story summary small { display:inline;margin-left:22px;padding:0; }
+}
+@media print {
+ .continue-reading { display:none!important; }
+}
