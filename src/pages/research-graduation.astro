@@ -22,6 +22,7 @@ const scriptHtml = getPageScripts("research-graduation");
   <EvidenceAtlasData />
 
   <section
+    id="archive-access"
     class="section research-lock-section"
     data-research-lock-gate
     data-protected-archive-url="assets/data/mission-log.enc.json"
@@ -33,6 +34,14 @@ const scriptHtml = getPageScripts("research-graduation");
         Enter the graduation research password to open the project notes, Mission Log navigator,
         and image viewer.
       </p>
+      <div class="research-passkey-controls" data-passkey-controls hidden>
+        <p class="eyebrow">Passkey · Windows Hello</p>
+        <div class="research-passkey-actions">
+          <button class="button" type="button" data-passkey-unlock hidden>Unlock with passkey</button>
+          <button class="research-passkey-forget" type="button" data-passkey-forget hidden>Forget this browser</button>
+        </div>
+        <p class="research-passkey-status" data-passkey-status role="status" aria-live="polite"></p>
+      </div>
       <form class="research-lock-form" data-research-lock-form method="post">
         <label for="research-lock-password">Password</label>
         <input
@@ -44,10 +53,24 @@ const scriptHtml = getPageScripts("research-graduation");
           data-research-lock-input
           required
         >
-        <button class="button" type="submit">Unlock</button>
+        <div class="research-passkey-actions">
+          <button class="button" type="submit">Unlock with password</button>
+          <button class="button" type="button" data-passkey-setup hidden>Set up passkey</button>
+        </div>
       </form>
+      <details class="research-passkey-help">
+        <summary>How passkey unlock works</summary>
+        <p>Set up verifies your archive password first, then asks your device to create a passkey. On compatible Windows devices, Windows Hello handles fingerprint, face or PIN verification.</p>
+        <p>This browser stores only an encrypted password shortcut. The passkey must support encryption (PRF); otherwise, use your password. Keep your password for recovery: clearing site data, changing browsers or changing the archive password requires a new link.</p>
+        <p>Forgetting this browser removes its encrypted shortcut. You can remove the passkey itself in your device’s passkey settings.</p>
+      </details>
       <p id="research-lock-error" class="research-lock-error" data-research-lock-error role="alert" hidden>Incorrect password.</p>
     </div>
+  </section>
+
+  <section class="research-unlocked-session" data-research-lock-session hidden aria-label="Archive access">
+    <p data-research-session-notice>Unlocked for this page. Leaving the page locks the archive.</p>
+    <button class="button" type="button" data-research-lock-now>Lock log</button>
   </section>
 
   <div data-research-lock-content hidden>

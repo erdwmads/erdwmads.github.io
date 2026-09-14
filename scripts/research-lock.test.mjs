@@ -103,7 +103,7 @@ const strictAtob = (value) => {
   return Buffer.from(value, "base64").toString("latin1");
 };
 
-const bootLock = (fetchImpl, { crypto = webcrypto } = {}) => {
+const bootLock = (fetchImpl, { crypto = webcrypto, passkey } = {}) => {
   const gate = new FakeElement();
   gate.dataset.protectedArchiveUrl = "assets/data/mission-log.enc.json";
   const content = new FakeElement();
@@ -116,6 +116,9 @@ const bootLock = (fetchImpl, { crypto = webcrypto } = {}) => {
   input.setAttribute("aria-describedby", "research-lock-error");
   const error = new FakeElement();
   error.hidden = true;
+  const passkeySetup=new FakeElement(),passkeyUnlock=new FakeElement(),passkeyForget=new FakeElement(),passkeyStatus=new FakeElement(),passkeyControls=new FakeElement(),session=new FakeElement(),lockButton=new FakeElement();
+  form.reportValidity=()=>!!input.value;
+  session.hidden=true;
   const documentEvents = [];
   const documentEventListeners = new Map();
   const windowEvents = new Map();
@@ -127,7 +130,7 @@ const bootLock = (fetchImpl, { crypto = webcrypto } = {}) => {
         "[data-research-lock-content]": content,
         "[data-research-lock-form]": form,
         "[data-research-lock-input]": input,
-        "[data-research-lock-error]": error
+        "[data-research-lock-error]": error, "[data-passkey-setup]":passkeySetup, "[data-passkey-unlock]":passkeyUnlock, "[data-passkey-forget]":passkeyForget, "[data-passkey-status]":passkeyStatus, "[data-passkey-controls]":passkeyControls, "[data-research-lock-session]":session, "[data-research-lock-now]":lockButton
       }[selector] || null;
     },
     dispatchEvent(event) {
@@ -145,6 +148,7 @@ const bootLock = (fetchImpl, { crypto = webcrypto } = {}) => {
   });
   const window = {
     crypto,
+    MadsResearchPasskey: passkey ? {forArchive:()=>passkey} : undefined,
     addEventListener(type, listener) {
       const listeners = windowEvents.get(type) || [];
       listeners.push(listener);
@@ -184,7 +188,7 @@ const bootLock = (fetchImpl, { crypto = webcrypto } = {}) => {
   const initialize = () => vm.runInNewContext(researchLock, context, { filename: "research-lock.js" });
   initialize();
 
-  return { content, document, documentEvents, error, form, gate, initialize, input, lockedMarkup, window };
+  return { content, document, documentEvents, error, form, gate, initialize, input, lockedMarkup, window, passkeySetup, passkeyUnlock, passkeyForget,passkeyStatus,session,lockButton };
 };
 
 const responseFor = (payload) => ({
@@ -454,4 +458,94 @@ test("cancelled departure invalidates a late attempt without disrupting a fresh 
   assert.deepEqual(archiveState(page), { entries });
   assert.equal(page.form.getAttribute("aria-busy"), null);
   assert.equal(page.form.button.disabled, false);
+});
+
+test("passkey setup validates the archive password before creating a credential", async () => {
+  const registrations=[];
+  const passkey={available:async()=>true,hasBinding:()=>false,register:async(p)=>registrations.push(p)};
+  const page=bootLock(async()=>responseFor(validPayload),{passkey});
+  page.input.value='wrong';
+  await page.passkeySetup.emit('click');
+  assert.equal(registrations.length,0);
+  assert.equal(page.gate.hidden,false);
+  assert.equal(page.error.textContent,'Incorrect password.');
+  page.input.value=password;
+  await page.passkeySetup.emit('click');
+  assert.deepEqual(registrations,[password]);
+  assert.deepEqual(archiveState(page),{entries});
+  assert.equal(page.input.value,'');
+});
+
+test("passkey recovery still decrypts the real archive and lock clears the session", async () => {
+  const page=bootLock(async()=>responseFor(validPayload),{passkey:{
+    available:async()=>true,hasBinding:()=>true,recover:async()=>password
+  }});
+  await page.passkeyUnlock.emit('click');
+  assert.deepEqual(archiveState(page),{entries});
+  assert.equal(page.session.hidden,false);
+  await page.lockButton.emit('click');
+  assert.equal(page.window.MadsProtectedArchive,undefined);
+  assert.equal(page.gate.hidden,false);
+  assert.equal(page.session.hidden,true);
+});
+
+test("missing PRF and cancelled verification keep a working password fallback", async () => {
+  for(const failure of [new Error('passkey-prf-unsupported'),Object.assign(new Error(),{name:'NotAllowedError'})]) {
+    const page=bootLock(async()=>responseFor(validPayload),{passkey:{
+      available:async()=>true,hasBinding:()=>true,recover:async()=>{throw failure;}
+    }});
+    await page.passkeyUnlock.emit('click');
+    assert.equal(page.window.MadsProtectedArchive,undefined);
+    assert.equal(page.gate.hidden,false);
+    assert.equal(page.form.button.disabled,false);
+    assert.equal(page.input.getAttribute('aria-invalid'),null);
+    page.input.value=password;
+    await page.form.emit('submit');
+    assert.deepEqual(archiveState(page),{entries});
+  }
+});
+
+test("navigation aborts passkey operations and late recovery never unlocks", async () => {
+  let resolveRecovery,signal;
+  const page=bootLock(async()=>responseFor(validPayload),{passkey:{
+    available:async()=>true,hasBinding:()=>true,
+    recover:options=>{signal=options.signal;return new Promise(resolve=>resolveRecovery=resolve);}
+  }});
+  const pending=page.passkeyUnlock.emit('click');
+  page.window.emit('mads:soft-nav-start');
+  assert.equal(signal.aborted,true);
+  resolveRecovery(password);await pending;
+  assert.equal(page.window.MadsProtectedArchive,undefined);
+  assert.equal(page.gate.hidden,false);
+  assert.equal(page.form.button.disabled,false);
+});
+
+test("enrollment cancellation never exposes decrypted entries", async () => {
+  let resolveRegister,signal;
+  const page=bootLock(async()=>responseFor(validPayload),{passkey:{
+    available:async()=>true,hasBinding:()=>false,
+    register:(p,options)=>{signal=options.signal;return new Promise(resolve=>resolveRegister=resolve);}
+  }});
+  page.input.value=password;
+  const pending=page.passkeySetup.emit('click');
+  for(let i=0;i<200&&!resolveRegister;i++) await new Promise(resolve=>setTimeout(resolve,5));
+  assert.equal(typeof resolveRegister,"function","enrollment must reach the credential ceremony");
+  page.window.emit('mads:soft-nav-start');
+  assert.equal(signal.aborted,true);
+  resolveRegister();await pending;
+  assert.equal(page.window.MadsProtectedArchive,undefined);
+  assert.equal(page.gate.hidden,false);
+});
+
+test("a changed archive password rejects the old shortcut without marking password input invalid", async () => {
+  const page=bootLock(async()=>responseFor(validPayload),{passkey:{
+    available:async()=>true,hasBinding:()=>true,recover:async()=>'old archive password'
+  }});
+  await page.passkeyUnlock.emit('click');
+  assert.equal(page.window.MadsProtectedArchive,undefined);
+  assert.equal(page.gate.hidden,false);
+  assert.match(page.error.textContent,/password.*changed/);
+  assert.equal(page.input.getAttribute('aria-invalid'),null);
+  page.input.value=password;await page.form.emit('submit');
+  assert.deepEqual(archiveState(page),{entries});
 });

@@ -247,3 +247,27 @@ html[data-theme] body#academic-site .mission-photo-grid figcaption > strong:firs
 }
 
 html[data-theme] body#academic-site .mission-photo-grid img { height: auto !important; object-fit: contain !important; }
+
+/* Passkey enrollment preserves the password gate and shared theme tokens. */
+body#academic-site .research-passkey-controls { margin-top: 24px; padding: 20px 0; border-block: 1px solid var(--obs-line); }
+body#academic-site .research-passkey-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+body#academic-site .research-passkey-actions:has([data-passkey-unlock][hidden]) { display: none; }
+body#academic-site .research-lock-form .research-passkey-actions { display: flex; }
+body#academic-site .research-passkey-actions .button { margin: 0; min-height: 46px; }
+body#academic-site .research-passkey-status { font-size: 13px; line-height: 1.65; margin: 12px 0 0; }
+body#academic-site .research-passkey-forget { min-height: 44px; padding: 8px; border: 0; border-radius: 6px; color: var(--obs-muted); background: transparent; box-shadow: none; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+body#academic-site .research-passkey-help { margin-top: 22px; border-top: 1px solid var(--obs-line); padding-top: 16px; font-size: 13px; line-height: 1.65; }
+body#academic-site .research-passkey-help summary { cursor: pointer; color: var(--obs-text); }
+body#academic-site .research-passkey-help p { font-size: 13px; line-height: 1.7; margin-top: 12px; }
+body#academic-site .research-unlocked-session { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 0; margin: 12px 0 24px; border-block: 1px solid var(--obs-line); }
+body#academic-site .research-unlocked-session p { margin: 0; color: var(--obs-muted); font-size: 14px; flex: 1 1 260px; }
+body#academic-site .research-unlocked-session .button { margin: 0; min-height: 46px; }
+body#academic-site [data-passkey-controls][hidden],
+body#academic-site [data-passkey-setup][hidden],
+body#academic-site [data-passkey-unlock][hidden],
+body#academic-site [data-passkey-forget][hidden],
+body#academic-site [data-research-lock-session][hidden] { display: none !important; }
+@media (max-width: 560px) {
+  body#academic-site .research-passkey-actions { align-items: stretch; flex-direction: column; }
+  body#academic-site .research-passkey-actions > .button { width: 100%; }
+}

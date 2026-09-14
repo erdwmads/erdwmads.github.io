@@ -15,7 +15,7 @@
     "audit:css": "node scripts/audit-css.mjs",
     "export:ppt-data": "node scripts/export-ppt-data.mjs",
     "test:mission-publisher": "node --test scripts/publish-protected-mission-log.test.mjs",
-    "test:research-lock": "node --test scripts/research-lock.test.mjs",
+    "test:research-lock": "node --test scripts/research-lock.test.mjs scripts/research-passkey.test.mjs",
     "test:mission-index": "node --test scripts/mission-index.test.mjs",
     "test:mission-lightbox": "node --test scripts/mission-lightbox.test.mjs",
     "test:mobile-layout": "node --test scripts/mobile-layout.test.mjs",
