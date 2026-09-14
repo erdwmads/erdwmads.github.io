@@ -549,3 +549,17 @@ test("a changed archive password rejects the old shortcut without marking passwo
   page.input.value=password;await page.form.emit('submit');
   assert.deepEqual(archiveState(page),{entries});
 });
+
+test("verification codes reach the gate while arbitrary error details stay private",async()=>{
+  for(const [code,expected] of [['PK-CREATE-UV','PK-CREATE-UV'],['PK-GET-AUTH-DATA','PK-GET-AUTH-DATA'],['private authenticator response','PK-VERIFY']]) {
+    const page=bootLock(async()=>responseFor(validPayload),{passkey:{
+      available:async()=>true,hasBinding:()=>true,
+      recover:async()=>{throw Object.assign(new Error('passkey-verification-failed'),{code});}
+    }});
+    await page.passkeyUnlock.emit('click');
+    assert.ok(page.error.textContent.endsWith('['+expected+']'));
+    assert.equal(page.error.textContent.includes('private authenticator response'),false);
+    assert.equal(page.window.MadsProtectedArchive,undefined);
+    assert.equal(page.form.button.disabled,false);
+  }
+});

@@ -200,3 +200,34 @@ test('cancellation during enrollment verification leaves no saved link',async()=
   await assert.rejects(a.vault.register(savedPassword),{name:'NotAllowedError'});
   assert.equal(a.storage.data.size,0);
 });
+
+test('verification identifies the exact creation or assertion check without leaking response data',async()=>{
+  const cases=[
+    ['TYPE',c=>{c.type='unexpected';}],
+    ['ID-SIZE',c=>{c.rawId=new Uint8Array(1025).buffer;}],
+    ['CLIENT-JSON',c=>{c.response.clientDataJSON=encode('{invalid').buffer;}],
+    ...['type','origin','challenge','crossOrigin'].map(field=>[
+      {'type':'CLIENT-TYPE',origin:'ORIGIN',challenge:'CHALLENGE',crossOrigin:'CROSS-ORIGIN'}[field],
+      c=>{const data=JSON.parse(new TextDecoder().decode(c.response.clientDataJSON));data[field]=field==='crossOrigin'?true:'private response must not appear in diagnostics';c.response.clientDataJSON=encode(JSON.stringify(data)).buffer;}
+    ]),
+    ['AUTH-DATA',c=>{c.response.authenticatorData=new Uint8Array(12).buffer;c.response.getAuthenticatorData=()=>c.response.authenticatorData;}],
+    ['RP-HASH',c=>{new Uint8Array(c.response.authenticatorData)[0]^=1;}],
+    ['UP',c=>{new Uint8Array(c.response.authenticatorData)[32]=4;}],
+    ['UV',c=>{new Uint8Array(c.response.authenticatorData)[32]=1;}],
+  ];
+  for(const creation of [true,false]) for(const [reason,change] of cases) {
+    const a=boot({credentials:{
+      [creation?'create':'get']:async o=>{const c=await credential(o,creation);change(c);return c;}
+    }});
+    await assert.rejects(a.vault.register(savedPassword),error=>{
+      assert.equal(error.message,'passkey-verification-failed');
+      assert.equal(error.code,'PK-'+(creation?'CREATE':'GET')+'-'+reason);
+      assert.deepEqual(Object.keys(error),['code'],'Diagnostics contain only a fixed public code');
+      return true;
+    });
+    assert.equal(a.storage.data.size,0,'A rejected response never creates a local link');
+  }
+  const a=boot();await a.vault.register(savedPassword);
+  const b=boot({storage:a.storage,credentials:{get:async o=>credential(o,false,{rawId:new Uint8Array([99]).buffer})}});
+  await assert.rejects(b.vault.recover(),{message:'passkey-verification-failed',code:'PK-GET-ID'});
+});

@@ -176,13 +176,17 @@
 
   const passkeyMessage = (caughtError) => {
     if (caughtError?.name === 'NotAllowedError' || caughtError?.name === 'AbortError') return 'Passkey verification was cancelled or timed out. Try again or use your password.';
+    if (caughtError?.message === 'passkey-verification-failed') {
+      const code = /^PK-(CREATE|GET)-(TYPE|ID-SIZE|ID|CLIENT-JSON|CLIENT-TYPE|ORIGIN|CHALLENGE|CROSS-ORIGIN|AUTH-DATA|RP-HASH|UP|UV)$/.test(caughtError.code)
+        ? caughtError.code : 'PK-VERIFY';
+      return 'The passkey could not be verified. Use your password. [' + code + ']';
+    }
     return {
       'passkey-prf-unsupported': 'This passkey cannot decrypt the archive because it does not support PRF. Use your password. An unused passkey may remain in your device’s passkey settings.',
       'passkey-unavailable': 'Passkey setup is unavailable in this browser. Use your password.',
       'passkey-storage-unavailable': 'This browser could not save the encrypted shortcut. Allow site storage or use your password.',
       'passkey-binding-unavailable': 'No usable passkey link was found on this browser. Unlock with your password to set one up.',
       'passkey-already-linked': 'This browser already has a passkey link. Use it, or forget this browser before setting up a replacement.',
-      'passkey-verification-failed': 'The passkey could not be verified. Use your password. [PK-VERIFY]',
       'passkey-decryption-failed': 'Device verification completed, but this browser’s encrypted shortcut could not be decrypted. Choose Forget this browser, then set up again with your current archive password. [PK-LOCAL]',
       'passkey-enrollment-verification-failed': 'The device created a passkey, but its unlock test failed. No browser link was saved. Use your password. [PK-SETUP]',
     }[caughtError?.message] || 'The passkey could not unlock this archive. Use your password; if it has changed, forget this browser and set up the passkey again.';

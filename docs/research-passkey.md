@@ -23,7 +23,7 @@ The local encrypted envelope is not synced even if a provider syncs its passkey.
 
 Localhost and the production domain are separate WebAuthn relying parties. Real Windows Hello enrollment and compatibility must be tested by the user at the final production origin. Automated tests use synthetic archives and simulated credential responses; they do not establish native Windows Hello PRF support.
 
-A failed unlock distinguishes device verification (PK-VERIFY), local encrypted-envelope decryption (PK-LOCAL), enrollment verification (PK-SETUP), and a saved password that cannot decrypt the current archive (PK-ARCHIVE). These codes contain no credential identifiers or secret material. Existing invalid links can be removed with **Forget this browser** and enrolled again using the current archive password.
+A failed unlock distinguishes device verification (PK-CREATE-* for registration, PK-GET-* for an assertion; PK-VERIFY for an unclassified older response), local encrypted-envelope decryption (PK-LOCAL), enrollment verification (PK-SETUP), and a saved password that cannot decrypt the current archive (PK-ARCHIVE). These codes contain no credential identifiers or secret material. Existing invalid links can be removed with **Forget this browser** and enrolled again using the current archive password.
 
 ## Verification
 - node --test scripts/research-passkey.test.mjs scripts/research-lock.test.mjs
@@ -35,3 +35,5 @@ References:
 - https://learn.microsoft.com/en-us/windows/security/identity-protection/passkeys/
 - https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API/WebAuthn_extensions#prf
 - https://developers.yubico.com/WebAuthn/Concepts/PRF_Extension/Developers_Guide_to_PRF.html
+
+Verification codes identify the failed check: credential type/ID/size, client JSON/type/origin/challenge/cross-origin context, authenticator data, RP hash, presence (UP), or verification (UV). Only fixed codes reach the error message; no response bytes, credential IDs, passwords, or PRF output are logged or sent. A PK-VERIFY report alone is insufficient to identify a Windows Hello provider issue. Collect the specific code at the production origin before changing validation or claiming compatibility.

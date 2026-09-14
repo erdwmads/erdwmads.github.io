@@ -32,6 +32,8 @@ try {
      if(mode==='cancel') throw new DOMException('User cancelled','NotAllowedError');
      const pk=options.publicKey,auth=new Uint8Array(37);
      auth.set(new Uint8Array(await crypto.subtle.digest('SHA-256',encode(pk.rp?.id||pk.rpId))));auth[32]=5;
+     if(mode==='bad-create-uv'&&creation) auth[32]=1;
+     if(mode==='bad-get-rp'&&!creation) auth[0]^=1;
      return {type:'public-key',rawId:new Uint8Array([11,22,33,44]).buffer,
        response:{clientDataJSON:encode(JSON.stringify({type:creation?'webauthn.create':'webauthn.get',origin:location.origin,challenge:base64(pk.challenge),crossOrigin:false})).buffer,authenticatorData:auth.buffer,getAuthenticatorData:()=>auth.buffer},
        getClientExtensionResults:()=>({prf:mode==='no-prf'?{enabled:false}:{enabled:true,results:{first:new Uint8Array(32).fill(87).buffer}}})};
@@ -74,6 +76,16 @@ try {
  assert.equal(await content.isVisible(),false);
  assert.equal(await page.evaluate(()=>Object.keys(localStorage).filter(k=>k.startsWith('mads-research-passkey-v1:')).length),0);
  results.push('No PRF means no saved shortcut and no false unlock');
+ for(const [mode,code] of [['bad-create-uv','PK-CREATE-UV'],['bad-get-rp','PK-GET-RP-HASH']]) {
+   await page.evaluate(mode=>localStorage.setItem('fixture-mode',mode),mode);
+   await input.fill(password);await setup.click();
+   await page.getByText('The passkey could not be verified. Use your password. ['+code+']',{exact:true}).waitFor({state:'visible'});
+   assert.equal(await content.isVisible(),false);
+   assert.equal(await page.evaluate(()=>Object.keys(localStorage).filter(k=>k.startsWith('mads-research-passkey-v1:')).length),0);
+   assert.equal(await page.getByRole('button',{name:'Unlock with password',exact:true}).isEnabled(),true);
+ }
+ results.push('Creation and assertion failures display precise safe codes, keep the archive locked and never save a broken link');
+
  await page.evaluate(()=>localStorage.removeItem('fixture-mode'));await page.reload();await setup.waitFor({state:'visible'});
  for(const width of [1440,390]) {
    await page.setViewportSize({width,height:1000});

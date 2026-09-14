@@ -70,8 +70,8 @@ const pageScripts: Record<string, ScriptSpec[]> = {
   // Password-gated public page; keep it out of sitemap contentPages.
   "research-graduation": [
     ...commonScripts,
-    { src: "assets/js/research-passkey.js?v=20260914-verified", defer: true },
-    { src: "assets/js/research-lock.js?v=20260914-verified", defer: true },
+    { src: "assets/js/research-passkey.js?v=20260914-diagnostics", defer: true },
+    { src: "assets/js/research-lock.js?v=20260914-diagnostics", defer: true },
     { src: "assets/js/mission-index.js?v=20260910-layout", defer: true },
     { src: "assets/js/mission-lightbox.js?v=20260909-comparison", defer: true },
     { src: "assets/js/mission-status-sync.js", defer: true },

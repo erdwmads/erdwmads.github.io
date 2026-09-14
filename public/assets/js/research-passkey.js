@@ -44,16 +44,39 @@
       catch { throw new Error('passkey-storage-unavailable'); }
     };
     const verify = async (credential, challenge, creation, expectedId) => {
+      // Only the failed check is exposed; never include response data or secrets.
+      let check = 'TYPE';
       try {
-        if (credential?.type !== 'public-key' || !credential.rawId?.byteLength ||
-            credential.rawId.byteLength > 1024 || (expectedId && !equal(bytes(credential.rawId), expectedId))) throw Error();
+        if (credential?.type !== 'public-key') throw Error();
+        check = 'ID-SIZE';
+        if (!credential.rawId?.byteLength || credential.rawId.byteLength > 1024) throw Error();
+        check = 'ID';
+        if (expectedId && !equal(bytes(credential.rawId), expectedId)) throw Error();
+        check = 'CLIENT-JSON';
         const client = JSON.parse(new TextDecoder().decode(credential.response.clientDataJSON));
-        if (client.type !== (creation ? 'webauthn.create' : 'webauthn.get') ||
-            client.origin !== origin || client.challenge !== toBase64(challenge) || client.crossOrigin === true) throw Error();
+        check = 'CLIENT-TYPE';
+        if (client?.type !== (creation ? 'webauthn.create' : 'webauthn.get')) throw Error();
+        check = 'ORIGIN';
+        if (client.origin !== origin) throw Error();
+        check = 'CHALLENGE';
+        if (client.challenge !== toBase64(challenge)) throw Error();
+        check = 'CROSS-ORIGIN';
+        if (client.crossOrigin === true) throw Error();
+        check = 'AUTH-DATA';
         const auth = bytes(creation ? credential.response.getAuthenticatorData() : credential.response.authenticatorData);
+        if (auth.length < 37) throw Error();
+        check = 'RP-HASH';
         const rpHash = bytes(await window.crypto.subtle.digest('SHA-256', encode(rpId)));
-        if (auth.length < 37 || !equal(auth.slice(0, 32), rpHash) || (auth[32] & 5) !== 5) throw Error();
-      } catch { throw new Error('passkey-verification-failed'); }
+        if (!equal(auth.slice(0, 32), rpHash)) throw Error();
+        check = 'UP';
+        if ((auth[32] & 1) !== 1) throw Error();
+        check = 'UV';
+        if ((auth[32] & 4) !== 4) throw Error();
+      } catch {
+        const error = new Error('passkey-verification-failed');
+        error.code = 'PK-' + (creation ? 'CREATE' : 'GET') + '-' + check;
+        throw error;
+      }
     };
     const prfOutput = credential => {
       const output = credential.getClientExtensionResults()?.prf?.results?.first;
