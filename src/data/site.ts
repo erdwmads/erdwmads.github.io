@@ -50,12 +50,12 @@ type ScriptSpec = {
 const commonScripts: ScriptSpec[] = [
   { src: "assets/js/site-header.js?v=20260913-reviewed", defer: true },
   { src: "assets/js/theme.js?v=20260831-stability", defer: true },
-  { src: "assets/js/ambient-space.js?v=20260910-responsive-fx", defer: true },
-  { src: "assets/js/research-coordinates.js?v=20260910-whole-site", defer: true }
+  { src: "assets/js/ambient-space.js?v=20260914-viewport", defer: true },
+  { src: "assets/js/research-coordinates.js?v=20260914-viewport", defer: true }
 ];
 
-const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20260910-responsive-fx", defer: true };
-const powerManagerScript: ScriptSpec = { src: "assets/js/power-manager.js" };
+const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20260914-viewport", defer: true };
+const powerManagerScript: ScriptSpec = { src: "assets/js/power-manager.js?v=20260914-viewport" };
 const legacyNavigationScript: ScriptSpec = { src: "assets/js/legacy-navigation.js?v=20260913-reading", defer: true };
 
 const pageScripts: Record<string, ScriptSpec[]> = {
@@ -70,8 +70,8 @@ const pageScripts: Record<string, ScriptSpec[]> = {
   // Password-gated public page; keep it out of sitemap contentPages.
   "research-graduation": [
     ...commonScripts,
-    { src: "assets/js/research-passkey.js?v=20260914-prf", defer: true },
-    { src: "assets/js/research-lock.js?v=20260914-passkey", defer: true },
+    { src: "assets/js/research-passkey.js?v=20260914-verified", defer: true },
+    { src: "assets/js/research-lock.js?v=20260914-verified", defer: true },
     { src: "assets/js/mission-index.js?v=20260910-layout", defer: true },
     { src: "assets/js/mission-lightbox.js?v=20260909-comparison", defer: true },
     { src: "assets/js/mission-status-sync.js", defer: true },
@@ -90,7 +90,7 @@ export function getPageScripts(pageKey: keyof typeof pageScripts | string, inlin
   return [
     renderScript(powerManagerScript),
     scripts.map(renderScript).join("\n"),
-    renderScript({ src: "assets/js/observatory-interactions.js?v=20260913-reviewed", defer: true }),
+    renderScript({ src: "assets/js/observatory-interactions.js?v=20260914-viewport", defer: true }),
     renderScript({ src: "assets/js/mineral-interactions.js?v=20260910-evidence", defer: true }),
     inlineHtml,
     renderScript(legacyNavigationScript)

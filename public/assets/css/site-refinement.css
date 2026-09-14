@@ -79,7 +79,7 @@ html[data-theme] body#academic-site .research-coordinates {
 }
 html[data-theme] body#academic-site> .research-coordinates { display:none; }
 html[data-theme] body#academic-site .obs-fx-panel .research-coordinates { display:grid; }
-@media(max-width:760px),(pointer:coarse){
+@media(max-width:760px){
   html[data-theme] body#academic-site .obs-fx-panel>.ambient-fx-toggle,
   html[data-theme] body#academic-site .obs-fx-panel .research-coordinates { display:none!important; }
   html[data-theme] body#academic-site .obs-fx-dock { right:12px; bottom:calc(12px + env(safe-area-inset-bottom)); }

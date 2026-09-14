@@ -4,7 +4,7 @@
   const body = document.body;
   const ua = navigator.userAgent || "";
   const isEdge = /\bEdgA?\/|\bEdgiOS\/|\bEdg\//.test(ua);
-  const MOBILE_INTERFACE_MEDIA = "(max-width: 760px), (pointer: coarse)";
+  const MOBILE_INTERFACE_MEDIA = "(max-width: 760px)";
   const mobileInterfaceQuery = window.matchMedia ? window.matchMedia(MOBILE_INTERFACE_MEDIA) : null;
 
   if (body.dataset.interface2046 === 'ready') return;
@@ -459,5 +459,3 @@
     init();
   }
 })();
-
-

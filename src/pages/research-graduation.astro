@@ -60,7 +60,7 @@ const scriptHtml = getPageScripts("research-graduation");
       </form>
       <details class="research-passkey-help">
         <summary>How passkey unlock works</summary>
-        <p>Set up verifies your archive password first, then asks your device to create a passkey. On compatible Windows devices, Windows Hello handles fingerprint, face or PIN verification.</p>
+        <p>Set up verifies your archive password first, then asks your device to create a passkey and prove it can decrypt the shortcut before saving it. Complete all verification prompts. On compatible Windows devices, Windows Hello handles fingerprint, face or PIN verification.</p>
         <p>This browser stores only an encrypted password shortcut. The passkey must support encryption (PRF); otherwise, use your password. Keep your password for recovery: clearing site data, changing browsers or changing the archive password requires a new link.</p>
         <p>Forgetting this browser removes its encrypted shortcut. You can remove the passkey itself in your device’s passkey settings.</p>
       </details>

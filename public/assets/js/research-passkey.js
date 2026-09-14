@@ -85,6 +85,19 @@
         );
       } finally { secret.fill(0); }
     };
+    const decryptBinding = async (record, signal) => {
+      const secret = await getSecret(record, signal);
+      const key = await wrappingKey(secret, record);
+      checkAbort(signal);
+      try {
+        return bytes(await window.crypto.subtle.decrypt(
+          {name:'AES-GCM',iv:fromBase64(record.iv),additionalData:aad(record)}, key, fromBase64(record.ciphertext)
+        ));
+      } catch (error) {
+        if (error?.name === 'OperationError') throw new Error('passkey-decryption-failed');
+        throw error;
+      }
+    };
     const register = async (password, {signal} = {}) => {
       checkAbort(signal);
       if (readBinding()) throw new Error('passkey-already-linked');
@@ -101,7 +114,7 @@
           challenge, pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],
           timeout:60000, attestation:'none',
           authenticatorSelection:{authenticatorAttachment:'platform', residentKey:'required', userVerification:'required'},
-          extensions:{prf:{eval:{first:salt}}}
+          extensions:{prf:{}}
         },
         signal
       });
@@ -110,13 +123,25 @@
       const extension = credential.getClientExtensionResults()?.prf;
       if (extension?.enabled !== true) throw new Error('passkey-prf-unsupported');
       const record = {version:1, origin, archiveUrl, credentialId:toBase64(credential.rawId), prfSalt:toBase64(salt), iv:toBase64(random(12))};
-      const secret = extension.results?.first ? prfOutput(credential) : await getSecret(record, signal);
+      // Derive the wrapping key through the same assertion used for future unlocks.
+      const secret = await getSecret(record, signal);
       const key = await wrappingKey(secret, record);
       const clear = encode(password);
       try {
         const encrypted = await window.crypto.subtle.encrypt({name:'AES-GCM',iv:fromBase64(record.iv),additionalData:aad(record)}, key, clear);
         checkAbort(signal);
         record.ciphertext = toBase64(encrypted);
+        // A created credential is not a working unlock: prove the assertion path
+        // decrypts this envelope before saving a link or reporting success.
+        try {
+          const verified = await decryptBinding(record, signal);
+          try { if (!equal(verified, clear)) throw new Error('passkey-enrollment-verification-failed'); }
+          finally { verified.fill(0); }
+        } catch (error) {
+          if (error?.message === 'passkey-decryption-failed') throw new Error('passkey-enrollment-verification-failed');
+          throw error;
+        }
+        checkAbort(signal);
         // Recheck at commit time: another tab may have enrolled during the ceremony.
         if (readBinding()) throw new Error('passkey-already-linked');
         try {
@@ -129,11 +154,7 @@
       checkAbort(signal);
       const record = readBinding();
       if (!record) throw new Error('passkey-binding-unavailable');
-      const secret = await getSecret(record, signal);
-      const key = await wrappingKey(secret, record);
-      const clear = bytes(await window.crypto.subtle.decrypt(
-        {name:'AES-GCM',iv:fromBase64(record.iv),additionalData:aad(record)}, key, fromBase64(record.ciphertext)
-      ));
+      const clear = await decryptBinding(record, signal);
       try { checkAbort(signal); return new TextDecoder('utf-8', {fatal:true}).decode(clear); }
       finally { clear.fill(0); }
     };

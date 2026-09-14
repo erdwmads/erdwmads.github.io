@@ -1,7 +1,8 @@
 
 (function () {
   const AMBIENT_STORAGE_KEY = "madsAmbientFxEnabled";
-  const MOBILE_AMBIENT_MEDIA = "(max-width: 760px), (pointer: coarse)";
+  // Touch input also occurs in desktop WebViews; compact mode follows viewport width.
+  const MOBILE_AMBIENT_MEDIA = "(max-width: 760px)";
   const mobileAmbientQuery = window.matchMedia ? window.matchMedia(MOBILE_AMBIENT_MEDIA) : null;
   let disposeAmbientLayer;
 
@@ -278,7 +279,7 @@
     // Minimal power saver:
     // keep the same visual language, but reduce always-on particle work.
     const isMobileAmbient = window.matchMedia &&
-      window.matchMedia("(max-width: 760px), (pointer: coarse)").matches;
+      window.matchMedia("(max-width: 760px)").matches;
 
     const dustCount = isMobileAmbient ? 88 : 122;
     const pebbleCount = isMobileAmbient ? 14 : 20;

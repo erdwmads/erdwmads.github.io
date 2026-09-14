@@ -80,7 +80,7 @@ test('creation without PRF output performs a get ceremony before saving',async()
     get:async o=>{calls.push(o);return credential(o,false);}
   }});
   await a.vault.register(savedPassword);
-  assert.equal(calls.length,1);
+  assert.equal(calls.length,2);
   assert.equal(await a.vault.recover(),savedPassword);
 });
 
@@ -158,4 +158,45 @@ test('an existing binding is not overwritten by a second registration',async()=>
   const original=[...a.storage.data.values()][0];
   await assert.rejects(a.vault.register('replacement'),{message:'passkey-already-linked'});
   assert.equal([...a.storage.data.values()][0],original);
+});
+
+
+test('key derivation uses the unlock assertion path even when creation returns a different output',async()=>{
+  const a=boot({credentials:{
+    get:async o=>credential(o,false,{getClientExtensionResults:()=>({prf:{results:{first:new Uint8Array(32).fill(12).buffer}}})})
+  }});
+  await a.vault.register(savedPassword);
+  assert.equal(await a.vault.recover(),savedPassword);
+});
+
+test('registration rejects an unstable unlock secret before saving any link',async()=>{
+  let calls=0;
+  const a=boot({credentials:{get:async o=>{
+    const value=++calls===1?87:12;
+    return credential(o,false,{getClientExtensionResults:()=>({prf:{results:{first:new Uint8Array(32).fill(value).buffer}}})});
+  }}});
+  await assert.rejects(a.vault.register(savedPassword),{message:'passkey-enrollment-verification-failed'});
+  assert.equal(a.storage.data.size,0);
+});
+
+test('creation output alone cannot hide an unusable assertion path',async()=>{
+  const a=boot({credentials:{
+    get:async o=>credential(o,false,{getClientExtensionResults:()=>({prf:{}})})
+  }});
+  await assert.rejects(a.vault.register(savedPassword),{message:'passkey-prf-unsupported'});
+  assert.equal(a.storage.data.size,0);
+});
+
+test('local envelope decryption failure is distinct from an archive password failure',async()=>{
+  const a=boot();await a.vault.register(savedPassword);
+  const b=boot({storage:a.storage,credentials:{
+    get:async o=>credential(o,false,{getClientExtensionResults:()=>({prf:{results:{first:new Uint8Array(32).fill(12).buffer}}})})
+  }});
+  await assert.rejects(b.vault.recover(),{message:'passkey-decryption-failed'});
+});
+
+test('cancellation during enrollment verification leaves no saved link',async()=>{
+  const a=boot({credentials:{get:async()=>{throw new DOMException('Cancelled','NotAllowedError');}}});
+  await assert.rejects(a.vault.register(savedPassword),{name:'NotAllowedError'});
+  assert.equal(a.storage.data.size,0);
 });

@@ -40,7 +40,7 @@
     if (passkeyStatus) passkeyStatus.textContent = linked
       ? 'A passkey is linked on this browser. Your device will ask you to verify.'
       : platformAvailable
-        ? 'To link this browser, enter your archive password and choose Set up passkey. Your device may ask you to verify twice.'
+        ? 'To link this browser, enter your archive password and choose Set up passkey. Complete all device prompts; setup includes an unlock verification.'
         : 'Passkey setup is unavailable here. Use your password, or open this page in Edge or Chrome with Windows Hello enabled.';
   };
 
@@ -182,7 +182,9 @@
       'passkey-storage-unavailable': 'This browser could not save the encrypted shortcut. Allow site storage or use your password.',
       'passkey-binding-unavailable': 'No usable passkey link was found on this browser. Unlock with your password to set one up.',
       'passkey-already-linked': 'This browser already has a passkey link. Use it, or forget this browser before setting up a replacement.',
-      'passkey-verification-failed': 'The passkey could not be verified. Use your password.',
+      'passkey-verification-failed': 'The passkey could not be verified. Use your password. [PK-VERIFY]',
+      'passkey-decryption-failed': 'Device verification completed, but this browser’s encrypted shortcut could not be decrypted. Choose Forget this browser, then set up again with your current archive password. [PK-LOCAL]',
+      'passkey-enrollment-verification-failed': 'The device created a passkey, but its unlock test failed. No browser link was saved. Use your password. [PK-SETUP]',
     }[caughtError?.message] || 'The passkey could not unlock this archive. Use your password; if it has changed, forget this browser and set up the passkey again.';
   };
 
@@ -208,7 +210,7 @@
       if (currentAttempt !== attemptToken) return;
       if (mode === 'setup') {
         phase = 'passkey';
-        if (passkeyStatus) passkeyStatus.textContent = 'Confirm the passkey on your device to link this browser…';
+        if (passkeyStatus) passkeyStatus.textContent = 'Follow the device prompts to create the passkey and verify that it can unlock this browser…';
         await passkeys.register(password, {signal:currentController?.signal});
         if (currentAttempt !== attemptToken) return;
       }
@@ -218,7 +220,9 @@
       unlock(entries);
     } catch (caughtError) {
       if (currentAttempt !== attemptToken) return;
-      if (phase === 'passkey' || (mode === 'passkey' && caughtError?.name === 'OperationError')) {
+      if (phase === 'archive' && mode === 'passkey' && caughtError?.name === 'OperationError') {
+        setError('The passkey recovered its saved password, but that password could not decrypt the current archive. If your password changed, forget this browser and set up again with the current password. [PK-ARCHIVE]', false);
+      } else if (phase === 'passkey') {
         setError(passkeyMessage(caughtError), false);
       } else if (caughtError?.name === 'OperationError') {
         setError('Incorrect password.');

@@ -5,8 +5,7 @@
     "(prefers-reduced-motion: reduce)"
   ];
   const MOBILE_MEDIA = [
-    "(max-width: 760px)",
-    "(pointer: coarse)"
+    "(max-width: 760px)"
   ];
 
   let idleTimer = 0;

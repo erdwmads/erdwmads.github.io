@@ -1,5 +1,5 @@
 (function () {
-  const MOBILE_COORDINATES_MEDIA = "(max-width: 760px), (pointer: coarse)";
+  const MOBILE_COORDINATES_MEDIA = "(max-width: 760px)";
   const mobileCoordinatesQuery = window.matchMedia
     ? window.matchMedia(MOBILE_COORDINATES_MEDIA)
     : null;

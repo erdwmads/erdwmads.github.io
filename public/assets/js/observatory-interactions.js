@@ -138,7 +138,7 @@
     const coordinates = document.querySelector('.research-coordinates');
     if (coordinates) panel.appendChild(coordinates);
     const closeSettings = () => { panel.hidden = true; settings.setAttribute('aria-expanded', 'false'); };
-    const compactDock = matchMedia('(max-width: 760px), (pointer: coarse)');
+    const compactDock = matchMedia('(max-width: 760px)');
     const resetSettings = () => {
       const restoreFocus = panel.contains(document.activeElement);
       closeSettings();
