@@ -109,7 +109,7 @@ if (!fs.existsSync(encryptedMissionPayloadPath)) {
   }
 }
 
-for (const relativePath of ["docs/codex-update-contract.md", "docs/maintenance-templates.md"]) {
+for (const relativePath of ["README.md", "docs/codex-update-contract.md", "docs/maintenance-templates.md"]) {
   const documentPath = path.join(root, relativePath);
   if (fs.readFileSync(documentPath, "utf8").includes("src/data/missionLog.ts")) {
     fail(`${relativePath}: stale plaintext Mission Log maintenance path`);

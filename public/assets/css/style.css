@@ -466,7 +466,7 @@ body::before {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image: url("../img/asteroid-bennu.jpg");
+  background-image: url("../img/asteroid-bennu.webp");
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -558,7 +558,7 @@ body::before {
       rgba(247, 251, 255, 0.52),
       rgba(247, 251, 255, 0.64)
     ),
-    url("../img/Solar_System_true_color.jpg") !important;
+    url("../img/Solar_System_true_color.webp") !important;
   background-size: cover !important;
   background-position: center center !important;
   background-repeat: no-repeat !important;
@@ -1669,7 +1669,7 @@ html[data-theme="space"] .site-header::before,
 html[data-theme="space"] .site-footer::before {
   background-image:
     linear-gradient(rgba(6, 16, 31, .32), rgba(6, 16, 31, .58)),
-    url("../img/Solar_System_true_color.jpg") !important;
+    url("../img/Solar_System_true_color.webp") !important;
 }
 
 html[data-theme="space"] .theme-toggle,
@@ -1822,7 +1822,7 @@ html[data-theme-space] .site-footer::before,
 body.space-mode .site-footer::before {
   background-image:
     linear-gradient(rgba(6, 16, 31, .24), rgba(6, 16, 31, .58)),
-    url("../img/Solar_System_true_color.jpg") !important;
+    url("../img/Solar_System_true_color.webp") !important;
 }
 
 html[data-theme="space"] .theme-toggle,
@@ -5395,7 +5395,7 @@ html:not([data-theme="space"]) .action-row a[href="research.html"] {
   .site-header::before {
     background-image:
       linear-gradient(rgba(5, 12, 23, .36), rgba(5, 12, 23, .56)),
-      url("../img/asteroid-bennu.jpg") !important;
+      url("../img/asteroid-bennu.webp") !important;
     background-size: cover !important;
     background-position: center center !important;
     filter: none !important;
@@ -5404,7 +5404,7 @@ html:not([data-theme="space"]) .action-row a[href="research.html"] {
   html:not([data-theme="space"]) .site-header::before {
     background-image:
       linear-gradient(rgba(235, 242, 248, .30), rgba(235, 242, 248, .48)),
-      url("../img/asteroid-bennu.jpg") !important;
+      url("../img/asteroid-bennu.webp") !important;
   }
 
   html[data-theme="space"] .site-header::before,
@@ -5412,7 +5412,7 @@ html:not([data-theme="space"]) .action-row a[href="research.html"] {
   body.space-mode .site-header::before {
     background-image:
       linear-gradient(rgba(5, 12, 23, .30), rgba(5, 12, 23, .58)),
-      url("../img/asteroid-bennu.jpg") !important;
+      url("../img/asteroid-bennu.webp") !important;
   }
 
   /* Keep the nav glass itself, but make it sit naturally on the asteroid background. */
@@ -5447,7 +5447,7 @@ html:not([data-theme="space"]) .action-row a[href="research.html"] {
   .site-header::before {
     background-image:
       linear-gradient(rgba(5, 12, 23, .22), rgba(5, 12, 23, .48)),
-      url("../img/Solar_System_true_color.jpg") !important;
+      url("../img/Solar_System_true_color.webp") !important;
     background-size: cover !important;
     background-position: center center !important;
   }
@@ -5455,7 +5455,7 @@ html:not([data-theme="space"]) .action-row a[href="research.html"] {
   html:not([data-theme="space"]) .site-header::before {
     background-image:
       linear-gradient(rgba(235, 242, 248, .18), rgba(235, 242, 248, .38)),
-      url("../img/Solar_System_true_color.jpg") !important;
+      url("../img/Solar_System_true_color.webp") !important;
     background-size: cover !important;
     background-position: center center !important;
   }
@@ -5465,7 +5465,7 @@ html:not([data-theme="space"]) .action-row a[href="research.html"] {
   body.space-mode .site-header::before {
     background-image:
       linear-gradient(rgba(5, 12, 23, .20), rgba(5, 12, 23, .52)),
-      url("../img/Solar_System_true_color.jpg") !important;
+      url("../img/Solar_System_true_color.webp") !important;
     background-size: cover !important;
     background-position: center center !important;
   }
@@ -11672,7 +11672,7 @@ body.ui-page-research-graduation #mission-index > .mission-index-panel {
   position: absolute !important;
   inset: -8% !important;
   z-index: -2 !important;
-  background-image: url("../img/asteroid-bennu.jpg") !important;
+  background-image: url("../img/asteroid-bennu.webp") !important;
   background-size: cover !important;
   background-position: center center !important;
   opacity: .20 !important;

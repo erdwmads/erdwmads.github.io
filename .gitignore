@@ -3,6 +3,8 @@ dist/
 .astro/
 .worktrees/
 _local/
+.codex_tmp/
+.claude/
 npm-debug.log*
 .DS_Store
 desktop.ini

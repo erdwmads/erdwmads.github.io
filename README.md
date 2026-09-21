@@ -43,9 +43,9 @@ npm run export:ppt-data
 - `src/components/MissionLogShell.astro` - password-gated Graduation Research Mission Log shell.
 - `src/data/site.ts` - site metadata, navigation, footer, script registry, sitemap page list.
 - `src/data/papers.ts` - Paper Shelf source data.
-- `src/data/missionLog.ts` - Graduation Research Mission Log source data.
+- `public/assets/data/mission-log.enc.json` - encrypted Mission Log payload. The plaintext source lives outside this repository; see `docs/content-workflow.md`.
 - `src/legacy/` - preserved page body fragments that have not yet been data-modeled.
-- `public/assets/css/style.css` - visual system, effects, responsive rules.
+- `public/assets/css/style.css` - legacy compatibility stylesheet; current stylesheet ownership is listed in `docs/ui-invariants.md`.
 - `public/assets/js/` - theme, ambient effects, soft navigation, Paper Shelf filters, password gate, and Mission Log scripts.
 - `public/assets/img/` - portraits, gallery photos, public research images, and backgrounds.
 - `public/assets/img/mission-log/` - Mission Log images used by the password-gated Graduation Research page.
@@ -57,7 +57,7 @@ Codex should do the website edits. The user can send rough content.
 
 - Add papers: update `src/data/papers.ts`.
   Each paper needs reader-facing `tags` and Paper Shelf `filters` (`dolomite`, `ci-orgueil`, `ryugu-bennu`, `methods`, `chronology`).
-- Add Mission Log entries: update `src/data/missionLog.ts`, place log photos under `public/assets/img/mission-log/`, then run `npm run check`.
+- Add Mission Log entries: update the private Mission Log JSON outside the repository, place display photos under `public/assets/img/mission-log/`, publish the encrypted payload with `npm run publish:mission-log`, then run `npm run check:all`. Only entry text is encrypted; images in that folder are publicly reachable (see `docs/content-workflow.md`).
 - Change navigation, page scripts, sitemap list, or global metadata: update `src/data/site.ts`.
 - Replace normal images: add files under `public/assets/img/`, then update the relevant data or legacy fragment.
 - Build PPTs from website content: run `npm run export:ppt-data` and use `dist/ppt-data.json`.

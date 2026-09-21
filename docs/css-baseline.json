@@ -1,26 +1,114 @@
 [
   {
+    "file": "experimental-folio.css",
+    "bytes": 3659,
+    "lines": 24,
+    "repeatedSelectors": 1,
+    "important": 44
+  },
+  {
+    "file": "image-inspector.css",
+    "bytes": 5315,
+    "lines": 44,
+    "repeatedSelectors": 9,
+    "important": 28
+  },
+  {
+    "file": "mineral-interactions.css",
+    "bytes": 10782,
+    "lines": 183,
+    "repeatedSelectors": 14,
+    "important": 11
+  },
+  {
+    "file": "observatory-experience.css",
+    "bytes": 25241,
+    "lines": 494,
+    "repeatedSelectors": 21,
+    "important": 138
+  },
+  {
+    "file": "observatory.css",
+    "bytes": 30280,
+    "lines": 503,
+    "repeatedSelectors": 41,
+    "important": 444
+  },
+  {
+    "file": "planetary-explorer.css",
+    "bytes": 22152,
+    "lines": 227,
+    "repeatedSelectors": 30,
+    "important": 79
+  },
+  {
+    "file": "quiet-observatory.css",
+    "bytes": 18487,
+    "lines": 235,
+    "repeatedSelectors": 39,
+    "important": 52
+  },
+  {
     "file": "research-log-evolution.css",
-    "bytes": 4267,
-    "lines": 178,
-    "repeatedSelectors": 5
+    "bytes": 13313,
+    "lines": 274,
+    "repeatedSelectors": 11,
+    "important": 46
+  },
+  {
+    "file": "research-reading.css",
+    "bytes": 8628,
+    "lines": 100,
+    "repeatedSelectors": 13,
+    "important": 20
+  },
+  {
+    "file": "research-scale.css",
+    "bytes": 3295,
+    "lines": 78,
+    "repeatedSelectors": 5,
+    "important": 8
+  },
+  {
+    "file": "review-refinement.css",
+    "bytes": 7024,
+    "lines": 137,
+    "repeatedSelectors": 1,
+    "important": 80
   },
   {
     "file": "shell-evolution.css",
-    "bytes": 5784,
-    "lines": 212,
-    "repeatedSelectors": 2
+    "bytes": 21341,
+    "lines": 700,
+    "repeatedSelectors": 11,
+    "important": 296
+  },
+  {
+    "file": "site-refinement.css",
+    "bytes": 16221,
+    "lines": 242,
+    "repeatedSelectors": 16,
+    "important": 131
   },
   {
     "file": "style.css",
-    "bytes": 542877,
-    "lines": 17592,
-    "repeatedSelectors": 270
+    "bytes": 521295,
+    "lines": 17625,
+    "repeatedSelectors": 270,
+    "important": 4381
   },
   {
     "file": "tokens.css",
     "bytes": 576,
     "lines": 22,
-    "repeatedSelectors": 0
+    "repeatedSelectors": 0,
+    "important": 0
+  },
+  {
+    "file": "typography.css",
+    "bytes": 2610,
+    "lines": 56,
+    "repeatedSelectors": 0,
+    "important": 12
   }
 ]

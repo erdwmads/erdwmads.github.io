@@ -6,9 +6,13 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const imageDir = path.join(root, "public/assets/img");
 const docsDir = path.join(root, "docs");
 const outputPath = path.join(docsDir, "image-inventory.md");
+// Every Mission Log display image needs a thumbnail; count the sources the same
+// way generate-image-derivatives.mjs does so new entries do not stale this check.
+const missionSourceCount = fs.readdirSync(path.join(imageDir, "mission-log"))
+  .filter((name) => /^grad-log-.*\.jpg$/i.test(name)).length;
 const derivativeTargets = [
   { label: "Photography", dir: path.join(imageDir, "thumbs", "photography"), expected: 21 },
-  { label: "Mission Log", dir: path.join(imageDir, "thumbs", "mission-log"), expected: 55 }
+  { label: "Mission Log", dir: path.join(imageDir, "thumbs", "mission-log"), expected: missionSourceCount }
 ];
 
 function walk(dir) {

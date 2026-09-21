@@ -1,0 +1,33 @@
+---
+import LegacyShell from "../components/LegacyShell.astro";
+import { contentPages, getPageScripts } from "../data/site";
+
+const scriptHtml = getPageScripts("home");
+---
+
+<LegacyShell
+  title="Page not found | Mads LIU Yong"
+  description="The requested page is not part of this research archive."
+  current="not-found"
+  mainClass="main"
+  path="404.html"
+  scriptHtml={scriptHtml}
+  noindex
+>
+  <section>
+    <p class="eyebrow">Signal lost · 404</p>
+    <h1>This page is not in the archive</h1>
+    <p class="lead">
+      The address may have changed, or the page was never catalogued. The sections below are current.
+    </p>
+  </section>
+
+  <section class="section two-col">
+    <h2 class="section-label">Archive index</h2>
+    <div class="card">
+      <ul>
+        {contentPages.map((page) => <li><a href={`/${page.href}`}>{page.title}</a></li>)}
+      </ul>
+    </div>
+  </section>
+</LegacyShell>

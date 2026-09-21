@@ -69,4 +69,4 @@ Astro + TypeScript + Markdown/JSON content
 
 The goal is not a dynamic app. The goal is a cleaner static site that GitHub Pages can serve reliably.
 
-Run `npm run audit:css` when changing stylesheet ownership. Treat `docs/css-baseline.json` as a complexity ceiling: new work should not increase `style.css` size or repeated-selector count.
+Run `npm run audit:css:check` when changing stylesheet ownership; it fails if `style.css` grows or a stylesheet is missing from the baseline. After an intentional change, refresh the baseline with `npm run audit:css -- --write`. Treat `docs/css-baseline.json` as a complexity ceiling: new work should not increase `style.css` size or repeated-selector count.

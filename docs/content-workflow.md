@@ -105,3 +105,16 @@ Keep Mission Log image paths local:
 Store public Mission Log image derivatives under `public/assets/img/mission-log/`; keep new original images in the private archive backup flow above.
 
 Desktop can use the lightbox. Mobile Mission Log images should remain inline figures with visible captions.
+
+### Mission Log images are not protected
+
+The passphrase and passkey flow encrypts entry text only. Every file under `public/assets/img/mission-log/` and `public/assets/img/thumbs/mission-log/` is deployed as an ordinary static asset: anyone with the URL can fetch it, and the filenames can be listed from the public GitHub repository. The owner accepted this boundary on 2026-09-21.
+
+Treat adding an image to that folder as publishing it:
+
+- Add only images the owner is willing to expose before the work is published. Hold back figures that would reveal an unpublished result on their own.
+- Publish a resized display derivative, not the instrument original. Originals belong in the private archive backup. A display image should rarely need more than about 2400 px on the long edge or 1.5 MB.
+- Do not put sample IDs, coordinates, or conclusions in image filenames. Keep the neutral `grad-log-YYYYMMDD-NN.jpg` pattern.
+- Captions and alt text stay in the encrypted payload, so an exposed image carries no interpretation with it.
+
+Removing an image later does not remove it from git history.

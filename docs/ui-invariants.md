@@ -18,6 +18,8 @@ Do not remove these concepts during refactors unless the owner explicitly change
 
 Mission Log content is private. The public site may preserve its shell and visual language, but detailed entries are available only from the encrypted archive after the protected unlock flow.
 
+That privacy covers entry text only. Mission Log images are ordinary public static assets; see "Mission Log images are not protected" in `docs/content-workflow.md`.
+
 Maintain entries in `C:\Users\tsuku\Desktop\Grad Research\Orgueil Grad Data\Website Archive\mission-log.private.json`, publish only the encrypted archive, and never restore a plaintext source route under `src`, `public`, or `dist`.
 
 ## Theme Behavior

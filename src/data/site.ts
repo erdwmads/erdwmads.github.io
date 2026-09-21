@@ -8,8 +8,31 @@ export const siteMetadata = {
   url: "https://erdwmads.github.io",
   title: "Mads LIU Yong Academic Website",
   description: "Academic website of Mads LIU Yong, focused on cosmic mineralogy, planetary sciences, meteoritics, and primitive Solar System materials.",
-  image: "assets/img/Solar_System_true_color.jpg",
+  image: "assets/img/og-cover.jpg",
   locale: "en_US"
+} as const;
+
+// Public profile facts only; keep the email out so the contact page's obfuscation still matters.
+export const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Mads LIU Yong",
+  url: `${siteMetadata.url}/`,
+  image: `${siteMetadata.url}/assets/img/profile.jpg`,
+  description: siteMetadata.description,
+  affiliation: [
+    {
+      "@type": "CollegeOrUniversity",
+      name: "Waseda University",
+      department: "Mineralogy Laboratory, Department of Earth Sciences"
+    },
+    {
+      "@type": "CollegeOrUniversity",
+      name: "The University of Tokyo",
+      department: "Mikouchi Laboratory, The University Museum"
+    }
+  ],
+  knowsAbout: ["Cosmic mineralogy", "Meteoritics", "Planetary sciences", "Carbonaceous chondrites", "Orgueil CI1 chondrite"]
 } as const;
 
 export const navItems = [
