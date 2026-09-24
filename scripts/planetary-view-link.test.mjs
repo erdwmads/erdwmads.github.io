@@ -57,12 +57,12 @@ test('rejects invalid state types and invalid supplied public fields', () => {
   }
 });
 
-test('public URL uses sibling research.html without query, old hash or credentials', () => {
-  for (const path of ['index.html', 'research.html', '']) {
+test('public URL uses sibling ryugu-bennu.html without query, old hash or credentials', () => {
+  for (const path of ['index.html', 'research.html', 'ryugu-bennu.html', '']) {
     const url = new URL(encodeObservation({ view: 'orbit' }, `https://user:secret@example.com/project/${path}?private=yes#password`));
-    assert.equal(url.href, 'https://example.com/project/research.html#observe=1&view=orbit');
+    assert.equal(url.href, 'https://example.com/project/ryugu-bennu.html#observe=1&view=orbit');
   }
-  assert.equal(new URL(encodeObservation({}, new URL(base))).pathname, '/project/research.html');
+  assert.equal(new URL(encodeObservation({}, new URL(base))).pathname, '/project/ryugu-bennu.html');
   for (const url of ['bad', '/research.html', 'javascript:alert(1)', 'file:///private/index.html', 'ftp://example.com/']) {
     assert.throws(() => encodeObservation({}, url), TypeError);
   }

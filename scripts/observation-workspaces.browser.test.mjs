@@ -13,7 +13,7 @@ try {
  const page=await browser.newPage({viewport:{width:1440,height:1050},reducedMotion:'reduce'});
  page.setDefaultTimeout(15000);page.on('pageerror',e=>errors.push(e.message));
  await page.addInitScript(()=>sessionStorage.setItem('mads-cosmic-arrival-v1','done'));
- await page.goto(base+'/research.html');
+ await page.goto(base+'/ryugu-bennu.html');
  assert.equal(await page.locator('.mission-workspace').count(),1,'mission workspace exists');
  const view=page.locator('[data-mission-viewport]'),notes=page.locator('[data-mission-notebook]');
  await view.scrollIntoViewIfNeeded();
@@ -88,7 +88,7 @@ try {
  assert(await page.locator('.cv-photo img').evaluate(img=>img.naturalWidth>0),'CV photo remains available');
  await page.locator('.continue-reading a[href="research.html"]').click();await page.waitForURL('**/research.html');
  await page.waitForFunction(()=>!document.documentElement.classList.contains('mads-soft-nav-active'));
- assert.equal(await page.locator('.continue-reading a[href="origins-study.html"]').count(),1);
+ assert.equal(await page.locator('.continue-reading a[href="ryugu-bennu.html"]').count(),1);
  results.push('CV photo and contextual link through continuous navigation');
  assert.deepEqual(errors,[]);console.log(JSON.stringify({results,errors},null,2));
  await writeFile(new URL('results.json',evidence),JSON.stringify({results,errors},null,2));

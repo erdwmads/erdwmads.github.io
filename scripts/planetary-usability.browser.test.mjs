@@ -8,7 +8,7 @@ let failures=0;
 async function check(name,fn,options={}) {
   const page=await browser.newPage({viewport:{width:1440,height:1000},reducedMotion:'reduce',...options});
   try {
-    await page.goto(`${base}/research.html`,{waitUntil:'networkidle'});
+    await page.goto(`${base}/ryugu-bennu.html`,{waitUntil:'networkidle'});
     const root=page.locator('.planetary');
     await root.locator('[data-stage]').scrollIntoViewIfNeeded();
     await page.waitForFunction(()=>document.querySelector('.planetary').dataset.renderState==='ready');

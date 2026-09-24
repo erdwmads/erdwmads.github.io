@@ -6,7 +6,7 @@ const base=process.env.SITE_TEST_URL||'http://127.0.0.1:4322';
 try {
   const page=await browser.newPage({viewport:{width:1440,height:1100},reducedMotion:'reduce'}),errors=[];
   page.on('pageerror',error=>errors.push(error.message));
-  await page.goto(`${base}/research.html#observe=1&view=origins&material=orgueil&originProgress=0.65&originCutaway=0.85`,{waitUntil:'networkidle'});
+  await page.goto(`${base}/ryugu-bennu.html#observe=1&view=origins&material=orgueil&originProgress=0.65&originCutaway=0.85`,{waitUntil:'networkidle'});
   await page.addStyleTag({content:'astro-dev-toolbar,.obs-fx-settings{display:none!important}'});
   const root=page.locator('.planetary'),canvas=root.locator('canvas');
   await root.locator('[data-stage]').scrollIntoViewIfNeeded();

@@ -697,3 +697,11 @@ html.is-edge-browser .ambient-space-layer {
     transform: none !important;
   }
 }
+
+/* mobile-readable-shell: 12px text floor and 44px tap targets for the shell on phones (2026-09).
+   The extra .site-header / .site-footer class outranks observatory.css, which loads later. */
+@media (max-width: 760px) {
+  html[data-theme] body#academic-site .site-header .brand span { font-size: 12px !important; line-height: 1.45 !important; }
+  html[data-theme] body#academic-site .site-header .nav-log-gate__copy small { font-size: 12px !important; letter-spacing: .03em !important; }
+  html[data-theme] body#academic-site .site-footer .footer-inner a { display: inline-flex !important; align-items: center; min-height: 44px; }
+}

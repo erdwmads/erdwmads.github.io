@@ -6,6 +6,7 @@
     "index.html": "ui-page-home",
     "": "ui-page-home",
     "research.html": "ui-page-research",
+    "ryugu-bennu.html": "ui-page-ryugu-bennu",
     "origins-study.html": "ui-page-origins",
     "research-log.html": "ui-page-research-log",
     "research-graduation.html": "ui-page-research-log",

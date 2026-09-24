@@ -21,6 +21,8 @@
     "test:mission-index": "node --test scripts/mission-index.test.mjs",
     "test:mission-lightbox": "node --test scripts/mission-lightbox.test.mjs",
     "test:mobile-layout": "node --test scripts/mobile-layout.test.mjs",
+    "test:unit": "node scripts/run-unit-tests.mjs",
+    "test:browser": "node scripts/run-browser-tests.mjs",
     "publish:mission-log": "node scripts/publish-protected-mission-log.mjs"
   },
   "devDependencies": {

@@ -9,7 +9,7 @@ const base=process.env.SITE_TEST_URL||'http://127.0.0.1:52523';
 try{for(const width of [1440,390,320]){
  const page=await browser.newPage({viewport:{width,height:1000},reducedMotion:'reduce'}),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.addInitScript(()=>sessionStorage.setItem('mads-cosmic-arrival-v1','done'));
- await page.goto(base+'/research.html');const root=page.locator('.planetary');await root.locator('[data-stage]').scrollIntoViewIfNeeded();
+ await page.goto(base+'/ryugu-bennu.html');const root=page.locator('.planetary');await root.locator('[data-stage]').scrollIntoViewIfNeeded();
  await page.waitForFunction(()=>document.querySelector('.planetary').dataset.renderState==='ready');
  assert.equal(await page.locator('.site-header .nav a[href="origins-study.html"]').count(),1);
  assert.deepEqual(await root.locator('[role="tablist"] [data-view]').evaluateAll(es=>es.map(e=>e.dataset.view)),['orbit','shape','sample','minerals']);
@@ -26,7 +26,7 @@ try{for(const width of [1440,390,320]){
  await page.locator('.site-header .nav a[href="origins-study.html"]').click();await page.waitForURL('**/origins-study.html');await page.waitForFunction(()=>window.study);
  assert.equal(await page.locator('.chapters [data-stage]').count(),4);
  if(width<=760)await page.locator('[data-nav-toggle]').click();
- await page.locator('.site-header .nav a[href="research.html"]').click();await page.waitForURL('**/research.html');
+ await page.locator('.site-header .nav a[href="ryugu-bennu.html"]').click();await page.waitForURL('**/ryugu-bennu.html');
  await page.goto(base+'/research.html#observe=1&view=origins&material=ryugu&originProgress=.65&originCutaway=.85');
  await page.waitForURL('**/origins-study.html#stage=2&progress=0.6');await page.waitForFunction(()=>window.study);
  assert.deepEqual(await page.evaluate(()=>({stage:study.state.stage,progress:study.state.progress,playing:study.state.playing})),{stage:2,progress:.6,playing:false});

@@ -181,3 +181,10 @@ html[data-theme] body#academic-site .mission-story [aria-current=step]{border-co
 @media(max-width:760px){.mission-flight-cue{bottom:36px;padding:7px 10px;max-width:calc(100% - 20px);}.mission-flight-cue strong{font-size:11px;}.mission-flight-cue span{font-size:9px;}.mission-solar-context{top:10px;left:10px;width:138px;padding:7px;}.mission-solar-context span{font-size:8px;}.mission-solar-context small{font-size:8px;}.mission-solar-context text{font-size:12px;}}
 
 @media(max-width:760px){.mission-viewport .mission-view-hint{left:10px;right:10px;bottom:6px;padding:0;background:none;font-size:8px;line-height:1.3;max-width:calc(100% - 20px);}.mission-flight-cue{bottom:39px;}}
+
+/* mobile-readable-missions: 11px floor for panel text, 10px for scene hints on phones (2026-09).
+   Dense map insets and legends keep their sizes so they do not cover the scene. */
+@media(max-width:760px){
+ .mission-chapters button span,.mission-story button time,.mission-explanation>span,.mission-location small,.mission-scrubber,.mission-orbit-details{font-size:11px;}
+ .mission-viewport .mission-view-hint,.mission-flight-cue span{font-size:10px;}
+}

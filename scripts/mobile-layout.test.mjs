@@ -234,6 +234,7 @@ test("ambient particles keep continuous positions at animation boundaries", () =
     legacyCss,
     /\.ambient-dust,\s*\.ambient-pebble\s*\{[^}]*animation-direction:\s*alternate\s*!important/is
   );
-  assert.match(legacyShell, /<link\s+rel="stylesheet"\s+href="assets\/css\/style\.css(?:\?[^"]+)?"/);
+  assert.match(legacyShell, /<link\s+rel="stylesheet"\s+href=\{`assets\/css\/site\.css\?v=\$\{stylesheetVersion\}`\}>/);
+  assert.match(siteSource, /export const stylesheets = \[\s*"style\.css",/);
   assert.match(siteSource, /src:\s*"assets\/js\/ambient-space\.js(?:\?[^"]+)?"/);
 });

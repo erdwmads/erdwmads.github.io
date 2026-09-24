@@ -3,21 +3,20 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';
 import {augmentAsteroid} from '../src/scripts/sample-missions/asteroid-detail.js';
-import {normalizeAsteroid} from '../src/scripts/asteroid-scale.js';
+import {normalizeAsteroid,restoreFacetedShape} from '../src/scripts/asteroid-scale.js';
 
 globalThis.ProgressEvent ??= class {constructor(type,properties){this.type=type;Object.assign(this,properties);}};
 
 async function sourceModel(id){
-  const bytes=await readFile(new URL(`../public/assets/data/planetary/${id==='ryugu'?'ryugu.obj':'bennu.glb'}`,import.meta.url));
-  if(id==='ryugu')return new OBJLoader().parse(bytes.toString());
+  const bytes=await readFile(new URL(`../public/assets/data/planetary/${id}.glb`,import.meta.url));
   // CPU geometry test: omit embedded images, retaining all source mesh data and transforms.
   const length=bytes.readUInt32LE(12),gltf=JSON.parse(bytes.subarray(20,20+length).toString());
   gltf.images=[];gltf.textures=[];gltf.materials=[];
   for(const mesh of gltf.meshes)for(const primitive of mesh.primitives)delete primitive.material;
   gltf.buffers[0].uri='data:application/octet-stream;base64,'+bytes.subarray(28+length).toString('base64');
-  return (await new GLTFLoader().parseAsync(JSON.stringify(gltf),'')).scene;
+  const scene=(await new GLTFLoader().parseAsync(JSON.stringify(gltf),'')).scene;
+  return id==='ryugu'?restoreFacetedShape(scene):scene;
 }
 
 function equivalentDiameter(object){

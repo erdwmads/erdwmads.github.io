@@ -7,7 +7,7 @@ const base=process.env.SITE_TEST_URL||'http://127.0.0.1:52523';
 try{
  const page=await browser.newPage({viewport:{width:1440,height:1050}}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));
- await page.goto(base+'/research.html',{waitUntil:'networkidle'});
+ await page.goto(base+'/ryugu-bennu.html',{waitUntil:'networkidle'});
  const root=page.locator('[data-sample-missions]'),view=root.locator('[data-mission-viewport]');
  const ready=async()=>{await view.scrollIntoViewIfNeeded();await page.waitForFunction(()=>document.querySelector('[data-sample-missions]').dataset.ready==='true'&&sampleMissions.state.calls>0,null,{timeout:45000});};
  await ready();
@@ -38,7 +38,7 @@ try{
  await page.waitForFunction(()=>document.querySelector('.planetary').dataset.mode==='sample'&&document.querySelector('.planetary').dataset.activeMaterial==='bennu');
  await page.locator('.nav a[href="contact.html"]').click();await page.waitForURL('**/contact.html');
  assert.equal(await page.evaluate(()=>Boolean(window.sampleMissions)),false);
- await page.locator('.nav a[href="research.html"]').click();await page.waitForURL('**/research.html');await ready();
+ await page.locator('.nav a[href="ryugu-bennu.html"]').click();await page.waitForURL('**/ryugu-bennu.html');await ready();
  assert.equal(await root.locator('canvas').count(),1);
  await page.evaluate(async()=>{await Promise.all([sampleMissions.choose('osiris-rex'),sampleMissions.choose('hayabusa2'),sampleMissions.choose('osiris-rex')]);});
  await ready();assert.equal(await page.evaluate(()=>sampleMissions.state.mission),'osiris-rex');
@@ -62,7 +62,7 @@ try{
  assert.deepEqual(errors,[]);
  await page.close();
  const mobile=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
- await mobile.goto(base+'/research.html',{waitUntil:'networkidle'});
+ await mobile.goto(base+'/ryugu-bennu.html',{waitUntil:'networkidle'});
  const mv=mobile.locator('[data-mission-viewport]');await mv.scrollIntoViewIfNeeded();
  await mobile.waitForFunction(()=>document.querySelector('[data-sample-missions]').dataset.ready==='true',null,{timeout:45000});
  const touch=mobile.locator('[data-mission-action="touch"]');await touch.click();

@@ -2,6 +2,7 @@
 import { brand, footerItems, navItems, personSchema, researchLogGate, siteMetadata } from "../data/site";
 import CosmicArrival from './CosmicArrival.astro';
 import ContinueReading from './ContinueReading.astro';
+import { stylesheetBundle } from "../lib/stylesheet-bundle";
 import '../scripts/origins-study/style.css';
 import '../scripts/sample-missions/style.css';
 
@@ -20,6 +21,7 @@ const canonicalPath = path || "index.html";
 const canonicalUrl = new URL(canonicalPath, `${siteMetadata.url}/`).toString();
 const imageUrl = new URL(siteMetadata.image, `${siteMetadata.url}/`).toString();
 const bodyClass = `site-refined ui-page-${current}`;
+const { version: stylesheetVersion } = await stylesheetBundle();
 ---
 
 <!doctype html>
@@ -88,22 +90,7 @@ const bodyClass = `site-refined ui-page-${current}`;
     }
   </style>
   <link rel="preload" href="assets/fonts/montserrat-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="assets/css/style.css?v=20260921-webp">
-  <link rel="stylesheet" href="assets/css/tokens.css">
-  <link rel="stylesheet" href="assets/css/shell-evolution.css?v=20260831-stability">
-  <link rel="stylesheet" href="assets/css/research-log-evolution.css?v=20260914-passkey">
-    <link rel="stylesheet" href="assets/css/observatory.css?v=20260910-navigation">
-  <link rel="stylesheet" href="assets/css/observatory-experience.css?v=20260909-hierarchy">
-    <link rel="stylesheet" href="assets/css/mineral-interactions.css?v=20260907-workflow">
-    <link rel="stylesheet" href="assets/css/research-scale.css?v=20260910-evidence">
-  <link rel="stylesheet" href="assets/css/planetary-explorer.css?v=20260910-whole-site">
-    <link rel="stylesheet" href="assets/css/typography.css?v=20260909-theme-geometry">
-  <link rel="stylesheet" href="assets/css/site-refinement.css?v=20260914-viewport">
-  <link rel="stylesheet" href="assets/css/review-refinement.css?v=20260913-mobile">
-  <link rel="stylesheet" href="assets/css/research-reading.css?v=20260913-flow">
-  <link rel="stylesheet" href="assets/css/experimental-folio.css?v=20260914-home-return">
-  <link rel="stylesheet" href="assets/css/image-inspector.css?v=20260913-hundred">
-  <link rel="stylesheet" href="assets/css/quiet-observatory.css?v=20260914-workspaces">
+  <link rel="stylesheet" href={`assets/css/site.css?v=${stylesheetVersion}`}>
     <script>
       import '../scripts/planetary-explorer.js';
       import '../scripts/origins-study/loader.js';

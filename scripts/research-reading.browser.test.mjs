@@ -9,7 +9,8 @@ try {
  await page.goto(base+'/research.html');
  await page.locator('[data-research-guide][data-ready]').waitFor();
  const ids=await page.locator('main h2[id]').evaluateAll(es=>es.map(e=>e.id));
- assert.ok(ids.indexOf('research-methods-title')<ids.indexOf('missions-title'),'Methods belong next to the project question');
+ assert.deepEqual(ids,['research-focus-title','research-methods-title','comparison-title'],'Methods follow the question; comparison materials close the page');
+ assert.equal(await page.locator('[data-sample-missions],[data-planetary-explorer],[data-image-inspector]').count(),0,'comparison workspaces live on ryugu-bennu.html');
  const nav=page.locator('[data-research-guide]');
  await nav.locator('a[href="#research-methods-title"]').click();
  await page.waitForFunction(()=>document.querySelector('[data-research-guide] a[aria-current="location"]')?.hash==='#research-methods-title');
@@ -18,8 +19,8 @@ try {
  assert.ok(aligned.nav>=0&&aligned.nav<25,JSON.stringify(aligned));
  assert.ok(aligned.heading>=aligned.bottom&&aligned.heading<aligned.bottom+100,JSON.stringify(aligned));
  const hash=await page.evaluate(()=>location.hash);
- await page.locator('#research-scale-title').evaluate(e=>e.scrollIntoView());
- await page.waitForFunction(()=>document.querySelector('[data-research-guide] a[aria-current="location"]')?.hash==='#research-scale-title');
+ await page.locator('#comparison-title').evaluate(e=>e.scrollIntoView());
+ await page.waitForFunction(()=>document.querySelector('[data-research-guide] a[aria-current="location"]')?.hash==='#comparison-title');
  assert.equal(await page.evaluate(()=>location.hash),hash,'Reading tracking must not rewrite navigation history');
  await page.locator('.nav a[href="origins-study.html"]').click();await page.waitForURL('**/origins-study.html');
  await page.locator('.study-project-context a').click();await page.waitForURL('**/research.html#research-focus-title');
@@ -48,7 +49,7 @@ try {
  const mobileAligned=await page.evaluate(()=>({heading:document.getElementById('research-focus-title').getBoundingClientRect().top,bottom:document.querySelector('[data-research-guide]').getBoundingClientRect().bottom}));
  assert.ok(mobileAligned.heading>=mobileAligned.bottom&&mobileAligned.heading<mobileAligned.bottom+100,JSON.stringify(mobileAligned));
  const nojs=await browser.newPage({javaScriptEnabled:false,viewport:{width:320,height:844}});await nojs.goto(base+'/research.html');
- assert.equal(await nojs.locator('[data-research-guide] a:visible').count(),5);assert.equal(await nojs.locator('[data-research-guide-toggle]').isVisible(),false);
+ assert.equal(await nojs.locator('[data-research-guide] a:visible').count(),3);assert.equal(await nojs.locator('[data-research-guide-toggle]').isVisible(),false);
  assert.ok(await nojs.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
  assert.deepEqual(errors,[]);console.log('Research reading order, sticky location tracking, mobile keyboard navigation, Origins handoff and no-JS links passed.');
 } finally {await browser.close();}

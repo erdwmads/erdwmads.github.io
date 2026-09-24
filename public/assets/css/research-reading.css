@@ -97,3 +97,8 @@ html[data-theme] body#academic-site .research-reading-context { max-width: 900px
 @media print {
   html[data-theme] body#academic-site .research-guide { display: none; }
 }
+
+/* mobile-readable-research: 12px text floor on phones (2026-09). */
+@media (max-width: 760px) {
+  html[data-theme] body#academic-site :is(.research-context-card dt, [data-research-guide-toggle] small, .research-guide a) { font-size: 12px !important; }
+}

@@ -83,3 +83,5 @@ When changing a component, check both themes explicitly.
 - `research-log-evolution.css`: Research Log dashboard, protected gate, and graduation research surfaces.
 
 The evolved styles remain globally loaded because soft navigation replaces the page body without replacing the document head. A future page-specific split must first teach soft navigation to synchronise stylesheet links.
+
+Pages link one generated bundle, `assets/css/site.css`, built from these files in the order of `stylesheets` in `src/data/site.ts`. The bundle only strips whitespace and comments, so ownership and cascade order are exactly as in the source files. Keep editing the owner files; the file-level `?v=` strings were replaced by one content hash on the bundle.

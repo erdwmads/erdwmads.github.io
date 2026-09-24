@@ -177,7 +177,7 @@
     if (group.text) detail.append(element('p', 'atlas-description', group.text));
     if (group.id === 'material' && !privateAtlas) {
       const specimenLink = element('a', 'atlas-source-button', 'View Orgueil specimen in Samples');
-      specimenLink.href = 'research.html#observe=1&view=sample&material=orgueil';
+      specimenLink.href = 'ryugu-bennu.html#observe=1&view=sample&material=orgueil';
       specimenLink.addEventListener('click', closeAtlas);
       detail.append(specimenLink);
     }

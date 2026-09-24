@@ -15,7 +15,7 @@ try {
     });
     await route.continue();
   });
-  await page.goto(`${process.env.SITE_TEST_URL||'http://127.0.0.1:4322'}/research.html`,{waitUntil:'networkidle'});
+  await page.goto(`${process.env.SITE_TEST_URL||'http://127.0.0.1:4322'}/ryugu-bennu.html`,{waitUntil:'networkidle'});
   await page.addStyleTag({content:'astro-dev-toolbar,.obs-fx-settings{display:none!important}'});
   const root=page.locator('.planetary'),stage=root.locator('[data-stage]'),canvas=root.locator('canvas');
   await stage.scrollIntoViewIfNeeded();await page.waitForFunction(()=>document.querySelector('.planetary').dataset.renderState==='ready');

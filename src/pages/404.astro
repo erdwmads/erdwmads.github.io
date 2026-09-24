@@ -25,7 +25,7 @@ const scriptHtml = getPageScripts("home");
   <section class="section two-col">
     <h2 class="section-label">Archive index</h2>
     <div class="card">
-      <ul>
+      <ul class="archive-index">
         {contentPages.map((page) => <li><a href={`/${page.href}`}>{page.title}</a></li>)}
       </ul>
     </div>

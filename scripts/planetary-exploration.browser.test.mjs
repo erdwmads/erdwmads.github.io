@@ -8,7 +8,7 @@ const base=process.env.SITE_TEST_URL||'http://127.0.0.1:4322';
 try {
   const page=await browser.newPage({viewport:{width:1440,height:1000}});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
-  await page.goto(`${base}/research.html`,{waitUntil:'networkidle'});
+  await page.goto(`${base}/ryugu-bennu.html`,{waitUntil:'networkidle'});
   const root=page.locator('.planetary');
   await root.locator('[data-stage]').scrollIntoViewIfNeeded();
   await page.waitForFunction(()=>document.querySelector('.planetary').dataset.renderState==='ready');

@@ -8,7 +8,7 @@ try{
  const failure=await browser.newPage({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
  await failure.addInitScript(()=>sessionStorage.setItem('mads-cosmic-arrival-v1','done'));
  await failure.route('**/assets/data/missions/ephemeris.json',r=>r.abort());
- await failure.goto(base+'/research.html',{waitUntil:'networkidle'});
+ await failure.goto(base+'/ryugu-bennu.html',{waitUntil:'networkidle'});
  await failure.locator('[data-mission-viewport]').scrollIntoViewIfNeeded();
  await failure.waitForFunction(()=>document.querySelector('[data-sample-missions]').dataset.ready==='error',null,{timeout:60000});
  for(const [id,m] of Object.entries(missions)){
@@ -25,7 +25,7 @@ try{
  const page=await browser.newPage({viewport:{width:1440,height:1050},reducedMotion:'reduce'}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));
  await page.addInitScript(()=>sessionStorage.setItem('mads-cosmic-arrival-v1','done'));
- await page.goto(base+'/research.html',{waitUntil:'networkidle'});
+ await page.goto(base+'/ryugu-bennu.html',{waitUntil:'networkidle'});
  const view=page.locator('[data-mission-viewport]');await view.scrollIntoViewIfNeeded();
  const ready=()=>page.waitForFunction(()=>document.querySelector('[data-sample-missions]').dataset.ready==='true'&&sampleMissions.state.calls>0,null,{timeout:60000});await ready();
  await page.evaluate(()=>sampleMissions.select(5,.5));await view.focus();

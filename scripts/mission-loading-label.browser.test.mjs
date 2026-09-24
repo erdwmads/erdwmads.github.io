@@ -6,7 +6,7 @@ try {
  const page=await browser.newPage({viewport:{width:1280,height:900},reducedMotion:'reduce'});
  let release;const gate=new Promise(resolve=>release=resolve);
  await page.route('**/assets/data/missions/**',async route=>{await gate;await route.continue();});
- await page.goto((process.env.SITE_TEST_URL||'http://127.0.0.1:52523')+'/research.html#mission-view=1&mission=hayabusa2&chapter=flyby&progress=0.5&focus=both&reference=earth&context=earth&cutaway=0',{waitUntil:'domcontentloaded'});
+ await page.goto((process.env.SITE_TEST_URL||'http://127.0.0.1:52523')+'/ryugu-bennu.html#mission-view=1&mission=hayabusa2&chapter=flyby&progress=0.5&focus=both&reference=earth&context=earth&cutaway=0',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>document.querySelector('[data-sample-missions]')?.dataset.initialized);
  assert.equal(await page.locator('[data-mission-range]').textContent(),'Preparing trajectory…');
  release();await page.waitForFunction(()=>window.sampleMissions?.state.ready,null,{timeout:60000});

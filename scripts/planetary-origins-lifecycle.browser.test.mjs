@@ -9,7 +9,7 @@ const base=process.env.SITE_TEST_URL||'http://127.0.0.1:4322';
 try {
   const page=await browser.newPage({viewport:{width:1440,height:1050},reducedMotion:'no-preference'});
   const errors=[];page.on('pageerror',error=>errors.push(error.message));
-  await page.goto(encodeObservation({view:'origins',material:'orgueil',originProgress:.65,originCutaway:.85},`${base}/research.html`),{waitUntil:'networkidle'});
+  await page.goto(encodeObservation({view:'origins',material:'orgueil',originProgress:.65,originCutaway:.85},`${base}/ryugu-bennu.html`),{waitUntil:'networkidle'});
   const root=page.locator('.planetary');
   await page.waitForFunction(()=>document.querySelector('[data-share-status]').textContent==='Saved observation restored');
   assert.equal(await root.getAttribute('data-origin-stage'),'2');
@@ -51,7 +51,7 @@ try {
   await page.close();
 
   const mobile=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
-  await mobile.goto(`${base}/research.html#observe=1&view=origins&material=orgueil&originProgress=0.65&originCutaway=0.85`,{waitUntil:'networkidle'});
+  await mobile.goto(`${base}/ryugu-bennu.html#observe=1&view=origins&material=orgueil&originProgress=0.65&originCutaway=0.85`,{waitUntil:'networkidle'});
   await mobile.addStyleTag({content:'astro-dev-toolbar,.obs-fx-settings{display:none!important}'});
   const mr=mobile.locator('.planetary');
   await mr.locator('[data-stage]').scrollIntoViewIfNeeded();

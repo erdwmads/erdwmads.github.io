@@ -7,11 +7,10 @@ import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';
 import {SSAOPass} from 'three/addons/postprocessing/SSAOPass.js';
 import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { createEphemeris } from './planetary-ephemeris.js';
 import { createMineralGroup } from './planetary-minerals.js';
 import { createOrbitBody } from './planetary-orbit-bodies.js';
-import { normalizeAsteroid } from './asteroid-scale.js';
+import { normalizeAsteroid, restoreFacetedShape, shapeModelUrl } from './asteroid-scale.js';
 
 export function disposeObject(object, includeCached = false) {
   object.traverse(node => {
@@ -205,9 +204,10 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
   async function model(id) {
     if (!cache.has(id)) {
       const pending = (async () => {
-        const response = await fetch(`/assets/data/planetary/${id === 'ryugu' ? 'ryugu.obj' : 'bennu.glb'}`, { signal });
+        const response = await fetch(shapeModelUrl(id), { signal });
         if (!response.ok) throw new Error('Shape model unavailable');
-        const object = id === 'ryugu' ? new OBJLoader().parse(await response.text()) : (await new GLTFLoader().parseAsync(await response.arrayBuffer(),'')).scene;
+        const object = (await new GLTFLoader().parseAsync(await response.arrayBuffer(),'')).scene;
+        if (id === 'ryugu') restoreFacetedShape(object);
         if (!alive) { disposeObject(object,true); throw new DOMException('Viewer disposed','AbortError'); }
         return normalizeAsteroid(object,id);
       })();

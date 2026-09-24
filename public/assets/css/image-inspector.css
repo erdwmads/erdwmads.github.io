@@ -41,3 +41,8 @@ html[data-theme] body#academic-site main .research-scale__caption > h3 { margin:
  html[data-theme] body#academic-site main .research-scale__caption > :is(p,h3,dl) { margin-bottom:16px; }
 }
 @media print {.inspector-controls,.inspector-stage-note{display:none!important;}.inspector-layout{display:block;}.inspector-stage{height:auto!important;}.inspector-stage img{position:static!important;transform:none!important;width:100%!important;height:auto!important;}}
+
+/* mobile-readable-inspector: 11px floor for inspector text on phones (2026-09). */
+@media (max-width: 760px) {
+  html[data-theme] body#academic-site :is(.inspector-topline, .inspector-zoom-label, .inspector-stage-note, .inspector-controls button span) { font-size: 11px !important; }
+}

@@ -69,4 +69,10 @@ Astro + TypeScript + Markdown/JSON content
 
 The goal is not a dynamic app. The goal is a cleaner static site that GitHub Pages can serve reliably.
 
+## Asset Budget Notes
+
+- All stylesheets ship as one render-blocking request, `assets/css/site.css` (whitespace-minified bundle: 75 KB gzip, 71 KB after the September 2026 dead-rule pruning, down from 117 KB gzip across 16 separate requests).
+- The Ryugu shape model ships as `ryugu.glb` (0.6 MB) instead of the 2.6 MB OBJ. It is an exact float32 re-encoding; `restoreFacetedShape` rebuilds the OBJ loader's geometry bit for bit.
+- The comparison workspaces (sample-return missions, planetary field guide, published microscopy) live on `ryugu-bennu.html`, so the Research page no longer loads three.js or the shape models.
+
 Run `npm run audit:css:check` when changing stylesheet ownership; it fails if `style.css` grows or a stylesheet is missing from the baseline. After an intentional change, refresh the baseline with `npm run audit:css -- --write`. Treat `docs/css-baseline.json` as a complexity ceiling: new work should not increase `style.css` size or repeated-selector count.

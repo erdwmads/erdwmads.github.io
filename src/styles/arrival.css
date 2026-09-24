@@ -26,7 +26,10 @@ html.cosmic-arrival-active { overflow: hidden; }
   transform: none !important; box-shadow: none !important; text-shadow: none;
 }
 #arrival-skip::before, #arrival-skip::after, #arrival-replay::before, #arrival-replay::after { content: none !important; }
-#arrival-skip { background: transparent; border-color: transparent; }
+/* Visible from the first frame: a quiet glass capsule rather than a bare text link. */
+#arrival-skip { font-size: 13px; color: #e4edf2; background: #0c141bcc; border-color: #cdb98366; }
+#arrival-skip .arrival-skip-key { font-size: 10px; letter-spacing: .06em; color: #95a5af; border: 1px solid #35434a; border-radius: 4px; padding: 2px 5px; line-height: 1; }
+@media (hover: none), (max-width: 600px) { #arrival-skip .arrival-skip-key { display: none; } }
 #arrival-skip:hover, #arrival-replay:hover { border-color: #cdb983; color: #fff; }
 #arrival-skip:focus-visible, #arrival-replay:focus-visible { outline: 2px solid #b9d9ec; outline-offset: 4px; }
 #arrival-skip svg, #arrival-replay svg { display: block; width: 16px; height: 16px; }
@@ -43,6 +46,6 @@ html.cosmic-arrival-active { overflow: hidden; }
   #cosmic-arrival .arrival-sequence { grid-template-columns: 16px 125px; gap: 8px; font-size: 9px; }
   #cosmic-arrival .arrival-label { font-size: 8px; }
   #cosmic-arrival .arrival-track { width: 149px; }
-  #arrival-skip { padding: 0 4px; font-size: 10px; gap: 6px; }
+  #arrival-skip { padding: 0 12px; font-size: 12px; gap: 8px; }
 }
 @media(prefers-reduced-motion:reduce) { #arrival-replay { display: none !important; } }

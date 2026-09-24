@@ -9,7 +9,7 @@ const base=process.env.SITE_TEST_URL||'http://127.0.0.1:52523';
 try{
  const page=await browser.newPage({viewport:{width:1440,height:1050}}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
- await page.goto(base+'/research.html',{waitUntil:'networkidle'});
+ await page.goto(base+'/ryugu-bennu.html',{waitUntil:'networkidle'});
  const root=page.locator('[data-sample-missions]'),view=root.locator('[data-mission-viewport]');
  await view.scrollIntoViewIfNeeded();
  await page.waitForFunction(()=>document.querySelector('[data-sample-missions]').dataset.ready==='true'&&window.sampleMissions.state.calls>0,null,{timeout:45000});

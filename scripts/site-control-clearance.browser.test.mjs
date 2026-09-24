@@ -23,7 +23,7 @@ try {
       await page.evaluate(() => document.fonts.ready);
       if (width <= 760) await page.locator('[data-nav-toggle]').click();
       const links = await clearTargets(page.locator('.nav a'));
-      assert.equal(links.length, 7);
+      assert.equal(links.length, 8, 'Home, Research, Ryugu & Bennu, Origins, Paper Shelf, CV, Photography, Contact');
       assert(links.every(link => link.clear), `${width} ${theme}: obscured navigation ${JSON.stringify(links)}`);
       if (width > 760) assert(Math.max(...links.map(link => link.top)) - Math.min(...links.map(link => link.top)) < 1, `${width}: navigation labels unexpectedly wrap`);
       const actions = await clearTargets(page.locator('.nav-log-gate, .theme-toggle'));

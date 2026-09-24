@@ -271,3 +271,8 @@ body#academic-site [data-research-lock-session][hidden] { display: none !importa
   body#academic-site .research-passkey-actions { align-items: stretch; flex-direction: column; }
   body#academic-site .research-passkey-actions > .button { width: 100%; }
 }
+
+/* mobile-readable-archive: 44px disclosure target on phones (2026-09). */
+@media (max-width: 760px) {
+  html[data-theme] body#academic-site .research-passkey-help summary { box-sizing: border-box; min-height: 44px; padding-block: 11px; }
+}

@@ -10,7 +10,7 @@ try{
  const page=await browser.newPage({viewport:{width:1440,height:1100},reducedMotion:'reduce'}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
  await page.addInitScript(()=>sessionStorage.setItem('mads-cosmic-arrival-v1','done'));
- await page.goto((process.env.SITE_TEST_URL||'http://127.0.0.1:52523')+'/research.html');
+ await page.goto((process.env.SITE_TEST_URL||'http://127.0.0.1:52523')+'/ryugu-bennu.html');
  const root=page.locator('[data-sample-missions]'),viewport=root.locator('[data-mission-viewport]');await viewport.scrollIntoViewIfNeeded();
  const ready=()=>page.waitForFunction(()=>window.sampleMissions&&document.querySelector('[data-sample-missions]').dataset.ready==='true',null,{timeout:60000});await ready();
  for(const id of ['hayabusa2','osiris-rex']){

@@ -5,7 +5,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const browser = await chromium.launch({ headless: true, ...(process.env.EDGE_EXECUTABLE ? { executablePath: process.env.EDGE_EXECUTABLE } : {}) });
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
-  await page.goto(`${process.env.SITE_TEST_URL || 'http://127.0.0.1:4322'}/research.html`, { waitUntil: 'networkidle' });
+  await page.goto(`${process.env.SITE_TEST_URL || 'http://127.0.0.1:4322'}/ryugu-bennu.html`, { waitUntil: 'networkidle' });
   const root = page.locator('.planetary');
   await root.locator('[data-stage]').scrollIntoViewIfNeeded();
   await page.waitForFunction(() => document.querySelector('.planetary').dataset.renderState === 'ready');

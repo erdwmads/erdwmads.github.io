@@ -1,0 +1,29 @@
+---
+import LegacyShell from "../components/LegacyShell.astro";
+import ResearchGuide from "../components/ResearchGuide.astro";
+import ResearchScaleJourney from "../components/ResearchScaleJourney.astro";
+import PlanetaryExplorer from "../components/PlanetaryExplorer.astro";
+import SampleMissions from "../components/SampleMissions.astro";
+import { getPageScripts } from "../data/site";
+
+const scriptHtml = getPageScripts("ryugu-bennu");
+const sections: [string, string][] = [
+  ["missions-title", "Sample-return missions"],
+  ["planetary-title", "Materials & orbits"],
+  ["research-scale-title", "Published microscopy"]
+];
+---
+
+<LegacyShell title='Ryugu & Bennu | Mads LIU Yong' description='Sample-return missions, orbits, shapes and published microscopy of asteroids Ryugu and Bennu, the comparison materials for research on dolomite in the Orgueil CI1 chondrite.' current='ryugu-bennu' mainClass='main' path="ryugu-bennu.html" scriptHtml={scriptHtml}>
+  <section class="research-intro">
+    <p class="eyebrow">Comparison materials</p>
+    <h1>Ryugu &amp; Bennu</h1>
+    <p class="lead">
+      Samples returned from two carbon-rich asteroids provide independent comparisons for the mineral record of water in my <a href="research.html#research-focus-title">Orgueil research</a>. They do not establish Orgueil’s parent body.
+    </p>
+  </section>
+  <ResearchGuide label="On this page" ariaLabel="Ryugu and Bennu sections" sections={sections} />
+  <SampleMissions />
+  <PlanetaryExplorer />
+  <ResearchScaleJourney />
+</LegacyShell>

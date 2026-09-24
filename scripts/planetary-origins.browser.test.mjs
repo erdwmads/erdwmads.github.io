@@ -8,7 +8,7 @@ const base=process.env.SITE_TEST_URL||'http://127.0.0.1:4322';
 try {
   const page=await browser.newPage({viewport:{width:1440,height:1060},reducedMotion:'no-preference'});
   const errors=[];page.on('pageerror',error=>errors.push(error.message));
-  await page.goto(`${base}/research.html`,{waitUntil:'networkidle'});
+  await page.goto(`${base}/ryugu-bennu.html`,{waitUntil:'networkidle'});
   await page.addStyleTag({content:'astro-dev-toolbar,.obs-fx-settings{display:none!important}'});
   const root=page.locator('.planetary');
   assert.equal(await root.locator('[data-view="origins"]').count(),1);

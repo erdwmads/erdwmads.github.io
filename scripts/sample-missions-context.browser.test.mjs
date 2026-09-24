@@ -4,7 +4,7 @@ const require=createRequire(import.meta.url),{chromium}=require(process.env.PLAY
 const browser=await chromium.launch({headless:true,...(process.env.EDGE_EXECUTABLE?{executablePath:process.env.EDGE_EXECUTABLE}:{})});
 try{
  const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
- await page.goto((process.env.SITE_TEST_URL||'http://127.0.0.1:52523')+'/research.html',{waitUntil:'networkidle'});
+ await page.goto((process.env.SITE_TEST_URL||'http://127.0.0.1:52523')+'/ryugu-bennu.html',{waitUntil:'networkidle'});
  const view=page.locator('[data-mission-viewport]'),canvas=view.locator('canvas');
  await view.scrollIntoViewIfNeeded();
  const ready=()=>page.waitForFunction(()=>document.querySelector('[data-sample-missions]').dataset.ready==='true',null,{timeout:45000});await ready();

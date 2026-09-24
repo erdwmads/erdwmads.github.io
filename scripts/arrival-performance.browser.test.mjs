@@ -28,7 +28,7 @@ try {
     }));
     assert(timing.handoff.length>5,'Handoff must have multiple animated frames');
     assert(Math.max(...timing.handoff)<250,'No quarter-second stall during the galaxy/Sun handoff');
-    assert(timing.elapsed<(width<700?4800:6900)+1000,'Playback duration is unchanged');
+    assert(timing.elapsed<(width<700?4000:5600)+1000,'Playback stays within its shortened duration');
     const sorted=timing.intervals.toSorted((a,b)=>a-b);
     console.log(`${width}px: duration ${Math.round(timing.elapsed)}ms; p95 frame ${sorted[Math.floor(sorted.length*.95)].toFixed(1)}ms; maximum handoff gap ${Math.max(...timing.handoff).toFixed(1)}ms`);
     await page.close();

@@ -1,6 +1,5 @@
 import * as T from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';
 import {ImprovedNoise} from 'three/addons/math/ImprovedNoise.js';
 import {rockMaterial,stoneGeometry,rng} from '../origins-study/materials.js';
 import {createSpacecraft,createCapsule} from './spacecraft.js';
@@ -16,7 +15,7 @@ import {createSamplingTerrain} from './terrain.js';
 import {createRecoveryCanopy} from './recovery.js';
 import {createCorona,createEntryWake} from './atmosphere.js';
 import {augmentAsteroid} from './asteroid-detail.js';
-import {normalizeAsteroid} from '../asteroid-scale.js';
+import {normalizeAsteroid,restoreFacetedShape,shapeModelUrl} from '../asteroid-scale.js';
 import {samplingClearance,samplingState,collectedGrain,phaseLabel,smooth,mix,sciFlight} from './motion.js';
 
 export function disposeGraph(root){
@@ -55,9 +54,10 @@ function line(points,color,opacity=.45){
  return new T.Line(new T.BufferGeometry().setFromPoints(points),new T.LineBasicMaterial({color,transparent:true,opacity}));
 }
 async function asteroid(id,signal){
- const response=await fetch('/assets/data/planetary/'+(id==='ryugu'?'ryugu.obj':'bennu.glb'),{signal});
+ const response=await fetch(shapeModelUrl(id),{signal});
  if(!response.ok)throw Error('Asteroid model unavailable');
- const object=id==='ryugu'?new OBJLoader().parse(await response.text()):(await new GLTFLoader().parseAsync(await response.arrayBuffer(),'')).scene;
+ const object=(await new GLTFLoader().parseAsync(await response.arrayBuffer(),'')).scene;
+ if(id==='ryugu')restoreFacetedShape(object);
  const unit=normalizeAsteroid(object,id);
  object.traverse(o=>{if(o.isMesh){for(const m of [o.material].flat())m?.dispose();o.material=rockMaterial(id==='ryugu'?0x454846:0x474542);o.castShadow=true;o.receiveShadow=true;}});
  augmentAsteroid(unit,id);return unit;

@@ -19,9 +19,9 @@ const browser=await chromium.launch({headless:true,...(process.env.EDGE_EXECUTAB
 try{
   const page=await browser.newPage({viewport:{width:1440,height:1050},reducedMotion:'reduce'}),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
-  await page.goto(base+'/research.html',{waitUntil:'networkidle'});
+  await page.goto(base+'/ryugu-bennu.html',{waitUntil:'networkidle'});
   const ids=await page.locator('main h2[id]').evaluateAll(nodes=>nodes.map(n=>n.id));
-  assert.deepEqual(ids,['research-focus-title','missions-title','planetary-title','research-scale-title','research-methods-title']);
+  assert.deepEqual(ids,['missions-title','planetary-title','research-scale-title']);
   assert.equal(await page.locator('[data-research-scale], [data-material-tabs]').count(),0);
   assert.equal(await page.locator('.research-scale img').count(),1);
   assert.equal(await page.locator('script[src*="research-scale.js"]').count(),0);
@@ -37,16 +37,19 @@ try{
   assert.equal(await root.locator('[data-ci-figure] img').count(),0);
   await root.locator('[data-action="show-sample"]').click();assert.equal(await root.getAttribute('data-mode'),'sample');
   assert.equal(await page.evaluate(()=>document.activeElement.dataset.view),'sample');
+  // The Research atlas stays with the research question and opens the specimen on the comparison page.
+  await page.goto(base+'/research.html',{waitUntil:'networkidle'});
   await page.locator('[data-public-atlas]').click();await page.locator('.evidence-atlas[open]').waitFor();
   assert.equal(await page.locator('.evidence-atlas img').count(),0);
   await page.locator('.atlas-detail a[href*="view=sample"]').click();
-  await page.waitForFunction(()=>!document.querySelector('.evidence-atlas').open&&document.querySelector('[data-share-status]').textContent==='Saved observation restored');
+  await page.waitForURL('**/ryugu-bennu.html#observe=1&view=sample&material=orgueil');
+  await page.waitForFunction(()=>document.querySelector('[data-share-status]')?.textContent==='Saved observation restored');
   assert.equal(await root.getAttribute('data-active-material'),'orgueil');
   await page.locator('.research-scale').scrollIntoViewIfNeeded();await page.locator('.research-scale').screenshot({path:process.env.TEMP+'/research-evidence-desktop.png'});
   await page.locator('.nav a[href="contact.html"]').click();await page.waitForURL('**/contact.html');
-  await page.locator('.nav a[href="research.html"]').click();await page.waitForURL('**/research.html');
+  await page.locator('.nav a[href="ryugu-bennu.html"]').click();await page.waitForURL('**/ryugu-bennu.html');
   assert.equal(await page.locator('.research-scale img').count(),1);assert.deepEqual(errors,[]);
-  const plain=await browser.newPage({javaScriptEnabled:false});await plain.goto(base+'/research.html');
+  const plain=await browser.newPage({javaScriptEnabled:false});await plain.goto(base+'/ryugu-bennu.html');
   assert.equal(await plain.locator('.research-scale figure').count(),1);await plain.close();
   console.log('PASS image content hashes, one material browser, sample ownership, atlas destination, section order and soft navigation');
 }finally{await browser.close();}

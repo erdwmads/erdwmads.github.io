@@ -239,3 +239,21 @@ html[data-theme] body#academic-site .cv-intro .cv-photo img { display:block; wid
   html[data-theme] body#academic-site .cv-intro { grid-template-columns:1fr; gap:24px; }
   html[data-theme] body#academic-site .cv-intro .cv-photo { justify-self:start; }
 }
+
+/* mobile-readable-content: 12px text floor and 44px tap targets in page content on phones (2026-09).
+   Selectors mirror the 11px rules above and in observatory.css so these win by order, not by new weight. */
+@media (max-width: 760px) {
+  html[data-theme] body#academic-site main :is(.pill, .project-tags span, .paper-status, .status-badge, .paper-filter),
+  html[data-theme] body#academic-site main.main .paper-card .project-tags span,
+  html[data-theme] body#academic-site .paper-shelf-search label,
+  html[data-theme] body#academic-site main.main .paper-status,
+  html[data-theme] body#academic-site .focus-list > div span,
+  html[data-theme] body#academic-site.ui-page-home :is(.hero .pill, .affiliation-copy) { font-size: 12px !important; }
+  html[data-theme] body#academic-site .paper-filter { min-width: 44px !important; }
+  html[data-theme] body#academic-site :is(.focus-next a, article.card > a) { display: inline-flex !important; align-items: center; min-height: 44px !important; }
+}
+
+/* 404 archive index: full-width rows rather than bare text links. */
+html[data-theme] body#academic-site .archive-index { margin: 0; padding: 0; list-style: none; }
+html[data-theme] body#academic-site .archive-index a { display: flex !important; align-items: center; min-height: 44px !important; border-bottom: 1px solid var(--obs-line); }
+html[data-theme] body#academic-site .archive-index li:last-child a { border-bottom: 0; }

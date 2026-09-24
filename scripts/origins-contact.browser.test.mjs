@@ -8,7 +8,7 @@ try {
     const page=await browser.newPage({viewport:{width,height:1000},reducedMotion:'reduce'}),errors=[];
     page.on('pageerror',e=>errors.push(e.message));
     page.on('console',m=>{if(m.type()==='error'&&/THREE|shader|WebGL/i.test(m.text()))errors.push(m.text());});
-    await page.goto(`${base}/research.html#observe=1&view=origins&material=ryugu&originProgress=.28&originCutaway=1`);
+    await page.goto(`${base}/ryugu-bennu.html#observe=1&view=origins&material=ryugu&originProgress=.28&originCutaway=1`);
     const root=page.locator('[data-planetary-explorer]'),stage=root.locator('[data-stage]'),canvas=root.locator('canvas');
     await stage.scrollIntoViewIfNeeded();
     await page.waitForFunction(()=>document.querySelector('.planetary').dataset.renderState==='ready');

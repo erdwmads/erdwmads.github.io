@@ -8,12 +8,13 @@
     "asset": "/assets/data/planetary/bennu.glb"
   },
   "ryugu": {
-    "file": "ryugu.obj",
+    "file": "ryugu.glb",
     "url": "https://data.darts.isas.jaxa.jp/pub/hayabusa2/paper/Watanabe_2019/SHAPE_SFM_49k_v20180804.obj",
     "source": "https://data.darts.isas.jaxa.jp/pub/hayabusa2/paper/Watanabe_2019/",
     "credit": "ISAS/JAXA; Watanabe et al. (2019), shape-model team",
     "diameterM": 900,
-    "asset": "/assets/data/planetary/ryugu.obj"
+    "encoding": "Lossless GLB re-encoding of the source OBJ (float32 positions, original face order); see scripts/shape-model-glb.mjs.",
+    "asset": "/assets/data/planetary/ryugu.glb"
   },
   "orgueil": {
     "model": null,

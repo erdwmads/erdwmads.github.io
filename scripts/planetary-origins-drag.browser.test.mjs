@@ -4,7 +4,7 @@ const require=createRequire(import.meta.url),{chromium}=require(process.env.PLAY
 const browser=await chromium.launch({headless:true,executablePath:process.env.EDGE_EXECUTABLE||'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'});
 try {
   const page=await browser.newPage({viewport:{width:1440,height:1100},reducedMotion:'reduce'});
-  await page.goto(`${process.env.SITE_TEST_URL||'http://127.0.0.1:4322'}/research.html#observe=1&view=origins&material=orgueil&originProgress=0.4375&originCutaway=0.85`,{waitUntil:'networkidle'});
+  await page.goto(`${process.env.SITE_TEST_URL||'http://127.0.0.1:4322'}/ryugu-bennu.html#observe=1&view=origins&material=orgueil&originProgress=0.4375&originCutaway=0.85`,{waitUntil:'networkidle'});
   const root=page.locator('.planetary'),range=root.locator('[data-origin-progress]');
   await range.scrollIntoViewIfNeeded();
   await page.waitForFunction(()=>document.querySelector('.planetary').dataset.modelReady==='origins');

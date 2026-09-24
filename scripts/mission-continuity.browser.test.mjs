@@ -18,7 +18,7 @@ async function check(name,fn){try{await fn();results.push(name);console.log('PAS
 function assertProbeCentered(s){assert.equal(s.focus,'spacecraft');assert(s.proximity.spanKm>0);assert(distance(s.camera.target,s.proximity.position)<s.proximity.spanKm*.01);const d=distance(s.camera.position,s.camera.target);assert(d>=s.camera.minDistance*.999&&d<=s.camera.maxDistance*1.001);}
 try{
  await page.addInitScript(()=>sessionStorage.setItem('mads-cosmic-arrival-v1','done'));
- await page.goto(base+'/research.html',{waitUntil:'domcontentloaded'});await view.scrollIntoViewIfNeeded();
+ await page.goto(base+'/ryugu-bennu.html',{waitUntil:'domcontentloaded'});await view.scrollIntoViewIfNeeded();
  const ready=()=>page.waitForFunction(()=>window.sampleMissions?.state.ready&&document.querySelector('[data-sample-missions]').dataset.ready==='true'&&sampleMissions.state.calls>0,null,{timeout:60000});await ready();
  for(const id of ['hayabusa2','osiris-rex']){
   await page.evaluate(id=>sampleMissions.choose(id),id);await ready();await view.scrollIntoViewIfNeeded();

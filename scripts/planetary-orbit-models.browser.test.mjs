@@ -11,13 +11,13 @@ try {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   page.on('console', message => { if(message.type()==='error') errors.push(message.text()); });
-  await page.goto(`${base}/research.html`,{waitUntil:'networkidle'});
+  await page.goto(`${base}/ryugu-bennu.html`,{waitUntil:'networkidle'});
   await page.addStyleTag({content:'.obs-fx-settings,astro-dev-toolbar {visibility:hidden!important;}'});
   const root = page.locator('[data-planetary-explorer]');
   await root.scrollIntoViewIfNeeded();
   await page.waitForFunction(()=>document.querySelector('[data-planetary-explorer]').dataset.renderState==='ready');
   const resources = await page.evaluate(()=>performance.getEntriesByType('resource').map(entry=>entry.name));
-  for(const path of ['/planetary/bennu.glb','/planetary/ryugu.obj','/arrival/earth-day.jpg','/arrival/earth-clouds.png']) {
+  for(const path of ['/planetary/bennu.glb','/planetary/ryugu.glb','/arrival/earth-day.jpg','/arrival/earth-clouds.png']) {
     assert.ok(resources.some(name=>name.endsWith(path)),`${path} must be requested`);
   }
   const stage = root.locator('[data-stage]');

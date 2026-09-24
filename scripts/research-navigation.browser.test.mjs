@@ -9,7 +9,7 @@ const browser=await chromium.launch({headless:true,executablePath:process.env.ED
 try{
 const page=await browser.newPage({viewport:{width:1440,height:1000},reducedMotion:'reduce'}),errors=[];page.on('pageerror',e=>errors.push(e.message));
 await page.addInitScript(()=>sessionStorage.setItem('mads-cosmic-arrival-v1','done'));
-await page.goto(base+'/research.html');
+await page.goto(base+'/ryugu-bennu.html');
 const root=page.locator('.planetary');await root.locator('[data-stage]').scrollIntoViewIfNeeded();await page.waitForFunction(()=>document.querySelector('.planetary').dataset.renderState==='ready');
 const icons=()=>root.locator('[data-icon]').evaluateAll(es=>es.map(e=>({name:e.dataset.icon,count:e.querySelectorAll('svg').length})));
 const controls=()=>root.locator('[data-action="zoom-in"],[data-action="zoom-out"],[data-action="reset"],[data-action="share"]').evaluateAll(es=>es.map(e=>e.getBoundingClientRect().height));
@@ -21,7 +21,7 @@ for(let i=0;i<3;i++){
 }
 console.log('PASS repeated page restoration: exactly one icon per control, stable button heights');
 for(const width of [1536,1280,1152,1024,768,390,320]){
- await page.setViewportSize({width,height:1000});await page.goto(base+'/research.html');
+ await page.setViewportSize({width,height:1000});await page.goto(base+'/ryugu-bennu.html');
  assert.equal(await root.locator('a[href="/origins-study.html"]').count(),0,'No isolated Origins link in Research');
  const link=page.locator('.site-header .nav a[href="origins-study.html"]');assert.equal(await link.count(),1);
  if(width<=760)await page.locator('[data-nav-toggle]').click();
@@ -39,10 +39,10 @@ for(const width of [1536,1280,1152,1024,768,390,320]){
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
  if(width===1536||width===390)await page.locator('.site-header').screenshot({path:join(tmpdir(),'origins-category-header-'+width+'.png')});
  if(width===1536){
-   await page.goBack();await page.waitForURL('**/research.html');assert((await icons()).every(x=>x.count===1),'Browser Back keeps one icon');
+   await page.goBack();await page.waitForURL('**/ryugu-bennu.html');assert((await icons()).every(x=>x.count===1),'Browser Back keeps one icon');
    await page.locator('.site-header .nav a[href="origins-study.html"]').click();await page.waitForURL('**/origins-study.html');await page.waitForFunction(()=>window.study);
  }
- await page.locator('.site-header .nav a[href="research.html"]').click();await page.waitForURL('**/research.html');await page.locator('.planetary [data-stage]').scrollIntoViewIfNeeded();
+ await page.locator('.site-header .nav a[href="ryugu-bennu.html"]').click();await page.waitForURL('**/ryugu-bennu.html');await page.locator('.planetary [data-stage]').scrollIntoViewIfNeeded();
  await page.waitForFunction(()=>document.querySelector('.planetary').dataset.renderState==='ready');assert((await icons()).every(x=>x.count===1));
  console.log('PASS '+width+'px: Origins top navigation, active state, mobile menu and return');
 }

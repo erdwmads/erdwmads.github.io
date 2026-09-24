@@ -11,7 +11,7 @@ try {
   // Orbit view now preloads both asteroid meshes; block the first request.
   const hold=new Promise(resolve=>release=resolve);
   await page.route('**/bennu.glb',async route=>{await hold;await route.continue();});
-  await page.goto(encodeObservation({material:'bennu',view:'shape'},`${base}/research.html`),{waitUntil:'domcontentloaded'});
+  await page.goto(encodeObservation({material:'bennu',view:'shape'},`${base}/ryugu-bennu.html`),{waitUntil:'domcontentloaded'});
   const root=page.locator('.planetary');
   await root.locator('[data-stage]').scrollIntoViewIfNeeded();
   await page.waitForFunction(()=>document.querySelector('.planetary').dataset.modelReady==='loading');
@@ -27,7 +27,7 @@ try {
   const slow=await browser.newPage();
   const holdData=new Promise(resolve=>release=resolve);
   await slow.route('**/orbits.json',async route=>{await holdData;await route.continue();});
-  await slow.goto(encodeObservation({material:'ryugu',view:'shape',day:614},`${base}/research.html`),{waitUntil:'domcontentloaded'});
+  await slow.goto(encodeObservation({material:'ryugu',view:'shape',day:614},`${base}/ryugu-bennu.html`),{waitUntil:'domcontentloaded'});
   await slow.waitForFunction(()=>document.querySelector('.planetary')?.dataset.initialized==='true');
   await slow.evaluate(()=>location.hash='planetary-title');
   await slow.waitForTimeout(60);
@@ -49,9 +49,9 @@ try {
 
   const soft=await browser.newPage();
   await soft.goto(`${base}/index.html`,{waitUntil:'networkidle'});
-  const share=encodeObservation({material:'ryugu',view:'sample',day:614},`${base}/research.html`);
-  await soft.locator('.nav a[href="research.html"]').evaluate((link,href)=>link.href=href,share);
-  await soft.locator('.nav a').filter({hasText:'Research'}).first().click();
+  const share=encodeObservation({material:'ryugu',view:'sample',day:614},`${base}/ryugu-bennu.html`);
+  await soft.locator('.nav a[href="ryugu-bennu.html"]').evaluate((link,href)=>link.href=href,share);
+  await soft.locator('.nav a').filter({hasText:'Ryugu & Bennu'}).first().click();
   await soft.waitForFunction(()=>document.querySelector('[data-share-status]')?.textContent==='Saved observation restored');
   assert.equal(await soft.locator('.planetary').getAttribute('data-mode'),'sample');
   assert.equal(await soft.locator('.planetary').getAttribute('data-active-material'),'ryugu');
@@ -59,7 +59,7 @@ try {
     const loading=await browser.newPage({reducedMotion:'reduce'});
     const pending=new Promise(resolve=>release=resolve);
     await loading.route('**/bennu.glb',async route=>{await pending;await route.continue();});
-    const url=encodeObservation({material:'bennu',view:'shape',camera:{position:[0,0,4],target:[0,0,0],up:[0,1,0],zoom:2}},`${base}/research.html`);
+    const url=encodeObservation({material:'bennu',view:'shape',camera:{position:[0,0,4],target:[0,0,0],up:[0,1,0],zoom:2}},`${base}/ryugu-bennu.html`);
     await loading.goto(url,{waitUntil:'domcontentloaded'});
     await loading.waitForFunction(()=>document.querySelector('.planetary')?.dataset.modelReady==='loading');
     if(action==='theme')await loading.evaluate(()=>document.documentElement.dataset.theme='light');

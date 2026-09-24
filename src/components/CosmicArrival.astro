@@ -12,7 +12,7 @@ const {home}=Astro.props;
   </div>
   <div class="arrival-bottom">
     <span class="arrival-sequence" aria-hidden="true"><span class="arrival-number">01</span><span class="arrival-label">GALACTIC DUST</span><span class="arrival-track"><span></span></span></span>
-    <button id="arrival-skip" type="button" autofocus>Skip intro <span data-arrival-icon="next"></span></button>
+    <button id="arrival-skip" type="button" autofocus aria-keyshortcuts="Escape">Skip intro <span class="arrival-skip-key" aria-hidden="true">Esc</span><span data-arrival-icon="next"></span></button>
   </div>
 </dialog>
 <button id="arrival-replay" type="button" title="Replay entrance animation" aria-label="Replay entrance animation" hidden><span data-arrival-icon="replay"></span></button>

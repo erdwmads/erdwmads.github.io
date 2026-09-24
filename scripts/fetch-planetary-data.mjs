@@ -1,4 +1,5 @@
 import { mkdir, writeFile } from 'node:fs/promises';
+import { objToGlb } from './shape-model-glb.mjs';
 
 const root = new URL('../public/assets/data/planetary/', import.meta.url);
 await mkdir(new URL('raw/', root), { recursive: true });
@@ -34,10 +35,15 @@ for (const [id, command, days] of bodies) {
 await writeFile(new URL('orbits.json', root), JSON.stringify(result));
 const assets = {
   bennu: { file: 'bennu.glb', url: 'https://assets.science.nasa.gov/content/dam/science/psd/solar/2023/09/b/Bennu_1_1.glb', source: 'https://science.nasa.gov/resource/bennu-3d-model/', credit: 'NASA Visualization Technology Applications and Development (VTAD)', diameterM: 492 },
-  ryugu: { file: 'ryugu.obj', url: 'https://data.darts.isas.jaxa.jp/pub/hayabusa2/paper/Watanabe_2019/SHAPE_SFM_49k_v20180804.obj', source: 'https://data.darts.isas.jaxa.jp/pub/hayabusa2/paper/Watanabe_2019/', credit: 'ISAS/JAXA; Watanabe et al. (2019), shape-model team', diameterM: 900 }
+  ryugu: { file: 'ryugu.glb', url: 'https://data.darts.isas.jaxa.jp/pub/hayabusa2/paper/Watanabe_2019/SHAPE_SFM_49k_v20180804.obj', source: 'https://data.darts.isas.jaxa.jp/pub/hayabusa2/paper/Watanabe_2019/', credit: 'ISAS/JAXA; Watanabe et al. (2019), shape-model team', diameterM: 900, encoding: 'Lossless GLB re-encoding of the source OBJ (float32 positions, original face order); see scripts/shape-model-glb.mjs.' }
 };
 for (const [id, asset] of Object.entries(assets)) {
-  await writeFile(new URL(asset.file, root), Buffer.from(await (await download(asset.url)).arrayBuffer()));
+  const response = await download(asset.url);
+  // The Ryugu OBJ is 2.6 MB of text; ship the same vertices and faces as a 0.6 MB GLB.
+  const bytes = asset.url.endsWith('.obj')
+    ? objToGlb(await response.text(), { name: id, copyright: asset.credit })
+    : Buffer.from(await response.arrayBuffer());
+  await writeFile(new URL(asset.file, root), bytes);
   asset.asset = `/assets/data/planetary/${asset.file}`;
   console.log(`Downloaded ${id}`);
 }

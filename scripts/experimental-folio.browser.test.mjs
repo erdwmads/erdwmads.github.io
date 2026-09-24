@@ -21,7 +21,7 @@ for(const theme of ['space','light']) {
 await page.evaluate(()=>document.documentElement.dataset.theme='space');
  await page.setViewportSize({width:390,height:844});await page.screenshot({path:path.join(os.tmpdir(),'folio100-home-mobile.png')});
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Home mobile overflow');
- await page.setViewportSize({width:1440,height:1000});await page.goto(base+'/research.html#research-scale-title');
+ await page.setViewportSize({width:1440,height:1000});await page.goto(base+'/ryugu-bennu.html#research-scale-title');
  const root=page.locator('[data-image-inspector]');await root.scrollIntoViewIfNeeded();await page.locator('[data-inspector-ready]').waitFor();
  assert.equal(await root.locator('img').count(),1);const original=await root.locator('img').getAttribute('src');
  const slider=page.locator('[data-inspector-zoom]');await slider.focus();await page.keyboard.press('End');
@@ -61,7 +61,7 @@ await page.locator('.obs-present-close').click();await page.waitForFunction(()=>
 await page.locator('.nav a[href="cv.html"]').click();await page.waitForURL('**/cv.html');await page.locator('.nav a[href="photography.html"]').click();await page.waitForURL('**/photography.html');
  await page.waitForFunction(()=>document.querySelector('[data-photo-experience]')?.dataset.photoLayout==='contact');
  await page.locator('[data-photo-layout="gallery"]').click();assert.equal(await page.locator('.photo-index-label:visible').count(),0);
- const nojs=await browser.newPage({javaScriptEnabled:false,viewport:{width:390,height:844}});await nojs.goto(base+'/research.html');
+ const nojs=await browser.newPage({javaScriptEnabled:false,viewport:{width:390,height:844}});await nojs.goto(base+'/ryugu-bennu.html');
  assert.equal(await nojs.locator('[data-inspector-controls]').isVisible(),false);assert.equal(await nojs.locator('[data-inspector-image]').count(),1);
  await nojs.goto(base+'/photography.html');assert.equal(await nojs.locator('[data-photo-layout-controls]').isVisible(),false);assert.equal(await nojs.locator('a[data-photo-index]').count(),photos);
  assert.deepEqual(errors,[]);console.log('Editorial identity, bounded image controls, keyboard isolation, same-image contact sheet, session restoration, no-JS fallback passed. Screenshots: TEMP/folio100-*.png');

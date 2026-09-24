@@ -1,7 +1,7 @@
 import { createElement, RotateCcw, ZoomIn, ZoomOut, Hand, Play, Pause, Clock3, Link } from 'lucide';
 import { mineralModels } from './mineral-guide.js';
 import { initResearchQuestions } from './research-questions.js';
-import { encodeObservation, decodeObservation, legacyOriginsDestination } from './planetary-view-link.js';
+import { encodeObservation, decodeObservation, legacyOriginsDestination, explorerPage } from './planetary-view-link.js';
 import { samplePhotos } from './planetary-samples.js';
 
 const materials = {
@@ -389,7 +389,7 @@ function init() {
   }, { signal });
   window.addEventListener('mads:material-selected', e => { if (!pendingObservation && !syncingMaterial && e.detail?.origin !== 'explorer') {interrupt();selectMaterial(e.detail?.material, false);} }, { signal });
   function restoreHash() {
-    if(lastHash===location.hash || !location.pathname.endsWith('/research.html'))return;
+    if(lastHash===location.hash || !location.pathname.endsWith('/'+explorerPage))return;
     lastHash=location.hash;
     restoreVersion++;pendingObservation=null;restoring=false;clearShare();shareUI();
     const destination=legacyOriginsDestination(location.hash);

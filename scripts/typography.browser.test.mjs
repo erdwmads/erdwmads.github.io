@@ -14,7 +14,7 @@ try {
     await page.addInitScript(theme=>{localStorage.setItem('mads-theme',theme);sessionStorage.setItem('mads-entry-gate-v1','done');},theme);
     for(const route of routes){
       try{
-        await page.goto(`http://127.0.0.1:4322/${route}.html`);
+        await page.goto(`${process.env.SITE_TEST_URL||'http://127.0.0.1:4322'}/${route}.html`);
         await page.evaluate(()=>document.fonts.ready);
         assert((await page.locator('body').evaluate(el=>getComputedStyle(el).fontFamily)).startsWith('Montserrat'));
         assert((await page.locator('h1').first().evaluate(el=>getComputedStyle(el).fontFamily)).startsWith('Montserrat'));

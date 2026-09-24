@@ -8,10 +8,10 @@
   },
   {
     "file": "image-inspector.css",
-    "bytes": 5315,
-    "lines": 44,
+    "bytes": 5603,
+    "lines": 49,
     "repeatedSelectors": 9,
-    "important": 28
+    "important": 29
   },
   {
     "file": "mineral-interactions.css",
@@ -50,17 +50,17 @@
   },
   {
     "file": "research-log-evolution.css",
-    "bytes": 13313,
-    "lines": 274,
+    "bytes": 13555,
+    "lines": 279,
     "repeatedSelectors": 11,
     "important": 46
   },
   {
     "file": "research-reading.css",
-    "bytes": 8628,
-    "lines": 100,
+    "bytes": 8884,
+    "lines": 105,
     "repeatedSelectors": 13,
-    "important": 20
+    "important": 21
   },
   {
     "file": "research-scale.css",
@@ -78,24 +78,24 @@
   },
   {
     "file": "shell-evolution.css",
-    "bytes": 21341,
-    "lines": 700,
+    "bytes": 21976,
+    "lines": 708,
     "repeatedSelectors": 11,
-    "important": 296
+    "important": 301
   },
   {
     "file": "site-refinement.css",
-    "bytes": 16221,
-    "lines": 242,
+    "bytes": 17649,
+    "lines": 260,
     "repeatedSelectors": 16,
-    "important": 131
+    "important": 137
   },
   {
     "file": "style.css",
-    "bytes": 521295,
-    "lines": 17625,
-    "repeatedSelectors": 270,
-    "important": 4381
+    "bytes": 478278,
+    "lines": 16075,
+    "repeatedSelectors": 235,
+    "important": 4016
   },
   {
     "file": "tokens.css",

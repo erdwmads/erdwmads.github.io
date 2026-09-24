@@ -6,7 +6,7 @@ const base=process.env.SITE_TEST_URL||'http://127.0.0.1:52523';
 try{
  for(const width of [320,390,760]){
   const page=await browser.newPage({viewport:{width,height:900},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
-  await page.goto(base+'/research.html',{waitUntil:'networkidle'});
+  await page.goto(base+'/ryugu-bennu.html',{waitUntil:'networkidle'});
   const section=page.locator('.research-scale');await section.scrollIntoViewIfNeeded();await section.locator('img').evaluate(img=>img.decode());
   for(const theme of ['space','light']){
    await page.evaluate(t=>document.documentElement.dataset.theme=t,theme);

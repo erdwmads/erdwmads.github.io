@@ -10,6 +10,8 @@ const booleanFields = ['compare', 'wireframe', 'separated'];
 const fields = [...Object.keys(enums), ...booleanFields, 'day', 'originProgress', 'originCutaway', 'camera'];
 const cameraFields = ['position', 'target', 'up', 'zoom'];
 const maxHashLength = 2048;
+// The page that hosts the planetary field guide; shared observation links open there.
+export const explorerPage = 'ryugu-bennu.html';
 
 function invalid() {
   throw new TypeError('Invalid public observation');
@@ -86,7 +88,7 @@ function sanitize(state, strict = false) {
 /** Encode own public fields only; invalid supplied fields/base URLs throw TypeError. */
 export function encodeObservation(state, baseUrl) {
   const clean = sanitize(state);
-  const url = new URL('research.html', baseUrl);
+  const url = new URL(explorerPage, baseUrl);
   if (url.protocol !== 'https:' && url.protocol !== 'http:') invalid();
   url.username = '';
   url.password = '';

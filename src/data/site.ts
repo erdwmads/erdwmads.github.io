@@ -38,6 +38,7 @@ export const personSchema = {
 export const navItems = [
   { href: "index.html", label: "Home", key: "home" },
   { href: "research.html", label: "Research", key: "research" },
+  { href: "ryugu-bennu.html", label: "Ryugu & Bennu", key: "ryugu-bennu" },
   { href: "origins-study.html", label: "Origins", key: "origins" },
   { href: "paper-shelf.html", label: "Paper Shelf", key: "paper-shelf" },
   { href: "cv.html", label: "CV", key: "cv" },
@@ -55,12 +56,35 @@ export const researchLogGate = {
 export const contentPages = [
   { href: "index.html", title: "Home", key: "home" },
   { href: "research.html", title: "Research", key: "research" },
+  { href: "ryugu-bennu.html", title: "Ryugu & Bennu", key: "ryugu-bennu" },
   { href: "origins-study.html", title: "Origins", key: "origins" },
   { href: "research-log.html", title: "Research Log", key: "research-log" },
   { href: "paper-shelf.html", title: "Paper Shelf", key: "paper-shelf" },
   { href: "cv.html", title: "CV", key: "cv" },
   { href: "photography.html", title: "Photography", key: "photography" },
   { href: "contact.html", title: "Contact", key: "contact" }
+] as const;
+
+// Cascade order of the public stylesheets in public/assets/css/. Pages link one bundle,
+// assets/css/site.css, generated at build time from these files in this order
+// (src/pages/assets/css/site.css.ts). Edit the source files, never the bundle.
+export const stylesheets = [
+  "style.css",
+  "tokens.css",
+  "shell-evolution.css",
+  "research-log-evolution.css",
+  "observatory.css",
+  "observatory-experience.css",
+  "mineral-interactions.css",
+  "research-scale.css",
+  "planetary-explorer.css",
+  "typography.css",
+  "site-refinement.css",
+  "review-refinement.css",
+  "research-reading.css",
+  "experimental-folio.css",
+  "image-inspector.css",
+  "quiet-observatory.css"
 ] as const;
 
 export const footerItems = ["© 2026 Mads LIU Yong", "What was responsible for making diverse planets in the Solar System?"] as const;
@@ -79,15 +103,16 @@ const commonScripts: ScriptSpec[] = [
 
 const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20260914-viewport", defer: true };
 const powerManagerScript: ScriptSpec = { src: "assets/js/power-manager.js?v=20260914-viewport" };
-const legacyNavigationScript: ScriptSpec = { src: "assets/js/legacy-navigation.js?v=20260913-reading", defer: true };
+const legacyNavigationScript: ScriptSpec = { src: "assets/js/legacy-navigation.js?v=20260925-comparison", defer: true };
 
 const pageScripts: Record<string, ScriptSpec[]> = {
-  contact: [...commonScripts, { src: "assets/js/contact.js?v=20260913-reviewed", defer: true }, interfaceScript],
-  cv: [...commonScripts, { src: "assets/js/cv.js?v=20260913-review", defer: true }, interfaceScript],
+  contact: [...commonScripts, { src: "assets/js/contact.js?v=20260925-email", defer: true }, interfaceScript],
+  cv: [...commonScripts, { src: "assets/js/cv.js?v=20260925-email", defer: true }, interfaceScript],
   home: [...commonScripts, interfaceScript],
   "paper-shelf": [...commonScripts, { src: "assets/js/paper-shelf.js?v=20260913-reviewed", defer: true }, interfaceScript],
   photography: [...commonScripts, interfaceScript],
   research: [...commonScripts, interfaceScript],
+  "ryugu-bennu": [...commonScripts, interfaceScript],
   origins: [...commonScripts, interfaceScript],
   "research-log": [...commonScripts, interfaceScript],
   // Password-gated public page; keep it out of sitemap contentPages.
@@ -114,7 +139,7 @@ export function getPageScripts(pageKey: keyof typeof pageScripts | string, inlin
     renderScript(powerManagerScript),
     scripts.map(renderScript).join("\n"),
     renderScript({ src: "assets/js/observatory-interactions.js?v=20260914-viewport", defer: true }),
-    renderScript({ src: "assets/js/mineral-interactions.js?v=20260910-evidence", defer: true }),
+    renderScript({ src: "assets/js/mineral-interactions.js?v=20260925-comparison", defer: true }),
     inlineHtml,
     renderScript(legacyNavigationScript)
   ].filter(Boolean).join("\n\n");

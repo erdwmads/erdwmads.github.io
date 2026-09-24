@@ -3,6 +3,7 @@ interface Props { current: string }
 const {current}=Astro.props;
 const destinations={
   research:{href:'research.html',label:'Research',detail:'Questions, methods and the mineral record'},
+  'ryugu-bennu':{href:'ryugu-bennu.html',label:'Ryugu & Bennu',detail:'Returned samples as comparison materials'},
   origins:{href:'origins-study.html',label:'Origins',detail:'Explore how a smaller world takes shape'},
   'paper-shelf':{href:'paper-shelf.html',label:'Paper Shelf',detail:'Read the sources behind the questions'},
   photography:{href:'photography.html',label:'Photography',detail:'Observations beyond the laboratory'},
@@ -11,7 +12,7 @@ const destinations={
   'research-log':{href:'research-log.html',label:'Research Log',detail:'Follow the work as it develops'}
 };
 const routes:Record<string,(keyof typeof destinations)[]>={
-  home:['research','origins'],research:['origins','paper-shelf'],origins:['research','paper-shelf'],
+  home:['research','origins'],research:['ryugu-bennu','paper-shelf'],'ryugu-bennu':['origins','research'],origins:['research','paper-shelf'],
   'paper-shelf':['research','research-log'],photography:['research','contact'],cv:['research','contact'],
   contact:['cv','photography'],'research-log':['research','paper-shelf']
 };

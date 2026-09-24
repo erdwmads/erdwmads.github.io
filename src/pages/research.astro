@@ -2,9 +2,6 @@
 import LegacyShell from "../components/LegacyShell.astro";
 import ResearchGuide from "../components/ResearchGuide.astro";
 import EvidenceAtlasData from "../components/EvidenceAtlasData.astro";
-import ResearchScaleJourney from "../components/ResearchScaleJourney.astro";
-import PlanetaryExplorer from "../components/PlanetaryExplorer.astro";
-import SampleMissions from "../components/SampleMissions.astro";
 import { getPageScripts } from "../data/site";
 import mainHtml from "../legacy/research-main.html?raw";
 import methodsHtml from "../legacy/research-methods.html?raw";
@@ -12,7 +9,15 @@ import methodsHtml from "../legacy/research-methods.html?raw";
 const scriptHtml = getPageScripts("research");
 ---
 
-<LegacyShell title='Research | Mads LIU Yong' description='Cosmic mineralogy research on Orgueil CI1 dolomite, with interactive asteroid orbits, sample-return missions and published microscopy.' current='research' mainClass='main' path="research.html" scriptHtml={scriptHtml}>
+<LegacyShell title='Research | Mads LIU Yong' description='Cosmic mineralogy research on dolomite in the Orgueil CI1 chondrite: the research question, the analytical pathway and the Ryugu and Bennu comparison materials.' current='research' mainClass='main' path="research.html" scriptHtml={scriptHtml}>
+  <script is:inline>
+    // The sample-return missions, planetary field guide and published microscopy moved to
+    // ryugu-bennu.html in September 2026. Forward shared views and section links made before the move.
+    (function () {
+      var hash = location.hash;
+      if (/^#(?:missions-title|planetary-title|research-scale-title)$|^#(?:observe|mission-view)=/.test(hash)) location.replace("ryugu-bennu.html" + location.search + hash);
+    })();
+  </script>
   <section class="research-intro">
     <p class="eyebrow">Research</p>
     <h1>Cosmic Mineralogy</h1>
@@ -23,8 +28,13 @@ const scriptHtml = getPageScripts("research");
   <ResearchGuide />
   <Fragment set:html={mainHtml} />
   <Fragment set:html={methodsHtml} />
-  <SampleMissions />
-  <PlanetaryExplorer />
-  <ResearchScaleJourney />
+  <section class="research-methods research-comparison" aria-labelledby="comparison-title">
+    <header class="research-methods-heading">
+      <p class="eyebrow">03 / Comparison materials</p>
+      <h2 id="comparison-title">Ryugu and Bennu</h2>
+      <p>Samples returned from asteroids Ryugu and Bennu provide independent comparisons for the mineral record of water. They do not establish Orgueil’s parent body.</p>
+    </header>
+    <p class="research-methods-reading">The sample-return missions, orbital context and published microscopy have their own page. <a href="ryugu-bennu.html">Explore Ryugu &amp; Bennu →</a></p>
+  </section>
   <EvidenceAtlasData />
 </LegacyShell>

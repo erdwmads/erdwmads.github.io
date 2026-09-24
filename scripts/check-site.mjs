@@ -14,6 +14,7 @@ const pptDataPath = path.join(distDir, "ppt-data.json");
 const pages = [
   "index.html",
   "research.html",
+  "ryugu-bennu.html",
   "research-graduation.html",
   "research-log.html",
   "paper-shelf.html",
@@ -273,6 +274,15 @@ for (const page of pages) {
 
 const homePage = readDistPage("index.html");
 const researchPage = readDistPage("research.html");
+const comparisonPage = readDistPage("ryugu-bennu.html");
+// Research presents the Orgueil question and pathway; the comparison materials live on their own page.
+for (const marker of ["data-sample-missions", "data-planetary-explorer", "data-image-inspector"]) {
+  if (researchPage.includes(marker)) fail(`research.html: ${marker} belongs on ryugu-bennu.html`);
+  if (!comparisonPage.includes(marker)) fail(`ryugu-bennu.html: missing ${marker}`);
+}
+if (!researchPage.includes('href="ryugu-bennu.html"') || !/location\.replace\("ryugu-bennu\.html"/.test(researchPage)) {
+  fail("research.html: must link to ryugu-bennu.html and forward shared views from before the move");
+}
 if (researchPage.includes("local-only archive")) {
   fail("research.html: stale local-only Mission Log wording");
 }
@@ -390,8 +400,40 @@ const shellSource = fs.readFileSync(path.join(root, "src", "components", "Legacy
 if (!shellSource.includes("data-nav-toggle") || !shellSource.includes("data-mobile-nav")) {
   fail("LegacyShell: missing compact mobile navigation contract");
 }
-if (!shellSource.includes('assets/css/tokens.css') || shellSource.indexOf('assets/css/tokens.css') > shellSource.indexOf('assets/css/shell-evolution.css')) {
-  fail("LegacyShell: evolution tokens must load before component styles");
+const siteDataSource = fs.readFileSync(path.join(root, "src", "data", "site.ts"), "utf8");
+const stylesheetOrder = [...(siteDataSource.match(/export const stylesheets = \[([\s\S]*?)\]/)?.[1] || "").matchAll(/"([^"]+\.css)"/g)].map((match) => match[1]);
+if (stylesheetOrder.indexOf("tokens.css") < 0 || stylesheetOrder.indexOf("tokens.css") > stylesheetOrder.indexOf("shell-evolution.css")) {
+  fail("site.ts: evolution tokens must load before component styles");
+}
+const publicStylesheets = fs.readdirSync(path.join(assetsDir, "css")).filter((name) => name.endsWith(".css"));
+for (const name of publicStylesheets) {
+  if (!stylesheetOrder.includes(name)) fail(`site.ts: ${name} is not in the stylesheet bundle order, so no page loads it`);
+}
+if (!/<link\s+rel="stylesheet"\s+href=\{`assets\/css\/site\.css\?v=\$\{stylesheetVersion\}`\}>/.test(shellSource)) {
+  fail("LegacyShell: pages must link the generated stylesheet bundle");
+}
+const stylesheetBundlePath = path.join(distDir, "assets", "css", "site.css");
+if (!fs.existsSync(stylesheetBundlePath)) {
+  fail("Missing generated stylesheet bundle: assets/css/site.css");
+} else {
+  const bundle = fs.readFileSync(stylesheetBundlePath, "utf8");
+  let lastIndex = -1;
+  for (const name of stylesheetOrder) {
+    const index = bundle.indexOf(`/*! ${name} */`);
+    if (index <= lastIndex) fail(`assets/css/site.css: ${name} is missing or out of cascade order`);
+    lastIndex = index;
+  }
+}
+for (const file of ["index.html", "research.html", "contact.html"]) {
+  const links = readDistPage(file).match(/<link\b[^>]*rel="stylesheet"[^>]*href="assets\/css\/[^"]+"/g) || [];
+  if (links.length !== 1 || !/href="assets\/css\/site\.css\?v=[0-9a-f]{10}"/.test(links[0])) {
+    fail(`${file}: expected exactly one versioned link to assets/css/site.css`);
+  }
+}
+for (const file of fs.readdirSync(distDir).filter((name) => name.endsWith(".html"))) {
+  if (fs.readFileSync(path.join(distDir, file), "utf8").includes("rivieraliuyong@")) {
+    fail(`${file}: publish the email only in its [at] form; contact.js and cv.js assemble the address`);
+  }
 }
 const graduationPage = readDistPage("research-graduation.html");
 if (!graduationPage.includes("assets/js/research-lock.js") || !graduationPage.includes("data-research-lock-gate") || !graduationPage.includes("data-research-lock-content")) {

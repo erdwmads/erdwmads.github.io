@@ -43,7 +43,8 @@ if(gate){
    await scene.ready;if(run!==serial)return;
   }catch(error){if(run===serial){console.warn('Entrance animation unavailable:',error);finish();}return;}
   clearTimeout(window.cosmicArrivalFallback);clearTimeout(timer);
-  const duration=innerWidth<700?4800:6900;timer=setTimeout(finish,duration+2000);gate.dataset.state='playing';
+  // Shortened in September 2026 so the name arrives sooner; the scene order is unchanged.
+  const duration=innerWidth<700?4000:5600;timer=setTimeout(finish,duration+2000);gate.dataset.state='playing';
   let start;
   function tick(time){if(run!==serial)return;start??=time;const p=Math.min(1,(time-start)/duration);draw(p);if(p===1)finish();else frame=requestAnimationFrame(tick);}
   frame=requestAnimationFrame(tick);

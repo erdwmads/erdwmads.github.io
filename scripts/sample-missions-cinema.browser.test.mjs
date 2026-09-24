@@ -5,7 +5,7 @@ const browser=await chromium.launch({headless:true,...(process.env.EDGE_EXECUTAB
 try{
  const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
- await page.goto((process.env.SITE_TEST_URL||'http://127.0.0.1:52523')+'/research.html',{waitUntil:'networkidle'});
+ await page.goto((process.env.SITE_TEST_URL||'http://127.0.0.1:52523')+'/ryugu-bennu.html',{waitUntil:'networkidle'});
  const root=page.locator('[data-sample-missions]'),view=root.locator('[data-mission-viewport]');
  await view.scrollIntoViewIfNeeded();
  const ready=()=>page.waitForFunction(()=>document.querySelector('[data-sample-missions]').dataset.ready==='true'&&sampleMissions.state.frames>0,null,{timeout:45000});

@@ -8,7 +8,7 @@ try {
   const base=process.env.SITE_TEST_URL||'http://127.0.0.1:4322';
   const readings=[];
   for(const [i,position] of [[2.1,1.15,4],[-2,-1,-4],[4,.2,0],[-4,.2,0],[0,4,1],[0,-4,1]].entries()) {
-    await page.goto(encodeObservation({view:'origins',material:'orgueil',originProgress:.65,originCutaway:0,camera:{position,target:[0,0,0],up:[0,1,0],zoom:1}},`${base}/research.html`),{waitUntil:'networkidle'});
+    await page.goto(encodeObservation({view:'origins',material:'orgueil',originProgress:.65,originCutaway:0,camera:{position,target:[0,0,0],up:[0,1,0],zoom:1}},`${base}/ryugu-bennu.html`),{waitUntil:'networkidle'});
     const canvas=page.locator('.planetary canvas');await canvas.scrollIntoViewIfNeeded();
     await page.waitForFunction(()=>document.querySelector('.planetary').dataset.renderState==='ready');
     const buffer=await canvas.screenshot({path:`.codex_tmp/origins-light-angle-${i}.png`});

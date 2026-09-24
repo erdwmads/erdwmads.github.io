@@ -19,7 +19,7 @@ try {
     }
   });
   page.on('pageerror', e => errors.push(e.message));
-  await page.goto(`${base}/research.html`, { waitUntil: 'networkidle' });
+  await page.goto(`${base}/ryugu-bennu.html`, { waitUntil: 'networkidle' });
   await page.addStyleTag({content:'astro-dev-toolbar { display:none !important; }'});
   assert.equal(await page.locator('[data-planetary-explorer]').count(), 1);
   const root = page.locator('[data-planetary-explorer]');
@@ -132,8 +132,8 @@ try {
   await page.locator('.nav a[href="contact.html"]').click();
   await page.waitForURL('**/contact.html');
   assert.equal(await page.locator('[data-planetary-explorer] canvas').count(), 0);
-  await page.locator('.nav a[href="research.html"]').click();
-  await page.waitForURL('**/research.html');
+  await page.locator('.nav a[href="ryugu-bennu.html"]').click();
+  await page.waitForURL('**/ryugu-bennu.html');
   await root.scrollIntoViewIfNeeded();
   await page.waitForFunction(() => document.querySelector('[data-planetary-explorer]')?.dataset.renderState === 'ready');
   assert.equal(await root.locator('canvas').count(), 1);
@@ -143,7 +143,7 @@ try {
   await page.waitForTimeout(300);
   assert.equal(await page.evaluate(() => window.__sceneDraws),draws,'Offscreen rendering must stop');
   const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
-  await mobile.goto(`${base}/research.html`, { waitUntil: 'networkidle' });
+  await mobile.goto(`${base}/ryugu-bennu.html`, { waitUntil: 'networkidle' });
   await mobile.addStyleTag({content:'astro-dev-toolbar { display:none !important; }'});
   const mr = mobile.locator('[data-planetary-explorer]');
   await mr.scrollIntoViewIfNeeded();
@@ -195,7 +195,7 @@ try {
   await pixels(mr,true);
   const failed = await browser.newPage();
   await failed.route('**/assets/data/planetary/orbits.json',route=>route.abort());
-  await failed.goto(`${base}/research.html`,{waitUntil:'networkidle'});
+  await failed.goto(`${base}/ryugu-bennu.html`,{waitUntil:'networkidle'});
   await failed.locator('.planetary-stage').scrollIntoViewIfNeeded();
   await failed.waitForFunction(()=>document.querySelector('.planetary').dataset.renderState==='error');
   assert.ok(await failed.locator('[data-fallback]').isVisible());

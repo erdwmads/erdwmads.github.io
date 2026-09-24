@@ -10,6 +10,9 @@ The user supplies research content, notes, papers, images, or presentation goals
 - Mission Log shell and lazy loading: `src/components/MissionLogShell.astro`
 - Mission Log images: `public/assets/img/mission-log/`
 - Paper Shelf layout and filters: `src/components/PaperShelf.astro`
+- Research page (question, analytical pathway): `src/pages/research.astro`
+- Comparison materials page (sample-return missions, planetary field guide, published microscopy): `src/pages/ryugu-bennu.astro`
+- Stylesheet cascade order and bundle: `stylesheets` in `src/data/site.ts`, built into `assets/css/site.css`
 - Theme tokens: `public/assets/css/tokens.css`
 - Header, navigation, mobile shell, and HUD: `public/assets/css/shell-evolution.css`
 - Research Log dashboard and protected research surfaces: `public/assets/css/research-log-evolution.css`

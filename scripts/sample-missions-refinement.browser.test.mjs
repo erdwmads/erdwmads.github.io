@@ -24,7 +24,7 @@ try{
  console.log('Rapid transition pixels',pixels);
  assert(pixels.before.slice(0,3).every((v,i)=>Math.abs(v-pixels.after[i])<=3),'a second transition starts from the currently displayed blend');
  assert(pixels.end[2]>pixels.end[0],'transition reaches the new frame');await harness.close();
- const page=await browser.newPage({viewport:{width:1440,height:1000}});await page.goto(base+'/research.html',{waitUntil:'networkidle'});
+ const page=await browser.newPage({viewport:{width:1440,height:1000}});await page.goto(base+'/ryugu-bennu.html',{waitUntil:'networkidle'});
  const v=page.locator('[data-mission-viewport]');await v.scrollIntoViewIfNeeded();await page.waitForFunction(()=>document.querySelector('[data-sample-missions]').dataset.ready==='true');
  await page.evaluate(()=>sampleMissions.select(3,.5));await page.waitForTimeout(900);
  const b=await v.boundingBox(),beforeScroll=await page.evaluate(()=>scrollY);
@@ -36,7 +36,7 @@ try{
  await page.locator('[data-mission-progress]').fill('500');assert.match(await page.locator('[data-mission-progress]').getAttribute('aria-valuetext'),/50%.*Projectile sampling/);
  await page.close();
  const mobile=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
- await mobile.goto(base+'/research.html',{waitUntil:'networkidle'});const mv=mobile.locator('[data-mission-viewport]');await mv.scrollIntoViewIfNeeded();await mobile.waitForFunction(()=>document.querySelector('[data-sample-missions]').dataset.ready==='true');
+ await mobile.goto(base+'/ryugu-bennu.html',{waitUntil:'networkidle'});const mv=mobile.locator('[data-mission-viewport]');await mv.scrollIntoViewIfNeeded();await mobile.waitForFunction(()=>document.querySelector('[data-sample-missions]').dataset.ready==='true');
  const explore=mobile.locator('[data-mission-action="touch"]');assert.match(await explore.innerText(),/Explore/);assert.match(await mobile.locator('[data-mission-hint]').innerText(),/Explore/);
  await explore.click();assert.match(await explore.innerText(),/Done/);assert.match(await mobile.locator('[data-mission-hint]').innerText(),/pinch/);
  await mv.press('Escape');assert.match(await explore.innerText(),/Explore/);

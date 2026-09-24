@@ -8,7 +8,7 @@ try{
     const context=await browser.newContext({viewport:{width,height:1000},hasTouch:width<760,isMobile:width<760,reducedMotion:'reduce'});
     const page=await context.newPage();
     await page.addInitScript(theme=>{sessionStorage.setItem('mads-entry-gate-v1','done');localStorage.setItem('mads-theme',theme);},theme);
-    await page.goto('http://127.0.0.1:4322/index.html');await page.evaluate(()=>document.fonts.ready);
+    await page.goto((process.env.SITE_TEST_URL||'http://127.0.0.1:4322')+'/index.html');await page.evaluate(()=>document.fonts.ready);
     try{
       const card=page.locator('.hero-card');
       for(const selector of ['.hero-card','.affiliation-card']){

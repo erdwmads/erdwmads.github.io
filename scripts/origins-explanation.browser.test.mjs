@@ -5,7 +5,7 @@ const browser=await chromium.launch({headless:true,...(process.env.EDGE_EXECUTAB
 try {
   const page=await browser.newPage({viewport:{width:1440,height:1100},reducedMotion:'reduce'}),errors=[];
   page.on('pageerror',error=>errors.push(error.message));
-  await page.goto(`${process.env.SITE_TEST_URL||'http://127.0.0.1:4322'}/research.html#observe=1&view=origins&material=orgueil&originProgress=.65&originCutaway=.85`,{waitUntil:'networkidle'});
+  await page.goto(`${process.env.SITE_TEST_URL||'http://127.0.0.1:4322'}/ryugu-bennu.html#observe=1&view=origins&material=orgueil&originProgress=.65&originCutaway=.85`,{waitUntil:'networkidle'});
   await page.addStyleTag({content:'astro-dev-toolbar,.obs-fx-settings{display:none!important}'});
   const root=page.locator('.planetary'),stage=root.locator('[data-stage]'),canvas=root.locator('canvas');
   await stage.scrollIntoViewIfNeeded();await page.waitForFunction(()=>document.querySelector('.planetary').dataset.renderState==='ready');

@@ -15,13 +15,13 @@ try {
  assert.equal(await page.locator('main').getAttribute('aria-busy'),null);
  await page.unroute('**/contact.html');
  await page.goto(base+'/index.html');await page.waitForFunction(()=>window.__madsLegacyNavigationReady);
- await page.evaluate(()=>{const a=document.createElement('a');a.href='research.html#missions-title';a.textContent='test destination';a.id='nav-regression-anchor';document.querySelector('main').prepend(a);});
- await page.locator('#nav-regression-anchor').click();await page.waitForURL('**/research.html#missions-title');
+ await page.evaluate(()=>{const a=document.createElement('a');a.href='ryugu-bennu.html#missions-title';a.textContent='test destination';a.id='nav-regression-anchor';document.querySelector('main').prepend(a);});
+ await page.locator('#nav-regression-anchor').click();await page.waitForURL('**/ryugu-bennu.html#missions-title');
  await page.waitForFunction(()=>!document.documentElement.classList.contains('mads-soft-nav-active'));
  const y=await page.evaluate(()=>scrollY);assert.ok(y>100);
  await page.goBack();await page.waitForURL('**/index.html');await page.waitForFunction(()=>!document.documentElement.classList.contains('mads-soft-nav-active'));
- await page.goForward();await page.waitForURL('**/research.html#missions-title');await page.waitForFunction(()=>!document.documentElement.classList.contains('mads-soft-nav-active'));
+ await page.goForward();await page.waitForURL('**/ryugu-bennu.html#missions-title');await page.waitForFunction(()=>!document.documentElement.classList.contains('mads-soft-nav-active'));
  assert.ok(Math.abs(await page.evaluate(()=>scrollY)-y)<4,'Forward restores initial anchor position');
- await page.locator('.nav a[href="research.html"]').click();assert.equal(new URL(page.url()).hash,'');
+ await page.locator('.nav a[href="ryugu-bennu.html"]').click();assert.equal(new URL(page.url()).hash,'');
  console.log('Navigation intent and anchor history: passed');
 } finally {await browser.close();}

@@ -14,7 +14,7 @@ try {
       const getContext=HTMLCanvasElement.prototype.getContext;
       HTMLCanvasElement.prototype.getContext=function(type,...args){return /webgl/.test(type)?null:getContext.call(this,type,...args);};
     });
-    await page.goto(encodeObservation({view:'sample',material:'ryugu',day:614},`${base}/research.html`),{waitUntil:'domcontentloaded'});
+    await page.goto(encodeObservation({view:'sample',material:'ryugu',day:614},`${base}/ryugu-bennu.html`),{waitUntil:'domcontentloaded'});
     const root=page.locator('.planetary');
     await page.waitForFunction(()=>document.querySelector('.planetary')?.dataset.mode==='sample');
     await root.locator('[data-sample-image]').waitFor({state:'visible'});
@@ -37,7 +37,7 @@ try {
     };
   });
   const initial={view:'orbit',material:'bennu',day:614,angle:'tilt',camera:{position:[0,-7,12],target:[0,0,0],up:[0,1,0],zoom:2}};
-  await page.goto(encodeObservation(initial,`${base}/research.html`),{waitUntil:'domcontentloaded'});
+  await page.goto(encodeObservation(initial,`${base}/ryugu-bennu.html`),{waitUntil:'domcontentloaded'});
   const root=page.locator('.planetary');
   const ready=()=>page.waitForFunction(()=>document.querySelector('.planetary')?.dataset.renderState==='ready'&&!document.querySelector('.planetary [data-share]').disabled);
   await root.locator('[data-stage]').scrollIntoViewIfNeeded();await ready();

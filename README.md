@@ -35,9 +35,18 @@ Generate structured data for PPT work:
 npm run export:ppt-data
 ```
 
+Run every unit test, or the Playwright browser regression tests against a fresh build (see `scripts/README.md`):
+
+```powershell
+npm run test:unit
+npm run build
+npm run test:browser
+```
+
 ## Structure
 
-- `src/pages/` - Astro routes that generate public pages.
+- `src/pages/` - Astro routes that generate public pages. `research.astro` holds the research question and analytical pathway; `ryugu-bennu.astro` holds the comparison materials (sample-return missions, planetary field guide, published microscopy).
+- `src/pages/assets/css/site.css.ts` and `src/lib/stylesheet-bundle.ts` - build-time stylesheet bundle; see CSS Maintenance.
 - `src/components/LegacyShell.astro` - shared head, SEO metadata, navigation, footer, and script shell.
 - `src/components/PaperShelf.astro` - Paper Shelf rendering and filter controls.
 - `src/components/MissionLogShell.astro` - password-gated Graduation Research Mission Log shell.
@@ -50,6 +59,7 @@ npm run export:ppt-data
 - `public/assets/img/` - portraits, gallery photos, public research images, and backgrounds.
 - `public/assets/img/mission-log/` - Mission Log images used by the password-gated Graduation Research page.
 - `public/assets/files/` - downloadable PDFs.
+- `scripts/` - build checks, audits, data generators and tests; indexed in `scripts/README.md`.
 
 ## Routine Updates
 
@@ -93,8 +103,11 @@ b27650d36470015bc138fae1b022ce1068efeb97
 
 ## CSS Maintenance
 
-`public/assets/css/style.css` is intentionally kept as a single compatibility stylesheet. Rule order matters.
+Pages load one stylesheet, `assets/css/site.css`, generated at build time from the files in `public/assets/css/`. The cascade order is the `stylesheets` list in `src/data/site.ts`; the bundle removes only whitespace and comments, and its `?v=` version is a content hash. Edit the source files, never the bundle, and add a new stylesheet to that list or no page will load it (`npm run check` fails if one is missing).
 
-- Edit the latest matching section instead of appending another late override.
+`public/assets/css/style.css` is the legacy compatibility stylesheet. Rule order matters.
+
+- Edit the latest matching section instead of appending another late override. New component rules belong in the owner stylesheets listed in `docs/ui-invariants.md`.
 - Do not move Space Mode, Interface 2046, Mission Log lightbox, or Entry Gate rules unless changing cascade order intentionally.
-- After changing styles, run `npm run check` and compare the public site and local Mission Log visually.
+- `node scripts/prune-dead-css.mjs` reports rules whose selectors can never match anything on the site; `--write` removes them. Build first, and pass the private Mission Log JSON with `--extra` so classes used only inside encrypted entries stay protected.
+- After changing styles, run `npm run check` and `npm run audit:css:check`, then compare the public site and local Mission Log visually.
