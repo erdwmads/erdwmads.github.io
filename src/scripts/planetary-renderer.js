@@ -299,11 +299,27 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     camera.position.sub(controls.target).applyAxisAngle(axis,(key==='ArrowLeft'||key==='ArrowUp'?1:-1)*0.14).add(controls.target); camera.lookAt(controls.target); controls.update(); requestRender();
   }
   let down = null;
+  // Labels are drawn compactly over the scene; on touch, a tap within a 44px target centred on a
+  // label selects it (nearest label wins). Their drawn size and placement are unchanged.
+  function labelNear(x, y) {
+    let best = null, bestDistance = Infinity;
+    for (const {element} of labels) {
+      if (element.hidden || element.tagName !== 'BUTTON') continue;
+      const b = element.getBoundingClientRect(), padX = Math.max(0,(44-b.width)/2), padY = Math.max(0,(44-b.height)/2);
+      if (x < b.left-padX || x > b.right+padX || y < b.top-padY || y > b.bottom+padY) continue;
+      const distance = Math.hypot(x-(b.left+b.width/2), y-(b.top+b.height/2));
+      if (distance < bestDistance) { best = element; bestDistance = distance; }
+    }
+    return best;
+  }
   renderer.domElement.addEventListener('pointerdown', e=> {down=[e.clientX,e.clientY];}, {signal});
   // OrbitControls captures pointers on the stage, so pointerup is retargeted there.
   stage.addEventListener('pointerup', e=> {
     const start = down; down = null;
-    if (!start || Math.hypot(e.clientX-start[0],e.clientY-start[1])>5 || current?.view!=='orbit') return;
+    if (!start || Math.hypot(e.clientX-start[0],e.clientY-start[1])>5) return;
+    const nearLabel = e.pointerType === 'touch' ? labelNear(e.clientX, e.clientY) : null;
+    if (nearLabel) { nearLabel.click(); return; }
+    if (current?.view!=='orbit') return;
     const r = stage.getBoundingClientRect(), ray = new THREE.Raycaster();
     ray.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,1-(e.clientY-r.top)/r.height*2),camera);
     const hit = ray.intersectObjects(clickable,true)[0]; if (hit) onSelect(hit.object.userData.id);

@@ -13,13 +13,18 @@ const same = (before, after, label) => {
   assert.equal(after.length, before.length, label);
   before.forEach((box,i) => Object.keys(box).forEach(key => assert(Math.abs(box[key]-after[i][key]) < .6, `${label}: item ${i} ${key} ${box[key]} -> ${after[i][key]}`)));
 };
+const separate = (boxes, width, label) => boxes.forEach((a,i) => {
+  assert(a.x>=-1 && a.x+a.width<=width+1,`${label}: controls fit`);
+  boxes.slice(i+1).forEach(b => assert(!(Math.min(a.x+a.width,b.x+b.width)-Math.max(a.x,b.x)>1 && Math.min(a.y+a.height,b.y+b.height)-Math.max(a.y,b.y)>1),`${label}: controls overlap`));
+});
 try {
   const widths=process.env.TEST_WIDTHS ? process.env.TEST_WIDTHS.split(',').map(Number) : process.env.TEST_QUICK ? [1440] : [1440,1024,768,390,320];
   for (const width of widths) for (const theme of ['space','light']) {
     const context = await browser.newContext({ viewport:{width,height:1000}, hasTouch:width<760, isMobile:width<760 });
     const page = await context.newPage();
     await page.addInitScript(theme => {sessionStorage.setItem('mads-entry-gate-v1','done');sessionStorage.setItem('mads-cosmic-arrival-v1','done');localStorage.setItem('mads-theme',theme);}, theme);
-    const routes = process.env.TEST_ROUTES?.split(',') || ([1440,390].includes(width) && !process.env.TEST_QUICK ? ['cv','research','index','paper-shelf','photography','contact','research-log','research-graduation','sample-cabinet'] : ['cv','research']);
+    // The planetary field guide moved from research to ryugu-bennu (8d592d6); Origins left it for origins-study (000abf8).
+    const routes = process.env.TEST_ROUTES?.split(',') || ([1440,390].includes(width) && !process.env.TEST_QUICK ? ['cv','research','ryugu-bennu','origins-study','index','paper-shelf','photography','contact','research-log','research-graduation','sample-cabinet'] : ['cv','ryugu-bennu','origins-study']);
     const errors=[];page.on('pageerror',error=>errors.push(error.message));
     for (const route of routes) {
       try {
@@ -40,7 +45,7 @@ try {
             same(before,await geometry(targets),'CV hover');
           }
           await cards.first().screenshot({path:`.codex_tmp/stable-cv-${width}-${theme}.png`});
-        } else if(route === 'research') {
+        } else if(route === 'ryugu-bennu') {
           const root = page.locator('[data-planetary-explorer]');
           await page.locator('[data-view="minerals"]').click();
           await page.waitForTimeout(500);
@@ -52,11 +57,11 @@ try {
           for (const material of ['ryugu','orgueil','bennu']) {
             await root.locator(`[data-material="${material}"]`).click();
             await page.waitForTimeout(250);
-            same(before, await geometry(controls),`Research ${material}`);
+            same(before, await geometry(controls),`Minerals ${material}`);
           }
           await root.locator('.planetary-toolbar').screenshot({path:`.codex_tmp/stable-research-${width}-${theme}.png`});
           await root.locator('[data-stage]').screenshot({path:`.codex_tmp/stable-model-${width}-${theme}.png`});
-          for(const view of ['orbit','shape','sample','origins']) {
+          for(const view of ['orbit','shape','sample']) {
             await root.locator(`[data-view="${view}"]`).click();
             await root.locator('[data-material="bennu"]').click();await page.waitForTimeout(120);
             const toolbarBefore=await geometry(root.locator('.planetary-toolbar, [data-share]'));
@@ -65,13 +70,19 @@ try {
               await root.locator(`[data-material="${material}"]`).click();await page.waitForTimeout(120);
               same(toolbarBefore,await geometry(root.locator('.planetary-toolbar, [data-share]')),`${view} ${material} toolbar`);
               same(contentBefore,(await geometry(root.locator('.planetary-layout'))).map(({x,y})=>({x,y})),`${view} ${material} content origin`);
-              const visible=root.locator('.planetary-toolbar button:visible, .planetary-toolbar select:visible, .planetary-origin-controls button:visible');
-              const boxes=await geometry(visible);
-              for(let i=0;i<boxes.length;i++) {
-                assert(boxes[i].x>=-1 && boxes[i].x+boxes[i].width<=width+1,`${view} ${material}: controls fit`);
-                for(let j=i+1;j<boxes.length;j++) assert(!(Math.min(boxes[i].x+boxes[i].width,boxes[j].x+boxes[j].width)-Math.max(boxes[i].x,boxes[j].x)>1 && Math.min(boxes[i].y+boxes[i].height,boxes[j].y+boxes[j].height)-Math.max(boxes[i].y,boxes[j].y)>1),`${view} ${material}: controls overlap`);
-              }
+              separate(await geometry(root.locator('.planetary-toolbar button:visible, .planetary-toolbar select:visible')),width,`${view} ${material}`);
             }
+          }
+        } else if(route === 'origins-study') {
+          // Chapters are the study's selection: they and the content origin stay put; every visible control fits without overlap.
+          await page.waitForFunction(()=>window.study);
+          const chapters=page.locator('.chapters [data-stage]'), origin=async()=>(await geometry(page.locator('.observatory'))).map(({x,y})=>({x,y}));
+          const chaptersBefore=await geometry(chapters), contentBefore=await origin();
+          for(const stage of [1,2,3,0]) {
+            await page.locator(`.chapters [data-stage="${stage}"]`).click();await page.locator(`.chapters [data-stage="${stage}"][aria-current="step"]`).waitFor();await page.waitForTimeout(120);
+            same(chaptersBefore,await geometry(chapters),`origins ${stage} chapters`);
+            same(contentBefore,await origin(),`origins ${stage} content origin`);
+            separate(await geometry(page.locator('.origins-study :is(button,input):visible')),width,`origins ${stage}`);
           }
         } else {
           const items=page.locator('main :is(.card,.paper-card,.pathway-step,.button,.paper-filter):visible');

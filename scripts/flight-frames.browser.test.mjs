@@ -14,10 +14,12 @@ try{
  const root=page.locator('[data-sample-missions]'),viewport=root.locator('[data-mission-viewport]');
  await viewport.scrollIntoViewIfNeeded();
  const ready=()=>page.waitForFunction(()=>window.sampleMissions&&document.querySelector('[data-sample-missions]').dataset.ready==='true',null,{timeout:45000});await ready();
+ // At 960px and below the view controls start inside the collapsed notebook, so open it as a visitor would.
+ const openNotes=async()=>{if(!await root.locator('[data-mission-notebook]').evaluate(d=>d.open))await root.locator('[data-mission-notebook] > summary').click();};
  for(const id of ['hayabusa2','osiris-rex']){
   await page.evaluate(id=>sampleMissions.choose(id),id);await ready();
   for(const width of [1440,390]){
-   await page.setViewportSize({width,height:1000});await viewport.scrollIntoViewIfNeeded();
+   await page.setViewportSize({width,height:1000});await openNotes();await viewport.scrollIntoViewIfNeeded();
    for(const [kind,p] of [['launch',0],['launch',.28],['launch',.7],['launch',1],['cruise',.45],['landing',0],['landing',.22],['landing',.42],['landing',.7],['landing',1]]){
     const stage=missions[id].stages.findIndex(s=>s.kind===kind);
     await page.evaluate(({stage,p})=>sampleMissions.select(stage,p),{stage,p});if(['launch','return','landing'].includes(kind))await root.locator('[data-mission-action="detail"]').click();await page.waitForTimeout(160);

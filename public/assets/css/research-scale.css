@@ -75,3 +75,7 @@ html[data-theme] body#academic-site main .research-scale :is(.research-scale__cr
   .research-scale__caption { padding:0; border-left:0; }
 }
 .research-record-links { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-block:20px 12px; }
+/* mobile-touch-research-scale: 44px touch target for the full-resolution figure link (2026-09). */
+@media (max-width: 760px), (pointer: coarse) {
+  html[data-theme] body#academic-site .research-scale__caption p > a:only-child { display: inline-flex !important; align-items: center; min-height: 44px !important; }
+}

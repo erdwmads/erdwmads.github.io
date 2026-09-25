@@ -188,3 +188,14 @@ html[data-theme] body#academic-site .mission-story [aria-current=step]{border-co
  .mission-chapters button span,.mission-story button time,.mission-explanation>span,.mission-location small,.mission-scrubber,.mission-orbit-details{font-size:11px;}
  .mission-viewport .mission-view-hint,.mission-flight-cue span{font-size:10px;}
 }
+/* mobile-touch-missions: 44px touch targets on phones and touch screens (2026-09). */
+@media(max-width:760px),(pointer:coarse){
+ html[data-theme] body#academic-site .sample-missions button[data-mission-action],
+ html[data-theme] body#academic-site .sample-missions :is(.mission-transport,.mission-share) button,
+ html[data-theme] body#academic-site .sample-missions .mission-touch{min-height:44px;min-width:44px;}
+ html[data-theme] body#academic-site .sample-missions .mission-scrubber input{min-height:44px;}
+ html[data-theme] body#academic-site .sample-missions .mission-sources li a{display:inline-flex!important;align-items:center;min-height:44px!important;}
+ html[data-theme] body#academic-site .sample-missions :is(.mission-location,.mission-footnote) a{display:flex!important;align-items:center;min-height:44px!important;}
+ html[data-theme] body#academic-site .sample-missions details.mission-story>summary{min-height:44px;}
+ html[data-theme] body#academic-site .sample-missions details.mission-sources>summary{min-height:44px;padding-block:11px;}
+}

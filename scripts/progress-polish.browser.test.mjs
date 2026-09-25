@@ -34,7 +34,9 @@ try {
     await page.goto(`${base}/index.html`);
     const primary=page.locator('main .button:not(.secondary):not(.atlas-launch)').first();
     const secondary=page.locator('main .button.secondary').first();
-    assert.notEqual(await primary.evaluate(el=>getComputedStyle(el).boxShadow),await secondary.evaluate(el=>getComputedStyle(el).boxShadow));
+    // Quiet controls carry no shadows (quiet-observatory.css), so the hierarchy lives in the face.
+    const face=el=>el.evaluate(el=>{const s=getComputedStyle(el);return `${s.backgroundColor} ${s.backgroundImage}`;});
+    assert.notEqual(await face(primary),await face(secondary),'primary actions keep a distinct face');
     await primary.hover();await page.waitForTimeout(100);
     assert.equal(await primary.locator('.obs-edge-light').count(),1);
     await page.close();
@@ -47,7 +49,7 @@ try {
     await page.goto(`${base}/research-graduation.html`);
     assert.equal(await page.locator('.mission-progress').count(),0);
     await page.locator('[data-research-lock-input]').fill(password);
-    await page.locator('[data-research-lock-form] button').click();
+    await page.locator('[data-research-lock-form] button[type="submit"]').click();
     await page.locator('.mission-progress').waitFor();
     assert.match(await page.locator('.mission-progress').innerText(),/Recorded observation 3/);
     assert.match(await page.locator('.research-note-body').innerText(),/Original record 3/);
@@ -92,7 +94,7 @@ try {
       await page.route('**/assets/data/mission-log.enc.json',route=>route.fulfill({json:realPayload}));
       await page.goto(`${base}/research-graduation.html#log-011`);
       await page.locator('[data-research-lock-input]').fill(password);
-      await page.locator('[data-research-lock-form] button').click();
+      await page.locator('[data-research-lock-form] button[type="submit"]').click();
       await page.locator('.mission-progress').waitFor();
       for(const entry of realEntries) {
         await page.locator(`[data-mission-target="${entry.id}"]`).click();

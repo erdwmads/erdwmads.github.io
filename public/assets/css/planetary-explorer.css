@@ -224,3 +224,12 @@ html[data-theme] body#academic-site .planetary[data-mode="origins"] [data-camera
   html[data-theme] body#academic-site .planetary .planetary-interaction-bar .planetary-touch { display:inline-flex; align-items:center; gap:8px; min-width:96px; justify-content:center; }
   .planetary[data-mode="sample"] .planetary-interaction-bar,.planetary[data-mode="shape"][data-material="orgueil"] .planetary-interaction-bar { display:none; }
 }
+/* mobile-touch-planetary: 44px touch targets on phones and touch screens (2026-09).
+   Orbit labels keep their drawn size; planetary-renderer.js accepts touch taps within 44px of them. */
+@media (max-width: 760px), (pointer: coarse) {
+  html[data-theme] body#academic-site .planetary .planetary-time input[type="range"] { height: 44px; }
+  html[data-theme] body#academic-site .planetary details.planetary-sources > summary { box-sizing: border-box; min-height: 44px; padding-block: 12px; }
+  html[data-theme] body#academic-site .planetary .planetary-question-footer a { display: flex !important; align-items: center; min-height: 44px !important; }
+  /* The Sun's label has no action; letting it take taps made touch adjustment swallow taps meant for Mercury. */
+  html[data-theme] body#academic-site .planetary span.planetary-label { pointer-events: none; }
+}

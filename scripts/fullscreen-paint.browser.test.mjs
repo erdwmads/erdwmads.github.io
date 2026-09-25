@@ -7,11 +7,14 @@ const browser = await chromium.launch({ headless: true, ...(process.env.EDGE_EXE
 const base = process.env.SITE_TEST_URL || 'http://127.0.0.1:4322';
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  // The viewer swaps in the photograph and its counter only after loading and decoding; a failed load shows Retry instead.
+  const shown = () => page.waitForFunction(() => document.querySelector('.obs-presentation-counter').textContent || (!document.querySelector('.obs-present-retry').hidden && 'image failed to load')).then(result => result.jsonValue());
   for (const theme of ['space', 'light']) {
     await page.goto(`${base}/photography.html`, { waitUntil: 'networkidle' });
     await page.evaluate(theme => localStorage.setItem('mads-theme', theme), theme);
     await page.reload({ waitUntil: 'networkidle' });
     await page.locator('[data-photo-index="0"]').click();
+    assert.equal(await shown(), '01 / 21');
     await page.locator('.obs-presentation-stage img').evaluate(img => img.decode());
     await page.waitForFunction(() => !document.querySelector('.obs-photo-flight'));
     await page.waitForTimeout(250);
@@ -26,9 +29,9 @@ try {
     for (let i = 0; i < before.length; i++) if (Math.abs(before[i] - after[i]) > 24) changed++;
     assert.ok(changed / before.length < .025, `${theme}: fullscreen painted the page instead of the viewer (${Math.round(100 * changed / before.length)}% changed)`);
     await page.locator('.obs-present-next').click();
-    assert.equal(await page.locator('.obs-presentation-counter').textContent(), '02 / 21');
+    assert.equal(await shown(), '02 / 21');
     await page.keyboard.press('ArrowLeft');
-    assert.equal(await page.locator('.obs-presentation-counter').textContent(), '01 / 21');
+    assert.equal(await shown(), '01 / 21');
     await page.locator('.obs-present-fullscreen').click();
     await page.waitForFunction(() => !document.fullscreenElement);
     assert.ok(await page.locator('.obs-presentation[open]').isVisible());

@@ -11,6 +11,8 @@ const browser = await chromium.launch({
 const base = process.env.SITE_TEST_URL || 'http://127.0.0.1:4322';
 const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
 const page = await context.newPage();
+// The home arrival (added after this test) has its own tests; start each visit with it already seen.
+await page.addInitScript(() => sessionStorage.setItem('mads-cosmic-arrival-v1', 'done'));
 const errors = [];
 page.on('pageerror', error => errors.push(error.message));
 try {
@@ -20,7 +22,8 @@ try {
   await page.getByLabel('Immersive', { exact: true }).check();
   assert.equal(await page.locator('html').getAttribute('data-fx-intensity'), 'immersive');
   await page.keyboard.press('Escape');
-  await toggleFx(page);
+  // FX has been on by default since b8ab393 (it was opt-in when this test was written); only switch it on if off.
+  if (await page.locator('html').evaluate(el => el.classList.contains('ambient-fx-disabled'))) await toggleFx(page);
   const researchButton = page.locator('main .button').first();
   await researchButton.hover();
   await page.waitForTimeout(100);
@@ -35,9 +38,13 @@ try {
   await page.waitForURL('**/photography.html');
   await page.locator('[data-present-photos]').click();
   await page.locator('.obs-presentation[open]').waitFor();
-  assert.equal(await page.locator('.obs-presentation-counter').textContent(), '01 / 21');
+  // Since 972dc30 the counter stays empty until the requested image has loaded and decoded.
+  const counter = page.locator('.obs-presentation-counter'), shown = page.locator('.obs-presentation-counter:not(:empty)');
+  await shown.waitFor();
+  assert.equal(await counter.textContent(), '01 / 21');
   await page.keyboard.press('ArrowRight');
-  assert.equal(await page.locator('.obs-presentation-counter').textContent(), '02 / 21');
+  await shown.waitFor();
+  assert.equal(await counter.textContent(), '02 / 21');
   await page.locator('.obs-present-fullscreen').click();
   await page.waitForTimeout(150);
   assert.equal(await page.evaluate(() => !!document.fullscreenElement), true);

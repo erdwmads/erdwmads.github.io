@@ -36,10 +36,10 @@
   },
   {
     "file": "planetary-explorer.css",
-    "bytes": 22152,
-    "lines": 227,
+    "bytes": 23013,
+    "lines": 236,
     "repeatedSelectors": 30,
-    "important": 79
+    "important": 81
   },
   {
     "file": "quiet-observatory.css",
@@ -64,10 +64,10 @@
   },
   {
     "file": "research-scale.css",
-    "bytes": 3295,
-    "lines": 78,
+    "bytes": 3611,
+    "lines": 82,
     "repeatedSelectors": 5,
-    "important": 8
+    "important": 10
   },
   {
     "file": "review-refinement.css",

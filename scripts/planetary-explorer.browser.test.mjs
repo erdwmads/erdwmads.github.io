@@ -27,11 +27,15 @@ try {
   await page.waitForFunction(() => document.querySelector('[data-planetary-explorer]')?.dataset.renderState === 'ready');
   assert.ok(await root.locator('canvas').isVisible());
   async function pixels(container, model = false) {
-    // Fixed site controls are outside the scene and must not enter its pixel bounds.
-    const overlayStyle = await container.page().addStyleTag({content:'.obs-fx-settings,astro-dev-toolbar { visibility:hidden !important; }'});
+    // Fixed site controls and the sticky section guide are outside the scene and must not enter its pixel bounds.
+    const overlayStyle = await container.page().addStyleTag({content:'.obs-fx-settings,astro-dev-toolbar,[data-research-guide] { visibility:hidden !important; }'});
     const labels = container.locator('[data-labels]');
+    // The stage's rounded clip shows the page colour at the canvas corners; square it so only scene pixels are measured.
+    const stage = container.locator('[data-stage]');
     await labels.evaluate(el => el.style.visibility='hidden');
+    await stage.evaluate(el => el.style.setProperty('border-radius','0','important'));
     const buffer = await container.locator('canvas').screenshot();
+    await stage.evaluate(el => el.style.removeProperty('border-radius'));
     await labels.evaluate(el => el.style.visibility='');
     await overlayStyle.evaluate(el=>el.remove());
     const {data: rgb, info} = await sharp(buffer).removeAlpha().raw().toBuffer({resolveWithObject:true});

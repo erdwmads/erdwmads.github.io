@@ -15,6 +15,8 @@ const root=page.locator('[data-sample-missions]'),view=root.locator('[data-missi
 async function state(){await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));return page.evaluate(()=>sampleMissions.state);}
 async function select(id,kind,p=0){const stage=missions[id].stages.findIndex(s=>s.kind===kind);await page.evaluate(({stage,p})=>sampleMissions.select(stage,p),{stage,p});return state();}
 async function check(name,fn){try{await fn();results.push(name);console.log('PASS',name);}catch(error){failures.push({name,error:error.stack});console.error('FAIL',name,error.message);await writeFile(join(evidence,`${failures.length}.json`),JSON.stringify({name,error:error.stack,state:await page.evaluate(()=>window.sampleMissions?.state).catch(()=>null)},null,2));await root.locator('.mission-scene').screenshot({path:join(evidence,`${failures.length}.png`),timeout:5000}).catch(()=>{});}}
+// Chapters open on the distance overview; Spacecraft close-up centres the probe.
+async function probe(id,kind,p){const s=await select(id,kind,p);assert.equal(s.focus,'both');await root.locator('[data-mission-action="spacecraft"]').click();return state();}
 function assertProbeCentered(s){assert.equal(s.focus,'spacecraft');assert(s.proximity.spanKm>0);assert(distance(s.camera.target,s.proximity.position)<s.proximity.spanKm*.01);const d=distance(s.camera.position,s.camera.target);assert(d>=s.camera.minDistance*.999&&d<=s.camera.maxDistance*1.001);}
 try{
  await page.addInitScript(()=>sessionStorage.setItem('mads-cosmic-arrival-v1','done'));
@@ -48,9 +50,9 @@ try{
     await root.locator('[data-mission-action="frame-earth"]').click();const restored=await state();assert.equal(restored.proximity.time,earth.proximity.time);assert.deepEqual(restored.proximity.position,earth.proximity.position);
    }
   });
-  for(const kind of ['rendezvous','depart'])await check(`${id} ${kind}: probe default, Ctrl-wheel physical zoom bounds`,async()=>{
-   for(const p of [0,.5,1])assertProbeCentered(await select(id,kind,p));
-   await select(id,kind,.5);await view.scrollIntoViewIfNeeded();const box=await view.boundingBox();await page.mouse.move(box.x+box.width*.55,box.y+box.height*.6);await page.keyboard.down('Control');
+  for(const kind of ['rendezvous','depart'])await check(`${id} ${kind}: distance overview default, probe close-up, Ctrl-wheel physical zoom bounds`,async()=>{
+   for(const p of [0,.5,1])assertProbeCentered(await probe(id,kind,p));
+   await probe(id,kind,.5);await view.scrollIntoViewIfNeeded();const box=await view.boundingBox();await page.mouse.move(box.x+box.width*.55,box.y+box.height*.6);await page.keyboard.down('Control');
    try{for(let i=0;i<18;i++)await page.mouse.wheel(0,100);const far=await state();assertProbeCentered(far);assert(distance(far.camera.position,far.camera.target)<=far.proximity.spanKm*20.001);for(let i=0;i<32;i++)await page.mouse.wheel(0,-100);assertProbeCentered(await state());}finally{await page.keyboard.up('Control');}
   });
   await check(`${id} manual key and drag pause playback`,async()=>{

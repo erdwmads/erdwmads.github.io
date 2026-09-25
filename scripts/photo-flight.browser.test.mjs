@@ -7,6 +7,8 @@ const browser = await chromium.launch({ headless: true, ...(process.env.EDGE_EXE
 const base = process.env.SITE_TEST_URL || 'http://127.0.0.1:4322';
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  // The viewer commits its counter only after the photograph has loaded and decoded; a failed load shows Retry instead.
+  const shown = () => page.waitForFunction(() => document.querySelector('.obs-presentation-counter').textContent || (!document.querySelector('.obs-present-retry').hidden && 'image failed to load')).then(result => result.jsonValue());
   await page.goto(`${base}/photography.html`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(1600);
   if (await page.locator('html').evaluate(el => el.classList.contains('ambient-fx-disabled'))) await toggleFx(page);
@@ -15,6 +17,7 @@ try {
   const y = await page.evaluate(() => scrollY);
   await tile.click();
   assert.equal(await page.locator('.obs-photo-flight').count(), 1, 'opening did not create the tile transition');
+  assert.equal(await shown(), '01 / 21');
   await page.waitForFunction(() => !document.querySelector('.obs-photo-flight'));
   assert.equal(await page.locator('.obs-presentation img').evaluate(el => getComputedStyle(el).visibility), 'visible');
   await page.locator('.obs-present-close').click();
@@ -22,18 +25,34 @@ try {
   await page.waitForFunction(() => !document.querySelector('.obs-presentation[open]'));
   assert.ok(Math.abs(await page.evaluate(() => scrollY) - y) < 2, 'closing lost scroll position');
   assert.ok(await tile.evaluate(el => el === document.activeElement));
-  const rapidClose = await tile.evaluate(el => {
+  // Closing before the photograph has loaded closes directly, so no return flight can start from full size.
+  const earlyClose = await tile.evaluate(el => {
     el.click();
-    const before = document.querySelector('.obs-photo-flight').getBoundingClientRect().width;
+    const flying = Boolean(document.querySelector('.obs-photo-flight'));
     document.querySelector('.obs-present-close').click();
-    return { before, after: document.querySelector('.obs-photo-flight').getBoundingClientRect().width };
+    return { flying, flight: Boolean(document.querySelector('.obs-photo-flight')), open: document.querySelector('.obs-presentation').open, focused: el === document.activeElement };
   });
+  assert.deepEqual(earlyClose, { flying: true, flight: false, open: false, focused: true }, 'closing before the image loaded did not close directly');
+  // Once it has loaded, closing during the opening flight returns from the interrupted size. Slowed animations keep the flight running.
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send('Animation.enable');
+  await cdp.send('Animation.setPlaybackRate', { playbackRate: .05 });
+  await tile.click();
+  assert.equal(await shown(), '01 / 21');
+  const rapidClose = await page.evaluate(() => {
+    const before = document.querySelector('.obs-photo-flight')?.getBoundingClientRect().width;
+    document.querySelector('.obs-present-close').click();
+    return { before, after: document.querySelector('.obs-photo-flight')?.getBoundingClientRect().width };
+  });
+  await cdp.send('Animation.setPlaybackRate', { playbackRate: 1 });
+  await cdp.detach();
+  assert.ok(rapidClose.before && rapidClose.after, 'rapid close did not return from the opening flight');
   assert.ok(rapidClose.after <= rapidClose.before + 2, 'rapid close jumped to full size');
   await page.waitForFunction(() => !document.querySelector('.obs-presentation[open]'));
   await tile.click();
   await page.keyboard.press('ArrowRight');
   assert.equal(await page.locator('.obs-photo-flight').count(), 0, 'changing image left an old animated photo');
-  assert.equal(await page.locator('.obs-presentation-counter').textContent(), '02 / 21');
+  assert.equal(await shown(), '02 / 21');
   await page.keyboard.press('Escape');
   await page.waitForFunction(() => !document.querySelector('.obs-presentation[open]'));
   await tile.click();

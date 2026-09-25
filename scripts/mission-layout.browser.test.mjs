@@ -15,7 +15,7 @@ const page=await browser.newPage({viewport:{width,height:1000},reducedMotion:'re
 await page.addInitScript(()=>sessionStorage.setItem('mads-cosmic-arrival-v1','done'));
 await page.route('**/assets/data/mission-log.enc.json',route=>route.fulfill({json:payload}));
 await page.goto((process.env.TEST_BASE_URL||'http://127.0.0.1:52523')+'/research-graduation.html');
-await page.locator('[data-research-lock-input]').fill(password);await page.locator('[data-research-lock-form] button').click();await page.locator('.mission-record-header').waitFor();
+await page.locator('[data-research-lock-input]').fill(password);await page.locator('[data-research-lock-form] button[type="submit"]').click();await page.locator('.mission-record-header').waitFor();
 for(const entry of entries){
 await page.locator('[data-mission-target="'+entry.id+'"]').evaluate(e=>e.click());
 for(const theme of ['space','light']){

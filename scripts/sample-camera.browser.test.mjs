@@ -16,6 +16,8 @@ try{
  await view.scrollIntoViewIfNeeded();
  const ready=()=>page.waitForFunction(()=>document.querySelector('[data-sample-missions]').dataset.ready==='true'&&sampleMissions.state.frames>0,null,{timeout:45000});
  await ready();
+ // At 960px and below the view controls start inside the collapsed notebook, so open it as a visitor would.
+ const openNotes=async()=>{if(!await root.locator('[data-mission-notebook]').evaluate(d=>d.open))await root.locator('[data-mission-notebook] > summary').click();};
  async function settled(kind,p,id){
   const aspect=await view.evaluate(el=>el.clientWidth/el.clientHeight),shot=['launch','return','landing'].includes(kind)?earthFlightShot(await page.evaluate(()=>sampleMissions.state.earth),'detail',aspect):missionShot(kind,p,id,aspect);
   await page.waitForFunction(shot=>{
@@ -27,7 +29,7 @@ try{
   await page.evaluate(id=>sampleMissions.choose(id),id);await ready();
   const sample=missions[id].stages.findIndex(s=>s.kind==='sample'),release=missions[id].stages.findIndex(s=>s.kind==='return');
   for(const width of [1440,390]){
-   await page.setViewportSize({width,height:1000});await view.scrollIntoViewIfNeeded();
+   await page.setViewportSize({width,height:1000});await openNotes();await view.scrollIntoViewIfNeeded();
    for(const [kind,stage,p]of [['sample',sample,0],['sample',sample,.52],['sample',sample,.78],['return',release,.7],['return',release,1]]){
     await page.evaluate(({stage,p})=>sampleMissions.select(stage,p),{stage,p});if(['launch','return','landing'].includes(kind))await root.locator('[data-mission-action="detail"]').click();await settled(kind,p,id);
     await root.locator('.mission-scene').screenshot({path:join(tmpdir(),`mission-camera-${id}-${kind}-${p}-${width}.png`)});

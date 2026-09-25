@@ -168,3 +168,9 @@ html[data-theme] body#academic-site .origins-study {
 
 html[data-theme] body#academic-site .origins-study canvas.study-dissolve { position:absolute; inset:0; z-index:1; pointer-events:none; }
 html[data-theme] body#academic-site .origins-study :is(.scene-hint,#explore,#retry-scene) { z-index:2; }
+/* mobile-touch-origins: a 44px chapter slider on phones and touch screens (2026-09); the track stays centred. */
+@media (max-width:760px),(pointer:coarse) {
+ html[data-theme] body#academic-site .origins-study {
+  .transport input { height:44px; }
+ }
+}

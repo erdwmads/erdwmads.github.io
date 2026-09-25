@@ -102,7 +102,7 @@ try {
     await page.route('**/assets/data/mission-log.enc.json',route=>route.fulfill({json:payload}));
     await page.goto(`${base}/research-graduation.html`);
     await page.locator('[data-research-lock-input]').fill(passphrase);
-    await page.locator('[data-research-lock-form] button').click();
+    await page.locator('[data-research-lock-form] button[type="submit"]').click();
     await page.locator('.mission-log-entry:not(.mission-log-entry-placeholder)').waitFor();
     await check(`${width}px scientific figure is not cropped`,async()=>assert.equal(await page.locator('.mission-log-entry img').evaluate(el=>getComputedStyle(el).objectFit),'contain'));
     await check(`${width}px defaults to newest log`,async()=>assert.equal(await page.locator('.mission-log-entry').getAttribute('id'),'log-011'));

@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {createCipheriv,pbkdf2Sync,randomBytes} from 'node:crypto';
 const {chromium}=createRequire(import.meta.url)(process.env.PLAYWRIGHT_MODULE||'playwright');
-const base=process.env.SITE_TEST_URL||'http://localhost:52523';
+// WebAuthn rejects IP addresses as relying-party IDs, so reach the runner's 127.0.0.1 server as localhost.
+const base=(process.env.SITE_TEST_URL||'http://localhost:52523').replace('://127.0.0.1','://localhost');
 const password='synthetic virtual-authenticator test';
 const salt=randomBytes(16),iv=randomBytes(12);
 const cipher=createCipheriv('aes-256-gcm',pbkdf2Sync(password,salt,600000,32,'sha256'),iv);

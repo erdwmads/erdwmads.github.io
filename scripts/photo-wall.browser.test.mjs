@@ -8,6 +8,8 @@ try {
   const page = await browser.newPage();
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
+  // The viewer commits its counter only after the photograph has loaded and decoded; a failed load shows Retry instead.
+  const shown = () => page.waitForFunction(() => document.querySelector('.obs-presentation-counter').textContent || (!document.querySelector('.obs-present-retry').hidden && 'image failed to load')).then(result => result.jsonValue());
   for (const width of [1440, 760, 390, 320]) {
     for (const theme of ['space', 'light']) {
       await page.setViewportSize({ width, height: 900 });
@@ -32,16 +34,16 @@ try {
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
       const tile = page.locator('[data-photo-index="3"]');
       await tile.click();
-      assert.equal(await page.locator('.obs-presentation-counter').textContent(), '04 / 21');
-      assert.ok((await page.locator('.obs-presentation img').getAttribute('src')).includes('%284%29'));
+      assert.equal(await shown(), '04 / 21');
+      assert.ok((await page.locator('.obs-presentation-stage img').getAttribute('src')).includes('%284%29'));
       await page.keyboard.press('ArrowRight');
-      assert.equal(await page.locator('.obs-presentation-counter').textContent(), '05 / 21');
+      assert.equal(await shown(), '05 / 21');
       await page.keyboard.press('Escape');
       await page.waitForFunction(() => !document.querySelector('.obs-presentation[open]'));
       assert.ok(await page.locator('[data-photo-index="4"]').evaluate(el => document.activeElement === el));
       await tile.focus();
       await page.keyboard.press('Enter');
-      assert.equal(await page.locator('.obs-presentation-counter').textContent(), '04 / 21');
+      assert.equal(await shown(), '04 / 21');
       await page.locator('.obs-present-close').click();
       await page.waitForFunction(() => !document.querySelector('.obs-presentation[open]'));
     }

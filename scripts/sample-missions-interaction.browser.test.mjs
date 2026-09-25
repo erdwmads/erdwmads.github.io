@@ -11,7 +11,7 @@ try{
  const root=page.locator('[data-sample-missions]'),view=root.locator('[data-mission-viewport]');
  const ready=async()=>{await view.scrollIntoViewIfNeeded();await page.waitForFunction(()=>document.querySelector('[data-sample-missions]').dataset.ready==='true'&&sampleMissions.state.calls>0,null,{timeout:45000});};
  await ready();
- await root.locator('[data-mission-stage="5"]').click();
+ await root.locator('[data-mission-chapters] [data-mission-stage="5"]').click();
  await root.locator('[data-mission-progress]').fill('490');
  assert.equal(await root.locator('[data-mission-status]').innerText(),'Projectile sampling');
  await root.locator('[data-mission-action="play"]').click();await view.scrollIntoViewIfNeeded();
@@ -26,7 +26,7 @@ try{
  await root.locator('[data-mission-action="play"]').click();
  await root.locator('[data-mission="hayabusa2"]').focus();await page.keyboard.press('ArrowRight');await ready();
  assert.equal(await page.evaluate(()=>sampleMissions.state.mission),'osiris-rex');
- await root.locator('[data-mission-stage="5"]').click();await root.locator('[data-mission-progress]').fill('490');
+ await root.locator('[data-mission-chapters] [data-mission-stage="5"]').click();await root.locator('[data-mission-progress]').fill('490');
  assert.equal(await root.locator('[data-mission-status]').innerText(),'Nitrogen-assisted sampling');
  await root.locator('[data-mission-action="play"]').click();await view.scrollIntoViewIfNeeded();await page.waitForTimeout(200);
  await page.evaluate(()=>scrollTo(0,0));await page.waitForFunction(()=>sampleMissions.state.visible===false);
@@ -42,11 +42,13 @@ try{
  assert.equal(await root.locator('canvas').count(),1);
  await page.evaluate(async()=>{await Promise.all([sampleMissions.choose('osiris-rex'),sampleMissions.choose('hayabusa2'),sampleMissions.choose('osiris-rex')]);});
  await ready();assert.equal(await page.evaluate(()=>sampleMissions.state.mission),'osiris-rex');
- // A BFCache restore retains DOM but creates a new viewer: tabs and chapters must reset together.
+ // A BFCache restore retains DOM but creates a new viewer. It resumes the mission remembered for this
+ // session (the viewer has done so since 972dc30), and its tabs and chapters must agree with it.
  await page.evaluate(()=>{dispatchEvent(new PageTransitionEvent('pagehide'));dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true}));});
  await ready();
- assert.equal(await root.locator('[aria-selected="true"]').getAttribute('data-mission'),'hayabusa2');
- assert.equal(await root.locator('[data-mission-stage]').count(),missions.hayabusa2.stages.length);
+ assert.equal(await page.evaluate(()=>sampleMissions.state.mission),'osiris-rex');
+ assert.equal(await root.locator('[aria-selected="true"]').getAttribute('data-mission'),'osiris-rex');
+ assert.equal(await root.locator('[data-mission-chapters] [data-mission-stage]').count(),missions['osiris-rex'].stages.length);
  assert.equal(await root.locator('canvas').count(),1);
  for(const width of [1440,768,390,320]){
   await page.setViewportSize({width,height:950});
@@ -69,7 +71,7 @@ try{
  assert.equal(await mv.getAttribute('data-touch-active'),'');
  await mv.press('Escape');assert.equal(await touch.getAttribute('aria-pressed'),'false');
  assert.equal(await touch.getAttribute('aria-label'),'Enable model rotation and pinch zoom');
- await mobile.locator('[data-mission-stage="5"]').click();await mobile.locator('[data-mission-progress]').fill('500');await mv.scrollIntoViewIfNeeded();
+ await mobile.locator('[data-mission-chapters] [data-mission-stage="5"]').click();await mobile.locator('[data-mission-progress]').fill('500');await mv.scrollIntoViewIfNeeded();
  await mobile.locator('.mission-scene').screenshot({path:process.env.TEMP+'/mission-mobile.png'});
  console.log('PASS play/pause/scrub, auto chapters, keyboard mission tabs, offscreen pause, reduced motion, sample destination, navigation cleanup, rapid switches, BFCache restore, 4 widths x 2 themes and mobile touch');
 }finally{await browser.close();}

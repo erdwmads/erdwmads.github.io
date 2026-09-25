@@ -16,7 +16,7 @@ try{
  for(const [id,mission]of Object.entries(missions)){
   await root.locator('[data-mission="'+id+'"]').click();
   await page.waitForFunction(id=>sampleMissions.state.mission===id&&document.querySelector('[data-sample-missions]').dataset.ready==='true',id,{timeout:45000});
-  assert.equal(await root.locator('[data-mission-stage]').count(),mission.stages.length);
+  assert.equal(await root.locator('[data-mission-chapters] [data-mission-stage]').count(),mission.stages.length);
   for(let stage=0;stage<mission.stages.length;stage++){
    const kind=mission.stages[stage].kind,p=kind==='launch'?.3:kind==='landing'?.72:kind==='return'?.68:.52;
    await page.evaluate(({stage,p})=>sampleMissions.select(stage,p),{stage,p});
@@ -29,5 +29,5 @@ try{
   }
  }
  assert.deepEqual(errors,[]);
- console.log('PASS all 17 dated chapters, both spacecraft, nonblank frames and no browser errors');
+ console.log('PASS all '+Object.values(missions).reduce((n,m)=>n+m.stages.length,0)+' dated chapters, both spacecraft, nonblank frames and no browser errors');
 }finally{await browser.close();}

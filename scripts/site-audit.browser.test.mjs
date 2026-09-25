@@ -54,10 +54,15 @@ try {
   await page.locator('.obs-present-close').click();
   await page.goto(`${base}/contact.html`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(1600);
-  assert.ok(await page.locator('.ui2046-progress').evaluate(el => el.hidden), 'short Contact page has a full-width progress stripe');
+  // Contact now scrolls at 1100px (email actions and Continue exploring), so the stripe shows; fit the viewport to make it short.
+  const progress = page.locator('.ui2046-progress');
+  assert.equal(await progress.evaluate(el => el.hidden), await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight + 2), 'progress stripe must follow whether Contact can scroll');
+  await page.setViewportSize({ width: 1440, height: await page.evaluate(() => document.documentElement.scrollHeight + 40) });
+  await page.waitForTimeout(300);
+  assert.ok(await progress.evaluate(el => el.hidden), 'short Contact page has a full-width progress stripe');
   assert.equal(await page.locator('.callout').evaluate(el => getComputedStyle(el, '::before').display), 'none', 'Contact retains old callout highlight');
-  // Sample Cabinet is explicitly retired and hidden by the existing site policy.
-  const routes = ['index', 'research', 'paper-shelf', 'cv', 'photography', 'contact', 'research-log', 'research-graduation'];
+  // Sample Cabinet is explicitly retired and hidden by the existing site policy. Ryugu & Bennu holds material split from Research.
+  const routes = ['index', 'research', 'ryugu-bennu', 'paper-shelf', 'cv', 'photography', 'contact', 'research-log', 'research-graduation'];
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 900 });
     for (const theme of ['space', 'light']) {
@@ -88,5 +93,5 @@ try {
     }
   }
   assert.deepEqual(errors, []);
-  console.log('Site audit: fullscreen state/error handling, Contact consistency and eight active pages in both themes on desktop/mobile passed.');
+  console.log('Site audit: fullscreen state/error handling, Contact consistency and nine active pages in both themes on desktop/mobile passed.');
 } finally { await browser.close(); }

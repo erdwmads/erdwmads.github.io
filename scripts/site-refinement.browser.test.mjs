@@ -10,11 +10,12 @@ assert(await page.locator('.obs-fx-panel .research-coordinates').isVisible());aw
 assert.match(await page.locator('.current-focus-section h2').innerText(),/^Dolomite in Orgueil CI1$/);
 assert.match(await page.locator('.research-title-detail').innerText(),/Full research title/);
 await page.locator('.research-title-detail summary').click();assert.match(await page.locator('.research-title-detail p').innerText(),/Cosmomineralogical Study/);
-await page.goto(base+'/research.html',{waitUntil:'networkidle'});
+// The five Research section paths are now two [data-research-guide] navigators: Research and the split-out Ryugu & Bennu page.
+for(const [route,count] of [['research',3],['ryugu-bennu',3]]){await page.goto(base+'/'+route+'.html',{waitUntil:'networkidle'});
 await page.evaluate(()=>window.researchMain=document.querySelector('main'));
-const links=page.locator('.page-outline a');assert.equal(await links.count(),5);
+const links=page.locator('[data-research-guide] a');assert.equal(await links.count(),count);
 for(const link of await links.all()){const href=await link.getAttribute('href');assert.equal(await page.locator(href).count(),1);await link.click();await page.waitForTimeout(120);assert((await page.locator(href).boundingBox()).y<800);}
-assert(await page.evaluate(()=>window.researchMain===document.querySelector('main')),'section anchors must not rebuild Research');
+assert(await page.evaluate(()=>window.researchMain===document.querySelector('main')),`section anchors must not rebuild ${route}`);}
 await page.goto(base+'/research-log.html',{waitUntil:'networkidle'});assert.doesNotMatch(await page.locator('main').innerText(),/Mission Log 010/);
 const footer=await page.locator('.site-footer').boundingBox();assert(footer.y+footer.height>=999,'short pages place the footer at the viewport end');
 for(const width of [390,320]){await page.setViewportSize({width,height:844});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));assert.equal(await page.locator('.research-coordinates').isVisible(),false);}

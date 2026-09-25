@@ -7,8 +7,10 @@ try{
  const page=await browser.newPage({viewport:{width:1440,height:1000},reducedMotion:'reduce'}),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
  await page.addInitScript(()=>sessionStorage.setItem('mads-cosmic-arrival-v1','done'));await page.goto((process.env.SITE_TEST_URL||'http://127.0.0.1:52523')+'/ryugu-bennu.html');
  const root=page.locator('[data-sample-missions]'),view=root.locator('[data-mission-viewport]');await view.scrollIntoViewIfNeeded();const ready=()=>page.waitForFunction(()=>window.sampleMissions&&document.querySelector('[data-sample-missions]').dataset.ready==='true',null,{timeout:60000});await ready();
+ // At 960px and below the view controls start inside the collapsed notebook, so open it as a visitor would.
+ const openNotes=async()=>{if(!await root.locator('[data-mission-notebook]').evaluate(d=>d.open))await root.locator('[data-mission-notebook] > summary').click();};
  for(const id of ['hayabusa2','osiris-rex']){await page.evaluate(id=>sampleMissions.choose(id),id);await ready();
-  for(const width of [1440,390]){await page.setViewportSize({width,height:1000});
+  for(const width of [1440,390]){await page.setViewportSize({width,height:1000});await openNotes();
    for(const kind of ['flyby','rendezvous','depart']){
     const stage=missions[id].stages.findIndex(s=>s.kind===kind);await page.evaluate(stage=>sampleMissions.select(stage,.5),stage);
     let physical;

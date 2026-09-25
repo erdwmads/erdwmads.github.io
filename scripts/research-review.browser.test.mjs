@@ -15,7 +15,7 @@ try{
   await failure.locator(`[data-mission="${id}"]`).click();
   await failure.waitForFunction(()=>document.querySelector('[data-sample-missions]').dataset.ready==='error',null,{timeout:60000});
   for(let i=0;i<m.stages.length;i++){
-   await failure.locator(`[data-mission-stage="${i}"]`).click();
+   await failure.locator(`[data-mission-chapters] [data-mission-stage="${i}"]`).click();
    assert.equal(await failure.locator('[data-mission-title]').innerText(),m.stages[i].title);
    assert.equal(await failure.locator('[data-mission-source]').getAttribute('href'),m.stages[i].source);
   }

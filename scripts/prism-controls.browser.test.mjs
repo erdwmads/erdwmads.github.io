@@ -15,12 +15,16 @@ try {
     const secondary=page.locator('main .button.secondary').first();
     try {
       await primary.scrollIntoViewIfNeeded();await page.waitForTimeout(250);
-      const resting=await primary.evaluate(el=>{const s=getComputedStyle(el);return {background:s.backgroundImage,shadow:s.boxShadow,arrow:getComputedStyle(el,'::after').content,color:s.color,transform:s.transform};});
+      const resting=await primary.evaluate(el=>{const s=getComputedStyle(el);return {background:s.backgroundImage,face:s.backgroundColor,edge:[s.borderTopWidth,s.borderTopStyle,s.borderTopColor],shadow:s.boxShadow,arrow:getComputedStyle(el,'::after').content,color:s.color,transform:s.transform};});
       assert((await primary.evaluate(el=>getComputedStyle(el).fontFamily)).includes('Montserrat'),'controls use original Montserrat');
       assert.equal(await primary.evaluate(el=>getComputedStyle(el).fontWeight),'600');
       assert(await page.evaluate(()=>document.fonts.check('600 14px Montserrat')&&document.fonts.check('700 24px Montserrat')),'local fonts load');
       assert.notEqual(resting.background,await secondary.evaluate(el=>getComputedStyle(el).backgroundImage),'primary and secondary surfaces must be distinct');
-      assert(resting.shadow.includes('3px'),'inner lip should be distinct from the outer border');
+      // Quiet controls (quiet-observatory.css) replaced the nested 3px prism lip with one thin --obs-line edge.
+      const line=await primary.evaluate(el=>{const probe=el.parentElement.appendChild(document.createElement('i'));probe.style.setProperty('color','var(--obs-line)','important');const value=getComputedStyle(probe).color;probe.remove();return value;});
+      assert.equal(resting.shadow,'none','resting controls carry no nested lip');
+      assert.deepEqual(resting.edge,['1px','solid',line],'one thin line-token edge frames the control');
+      assert.notEqual(line,resting.face,'the edge must stay distinct from the control face');
       const box=await primary.boundingBox();assert(box.height>=44);
       await primary.hover();await page.waitForTimeout(250);
       assert.deepEqual(await primary.boundingBox(),box,'hover must not move or resize controls');

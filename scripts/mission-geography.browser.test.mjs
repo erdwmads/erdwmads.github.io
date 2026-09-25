@@ -13,13 +13,16 @@ try{
  await page.goto((process.env.SITE_TEST_URL||'http://127.0.0.1:52523')+'/ryugu-bennu.html');
  const root=page.locator('[data-sample-missions]'),viewport=root.locator('[data-mission-viewport]');await viewport.scrollIntoViewIfNeeded();
  const ready=()=>page.waitForFunction(()=>window.sampleMissions&&document.querySelector('[data-sample-missions]').dataset.ready==='true',null,{timeout:60000});await ready();
+ // At 960px and below the view controls start inside the collapsed notebook, so open it as a visitor would.
+ const openNotes=async()=>{if(!await root.locator('[data-mission-notebook]').evaluate(d=>d.open))await root.locator('[data-mission-notebook] > summary').click();};
  for(const id of ['hayabusa2','osiris-rex']){
   await page.evaluate(id=>sampleMissions.choose(id),id);await ready();
   for(const width of [1440,390]){
-   await page.setViewportSize({width,height:1100});await viewport.scrollIntoViewIfNeeded();
+   await page.setViewportSize({width,height:1100});await openNotes();await viewport.scrollIntoViewIfNeeded();
    for(const kind of ['launch','return','landing']){
     const stage=missions[id].stages.findIndex(s=>s.kind===kind);await page.evaluate(stage=>sampleMissions.select(stage,.45),stage);await page.waitForTimeout(200);
-    assert.equal(await page.evaluate(()=>sampleMissions.state.context),'detail');await root.locator('[data-mission-action="earth"]').click();
+    // Launch and landing open on the vehicle; capsule separation opens on the Earth overview.
+    assert.equal(await page.evaluate(()=>sampleMissions.state.context),kind==='return'?'earth':'detail');await root.locator('[data-mission-action="earth"]').click();
     assert.equal(await root.locator('[data-mission-location]').textContent(),locationFor(id,kind).label);
     await root.locator('.mission-scene').screenshot({path:join(tmpdir(),`geography-${id}-${kind}-${width}.png`)});
     await root.locator('[data-mission-action="detail"]').click();await page.waitForTimeout(200);

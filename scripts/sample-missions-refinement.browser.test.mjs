@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {build} from 'esbuild';
+import {missions} from '../src/scripts/sample-missions/data.js';
 const require=createRequire(import.meta.url),{chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const browser=await chromium.launch({headless:true,...(process.env.EDGE_EXECUTABLE?{executablePath:process.env.EDGE_EXECUTABLE}:{})});
 const base=process.env.SITE_TEST_URL||'http://127.0.0.1:52523';
@@ -26,7 +27,8 @@ try{
  assert(pixels.end[2]>pixels.end[0],'transition reaches the new frame');await harness.close();
  const page=await browser.newPage({viewport:{width:1440,height:1000}});await page.goto(base+'/ryugu-bennu.html',{waitUntil:'networkidle'});
  const v=page.locator('[data-mission-viewport]');await v.scrollIntoViewIfNeeded();await page.waitForFunction(()=>document.querySelector('[data-sample-missions]').dataset.ready==='true');
- await page.evaluate(()=>sampleMissions.select(3,.5));await page.waitForTimeout(900);
+ // The surface-boundary and "Projectile sampling" checks need the first touchdown; index 3 is the outbound cruise.
+ await page.evaluate(stage=>sampleMissions.select(stage,.5),missions.hayabusa2.stages.findIndex(s=>s.kind==='sample'));await page.waitForTimeout(900);
  const b=await v.boundingBox(),beforeScroll=await page.evaluate(()=>scrollY);
  await page.mouse.move(b.x+b.width*.5,b.y+b.height*.5);await page.mouse.wheel(0,350);await page.waitForTimeout(200);
  assert((await page.evaluate(()=>scrollY))>beforeScroll+100,'ordinary wheel scroll passes through the model to the page');

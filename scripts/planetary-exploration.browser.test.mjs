@@ -65,7 +65,8 @@ try {
     }
   }
   await page.emulateMedia({reducedMotion:'reduce'});
-  assert.equal(await root.getAttribute('data-focus-fx'),'off');
+  // The media-query change event is delivered on the page's next rendering update, not synchronously.
+  await page.waitForFunction(()=>document.querySelector('.planetary').dataset.focusFx==='off',null,{timeout:5000});
   await root.locator('[data-view="minerals"]').click();
   await root.locator('[data-mineral="matrix"]').click();
   await root.locator('[data-mineral-detail]').check();
