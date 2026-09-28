@@ -19,8 +19,9 @@ try {
   assert.ok(await page.locator('.ui2046-layer').isVisible());
   const pebble=page.locator('.ambient-pebble').first();
   const before=await pebble.evaluate(e=>getComputedStyle(e).transform);
-  await page.waitForTimeout(300);
-  assert.notEqual(await pebble.evaluate(e=>getComputedStyle(e).transform),before,'The restored pebbles actually move');
+  // A 42–74 s out-and-back drift can sit near a turning point, so allow a few seconds for visible motion.
+  const moved=await page.waitForFunction(before=>getComputedStyle(document.querySelector('.ambient-pebble')).transform!==before,before,{timeout:3000}).then(()=>true,()=>false);
+  assert.ok(moved,'The restored pebbles actually move');
   await page.evaluate(()=>window.backgroundBefore=document.querySelector('.ambient-space-layer'));
   await page.locator('.nav a[href="index.html"]').click();await page.waitForURL('**/index.html');
   assert.equal(await page.evaluate(()=>window.backgroundBefore===document.querySelector('.ambient-space-layer')),true,'Navigation keeps the same background layer');

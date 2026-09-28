@@ -2,27 +2,34 @@
 html[data-research-reading] { scroll-padding-top: 0; }
 /* Research reading structure shares the site's theme tokens and native links. */
 html[data-theme] body#academic-site .research-intro { max-width: 860px; }
+/* The section guide is a segmented control: equal cells across the bar, the current one filled and marked. */
 html[data-theme] body#academic-site .research-guide {
-  display: flex; align-items: center; gap: 16px; margin: 30px 0 36px; padding: 8px 12px;
+  display: flex; align-items: stretch; gap: 6px; margin: 30px 0 36px; padding: 5px;
   background: var(--obs-surface); border: 1px solid var(--obs-line); border-radius: 12px;
 }
 html[data-theme] body#academic-site .research-guide[data-ready] { position: sticky; top: 12px; z-index: 40; }
 html[data-theme] body#academic-site .research-guide-label {
-  padding: 0 6px; color: var(--obs-muted); font-size: 11px; font-weight: 600; white-space: nowrap;
+  display: flex; align-items: center; margin: 8px 2px 8px 0; padding: 0 16px 0 12px; border-right: 1px solid var(--obs-line);
+  color: var(--obs-muted); font-size: 11px; font-weight: 600; white-space: nowrap;
 }
 html[data-theme] body#academic-site .research-guide ol {
-  display: flex; flex: 1; justify-content: space-between; gap: 4px; padding: 0; margin: 0; list-style: none;
+  display: grid; flex: 1; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 4px; padding: 0; margin: 0; list-style: none;
 }
 html[data-theme] body#academic-site .research-guide li { padding: 0; margin: 0; min-width: 0; }
 html[data-theme] body#academic-site .research-guide a {
-  display: flex !important; align-items: center; gap: 8px; min-height: 44px !important; padding: 8px 10px !important; border-radius: 7px !important;
+  position: relative; display: flex !important; align-items: center; justify-content: center; gap: 8px; min-height: 44px !important; padding: 8px 14px !important; border-radius: 8px !important;
   color: var(--obs-text) !important; font-size: 12px !important; line-height: 1.5 !important; font-weight: 600 !important; text-decoration: none !important;
   transition: background-color .18s ease, color .18s ease;
 }
-html[data-theme] body#academic-site .research-guide a > span { font-size: 10px !important; color: var(--obs-muted) !important; }
+html[data-theme] body#academic-site .research-guide a > span { font-size: 10px !important; color: var(--obs-muted) !important; font-variant-numeric: tabular-nums; }
 html[data-theme] body#academic-site .research-guide a:hover { background: var(--obs-surface-hover) !important; }
 html[data-theme] body#academic-site .research-guide a[aria-current] {
-  background: var(--obs-highlight) !important; color: var(--obs-accent) !important; box-shadow: inset 0 -2px var(--obs-accent) !important;
+  background: var(--obs-highlight) !important; color: var(--obs-accent) !important; box-shadow: none !important;
+}
+html[data-theme] body#academic-site .research-guide a[aria-current] > span { color: inherit !important; opacity: .72; }
+/* A short centred marker under the current cell, clear of its rounded corners. */
+html[data-theme] body#academic-site .research-guide a[aria-current]::after {
+  content: ""; position: absolute; left: calc(50% - 16px); width: 32px; bottom: 0; height: 2px; border-radius: 2px 2px 0 0; background: var(--obs-accent);
 }
 html[data-theme] body#academic-site .research-guide a:focus-visible,
 html[data-theme] body#academic-site [data-research-guide-toggle]:focus-visible { outline: 2px solid var(--obs-accent); outline-offset: 3px; }
@@ -67,8 +74,9 @@ html[data-theme] body#academic-site .research-reading-context { max-width: 900px
 @media (max-width: 760px) {
   html[data-theme] body#academic-site .research-guide { display: block; margin-block: 24px; padding: 6px; border-radius: 10px; }
   html[data-theme] body#academic-site .research-guide[data-ready] { top: 0; }
-  html[data-theme] body#academic-site .research-guide ol { display: grid; grid-template-columns: 1fr; gap: 3px; }
-  html[data-theme] body#academic-site .research-guide a { font-size: 13px !important; min-height: 46px !important; padding: 8px 12px !important; }
+  html[data-theme] body#academic-site .research-guide ol { display: grid; grid-auto-flow: row; grid-template-columns: 1fr; gap: 3px; }
+  html[data-theme] body#academic-site .research-guide a { justify-content: flex-start; font-size: 13px !important; min-height: 46px !important; padding: 8px 12px !important; }
+  html[data-theme] body#academic-site .research-guide a[aria-current]::after { left: 0; right: auto; top: 12px; bottom: 12px; width: 2px; height: auto; border-radius: 0 2px 2px 0; }
   html[data-theme] body#academic-site .research-guide[data-ready] [data-research-guide-toggle] {
     display: flex; width: 100%; align-items: center; justify-content: space-between; min-height: 52px; padding: 6px 10px;
     border: 0; border-radius: 6px; background: transparent; box-shadow: none; color: var(--obs-text); text-align: left; cursor: pointer;

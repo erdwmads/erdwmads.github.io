@@ -37,8 +37,8 @@ html[data-theme] body#academic-site .planetary :is(.planetary-materials, .planet
   border-color: var(--obs-accent) !important;
 }
 @media (hover:hover) {
+  /* Controls carry no resting shadow (quiet-observatory.css), so hover adds none; the cyan edge is the cue. */
   html[data-theme] body#academic-site .planetary :is(.planetary-materials, .planetary-toolbar, .planetary-mineral-tabs) button:hover:not(:disabled) {
-    box-shadow: var(--obs-control-hover-shadow) !important;
     border-color: var(--obs-cyan) !important;
   }
   html[data-theme] body#academic-site .planetary :is(.planetary-materials, .planetary-toolbar, .planetary-mineral-tabs) button[aria-pressed="true"]:hover { border-color: var(--obs-accent) !important; }

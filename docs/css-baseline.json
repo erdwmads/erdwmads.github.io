@@ -22,10 +22,10 @@
   },
   {
     "file": "observatory-experience.css",
-    "bytes": 25241,
+    "bytes": 25326,
     "lines": 494,
     "repeatedSelectors": 21,
-    "important": 138
+    "important": 136
   },
   {
     "file": "observatory.css",
@@ -36,17 +36,17 @@
   },
   {
     "file": "planetary-explorer.css",
-    "bytes": 23013,
+    "bytes": 23065,
     "lines": 236,
     "repeatedSelectors": 30,
-    "important": 81
+    "important": 80
   },
   {
     "file": "quiet-observatory.css",
-    "bytes": 18487,
-    "lines": 235,
+    "bytes": 18774,
+    "lines": 237,
     "repeatedSelectors": 39,
-    "important": 52
+    "important": 53
   },
   {
     "file": "research-log-evolution.css",
@@ -57,10 +57,10 @@
   },
   {
     "file": "research-reading.css",
-    "bytes": 8884,
-    "lines": 105,
+    "bytes": 9851,
+    "lines": 113,
     "repeatedSelectors": 13,
-    "important": 21
+    "important": 22
   },
   {
     "file": "research-scale.css",
@@ -85,8 +85,8 @@
   },
   {
     "file": "site-refinement.css",
-    "bytes": 17649,
-    "lines": 260,
+    "bytes": 17733,
+    "lines": 261,
     "repeatedSelectors": 16,
     "important": 137
   },

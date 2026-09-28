@@ -97,6 +97,8 @@ html[data-theme] body#academic-site.site-refined {
 
 html[data-theme] body#academic-site.site-refined .paper-filter {background:var(--obs-surface)!important;}
 html[data-theme] body#academic-site.site-refined .paper-filter[aria-pressed=true] {background:var(--obs-highlight)!important;border-color:var(--obs-accent)!important;}
+/* An unselected filter keeps its face under the pointer (observatory.css would paint the old metal); the edge is the cue. */
+@media(hover:hover) { html[data-theme] body#academic-site.site-refined .paper-filter:not([aria-pressed=true]):hover {background:var(--obs-surface)!important;} }
 
 /* Sample-specific proportions belong beside the animation, in both color modes. */
 .origins-study .mineral-budget{grid-column:1/-1;padding:24px 28px;border-top:1px solid var(--line);background:var(--panel);min-width:0}
