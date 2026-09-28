@@ -30,6 +30,7 @@ export function createViewer(host,{signal,onTick,onReady,onError}){
  let compiling=0,released=false;
  let alive=true,visible=true,frame=0,last=0,playing=false,world,mission='hayabusa2',stage=0,progress=0,context='earth',focus='both',version=0,autoCamera=true,contextLost=false,frames=0,reference='earth',cutaway=false;
  const insetCamera=new T.PerspectiveCamera(40,1,.1,1000000),inset=host.querySelector('[data-mission-inset]'),legend=host.querySelector('[data-mission-legend]');
+ const targetInset=host.querySelector('[data-mission-inset-target]'),scaleBar=host.querySelector('[data-mission-scale]');
  const cache=new Map(),labelLayer=host.querySelector('[data-mission-labels]'),labelElements=Array.from({length:4},()=>{const s=document.createElement('span');labelLayer.append(s);return s;});
  const leaderElements=labelElements.map(()=>{const line=document.createElement('i');line.className='mission-leader';labelLayer.prepend(line);return line;});
  let width=0,height=0,ending=0;
@@ -73,14 +74,26 @@ export function createViewer(host,{signal,onTick,onReady,onError}){
   if(!world)return;if(transition)presentation.capture();stage=Math.max(0,Math.min(missions[mission].stages.length-1,index));progress=clampProgress(p);autoCamera=true;focus='both';context=missions[mission].stages[stage].kind==='return'?'earth':'detail';reference='earth';cutaway=false;ending=0;
   setScene();positionCamera(true);controls.update();last=0;request();
  }
+ function aimInset(shot){insetCamera.position.set(...shot.position);insetCamera.near=shot.near;insetCamera.far=shot.far;insetCamera.fov=shot.fov;insetCamera.up.set(...(shot.up||[0,1,0]));insetCamera.lookAt(new T.Vector3(...shot.target));insetCamera.updateProjectionMatrix();insetCamera.updateMatrixWorld();}
+ function renderInset(element,h){const r=element.getBoundingClientRect();renderer.setScissor(r.left-h.left,h.bottom-r.bottom,r.width,r.height);renderer.setViewport(r.left-h.left,h.bottom-r.bottom,r.width,r.height);renderer.clear();renderer.render(scene,insetCamera);}
  function drawInset(){
-  const f=world?.earth(),physical=world?.proximity(),active=!!f||!!physical&&physical.kind!=='flyby';inset.hidden=!active;legend.hidden=!(physical&&focus==='both');if(!active)return;
+  // In the distance overview both bodies are dots at true scale, so each gets its own close-up.
+  const f=world?.earth(),physical=world?.proximity(),active=!!f||!!physical&&physical.kind!=='flyby',overview=active&&!f&&focus==='both';inset.hidden=!active;targetInset.hidden=!overview;legend.hidden=!(physical&&focus==='both');if(!active)return;
   inset.querySelector('span').textContent=f?(context==='earth'?'Capsule · separate close-up':'Earth context'):focus==='spacecraft'?'Target · separate close-up':'Probe · separate close-up';
-  const shot=f?earthFlightShot(f,context==='earth'?'detail':'earth',1):proximityShot(physical,focus==='spacecraft'?'asteroid':'spacecraft',1);insetCamera.position.set(...shot.position);insetCamera.near=shot.near;insetCamera.far=shot.far;insetCamera.fov=shot.fov;insetCamera.up.set(...(shot.up||[0,1,0]));insetCamera.lookAt(new T.Vector3(...shot.target));insetCamera.updateProjectionMatrix();insetCamera.updateMatrixWorld();
+  const shot=f?earthFlightShot(f,context==='earth'?'detail':'earth',1):proximityShot(physical,focus==='spacecraft'?'asteroid':'spacecraft',1);aimInset(shot);
   const anchors=f?[[0,-6371,0],f.positionKm]:[physical.targetPosition||[0,0,0],physical.position];
   ['target','vehicle'].forEach((name,i)=>{const label=inset.querySelector('[data-inset-'+name+']'),point=new T.Vector3(...anchors[i]).project(insetCamera);label.hidden=!f||context==='earth';label.textContent=i===0?(f?'Earth':physical.kind==='flyby'?'Earth':missions[mission].target):'Vehicle';label.style.left=Math.max(4,Math.min((point.x*.5+.5)*inset.clientWidth-14,inset.clientWidth-40))+'px';label.style.top=Math.max(4,Math.min((-point.y*.5+.5)*inset.clientHeight+7,inset.clientHeight-34))+'px';});
-  const r=inset.getBoundingClientRect(),h=host.getBoundingClientRect(),savedViewport=new T.Vector4();renderer.getViewport(savedViewport);const fog=scene.fog,background=scene.background.clone();scene.fog=null;scene.background.set('#050d15');if(f||physical)world.contextHelpers(f?context==='detail':false);
-  renderer.setScissorTest(true);renderer.setScissor(r.left-h.left,h.bottom-r.bottom,r.width,r.height);renderer.setViewport(r.left-h.left,h.bottom-r.bottom,r.width,r.height);renderer.clear();const updateShadows=renderer.shadowMap.autoUpdate;renderer.shadowMap.autoUpdate=false;renderer.render(scene,insetCamera);renderer.shadowMap.autoUpdate=updateShadows;renderer.setScissorTest(false);renderer.setViewport(savedViewport);scene.fog=fog;scene.background.copy(background);if(f||physical)world.contextHelpers(f?context==='earth':focus==='both');
+  const h=host.getBoundingClientRect(),savedViewport=new T.Vector4();renderer.getViewport(savedViewport);const fog=scene.fog,background=scene.background.clone();scene.fog=null;scene.background.set('#050d15');if(f||physical)world.contextHelpers(f?context==='detail':false);
+  renderer.setScissorTest(true);const updateShadows=renderer.shadowMap.autoUpdate;renderer.shadowMap.autoUpdate=false;renderInset(inset,h);
+  if(overview){aimInset(proximityShot(physical,'asteroid',1));renderInset(targetInset,h);}
+  renderer.shadowMap.autoUpdate=updateShadows;renderer.setScissorTest(false);renderer.setViewport(savedViewport);scene.fog=fog;scene.background.copy(background);if(f||physical)world.contextHelpers(f?context==='earth':focus==='both');
+ }
+ // A scale bar at the midpoint's depth: true distances are readable even when both bodies are dots.
+ function drawScale(rect){
+  const physical=world?.proximity();scaleBar.hidden=!(physical&&focus==='both');if(scaleBar.hidden)return;
+  const middle=new T.Vector3(...physical.targetPosition).add(new T.Vector3(...physical.position)).multiplyScalar(.5).applyMatrix4(camera.matrixWorldInverse);
+  const pixelsPerKm=rect.height/(2*Math.max(1e-9,-middle.z)*Math.tan(camera.fov*Math.PI/360)),raw=110/pixelsPerKm,power=10**Math.floor(Math.log10(raw)),km=(raw/power>=5?5:raw/power>=2?2:1)*power;
+  scaleBar.querySelector('i').style.width=Math.round(km*pixelsPerKm)+'px';scaleBar.querySelector('span').textContent=km<1?Math.round(km*1000)+' m':km.toLocaleString('en-US')+' km';
  }
  function draw(now){
   frame=0;if(!alive||!visible||document.hidden||contextLost)return;
@@ -94,8 +107,10 @@ export function createViewer(host,{signal,onTick,onReady,onError}){
   const cameraMoving=autoCamera&&world?positionCamera(false,seconds):false;
   controls.dampingFactor=cameraDamping(seconds);
   controls.update();renderer.info.reset();presentation.render(now);drawInset();frames++;
-  const labels=world?.labels()||[],rect=host.getBoundingClientRect(),occupied=[];
-  for(const overlay of host.querySelectorAll('[data-mission-inset],[data-mission-flight-cue],[data-mission-solar-context],[data-mission-legend]'))if(!overlay.hidden){const r=overlay.getBoundingClientRect();occupied.push({x:r.left-rect.left,y:r.top-rect.top,width:r.width,height:r.height});}
+  const labels=world?.labels()||[],rect=host.getBoundingClientRect(),occupied=[];drawScale(rect);
+  // Labels stay above the motion callout; on narrow screens it spans nearly the whole width.
+  const cue=host.querySelector('[data-mission-flight-cue]'),cueRect=cue&&!cue.hidden?cue.getBoundingClientRect():null,bounds={width:rect.width,height:cueRect?.height?Math.min(rect.height,cueRect.top-rect.top+39):rect.height};
+  for(const overlay of host.querySelectorAll('[data-mission-inset],[data-mission-inset-target],[data-mission-scale],[data-mission-flight-cue],[data-mission-solar-context],[data-mission-legend]'))if(!overlay.hidden){const r=overlay.getBoundingClientRect();occupied.push({x:r.left-rect.left,y:r.top-rect.top,width:r.width,height:r.height});}
   labels.forEach((entry,i)=>{
    if(i>=4)return;
    const point=entry.point.clone().project(camera),label=labelElements[i],leader=leaderElements[i],kind=world.kind();
@@ -105,13 +120,21 @@ export function createViewer(host,{signal,onTick,onReady,onError}){
    if(outside&&(isProximity(kind)&&focus!=='both'||kind==='return'&&context==='detail')){
     const direction=entry.point.clone().applyMatrix4(camera.matrixWorldInverse),horizontal=Math.abs(direction.x)>=Math.abs(direction.y),arrow=horizontal?(direction.x<0?'←':'→'):(direction.y>0?'↑':'↓');
     const f=world.earth(),distance=f?new T.Vector3(...f.spacecraft.positionKm).distanceTo(new T.Vector3(...f.capsule.positionKm)):world.proximity().rangeKm;label.hidden=false;label.textContent=arrow+' '+entry.text.split(' · ')[0]+' · '+(distance<1?Math.round(distance*1000)+' m':distance.toLocaleString('en-US',{maximumFractionDigits:1})+' km');
-    const box=placeLabel(direction.x<0?10:rect.width-label.offsetWidth-10,rect.height*.7,label.offsetWidth,label.offsetHeight,occupied,rect);occupied.push(box);label.style.left=box.x+'px';label.style.top=box.y+'px';return;
+    const box=placeLabel(direction.x<0?10:rect.width-label.offsetWidth-10,Math.min(rect.height*.7,bounds.height-label.offsetHeight-45),label.offsetWidth,label.offsetHeight,occupied,bounds);occupied.push(box);label.style.left=box.x+'px';label.style.top=box.y+'px';return;
    }
-   const right=x<rect.width*.6,offset=Math.min(110,rect.width*.13),lw=label.offsetWidth,lh=label.offsetHeight;
+   let right=x<rect.width*.6;const offset=Math.min(110,rect.width*.13),lw=label.offsetWidth,lh=label.offsetHeight;
    let lx=Math.min(Math.max(10,x+(right?offset:-offset-lw)),rect.width-lw-10);
    const dy=context==='earth'&&hasEarthContext(kind)?(i===0?55:i===1?-70:-120):['cruise','outbound','flyby','rendezvous','depart'].includes(kind)?(i===0?-60:40):kind==='return'?(i===0?-65:i===1?35:100):kind==='landing'?(i===0?-55:55):kind==='stow'?80:kind==='sample'?(i===0?40:-75):-50;
-   let ly=Math.min(Math.max(12,y+dy),rect.height-lh-45);
-   if(!outside){const box=placeLabel(lx,ly,lw,lh,occupied,rect);lx=box.x;ly=box.y;occupied.push(box);}
+   let ly=Math.min(Math.max(12,y+dy),bounds.height-lh-45);
+   if(['cruise','outbound'].includes(kind)){
+    // Heliocentric chapters: set each label outward from the Sun, so the Sun, Earth, target and
+    // probe labels spread around the orbits instead of piling up at the centre.
+    const sun=new T.Vector3().project(camera),cx=(sun.x*.5+.5)*rect.width,cy=(-sun.y*.5+.5)*rect.height;
+    let ux=x-cx,uy=y-cy;const length=Math.hypot(ux,uy);if(length<8){ux=-.55;uy=-.83;}else{ux/=length;uy/=length;}
+    const reach=Math.min(92,rect.width*.12);right=ux>=0;
+    lx=Math.min(Math.max(10,x+ux*reach-(right?0:lw)),rect.width-lw-10);ly=Math.min(Math.max(12,y+uy*reach-lh/2),bounds.height-lh-45);
+   }
+   if(!outside){const box=placeLabel(lx,ly,lw,lh,occupied,bounds);lx=box.x;ly=box.y;occupied.push(box);}
    label.style.left=lx+'px';label.style.top=ly+'px';
    const endX=right?lx:lx+lw,endY=ly+lh*.5,dx=endX-x,deltaY=endY-y;
    leader.style.left=x+'px';leader.style.top=y+'px';leader.style.width=Math.hypot(dx,deltaY)+'px';leader.style.transform='rotate('+Math.atan2(deltaY,dx)+'rad)';

@@ -10,6 +10,8 @@ export function createChapterReader(root,initial,signal){
     const sequence=$('#reaction-sequence');if(sequence)sequence.hidden=state.stage!==2;
     for(const [id,index] of [['growth-sequence',1],['inheritance-sequence',3]]){const list=$('#'+id);if(list)list.hidden=state.stage!==index;}
     const budget=$('#mineral-budget');if(budget)budget.hidden=state.stage!==2;
+    // The 3D scene reveals the locator once its image exists; reading alone only hides it.
+    const locator=$('#section-locator');if(locator&&state.stage!==2)locator.hidden=true;
     for(const key of ['eyebrow','title','description','scale','environment'])$('#'+key).textContent=data[key];
     root.querySelectorAll('[data-stage]').forEach(button=>{
       button.disabled=false;
@@ -21,6 +23,7 @@ export function createChapterReader(root,initial,signal){
   function select(stage,progress=.05){state={...state,stage,progress};render();onSelect?.(stage,progress);}
   function fallback(current=state){
     state={...current,paused:true};onSelect=undefined;render();
+    const locator=$('#section-locator');if(locator)locator.hidden=true;
     root.querySelectorAll('.observatory button:not(#retry-scene),.observatory input').forEach(control=>control.disabled=true);
     $('#legend').hidden=false;$('#material-note').hidden=true;$('#moment').textContent='Chapter context';
   }

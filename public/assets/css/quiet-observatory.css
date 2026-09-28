@@ -89,7 +89,6 @@ html[data-theme] body#academic-site.site-refined {
    .segmented button { min-width:60px;padding:0 7px; }
    .transport { padding:14px;gap:12px; }
    .transport-copy { width:calc(100% - 56px); }
-   .scene-hint { font-size:9px; }
    .reaction-sequence { display:grid;grid-template-columns:1fr 1fr;gap:0 18px; }
  }
 }

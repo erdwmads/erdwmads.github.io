@@ -16,7 +16,7 @@ async function sourceModel(id){
   for(const mesh of gltf.meshes)for(const primitive of mesh.primitives)delete primitive.material;
   gltf.buffers[0].uri='data:application/octet-stream;base64,'+bytes.subarray(28+length).toString('base64');
   const scene=(await new GLTFLoader().parseAsync(JSON.stringify(gltf),'')).scene;
-  return id==='ryugu'?restoreFacetedShape(scene):scene;
+  return restoreFacetedShape(scene);
 }
 
 function equivalentDiameter(object){
@@ -35,7 +35,7 @@ function equivalentDiameter(object){
   return Math.cbrt(Math.abs(volume)*6/Math.PI);
 }
 
-for(const [id,spanKm,diameterKm] of [['bennu',.565036987,.491774603],['ryugu',1.019200027,.896499394]]){
+for(const [id,spanKm,diameterKm] of [['bennu',.566360176,.489431026],['ryugu',1.019200027,.896499394]]){
   test(`${id} source dimensions survive display normalization and conversion to kilometres`,async()=>{
     assert.equal(typeof normalizeAsteroid,'function','shared normalization must retain the source physical scale');
     const unit=normalizeAsteroid(await sourceModel(id),id);

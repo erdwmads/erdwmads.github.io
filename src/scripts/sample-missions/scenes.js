@@ -10,13 +10,14 @@ import {hasEarthContext} from './locations.js';
 import {createEarthFlightScene} from './earth-scene.js';
 import {earthInertialOrientation} from './earth-inertial.js';
 import {earthGroundMaterial} from './earth-ground.js';
-import {createSciProjectile} from './sci.js';
+import {createSciProjectile,createGlowBillboard,createEjectaCurtain} from './sci.js';
 import {createSamplingTerrain} from './terrain.js';
 import {createRecoveryCanopy} from './recovery.js';
 import {createCorona,createEntryWake} from './atmosphere.js';
 import {augmentAsteroid} from './asteroid-detail.js';
+import {loadPackedJson} from './packed-data.js';
 import {normalizeAsteroid,restoreFacetedShape,shapeModelUrl} from '../asteroid-scale.js';
-import {samplingClearance,samplingState,collectedGrain,phaseLabel,smooth,mix,sciFlight} from './motion.js';
+import {samplingClearance,samplingState,collectedGrain,phaseLabel,smooth,mix,sciFlight,sciLayout,clampProgress} from './motion.js';
 
 export function disposeGraph(root){
  const geometries=new Set(),materials=new Set(),textures=new Set();
@@ -57,14 +58,14 @@ async function asteroid(id,signal){
  const response=await fetch(shapeModelUrl(id),{signal});
  if(!response.ok)throw Error('Asteroid model unavailable');
  const object=(await new GLTFLoader().parseAsync(await response.arrayBuffer(),'')).scene;
- if(id==='ryugu')restoreFacetedShape(object);
+ restoreFacetedShape(object);
  const unit=normalizeAsteroid(object,id);
  object.traverse(o=>{if(o.isMesh){for(const m of [o.material].flat())m?.dispose();o.material=rockMaterial(id==='ryugu'?0x454846:0x474542);o.castShadow=true;o.receiveShadow=true;}});
  augmentAsteroid(unit,id);return unit;
 }
 export async function createMissionScene(id,signal){
  const loader=new T.TextureLoader();
- const results=await Promise.allSettled([createSpacecraft(id),asteroid(id==='hayabusa2'?'ryugu':'bennu',signal),loader.loadAsync('/assets/img/arrival/earth-day.jpg'),loader.loadAsync('/assets/img/arrival/earth-clouds.png'),fetch('/assets/data/missions/ephemeris.json',{signal}).then(r=>{if(!r.ok)throw Error('Mission trajectory unavailable');return r.json();}),fetch('/assets/data/missions/journey.json',{signal}).then(r=>{if(!r.ok)throw Error('Solar journey unavailable');return r.json();})]);
+ const results=await Promise.allSettled([createSpacecraft(id),asteroid(id==='hayabusa2'?'ryugu':'bennu',signal),loader.loadAsync('/assets/img/arrival/earth-day.jpg'),loader.loadAsync('/assets/img/arrival/earth-clouds.png'),loadPackedJson('/assets/data/missions/ephemeris.packed.json',signal,'Mission trajectory unavailable'),loadPackedJson('/assets/data/missions/journey.packed.json',signal,'Solar journey unavailable')]);
  if(signal.aborted||results.some(r=>r.status==='rejected')){
   for(const r of results)if(r.status==='fulfilled'){if(r.value?.isTexture)r.value.dispose();else disposeGraph(r.value.group||r.value);}
   throw results.find(r=>r.status==='rejected')?.reason||new DOMException('Disposed','AbortError');
@@ -91,6 +92,13 @@ export async function createMissionScene(id,signal){
  const projectile=mesh(new T.SphereGeometry(.018,12,8),new T.MeshStandardMaterial({color:0xc8c5b2,metalness:.7,roughness:.4}),group);
  const particles=new T.InstancedMesh(stoneGeometry(80,1),new T.MeshStandardMaterial({color:0x626059,roughness:1}),96);group.add(particles);
  const seeds=Array.from({length:96},()=>({a:random()*Math.PI*2,v:.4+random()*2,h:.5+random()*1.7,s:.004+random()**3*.035}));
+ // SCI readability aids (illustrative): at site scale the 13 cm projectile is a few pixels, so a glow and a
+ // short trail mark it; a flash marks contact, a cone shows the ejecta curtain DCAM3 imaged, and
+ // ground-following loops mark the crater rim and the second-touchdown target.
+ const sciGlow=createGlowBillboard(0xffd49a,.9),sciFlash=createGlowBillboard(0xfff1d6,1),sciTrail=line([new T.Vector3(),new T.Vector3(0,1,0)],0xffd9a8,.55),curtain=createEjectaCurtain();
+ const groundLoop=opacity=>new T.LineLoop(new T.BufferGeometry().setAttribute('position',new T.Float32BufferAttribute(new Float32Array(72*3),3)),new T.LineBasicMaterial({color:0xe8c782,transparent:true,opacity}));
+ const craterRing=groundLoop(.65),targetRing=groundLoop(.9);group.add(sciGlow,sciFlash,sciTrail,curtain.mesh,craterRing,targetRing);
+ const followGround=(loop,center,radius)=>{const a=loop.geometry.attributes.position;for(let i=0;i<72;i++){const t=i/72*Math.PI*2,x=center.x+Math.cos(t)*radius,z=center.z+Math.sin(t)*radius;a.setXYZ(i,x,terrain.heightAt(x,z)+.035,z);}a.needsUpdate=true;loop.geometry.computeBoundingSphere();loop.visible=true;};
  const desertGeometry=new T.PlaneGeometry(200,200,100,100);desertGeometry.rotateX(-Math.PI/2);
  const dp=desertGeometry.attributes.position;for(let i=0;i<dp.count;i++){const x=dp.getX(i),z=dp.getZ(i);dp.setY(i,(noise.noise(x*.18,4,z*.18)-noise.noise(0,4,0))*.15*smooth((Math.hypot(x,z)-2.8)/3));}desertGeometry.computeVertexNormals();
  const desertMaterial=earthGroundMaterial(id==='hayabusa2'?0x947452:0xb6a78b);desertMaterial.transparent=true;
@@ -126,7 +134,7 @@ export async function createMissionScene(id,signal){
  function addLabel(text,point){labels.push({text,point:point.clone()});}
  function update(kind,p,stageId,context='detail',focus='both',reference='earth',cutaway=false){
   currentKind=kind;labels=[];velocityArrows.forEach(a=>a.visible=false);rangeLink.visible=false;proximityState=null;journeyState=null;frameState=null;flybySunRoute.visible=flybySunTrail.visible=flybyEarthRoute.visible=false;locators.visible=false;Object.values(proximityRoutes).forEach(r=>r.visible=false);Object.values(proximityTrails).forEach(r=>r.visible=false);stars.scale.setScalar(1);earthFlight.hide();
-  for(const o of [craft.group,body,earth,sun,launch.group,capsule,chute,ground,desert,route,impactor,projectile,particles,heat]){o.visible=false;o.rotation.set(0,0,0);o.position.set(0,0,0);o.scale.setScalar(1);}
+  for(const o of [craft.group,body,earth,sun,launch.group,capsule,chute,ground,desert,route,impactor,projectile,particles,heat,sciGlow,sciFlash,sciTrail,curtain.mesh,craterRing,targetRing]){o.visible=false;o.rotation.set(0,0,0);o.position.set(0,0,0);o.scale.setScalar(1);}
   earth.rotation.set(.12,2,.15);earth.children[0].material.opacity=1;earth.children[1].material.opacity=.85;earth.children[2].material.uniforms.opacity.value=.55;
   craft.capsule.visible=true;craft.setSampling(false);craft.setSolarDeployment(1);craft.setHornDeployment?.(1);craft.setSamplingCutaway?.(false);
   if(id==='osiris-rex'&&(['depart','return','landing'].includes(kind)))craft.setStowage(1);
@@ -165,6 +173,8 @@ export async function createMissionScene(id,signal){
    const contact=p>=.46&&p<=.57;
    addLabel(contact?(id==='hayabusa2'?'Sampler horn contact':'TAGSAM contact'):'Sampling target',new T.Vector3(0,.2,0));
    addLabel(id==='hayabusa2'?'Hayabusa2':'OSIRIS-REx',craft.group.position);
+   // The second touchdown sampled ejecta north of the SCI crater; keep the crater marked in view.
+   if(stageId==='touchdown-2'){followGround(craterRing,terrain.markers.sciImpact,sciLayout.rimRadius);addLabel('SCI crater · 20 m south',terrain.markers.sciImpact);}
    const sampling=samplingState(p,id);projectile.visible=sampling.projectileVisible;projectile.position.set(0,sampling.projectileY,0);
    const burst=sampling.ejecta,surface=samplingClearance(id==='hayabusa2'?.51:.49,id);particles.visible=burst>0&&p<.92;
    for(let i=0;i<seeds.length;i++){
@@ -184,7 +194,17 @@ export async function createMissionScene(id,signal){
     const t=Math.max(0,(p-.4)/.6),distance=northward?14+(i%7)*.65:3+s.v*3,flight=Math.min(1,t/(northward?.82:.65));
     const endX=origin.x+Math.cos(a)*distance,endZ=origin.z+Math.sin(a)*distance,groundY=terrain.heightAt(endX,endZ);dummy.position.set(mix(origin.x,endX,flight),mix(origin.y,groundY,flight)+.02+(northward?6:3)*4*flight*(1-flight),mix(origin.z,endZ,flight));dummy.scale.set(s.s*1.5,s.s*.65,s.s*.9);dummy.rotation.set(i,burst+i,i*.2);dummy.updateMatrix();particles.setMatrixAt(i,dummy.matrix);
    }particles.instanceMatrix.needsUpdate=true;
-   addLabel(p<.4?'SCI copper projectile · 13 cm':'SCI crater · ejecta source',p<.4?impactor.position:origin);addLabel('Second touchdown · 20 m north',terrain.markers.samplingTarget);
+   if(impact.visible){
+    sciGlow.visible=sciTrail.visible=true;sciGlow.position.copy(impactor.position);sciGlow.scale.setScalar(.75);
+    const a=sciTrail.geometry.attributes.position;a.setXYZ(0,...impactor.position.toArray());a.setXYZ(1,impactor.position.x,impactor.position.y+Math.min(2.6,12-impact.height+.4),impactor.position.z);a.needsUpdate=true;sciTrail.geometry.computeBoundingSphere();
+   }
+   const flash=clampProgress((p-.4)/.07);sciFlash.visible=p>=.4&&flash<1;sciFlash.position.copy(origin).add(new T.Vector3(0,.25,0));sciFlash.scale.setScalar(.8+flash*3.4);sciFlash.userData.setStrength((1-flash)**2);
+   // The curtain widens at about 45 degrees from the rim as it rises, then thins out.
+   const rise=clampProgress((p-.4)/.22),thin=1-smooth((p-.6)/.22);curtain.mesh.visible=rise>0&&thin>0;curtain.mesh.position.copy(origin);
+   curtain.update({base:sciLayout.apparentRadius*.55,height:.4+rise*7.2,spread:1,opacity:.62*smooth(rise/.25)*thin,phase:p*6});
+   if(impact.excavation>.9)followGround(craterRing,origin,sciLayout.rimRadius);followGround(targetRing,terrain.markers.samplingTarget,1.4);
+   addLabel(p<.4?'SCI copper projectile · 13 cm':'SCI crater · ~14.5 m across',p<.4?impactor.position:origin);addLabel('Second touchdown · 20 m north',terrain.markers.samplingTarget);
+   if(curtain.mesh.visible&&p>.43)addLabel('Ejecta curtain · illustrative',origin.clone().add(new T.Vector3(-sciLayout.apparentRadius*.9,2.2+rise*3,0)));
   }else if(kind==='stow'){
    craft.group.visible=true;craft.setStowage(p);craft.group.rotation.y=-.2+p*.25;craft.group.updateMatrix();
    craft.group.updateMatrixWorld(true);

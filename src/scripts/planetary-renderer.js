@@ -74,7 +74,10 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     focusFx = value;
     originRim.visible=['shape','minerals'].includes(current?.view)&&value;
     sunlight.visible=current?.view==='orbit';
-    key.intensity=current?.view==='orbit'?0:2.8;fill.intensity=current?.view==='orbit'?.12:.2;hemisphere.intensity=current?.view==='orbit'?.42:.55;
+    // Mineral models bring their own key, fill and rim lights; the shared lights would flatten their faces,
+    // and a full-strength teal focus rim would tint the specimens.
+    const studio=current?.view==='minerals';
+    originRim.intensity=studio?.5:1.6;key.intensity=current?.view==='orbit'||studio?0:2.8;fill.intensity=current?.view==='orbit'?.12:studio?0:.2;hemisphere.intensity=current?.view==='orbit'?.42:studio?0:.55;
     world.traverse(node => {
       if (node.userData.focusHalo) node.visible = value;
       if (current?.view!=='orbit' && node.isMesh && node.material?.emissive) { node.material.emissive.setHex(color().gold); node.material.emissiveIntensity = value ? 0.035 : 0; }
@@ -92,7 +95,7 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     for (const marker of world.userData.markers || []) marker.scale.setScalar(1/Math.sqrt(camera.zoom));
     scene.updateMatrixWorld(true);
     ao.enabled=current?.view!=='orbit'&&stage.clientWidth>760;
-    scene.environmentIntensity=current?.view==='orbit'?0:.25;
+    scene.environmentIntensity=current?.view==='orbit'?0:world.userData.environmentIntensity??.25;
     if(current?.view==='orbit')renderer.render(scene,camera);else {syncOcclusionCamera(ao,camera);composer.render();}
     const rect = stage.getBoundingClientRect(), placed = [];
     for (const entry of labels) {
@@ -207,7 +210,7 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
         const response = await fetch(shapeModelUrl(id), { signal });
         if (!response.ok) throw new Error('Shape model unavailable');
         const object = (await new GLTFLoader().parseAsync(await response.arrayBuffer(),'')).scene;
-        if (id === 'ryugu') restoreFacetedShape(object);
+        restoreFacetedShape(object);
         if (!alive) { disposeObject(object,true); throw new DOMException('Viewer disposed','AbortError'); }
         return normalizeAsteroid(object,id);
       })();
@@ -230,7 +233,7 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
       object.position.x = state.compare ? (i===0?-0.75:0.6) : 0;
       group.add(object);
       const anchor = new THREE.Object3D(); anchor.position.set(object.position.x,-scale*0.6,0); group.add(anchor);
-      if (state.compare) label(anchor,`${ids[i]==='bennu'?'Bennu · mean ~492 m':'Ryugu · mean ~900 m'}`,ids[i],pending);
+      if (state.compare) label(anchor,`${ids[i]==='bennu'?'Bennu · mean ~490 m':'Ryugu · mean ~900 m'}`,ids[i],pending);
       else {
         // Anchor the annotation to an actual front-facing vertex near the display equator.
         object.updateMatrixWorld(true);
@@ -249,6 +252,11 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     const bounds=new THREE.Box3().setFromObject(group);
     return {group,pending,targets:[],radius:state.compare?Math.max(Math.abs(bounds.min.x),Math.abs(bounds.max.x))*1.16:0.94,radiusY:state.compare?1.05:0.94};
   }
+  function mineralView(state) {
+    // The model supplies its own frame (separated layout plus margin), so the detail toggle keeps one scale.
+    const group=createMineralGroup(state.mineral,state.separated,document.documentElement.dataset.theme==='light');
+    return {group,pending:[],targets:[],radius:1.55,...group.userData.frame};
+  }
   async function show(next) {
 
     const state = {...next}, ticket = ++version;
@@ -258,7 +266,7 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     if (contextLost) { onError(new Error('WebGL context lost')); return; }
     if (state.view === 'shape') { root.dataset.modelReady = 'loading'; status.hidden = false; status.textContent = 'Loading public shape model...'; }
     try {
-      const built = state.view === 'orbit' ? await orbitGroup(state) : state.view === 'minerals' ? {group:createMineralGroup(state.mineral,state.separated),pending:[],targets:[],radius:1.55} : await shapeGroup(state);
+      const built = state.view === 'orbit' ? await orbitGroup(state) : state.view === 'minerals' ? mineralView(state) : await shapeGroup(state);
       if (!alive || contextLost || ticket !== version) { disposeObject(built.group); return false; }
       current = state;
       root.dataset.renderState='rendering';

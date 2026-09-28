@@ -18,7 +18,7 @@ const papers = readConstArray("src/data/papers.ts", "papers");
 const payload = {
   generatedAt: new Date().toISOString(),
   site: "https://erdwmads.github.io",
-  researchTheme: "Cosmomineralogical Study of Dolomite in the Orgueil CI1 Chondrite: Aqueous Alteration Processes and Material Evolution in a Primitive Asteroidal Parent Body",
+  researchTheme: "Astromineralogical Study of Ca–Mg Carbonates Reported as Dolomite in the Orgueil CI1 Chondrite: Crystallographic Identification and Implications for Parent-Body Aqueous Alteration",
   papers: papers.map((paper) => ({
     status: paper.status,
     title: paper.title,

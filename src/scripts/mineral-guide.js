@@ -1,9 +1,9 @@
 export const mineralModels = {
   carbonate: {
     name: 'Dolomite', formula: 'CaMg(CO3)2', category: 'Carbonate',
-    description: 'A tilted, six-faced crystal rather than a rectangular cube. Dolomite can form rhombohedra; this model isolates that recognisable form.',
+    description: 'A six-faced rhombohedron rather than a rectangular cube: its faces meet at the oblique angles of dolomite\'s three cleavage planes. Dolomite can form rhombohedra; this model isolates that recognisable form.',
     appearance: 'White to pale pink; glassy to pearly', detail: 'Separate cleavage blocks',
-    explanation: 'The separated blocks illustrate three inclined cleavage directions. They are not atoms, a unit cell or a simulated fracture experiment.',
+    explanation: 'The separated blocks illustrate three inclined cleavage directions; each piece keeps the rhombohedral shape. They are not atoms, a unit cell or a simulated fracture experiment.',
     research: 'Ca and Mg near a 1:1 atomic ratio make a useful carbonate target. Chemistry plus diffraction and texture are needed to identify dolomite in Orgueil.',
     source: 'https://www.handbookofmineralogy.org/pdfs/dolomite.pdf', mindat: 'https://www.mindat.org/min-1304.html'
   },
@@ -11,7 +11,7 @@ export const mineralModels = {
     name: 'Lizardite', formula: 'Mg3Si2O5(OH)4', category: 'Serpentine-group sheet silicate',
     description: 'Think of very thin flakes stacked together. Lizardite is a named example of a hydrated sheet silicate, not feldspar and not a label for the entire meteorite matrix.',
     appearance: 'Often pale green; fine scales or aggregates', detail: 'Separate sheets',
-    explanation: 'The spaced plates show a layered organisation. Their thickness, spacing and green colour are illustrative, not an atomic structure or a measured CI texture.',
+    explanation: 'The spaced flakes are stacked along one direction, showing a layered organisation. Their thickness, spacing and green colour are illustrative, not an atomic structure or a measured CI texture.',
     research: 'Fine-grained hydrated silicates record water-rock interaction. TEM and diffraction distinguish structures that cannot be identified by colour or SEM appearance alone.',
     source: 'https://www.handbookofmineralogy.org/pdfs/lizardite.pdf', mindat: 'https://www.mindat.org/min-2425.html'
   },

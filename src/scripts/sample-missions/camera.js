@@ -11,7 +11,17 @@ export function missionShot(kind,p,id,aspect=1.8,stageId=''){
   const angle=mix(.72,.5,approach)-.08*retreat,distance=6.3+h*1.15;
   position=[Math.sin(angle)*distance,2.65+h*.75,Math.cos(angle)*distance];target=[0,.95+h*.58,0];fov=38;
   if(stageId==='touchdown-2'){
-   const close=smooth((p-.1)/.3);position=blend(sitePosition,position,close);target=blend(siteTarget,target,close);fov=mix(42,38,close);
+   // Close in from the north, so the SCI crater 20 m south stays in view behind the spacecraft
+   // and this touchdown does not repeat the first one's framing. The camera orbits the site
+   // (direction, height and distance are interpolated, not position), so it never sweeps low
+   // over the arriving spacecraft.
+   const close=smooth((p-.1)/.3),from=sitePosition.map((v,i)=>v-siteTarget[i]),to=[-position[0]-target[0],position[1]*1.35-target[1],-position[2]-target[2]];
+   if(close>0){
+    const r0=Math.hypot(...from),r1=Math.hypot(...to),a0=Math.atan2(from[0],from[2]),a1=Math.atan2(to[0],to[2]),turn=Math.atan2(Math.sin(a1-a0),Math.cos(a1-a0));
+    const azimuth=a0+turn*close,elevation=mix(Math.asin(from[1]/r0),Math.asin(to[1]/r1),close),r=r0*(r1/r0)**close;
+    target=blend(siteTarget,target,close);position=[target[0]+Math.sin(azimuth)*Math.cos(elevation)*r,target[1]+Math.sin(elevation)*r,target[2]+Math.cos(azimuth)*Math.cos(elevation)*r];
+   }else{position=sitePosition;target=siteTarget;}
+   fov=mix(42,38,close);
   }
  }else if(kind==='impact'){
   const overview=clampProgress((p-.6)/.4),z=sciLayout.crater[2];

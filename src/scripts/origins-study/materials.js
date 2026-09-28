@@ -106,20 +106,6 @@ export function dustCloud(count=450,seed=5){
   }};
 }
 
-// A shared spatial displacement keeps neighboring fracture faces matched.
-// Morphing exposes the relief during separation, while the intact body stays closed.
-export function fractureRelief(source,center){
-  const geometry=new TessellateModifier(.13,5).modify(source),rough=geometry.clone(),p=rough.attributes.position;
-  source.computeBoundingBox();const size=source.boundingBox.getSize(new T.Vector3()),amplitude=Math.min(1,Math.min(size.x,size.y,size.z)/.4);
-  for(let i=0;i<p.count;i++){
-    const x=p.getX(i)+center.x,y=p.getY(i)+center.y,z=p.getZ(i)+center.z;
-    const strength=.005*amplitude;
-    p.setXYZ(i,p.getX(i)+strength*noise.noise(x*7+73,y*7,z*7)+.002*amplitude*noise.noise(x*23+11,y*23,z*23),p.getY(i)+strength*noise.noise(x*7,y*7+19,z*7)+.002*amplitude*noise.noise(x*23,y*23+31,z*23),p.getZ(i)+strength*noise.noise(x*7,y*7,z*7+47)+.002*amplitude*noise.noise(x*23,y*23,z*23+57));
-  }
-  rough.deleteAttribute('normal');const welded=mergeVertices(rough);welded.computeVertexNormals();const smooth=welded.toNonIndexed();
-  geometry.morphAttributes.position=[rough.attributes.position];geometry.morphAttributes.normal=[smooth.attributes.normal];rough.dispose();welded.dispose();smooth.dispose();return materialOrigin(geometry,center.toArray());
-}
-
 // Real relief on the illustrative section lets grazing light reveal the matrix.
 export function sectionRelief(source){
   const geometry=new TessellateModifier(.085,7).modify(source),p=geometry.attributes.position;

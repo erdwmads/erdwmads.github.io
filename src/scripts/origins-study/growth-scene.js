@@ -3,13 +3,15 @@ import {stoneGeometry,rockMaterial} from './materials.js';
 import {growthPopulation,grainPosition} from './growth-dynamics.js';
 import {aggregateSurface} from './aggregate-surface.js';
 import {smooth} from './timeline.mjs';
+// Chapter 04 views its parent from this side too, so the final body is recognisable there.
+export const growthCamera=[3.7,2.6,8.4];
 export function accretion(){
  const group=new T.Group(),population=growthPopulation(),material=rockMaterial(0x929b9e),geometry=stoneGeometry(120,1);
  const grains=new T.InstancedMesh(geometry,material,population.grains.length),o=new T.Object3D(),color=new T.Color();
  grains.name='accreting-grains';grains.instanceMatrix.setUsage(T.DynamicDrawUsage);grains.frustumCulled=false;group.add(grains);group.userData.population=population;
  const fines=aggregateSurface(rockMaterial(0x50574f),'aggregate-fine-material');group.add(fines.mesh);
  let previousPhase,previousT=-1;
- return{group,camera:[3.7,2.6,8.4],target:[0,0,0],update(t,phase){
+ return{group,camera:growthCamera,target:[0,0,0],update(t,phase){
   material.color.setHex(0x92958d);
   if(t!==previousT){if(t<=.58){fines.mesh.visible=false;}else{const points=population.grains.filter(p=>!p.escape).map(p=>grainPosition(p,population,t));fines.update(points,4.8-3.05*smooth((t-.44)/.52),.25,1.6*smooth((t-.58)/.32));}previousT=t;}
   population.grains.forEach((p,i)=>{

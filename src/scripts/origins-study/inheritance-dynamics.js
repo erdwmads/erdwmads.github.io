@@ -3,7 +3,8 @@ import {remnantPacking} from './remnant-packing.js';
 import {smooth} from './timeline.mjs';
 import {contactDistance,fragmentsSeparated} from './fragment-contact.js';
 export const remnantCenter=new T.Vector3(-1.25,-.12,0);
-export function packRemnant(parts){parts.forEach((part,i)=>{if(part.preserved)part.target=new T.Vector3().fromArray(remnantPacking[i]);});}
+// A missing entry means the baked packing is stale; regenerate it with scripts/generate-remnant-packing.mjs.
+export function packRemnant(parts){parts.forEach((part,i)=>{if(part.preserved)part.target=remnantPacking[i]?new T.Vector3().fromArray(remnantPacking[i]):part.start.clone();});}
 // Face-based contacts pack the actual angular fragments into a compact remnant.
 // These are authored trajectories, not fitted fragment velocities or an N-body solution.
 export function computeRemnantPacking(parts){

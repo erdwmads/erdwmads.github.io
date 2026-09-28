@@ -1,5 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises';
-import { objToGlb } from './shape-model-glb.mjs';
+import { objToGlb, meshToGlb } from './shape-model-glb.mjs';
+import { readGlbMesh, simplifyShape } from './simplify-shape-model.mjs';
 
 const root = new URL('../public/assets/data/planetary/', import.meta.url);
 await mkdir(new URL('raw/', root), { recursive: true });
@@ -34,15 +35,20 @@ for (const [id, command, days] of bodies) {
 }
 await writeFile(new URL('orbits.json', root), JSON.stringify(result));
 const assets = {
-  bennu: { file: 'bennu.glb', url: 'https://assets.science.nasa.gov/content/dam/science/psd/solar/2023/09/b/Bennu_1_1.glb', source: 'https://science.nasa.gov/resource/bennu-3d-model/', credit: 'NASA Visualization Technology Applications and Development (VTAD)', diameterM: 492 },
+  bennu: { file: 'bennu.glb', url: 'https://svs.gsfc.nasa.gov/vis/a000000/a005000/a005069/g_00880mm_alt_ptm_0000n00000_v020.glb', source: 'https://svs.gsfc.nasa.gov/5069', credit: "NASA's Scientific Visualization Studio; data NASA/University of Arizona/CSA/York University/MDA. OSIRIS-REx OLA v20 global shape model (Daly et al. 2020).", diameterM: 490, simplify: 49152, encoding: 'Simplified from 3,366,134 to 49,042 triangles with meshoptimizer (maximum geometric error about 0.9 m); kilometres, body-fixed frame; see scripts/simplify-shape-model.mjs.' },
   ryugu: { file: 'ryugu.glb', url: 'https://data.darts.isas.jaxa.jp/pub/hayabusa2/paper/Watanabe_2019/SHAPE_SFM_49k_v20180804.obj', source: 'https://data.darts.isas.jaxa.jp/pub/hayabusa2/paper/Watanabe_2019/', credit: 'ISAS/JAXA; Watanabe et al. (2019), shape-model team', diameterM: 900, encoding: 'Lossless GLB re-encoding of the source OBJ (float32 positions, original face order); see scripts/shape-model-glb.mjs.' }
 };
 for (const [id, asset] of Object.entries(assets)) {
   const response = await download(asset.url);
   // The Ryugu OBJ is 2.6 MB of text; ship the same vertices and faces as a 0.6 MB GLB.
-  const bytes = asset.url.endsWith('.obj')
-    ? objToGlb(await response.text(), { name: id, copyright: asset.credit })
-    : Buffer.from(await response.arrayBuffer());
+  let bytes;
+  if (asset.url.endsWith('.obj')) bytes = objToGlb(await response.text(), { name: id, copyright: asset.credit });
+  else if (asset.simplify) {
+    // NASA's Bennu model has 3.4 million triangles (60 MB); ship Ryugu's triangle budget instead.
+    const simplified = await simplifyShape(readGlbMesh(Buffer.from(await response.arrayBuffer())), asset.simplify);
+    bytes = meshToGlb(simplified.positions, simplified.indices, { name: id, copyright: asset.credit, generator: 'simplify-shape-model.mjs' });
+    delete asset.simplify;
+  } else bytes = Buffer.from(await response.arrayBuffer());
   await writeFile(new URL(asset.file, root), bytes);
   asset.asset = `/assets/data/planetary/${asset.file}`;
   console.log(`Downloaded ${id}`);

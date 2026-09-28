@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { packEphemeris } from './mission-data-pack.mjs';
 
 // Regenerate with Python + spiceypy installed; PYTHON selects the executable.
 // Downloads only the compact ephemeris/frame kernels, never shape/attitude kernels.
@@ -125,4 +126,6 @@ for (const [mission,phases] of Object.entries(output)) {
 const destination=join(root,'public/assets/data/missions/ephemeris.json');
 await mkdir(dirname(destination),{recursive:true});
 await writeFile(destination,JSON.stringify(output)+'\n');
+// Compact fixed-point copy read by the site (decoder: src/scripts/sample-missions/packed-data.js).
+await writeFile(join(root,'public/assets/data/missions/ephemeris.packed.json'),packEphemeris(output));
 console.log(destination);

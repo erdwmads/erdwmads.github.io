@@ -1,10 +1,11 @@
 {
   "bennu": {
     "file": "bennu.glb",
-    "url": "https://assets.science.nasa.gov/content/dam/science/psd/solar/2023/09/b/Bennu_1_1.glb",
-    "source": "https://science.nasa.gov/resource/bennu-3d-model/",
-    "credit": "NASA Visualization Technology Applications and Development (VTAD)",
-    "diameterM": 492,
+    "url": "https://svs.gsfc.nasa.gov/vis/a000000/a005000/a005069/g_00880mm_alt_ptm_0000n00000_v020.glb",
+    "source": "https://svs.gsfc.nasa.gov/5069",
+    "credit": "NASA's Scientific Visualization Studio; data NASA/University of Arizona/CSA/York University/MDA. OSIRIS-REx OLA v20 global shape model (Daly et al. 2020).",
+    "diameterM": 490,
+    "encoding": "Simplified from 3,366,134 to 49,042 triangles with meshoptimizer (maximum geometric error about 0.9 m); kilometres, body-fixed frame; see scripts/simplify-shape-model.mjs.",
     "asset": "/assets/data/planetary/bennu.glb"
   },
   "ryugu": {

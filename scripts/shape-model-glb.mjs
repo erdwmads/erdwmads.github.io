@@ -33,10 +33,14 @@ export function objToGlb(text, { name = "shape", copyright } = {}) {
   const vertexCount = positions.length / 3;
   if (!vertexCount || !indices.length) throw new Error("OBJ contains no vertices or faces");
   if (indices.some((index) => index < 0 || index >= vertexCount)) throw new Error("OBJ face references a missing vertex");
+  return meshToGlb(new Float32Array(positions), indices, { name, copyright });
+}
 
-  const positionArray = new Float32Array(positions);
+// Writes one position-only indexed triangle mesh (float32 positions, faces in the given order).
+export function meshToGlb(positionArray, indices, { name = "shape", copyright, generator = "shape-model-glb.mjs" } = {}) {
+  const vertexCount = positionArray.length / 3;
   // WebGL2 always restarts primitives at 0xFFFF, so 16-bit indices must stay below it.
-  const indexArray = vertexCount < 0xffff ? new Uint16Array(indices) : new Uint32Array(indices);
+  const indexArray = vertexCount < 0xffff ? Uint16Array.from(indices) : Uint32Array.from(indices);
   const min = [Infinity, Infinity, Infinity];
   const max = [-Infinity, -Infinity, -Infinity];
   positionArray.forEach((value, i) => {
@@ -52,7 +56,7 @@ export function objToGlb(text, { name = "shape", copyright } = {}) {
   indexBytes.copy(bin, indexOffset);
 
   const gltf = {
-    asset: { version: "2.0", generator: "erdwmads.github.io scripts/shape-model-glb.mjs", ...(copyright ? { copyright } : {}) },
+    asset: { version: "2.0", generator: `erdwmads.github.io scripts/${generator}`, ...(copyright ? { copyright } : {}) },
     scene: 0,
     scenes: [{ nodes: [0] }],
     nodes: [{ mesh: 0, name }],

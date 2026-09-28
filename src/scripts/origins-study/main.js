@@ -55,7 +55,7 @@ export function mountStudy(root,reader){
   const ao=new SSAOPass(world,camera,1,1);ao.kernelRadius=5;ao.minDistance=.001;ao.maxDistance=.065;composer.addPass(ao);composer.addPass(new OutputPass());
 
   const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
-  const chapterMotionNodes=['.chapter-heading','.chapter-description','.scene-note'].map(selector=>$(selector));
+  const chapterMotionNodes=['.chapter-heading','.chapter-description','.scene-note','#section-locator'].map(selector=>$(selector)).filter(Boolean);
   on(reducedMotion,'change',()=>{
     if(reducedMotion.matches){
       chapterMotionNodes.forEach(node=>node.getAnimations().forEach(animation=>animation.cancel()));
@@ -98,13 +98,27 @@ export function mountStudy(root,reader){
     const w=viewport.clientWidth,h=viewport.clientHeight;renderer.setSize(w,h,false);composer.setSize(w,h);camera.aspect=w/h;
     camera.clearViewOffset();camera.updateProjectionMatrix();resetCamera();dirty=true;requestFrame();
   }
+  function stageLighting(index){
+    key.shadow.normalBias=index===2?.0015:.025;ao.kernelRadius=index===2?2:5;
+    ao.enabled=index!==0 && viewport.clientWidth>760;key.intensity=index===0?2.7:3.2;rim.intensity=index===0?2.1:1.4;fill.intensity=index===0?.3:.5;ambient.intensity=index===0?.6:.55;world.environmentIntensity=index===0?.22:.24;
+  }
   function showStage(index,initial=.05){
     const changing=index!==stage;
     if(changing)captureDissolve();
     setExploring(false);manualCamera=false;stage=index;progress=initial;hold=0;scenes.forEach((s,i)=>s.group.visible=i===index);
     if(changing)animateChapter();
-    key.shadow.normalBias=index===2?.0015:.025;ao.kernelRadius=index===2?2:5;
-    ao.enabled=index!==0 && viewport.clientWidth>760;key.intensity=index===0?2.7:3.2;rim.intensity=index===0?2.1:1.4;fill.intensity=index===0?.3:.5;ambient.intensity=index===0?.6:.55;world.environmentIntensity=index===0?.22:.24;resetCamera();sync();if(changing)startDissolve();
+    const locator=$('#section-locator');if(locator)locator.hidden=index!==2||!locator.dataset.ready;
+    stageLighting(index);resetCamera();sync();if(changing)startDissolve();
+  }
+  // Chapter 03's locator shows the chapter 02 endpoint from chapter 02's own side. It is drawn
+  // once from the real scene, then kept as a still image: no extra render loop or camera motion.
+  function paintLocator(){
+    const figure=$('#section-locator'),target=figure?.querySelector('canvas');if(!target)return;
+    const growth=scenes[1];scenes.forEach((s,i)=>s.group.visible=i===1);growth.update(1,false);stageLighting(1);
+    camera.position.fromArray(growth.camera).setLength(4.8);camera.lookAt(0,0,0);camera.updateMatrixWorld();
+    syncOcclusionCamera(ao,camera);composer.render();
+    const side=Math.min(canvas.width,canvas.height);target.getContext('2d').drawImage(canvas,(canvas.width-side)/2,(canvas.height-side)/2,side,side,0,0,target.width,target.height);
+    renderer.setRenderTarget(null);renderer.clear();figure.dataset.ready='true';
   }
   function sync(){
     dirty=true;requestFrame();
@@ -133,6 +147,7 @@ export function mountStudy(root,reader){
   try{
     for(const build of[nebula,accretion,alteration,inheritance]){await new Promise(resolve=>requestAnimationFrame(resolve));if(disposed)return;const s=build();s.group.traverse(node=>{if(node.isMesh&&node.material?.isMeshStandardMaterial&&!node.material.transparent){node.castShadow=node.material.side!==T.BackSide;node.receiveShadow=node.material.side!==T.BackSide;}});scenes.push(s);world.add(s.group);s.group.visible=false;}
     resize();scenes.forEach(s=>s.group.visible=true);compiling=true;try{await renderer.compileAsync(world,camera);}finally{compiling=false;if(disposed)releaseResources();}if(disposed)return;
+    paintLocator();
     const initial=reader.state;showStage(initial.stage,initial.progress);setPhase(initial.phase||false);setPlaying(initial.paused?false:playing);$('#loading').hidden=true;
     studyControls.forEach(control=>control.disabled=false);
     resizeObserver=new ResizeObserver(resize);resizeObserver.observe(viewport);

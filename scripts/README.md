@@ -38,6 +38,9 @@ The deploy workflow runs these, then builds and deploys `dist/`:
 | `generate-image-derivatives.mjs` | Photography and Mission Log WebP thumbnails (`npm run images:derive`) |
 | `generate-site-backgrounds.mjs` | WebP backgrounds, portrait and the 1200×630 social card (`npm run images:backgrounds`) |
 | `shape-model-glb.mjs` | lossless OBJ → GLB re-encoding of measured shape models |
+| `spacecraft-model-simplify.mjs` | reproducible display simplification of NASA's OSIRIS-REx GLB (reads the unmodified NASA file from git history or a path; see `SPACECRAFT-CREDITS.md`) |
+| `draco-sequential-encoder.mjs` | minimal Draco mesh encoder used by the simplifier; output is checked with the site's own decoder |
+| `mission-data-pack.mjs` | repacks `journey.json` / `ephemeris.json` into the compact `journey.packed.json` / `ephemeris.packed.json` the site loads; the two mission generators call it too |
 | `export-ppt-data.mjs` | public Paper Shelf and project data for slides |
 
 ## Data generators (offline, network or Python)
@@ -46,8 +49,8 @@ The deploy workflow runs these, then builds and deploys `dist/`:
 |---|---|
 | `fetch-planetary-data.mjs` | JPL Horizons orbits, the Bennu GLB and the Ryugu GLB (converted from JAXA's OBJ) |
 | `fetch-planetary-timeline.mjs` | daily ephemeris timelines for the planetary field guide |
-| `fetch-mission-journey.mjs` | Hayabusa2 and OSIRIS-REx heliocentric journey vectors |
-| `fetch-mission-ephemeris.mjs` | mission ephemerides (needs Python with `spiceypy`) |
+| `fetch-mission-journey.mjs` | Hayabusa2 and OSIRIS-REx heliocentric journey vectors (`journey.json` and packed `journey.packed.json`) |
+| `fetch-mission-ephemeris.mjs` | mission ephemerides (needs Python with `spiceypy`; `ephemeris.json` and packed `ephemeris.packed.json`) |
 | `generate-origins-volume.mjs`, `generate-fine-settling.mjs`, `generate-remnant-packing.mjs`, `build-origins-section.mjs` | conceptual Origins geometry (illustrative, not a reconstruction) |
 | `nasa-geometry-fixture.mjs` | decodes the NASA spacecraft model for geometry tests |
 
@@ -58,7 +61,7 @@ The deploy workflow runs these, then builds and deploys `dist/`:
 - Mission Log and unlock: `publish-protected-mission-log`, `research-lock`, `research-passkey`, `mission-index`, `mission-lightbox`, `mission-layout`
 - Site shell and pages: `mobile-layout`, `site-header`, `paper-shelf`, `photography-loading`, `viewer-keyboard-boundaries`
 - Planetary field guide: `planetary-*`, `asteroid-scale`, `shape-model-glb`
-- Sample-return missions: `sample-*`, `physical-models`, and `src/scripts/sample-missions/*.test.mjs`
+- Sample-return missions: `sample-*`, `physical-models`, `mission-data-pack`, `spacecraft-model-simplify`, `draco-sequential-encoder`, and `src/scripts/sample-missions/*.test.mjs`
 - Origins: `origins-*`, `arrival-timeline`, and `src/scripts/origins-study/*.test.mjs`
 - Image inspector: `src/scripts/image-inspector.test.mjs`
 

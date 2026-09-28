@@ -3,10 +3,11 @@ import {ConvexGeometry} from 'three/addons/geometries/ConvexGeometry.js';
 import {rng,stoneGeometry} from './materials.js';
 
 // Voronoi partition of one convex illustrative body; this is not an impact solver.
-export function fracturedBody(seed=65,count=28){
-  const random=rng(seed),surface=stoneGeometry(seed,3),vertices=[];
-  for(let i=0;i<surface.attributes.position.count;i++)vertices.push(new T.Vector3().fromBufferAttribute(surface.attributes.position,i).multiplyScalar(1.6));
-  const shell=new ConvexGeometry(vertices);surface.dispose();
+// An optional point envelope replaces the default stone outline without changing the seeds.
+export function fracturedBody(seed=65,count=28,envelope){
+  const random=rng(seed),vertices=envelope||[];
+  if(!envelope){const surface=stoneGeometry(seed,3);for(let i=0;i<surface.attributes.position.count;i++)vertices.push(new T.Vector3().fromBufferAttribute(surface.attributes.position,i).multiplyScalar(1.6));surface.dispose();}
+  const shell=new ConvexGeometry(vertices);
   const positions=shell.attributes.position,faces=[];
   for(let i=0;i<positions.count;i+=3)faces.push([0,1,2].map(j=>new T.Vector3().fromBufferAttribute(positions,i+j)));
   // Denser partition near the illustrated impact, with larger remote fragments.
@@ -31,5 +32,5 @@ export function fracturedBody(seed=65,count=28){
     const points=polygons.flat(),center=points.reduce((p,v)=>p.add(v),new T.Vector3()).divideScalar(points.length),geometry=new ConvexGeometry(points.map(v=>v.clone().sub(center)));
     return {geometry,center};
   });
-  return {shell,cells};
+  return {shell,cells,sites:seeds};
 }

@@ -2,11 +2,14 @@ import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {createHash} from 'node:crypto';
+import {packJourney} from './mission-data-pack.mjs';
+import {decodePacked} from '../src/scripts/sample-missions/packed-data.js';
 
 // Official geometric ICRF vectors, sampled on shared UTC epochs. No orbit fitting.
 // Run: node scripts/fetch-mission-journey.mjs. Raw requests/responses remain cached.
 const root=new URL('../',import.meta.url),cache=process.env.MISSION_JOURNEY_CACHE||join(tmpdir(),'mission-journey-horizons');
-const ephemeris=JSON.parse(await readFile(new URL('public/assets/data/missions/ephemeris.json',root),'utf8'));
+// ephemeris.json may be retired once the site reads the packed ephemeris.packed.json.
+const ephemeris=await readFile(new URL('public/assets/data/missions/ephemeris.json',root),'utf8').then(JSON.parse,async()=>decodePacked(await readFile(new URL('public/assets/data/missions/ephemeris.packed.json',root),'utf8')));
 await mkdir(cache,{recursive:true});
 const api='https://ssd.jpl.nasa.gov/api/horizons_file.api';
 const configurations=[
@@ -59,3 +62,5 @@ for(const config of configurations){
  console.log(`${config.id}: direct/translated flyby maximum difference ${Math.max(...directFlybyResiduals)} km; arrival range ${Math.hypot(...craft.rows.at(-1).slice(0,3).map((v,j)=>v-target.rows.at(-1)[j]))} km`);
 }
 await writeFile(new URL('public/assets/data/missions/journey.json',root),JSON.stringify(output)+'\n');
+// Compact fixed-point copy read by the site (decoder: src/scripts/sample-missions/packed-data.js).
+await writeFile(new URL('public/assets/data/missions/journey.packed.json',root),packJourney(output,ephemeris));

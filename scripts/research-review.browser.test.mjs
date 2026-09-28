@@ -7,7 +7,7 @@ const base=process.env.SITE_TEST_URL||'http://127.0.0.1:52523';
 try{
  const failure=await browser.newPage({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
  await failure.addInitScript(()=>sessionStorage.setItem('mads-cosmic-arrival-v1','done'));
- await failure.route('**/assets/data/missions/ephemeris.json',r=>r.abort());
+ await failure.route('**/assets/data/missions/ephemeris.packed.json',r=>r.abort());
  await failure.goto(base+'/ryugu-bennu.html',{waitUntil:'networkidle'});
  await failure.locator('[data-mission-viewport]').scrollIntoViewIfNeeded();
  await failure.waitForFunction(()=>document.querySelector('[data-sample-missions]').dataset.ready==='error',null,{timeout:60000});

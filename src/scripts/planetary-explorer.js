@@ -3,9 +3,10 @@ import { mineralModels } from './mineral-guide.js';
 import { initResearchQuestions } from './research-questions.js';
 import { encodeObservation, decodeObservation, legacyOriginsDestination, explorerPage } from './planetary-view-link.js';
 import { samplePhotos } from './planetary-samples.js';
+import { unpackTimeline } from './planetary-timeline.js';
 
 const materials = {
-  bennu: { name: 'Bennu', mission: 'OSIRIS-REx', size: 'About 492 m', source: 'https://science.nasa.gov/resource/bennu-3d-model/', photo: '/assets/img/research-scale/bennu-whole.png', shape: 'A small, top-shaped asteroid with an equatorial bulge and a rough, boulder-rich surface.', mineral: 'Returned Bennu material records water-rock interaction. Published analyses describe hydrated silicates, carbonates and other phases; the same-looking grain need not be the same mineral.', citation: 'https://doi.org/10.1111/maps.14227' },
+  bennu: { name: 'Bennu', mission: 'OSIRIS-REx', size: 'About 490 m', source: 'https://svs.gsfc.nasa.gov/5069', photo: '/assets/img/research-scale/bennu-whole.png', shape: 'A small, top-shaped asteroid with an equatorial bulge and a rough, boulder-rich surface.', mineral: 'Returned Bennu material records water-rock interaction. Published analyses describe hydrated silicates, carbonates and other phases; the same-looking grain need not be the same mineral.', citation: 'https://doi.org/10.1111/maps.14227' },
   ryugu: { name: 'Ryugu', mission: 'Hayabusa2', size: 'About 900 m', source: 'https://data.darts.isas.jaxa.jp/pub/hayabusa2/paper/Watanabe_2019/', photo: '/assets/img/research-scale/ryugu-jaxa.jpg', shape: 'A top-shaped asteroid with a prominent equatorial ridge. Its irregular relief comes from the published shape mesh, not a procedurally generated rock.', mineral: 'Ryugu samples have a CI-like chemical composition and preserve aqueous alteration. Comparing their minerals with Orgueil tests similarities without assuming an identical geological history.', citation: 'https://www.isas.jaxa.jp/en/topics/003094.html' },
   orgueil: { name: 'CI / Orgueil', mission: 'Meteorite specimen', size: 'Specimen, not an asteroid', source: 'https://naturalhistory.si.edu/object/nmnhmineralsciences_1017941', photo: '/assets/img/research-scale/orgueil-smithsonian.jpg', shape: 'No measured three-dimensional scan of this Orgueil specimen is supplied. Open Samples to view the Smithsonian reference photograph.', mineral: 'The research focus is dolomite in Orgueil: its chemistry, crystal structure and relationship to the surrounding matrix. Mineral textures can constrain alteration processes when supported by analysis.', citation: 'https://www.mnhn.fr/fr/meteorite-d-orgueil' }
 };
@@ -147,7 +148,7 @@ function init() {
       el('scale-note').textContent = state.compare && state.material !== 'orgueil' ? 'Approximate size comparison · common scale' : 'Shape view · display orientation';
       facts([['Context', m.mission], ['Size', m.size]]);
       el('interpretation').textContent = state.material === 'orgueil' ? 'A single photograph cannot supply unseen geometry. The Minerals view presents a separate, explicitly conceptual explanation.' : 'The mesh describes external geometry. It does not reveal the internal structure or identify surface minerals. The lighting is illustrative, not measured reflectance.';
-      el('boundary').textContent = state.material === 'orgueil' ? 'CI is a meteorite class, not a single body with a standard shape.' : 'Original public mesh; display orientation and neutral material applied. Comparison preserves source dimensions on a common scale. Labels give approximate mean diameters (Bennu 492 m; Ryugu 900 m), not maximum widths or precision measurements.';
+      el('boundary').textContent = state.material === 'orgueil' ? 'CI is a meteorite class, not a single body with a standard shape.' : 'Public shape model (Bennu simplified to about 49,000 triangles, like Ryugu); display orientation and neutral material applied. Comparison preserves source dimensions on a common scale. Labels give approximate mean diameters (Bennu 490 m; Ryugu 900 m), not maximum widths or precision measurements.';
     } else if (state.view === 'sample') {
       const photo=samplePhotos[state.material];
       el('object-title').textContent=photo.title;
@@ -290,9 +291,10 @@ function init() {
         data = await response.json();
       }
       if(!timeline) {
-        const timeResponse = await fetch('/assets/data/planetary/timeline.json',{signal});
+        // Fixed-point transfer copy of timeline.json (within 7.5 km); unpacked to the same shape.
+        const timeResponse = await fetch('/assets/data/planetary/timeline.packed.json',{signal});
         if (!timeResponse.ok) throw new Error('Timeline unavailable');
-        timeline = await timeResponse.json();
+        timeline = unpackTimeline(await timeResponse.json());
         data.timeline = timeline;
         const max = (Date.parse(timeline.end)-Date.parse(timeline.start))/dayMs;
         el('timeline').max = max*24;

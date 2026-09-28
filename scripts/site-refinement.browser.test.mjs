@@ -9,7 +9,7 @@ await page.locator('.obs-fx-settings').click();assert(await page.locator('.obs-f
 assert(await page.locator('.obs-fx-panel .research-coordinates').isVisible());await page.keyboard.press('Escape');assert(await page.locator('.obs-fx-panel').isHidden());
 assert.match(await page.locator('.current-focus-section h2').innerText(),/^Dolomite in Orgueil CI1$/);
 assert.match(await page.locator('.research-title-detail').innerText(),/Full research title/);
-await page.locator('.research-title-detail summary').click();assert.match(await page.locator('.research-title-detail p').innerText(),/Cosmomineralogical Study/);
+await page.locator('.research-title-detail summary').click();assert.match(await page.locator('.research-title-detail p').innerText(),/Astromineralogical Study of Ca–Mg Carbonates Reported as Dolomite/);
 // The five Research section paths are now two [data-research-guide] navigators: Research and the split-out Ryugu & Bennu page.
 for(const [route,count] of [['research',3],['ryugu-bennu',3]]){await page.goto(base+'/'+route+'.html',{waitUntil:'networkidle'});
 await page.evaluate(()=>window.researchMain=document.querySelector('main'));

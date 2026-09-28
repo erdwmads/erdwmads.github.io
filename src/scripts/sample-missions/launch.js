@@ -1,6 +1,24 @@
 import * as T from 'three';
+import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 
 const ease=x=>{x=T.MathUtils.clamp(x,0,1);return x*x*(3-2*x);};
+// Each stage, booster and fairing half moves as one rigid body, so its unnamed static parts can be
+// drawn as one mesh per material (about 170 draw calls, plus shadows, become about 50). Exhaust
+// sheets, instanced fasteners and named parts stay separate; the first material keeps the first slot.
+function mergeStatic(component){
+ component.updateMatrixWorld(true);
+ const inverse=component.matrixWorld.clone().invert(),buckets=new Map(),parts=[];
+ component.traverse(o=>{
+  if(!o.isMesh||o.isInstancedMesh||o.material.isShaderMaterial||o.name)return;
+  if(!buckets.has(o.material))buckets.set(o.material,[]);
+  buckets.get(o.material).push(o.geometry.clone().applyMatrix4(new T.Matrix4().multiplyMatrices(inverse,o.matrixWorld)));parts.push(o);
+ });
+ for(const o of parts){o.removeFromParent();o.geometry.dispose();}
+ [...buckets].forEach(([material,geometries],i)=>{
+  const merged=new T.Mesh(mergeGeometries(geometries),material);merged.castShadow=merged.receiveShadow=true;geometries.forEach(g=>g.dispose());
+  merged.parent=component;component.children.splice(i,0,merged);
+ });
+}
 const mesh=(g,m,parent,x=0,y=0,z=0)=>{const o=new T.Mesh(g,m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o;};
 const lathe=(points,segments=64,start=0,length=Math.PI*2)=>new T.LatheGeometry(points.map(([r,y])=>new T.Vector2(r,y)),segments,start,length);
 function cylinder(parent,material,radius,bottom,top){return mesh(new T.CylinderGeometry(radius,radius,top-bottom,64),material,parent,0,(bottom+top)/2);}
@@ -154,6 +172,7 @@ export function createLaunchVehicle(id){
  // Keep the established vertical/payload anchors while correcting the overly
  // wide schematic airframes to JAXA's 53 m / 4 m and ULA's 189 ft / 12.5 ft.
  for(const component of group.children){component.scale.x*=radialScale;component.scale.z*=radialScale;}
+ group.children.forEach(mergeStatic);
  group.userData.airframeLength=airframeHeight;
  group.userData.payloadMountRadiusM=mountRadiusM;
  group.userData.baseY=japanese?-1.73:-1.71;

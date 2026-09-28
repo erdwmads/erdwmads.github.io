@@ -33,9 +33,16 @@ export function earthFlightShot(state,context,aspect=1.9){
    cameraUp.copy(south).cross(approach).normalize();
    // A fixed oblique view down the incoming path keeps Earth ahead of the
    // released capsule, rather than panning sideways around the mother ship.
-   offset=approach.multiplyScalar(-2.5).addScaledVector(south,.65);
+   offset=approach.clone().multiplyScalar(-2.5).addScaledVector(south,.65);
    if(state.kind==='landing'){
-    const nearGround=1-T.MathUtils.smoothstep(state.altitudeKm,5,80);
+    // From the return chapter's view, turn to a side view within the first seconds of entry,
+    // so the capsule's profile (not only its back cover) and its wake are readable. Seen from
+    // the south, the capsule stays side-on whether it flies level or hangs under its parachute.
+    const side=approach.clone().multiplyScalar(-.4).addScaledVector(south,2.2).addScaledVector(radial,.55);
+    offset.lerp(side,T.MathUtils.smoothstep(state.elapsedSeconds??0,0,12));
+    // The ground-level view from the west only suits the vertical descent under the parachute;
+    // while the capsule still flies east it would look at its back cover.
+    const nearGround=T.MathUtils.smoothstep(state.parachute??0,0,1);
     offset.lerp(east.multiplyScalar(-2.2).addScaledVector(radial,.65).addScaledVector(south,.65),nearGround);
     cameraUp.lerp(radial,nearGround).normalize();
    }
@@ -92,8 +99,9 @@ export function createEarthFlightScene(id,{group,earth,craft,launch,capsule,cano
     state.cameraTarget=new T.Vector3(...state.cameraTarget).lerp(payload,releaseFocus).toArray();
     state.displaySpanKm=T.MathUtils.lerp(state.displaySpanKm,profile.spacecraft.spanKm*2,releaseFocus);
    }
-   // The real folded payload remains on its adapter after the fairing leaves.
-   craft.group.visible=true;craft.group.scale.setScalar(craftScale);craft.group.position.copy(payload);craft.group.quaternion.copy(launch.group.quaternion);craft.setSolarDeployment(state.spacecraftReleased?Math.min(1,(state.elapsedSeconds-state.events.spacecraftSeparation)/40):0);craft.setHornDeployment?.(state.spacecraftReleased?Math.min(1,(state.elapsedSeconds-state.events.spacecraftSeparation)/40):0);
+   // The real folded payload remains on its adapter after the fairing leaves. Until then the fairing
+   // hides it completely, so it is not drawn (about 100 meshes and their shadows).
+   craft.group.visible=state.elapsedSeconds>=state.events.fairingSeparation;craft.group.scale.setScalar(craftScale);craft.group.position.copy(payload);craft.group.quaternion.copy(launch.group.quaternion);craft.setSolarDeployment(state.spacecraftReleased?Math.min(1,(state.elapsedSeconds-state.events.spacecraftSeparation)/40):0);craft.setHornDeployment?.(state.spacecraftReleased?Math.min(1,(state.elapsedSeconds-state.events.spacecraftSeparation)/40):0);
    labels.push({text:state.spacecraftReleased?profile.spacecraft.name:profile.rocket.name,point:new T.Vector3(...state.cameraTarget)});
   }else if(kind==='return'){
    craft.group.visible=capsule.visible=true;craft.group.scale.setScalar(craftScale);craft.group.position.set(...state.spacecraft.positionKm);craft.group.quaternion.setFromUnitVectors(up,new T.Vector3(...state.capsule.positionKm).sub(craft.group.position).normalize());craft.capsule.visible=false;
@@ -110,7 +118,8 @@ export function createEarthFlightScene(id,{group,earth,craft,launch,capsule,cano
    labels.push({text:state.diverting?'Spacecraft · Earth avoidance':'Spacecraft · capsule release',point:craft.group.position.clone()},{text:'Return capsule · '+Math.round(profile.capsule.diameterKm*1e5)+' cm',point:capsule.position.clone()});
   }else{
    capsule.visible=true;capsule.scale.setScalar(capsuleScale);capsule.position.set(...state.positionKm);capsule.quaternion.setFromUnitVectors(down,state.parachute>0?radial.clone().negate():forward);capsule.position.addScaledVector(radial,-capsuleBottom*capsuleScale);capsule.userData.setRecovery?.(state.parachute);
-   heat.visible=state.heat>.005;heat.scale.setScalar(capsuleScale*.65);heat.quaternion.copy(capsule.quaternion);heat.position.copy(capsule.position);entryWake.update(.08+Math.min(.3,state.elapsedSeconds/1000));
+   // Glow brightness follows the radiance envelope, so it fades as the capsule slows instead of lasting to parachute altitude.
+   heat.visible=state.heat>.01;heat.scale.setScalar(capsuleScale*.65);heat.quaternion.copy(capsule.quaternion);heat.position.copy(capsule.position);entryWake.update(state.elapsedSeconds/60,state.heat);
    const canopyScale=(id==='osiris-rex'?.0073:.0025)/(canopy.group.userData.deployedSpan||(id==='osiris-rex'?2.7323272:2.7729001)),crown=id==='hayabusa2'?0:capsuleTop*capsuleScale; canopy.group.visible=state.parachute>0;canopy.group.scale.setScalar(canopyScale);canopy.group.quaternion.setFromUnitVectors(up,radial);canopy.group.position.copy(capsule.position).addScaledVector(radial,2*canopyScale+crown);
    canopy.update(state.parachute,state.landed?T.MathUtils.smoothstep(p,.92,1):0,(capsuleBottom*capsuleScale-crown)/canopyScale);
    state.cameraTarget=capsule.position.clone().addScaledVector(radial,state.parachute>0?canopyScale:0).toArray();state.displaySpanKm=state.parachute>0?canopyScale*3:profile.capsule.diameterKm*2.3;
@@ -120,7 +129,7 @@ export function createEarthFlightScene(id,{group,earth,craft,launch,capsule,cano
     state.cameraTarget=new T.Vector3(...state.cameraTarget).lerp(recoveryBounds.getCenter(new T.Vector3()),settle).toArray();
     state.displaySpanKm*=T.MathUtils.lerp(1,.72,settle);
    }
-   labels.push({text:state.landed?'Recovered capsule':state.parachute>0?'Parachute descent':'Heat shield faces the airflow',point:capsule.position.clone()});
+   labels.push({text:state.landed?'Recovered capsule':state.parachute>0?'Parachute descent':'Heat shield faces the airflow · '+Math.round(profile.capsule.diameterKm*1e5)+' cm capsule',point:capsule.position.clone()});
   }
   const position=markerGeometry.attributes.position;position.setXYZ(0,0,.001,0);position.setXYZ(1,...state.positionKm);position.setXYZ(2,...(state.spacecraft?.positionKm||state.positionKm));position.needsUpdate=true;markerGeometry.computeBoundingSphere();
   if(context==='earth'){labels=kind==='return'?[{text:'Earth · recovery region',point:new T.Vector3(0,0,0)},...labels]:[{text:locationFor(id,kind).label,point:new T.Vector3(0,0,0)},...labels];}
