@@ -17,7 +17,10 @@ try {
         await page.goto(`${process.env.SITE_TEST_URL||'http://127.0.0.1:4322'}/${route}.html`);
         await page.evaluate(()=>document.fonts.ready);
         assert((await page.locator('body').evaluate(el=>getComputedStyle(el).fontFamily)).startsWith('Montserrat'));
-        assert((await page.locator('h1').first().evaluate(el=>getComputedStyle(el).fontFamily)).startsWith('Montserrat'));
+        // Headings keep Montserrat; only the owner's name uses the serif name face, so "Ioong" cannot read as "loong".
+        const heading=page.locator('h1:not(#home-name)').first();
+        if(await heading.count())assert((await heading.evaluate(el=>getComputedStyle(el).fontFamily)).startsWith('Montserrat'));
+        for(const family of await page.locator('.brand strong, #home-name, .person-name').evaluateAll(nodes=>nodes.map(el=>getComputedStyle(el).fontFamily)))assert(family.startsWith('Georgia'),'owner name uses the serif name face: '+family);
         const fonts=await page.evaluate(()=>[...document.fonts].filter(f=>f.status==='loaded').map(f=>f.family.replace(/["']/g,'')));
         assert(fonts.includes('Montserrat'),'original local font face loaded');
         assert(!fonts.some(font=>['Source Sans 3','Manrope','Inter'].includes(font)),'experimental font faces are not loaded');

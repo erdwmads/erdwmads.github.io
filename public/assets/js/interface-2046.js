@@ -105,7 +105,7 @@
 
   const routeForPage = (key) => {
     if (shortRouteMap[key]) return shortRouteMap[key];
-    const pageTitle = (document.title || 'Y. Mads Lieu').split('|')[0].trim() || 'Mission File';
+    const pageTitle = (document.title || 'I. Mads Lieu').split('|')[0].trim() || 'Mission File';
     const h1 = document.querySelector('main h1, .hero h1, .page-title');
     return shortenRoute(h1?.textContent || pageTitle);
   };
@@ -392,7 +392,7 @@
             <p class="entry-gate__code">CI-ORGUEIL / 2046</p>
           </div>
           <h2 class="entry-gate__name">
-            <span>Y. Mads</span>
+            <span>I. Mads</span>
             <span>Lieu</span>
           </h2>
           <p class="entry-gate__archive">Cosmic mineralogy / primitive Solar System materials</p>

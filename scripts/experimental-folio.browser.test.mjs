@@ -8,7 +8,7 @@ try {
  const page=await browser.newPage({viewport:{width:1440,height:1000},reducedMotion:'reduce'});page.setDefaultTimeout(12000);
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto(base+'/index.html');await page.evaluate(()=>document.fonts.ready);
- assert.equal(await page.locator('h1').innerText(),'Y. Mads Lieu');assert.equal(await page.locator('.home-card-grid .card').count(),4);
+ assert.equal(await page.locator('h1').innerText(),'I. Mads Lieu');assert.equal(await page.locator('.home-card-grid .card').count(),4);
  assert.equal(await page.locator('.hero-card .avatar img').evaluate(e=>e.complete&&e.naturalWidth>0),true);
  await page.screenshot({path:path.join(os.tmpdir(),'folio100-home-desktop.png')});
 for(const theme of ['space','light']) {

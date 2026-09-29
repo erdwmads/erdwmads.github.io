@@ -26,18 +26,32 @@ const pages = [
 ];
 
 const failures = [];
-const expectedDisplayName = "Y. Mads Lieu";
-// Retired spellings of the owner's name in any case, joined by spaces, underscores, hyphens, entities or markup,
-// and Chinese-character forms (built from code points so this file never carries them).
+// Academic signature and full name (settled 2026-09-30).
+const expectedDisplayName = "I. Mads Lieu";
+const expectedFullName = "Ioong Mads Lieu";
+// Retired spellings of the owner's name in any case, joined by spaces, underscores, hyphens, entities or markup:
+// LIU Yong / Lieu Yong forms, Mads Yong Lieu, and "Mads Lieu" without "I." or "Ioong" before it (so Y. Mads Lieu too),
+// plus Chinese-character forms (built from code points so this file never carries them).
+const nameGap = "(?:[\\s_-]|&nbsp;|&#160;|<[^>]+>)";
 const staleNamePattern = new RegExp(
-  `(?:liu|lieu)(?:[\\s_-]|&nbsp;|&#160;|<[^>]+>)*yong|${String.fromCodePoint(0x5289, 0x96cd)}|${String.fromCodePoint(0x5218, 0x96cd)}`,
+  [
+    `(?:liu|lieu)${nameGap}*yong`,
+    `mads${nameGap}+yong${nameGap}+lieu`,
+    `(?<!\\bI\\.\\s|\\bIoong\\s)\\bmads${nameGap}+lieu\\b`,
+    String.fromCodePoint(0x5289, 0x96cd),
+    String.fromCodePoint(0x5218, 0x96cd)
+  ].join("|"),
   "i"
 );
+// The former romanization is published once on purpose, in the Home Person alternateName, so older search results match.
+const formerName = ["Mads", "LIU", "Yong"].join(" ");
+const formerNameHolds = new Set(["src/data/site.ts", "index.html"]);
 // The research proposal is published under a neutral filename (the document itself is unchanged).
 // Its former filename is still cited in archived plans under docs/, which are historical records and stay as written.
 const proposalPath = "assets/files/Bachelors_Thesis_Research_Proposal.pdf";
 const retiredProposalPath = `assets/files/Bachelors_Thesis_Research_Proposal_${["Mads", "LIU", "Yong"].join("_")}.pdf`;
 function withoutHeldNames(relativePath, text) {
+  if (formerNameHolds.has(relativePath)) text = text.replace(`"${formerName}"`, "");
   return relativePath.startsWith("docs/") ? text.split(retiredProposalPath).join("") : text;
 }
 // Decodes the entity and percent forms a harvester would also decode.
@@ -463,8 +477,10 @@ for (const file of fs.readdirSync(distDir).filter((name) => name.endsWith(".html
 }
 for (const [file, marker] of [
   ["index.html", `<h1 id="home-name">${expectedDisplayName}</h1>`],
-  ["cv.html", `<p class="cv-identity">${expectedDisplayName} `],
-  ["contact.html", `<h3>${expectedDisplayName}</h3>`]
+  ["index.html", `<span class="person-name">${expectedFullName}</span>`],
+  ["cv.html", `<p class="cv-identity"><span class="person-name">${expectedDisplayName}</span> `],
+  ["cv.html", `<p class="cv-citation">Cite as <span class="person-name">Lieu, I. M.</span></p>`],
+  ["contact.html", `<h3 class="person-name">${expectedDisplayName}</h3>`]
 ]) {
   if (!readDistPage(file).includes(marker)) fail(`${file}: missing the owner's name in ${marker}`);
 }
@@ -507,8 +523,10 @@ for (const file of ["index.html", "cv.html", "contact.html"]) {
 const homeSchema = (readDistPage("index.html").match(/<script type="application\/ld\+json">([^<]+)<\/script>/) || [])[1];
 try {
   const person = JSON.parse(homeSchema);
-  if (person.name !== expectedDisplayName || !person.sameAs?.includes(orcidUrl) || JSON.stringify(person).includes("@gmail")) {
-    fail("index.html: Person structured data must name the owner and list the ORCID iD in sameAs, without the email");
+  const names = [person.name, person.givenName, person.familyName, JSON.stringify(person.alternateName)];
+  const expectedNames = [expectedDisplayName, "Ioong Mads", "Lieu", JSON.stringify([expectedFullName, formerName])];
+  if (names.join("\n") !== expectedNames.join("\n") || !person.sameAs?.includes(orcidUrl) || JSON.stringify(person).includes("@gmail")) {
+    fail("index.html: Person structured data must carry the name, given and family names, alternate names and ORCID iD, without the email");
   }
 } catch {
   fail("index.html: missing or unreadable Person structured data");

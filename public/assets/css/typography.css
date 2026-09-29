@@ -53,3 +53,11 @@ html[data-theme] body#academic-site main .button svg { flex-shrink: 0; }
     min-width: 112px !important;
   }
 }
+
+/* Personal names use a serif face whose capital I and lowercase l differ, so "Ioong" never reads as "loong".
+   Only the name itself changes face; the rest of the site keeps Montserrat. */
+html[data-theme] { --type-name: Georgia, 'Times New Roman', 'Noto Serif', 'DejaVu Serif', serif; }
+html[data-theme] body#academic-site :is(.brand strong, #home-name, .person-name, .arrival-name) {
+  font-family: var(--type-name) !important;
+  letter-spacing: 0 !important;
+}

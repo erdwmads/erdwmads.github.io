@@ -132,7 +132,7 @@
       const salt = random(32);
       const credential = await window.navigator.credentials.create({
         publicKey: {
-          rp: {id:rpId, name:'Y. Mads Lieu · Research Log'},
+          rp: {id:rpId, name:'I. Mads Lieu · Research Log'},
           user: {id:random(32), name:'Research Log on this browser', displayName:'Research Log'},
           challenge, pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],
           timeout:60000, attestation:'none',

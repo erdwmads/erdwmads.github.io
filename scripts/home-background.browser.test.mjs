@@ -26,7 +26,7 @@ try {
   await page.locator('.nav a[href="index.html"]').click();await page.waitForURL('**/index.html');
   assert.equal(await page.evaluate(()=>window.backgroundBefore===document.querySelector('.ambient-space-layer')),true,'Navigation keeps the same background layer');
   await page.locator('.hero').waitFor();
-  assert.equal(await page.locator('h1').innerText(),'Y. Mads Lieu');
+  assert.equal(await page.locator('h1').innerText(),'I. Mads Lieu');
   assert.equal(await page.locator('.hero .avatar img').evaluate(e=>e.complete&&e.naturalWidth>0),true);
   await page.locator('.obs-fx-settings').click();
   const fx=page.locator('.ambient-fx-toggle');

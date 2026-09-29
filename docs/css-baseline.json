@@ -85,10 +85,10 @@
   },
   {
     "file": "site-refinement.css",
-    "bytes": 20836,
-    "lines": 304,
-    "repeatedSelectors": 19,
-    "important": 184
+    "bytes": 21668,
+    "lines": 313,
+    "repeatedSelectors": 20,
+    "important": 192
   },
   {
     "file": "style.css",
@@ -106,9 +106,9 @@
   },
   {
     "file": "typography.css",
-    "bytes": 2610,
-    "lines": 56,
+    "bytes": 3076,
+    "lines": 64,
     "repeatedSelectors": 0,
-    "important": 12
+    "important": 14
   }
 ]

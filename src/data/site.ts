@@ -1,14 +1,14 @@
 export const brand = {
-  name: "Y. Mads Lieu",
+  name: "I. Mads Lieu",
   tagline: "Cosmic Mineralogy &bull; Planetary Sciences &bull; Meteoritics",
   homeHref: "index.html"
 } as const;
 
 export const siteMetadata = {
   url: "https://erdwmads.github.io",
-  title: "Y. Mads Lieu Academic Website",
-  author: "Y. Mads Lieu",
-  description: "Academic website of Y. Mads Lieu, focused on cosmic mineralogy, planetary sciences, meteoritics, and primitive Solar System materials.",
+  title: "I. Mads Lieu Academic Website",
+  author: "I. Mads Lieu",
+  description: "Academic website of I. Mads Lieu, focused on cosmic mineralogy, planetary sciences, meteoritics, and primitive Solar System materials.",
   image: "assets/img/og-cover.jpg",
   locale: "en_US"
 } as const;
@@ -21,10 +21,15 @@ export const orcid = {
 } as const;
 
 // Public profile facts only; keep the email out so the contact page's obfuscation still matters.
+// alternateName keeps the full name and the former romanization so older search results still match;
+// it is the only place the former name is published.
 export const personSchema = {
   "@context": "https://schema.org",
   "@type": "Person",
-  name: "Y. Mads Lieu",
+  name: "I. Mads Lieu",
+  givenName: "Ioong Mads",
+  familyName: "Lieu",
+  alternateName: ["Ioong Mads Lieu", "Mads LIU Yong"],
   url: `${siteMetadata.url}/`,
   image: `${siteMetadata.url}/assets/img/profile.jpg`,
   description: siteMetadata.description,
@@ -100,7 +105,7 @@ export const stylesheets = [
   "quiet-observatory.css"
 ] as const;
 
-export const footerItems = ["© 2026 Y. Mads Lieu", "What was responsible for making diverse planets in the Solar System?"] as const;
+export const footerItems = ["© 2026 I. Mads Lieu", "What was responsible for making diverse planets in the Solar System?"] as const;
 
 type ScriptSpec = {
   src: string;
@@ -114,7 +119,7 @@ const commonScripts: ScriptSpec[] = [
   { src: "assets/js/research-coordinates.js?v=20260914-viewport", defer: true }
 ];
 
-const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20260929-identity", defer: true };
+const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20260930-name", defer: true };
 const powerManagerScript: ScriptSpec = { src: "assets/js/power-manager.js?v=20260914-viewport" };
 const legacyNavigationScript: ScriptSpec = { src: "assets/js/legacy-navigation.js?v=20260925-comparison", defer: true };
 
@@ -131,7 +136,7 @@ const pageScripts: Record<string, ScriptSpec[]> = {
   // Password-gated public page; keep it out of sitemap contentPages.
   "research-graduation": [
     ...commonScripts,
-    { src: "assets/js/research-passkey.js?v=20260929-identity", defer: true },
+    { src: "assets/js/research-passkey.js?v=20260930-name", defer: true },
     { src: "assets/js/research-lock.js?v=20260914-diagnostics", defer: true },
     { src: "assets/js/mission-index.js?v=20260910-layout", defer: true },
     { src: "assets/js/mission-lightbox.js?v=20260909-comparison", defer: true },
