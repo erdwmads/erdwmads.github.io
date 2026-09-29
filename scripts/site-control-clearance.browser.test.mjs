@@ -32,10 +32,13 @@ try {
       await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
       const footer = await clearTargets(page.locator('.site-footer a, .obs-fx-settings'));
       assert(footer.every(action => action.clear), `${width} ${theme}: footer action obscured ${JSON.stringify(footer)}`);
+      // Every footer link (the ORCID iD and Back to top) must stay clear of the fixed settings control.
       const overlap = await page.evaluate(() => {
-        const a = document.querySelector('.site-footer a').getBoundingClientRect();
         const b = document.querySelector('.obs-fx-settings').getBoundingClientRect();
-        return Math.min(a.right, b.right) > Math.max(a.left, b.left) && Math.min(a.bottom, b.bottom) > Math.max(a.top, b.top);
+        return [...document.querySelectorAll('.site-footer a')].some((link) => {
+          const a = link.getBoundingClientRect();
+          return Math.min(a.right, b.right) > Math.max(a.left, b.left) && Math.min(a.bottom, b.bottom) > Math.max(a.top, b.top);
+        });
       });
       assert.equal(overlap, false, `${width} ${theme}: footer and settings overlap`);
       await page.goto(`${base}/paper-shelf.html`, { waitUntil: 'networkidle' });

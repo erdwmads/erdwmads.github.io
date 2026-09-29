@@ -1,0 +1,3 @@
+# ORCID's iD icon is published byte-for-byte as ORCID provides it (check-site pins its sha256),
+# so git must neither rewrite nor flag its CRLF line endings on any platform.
+public/assets/img/orcid/*.svg -text -whitespace

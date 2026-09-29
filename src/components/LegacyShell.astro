@@ -1,5 +1,5 @@
 ---
-import { brand, footerItems, navItems, personSchema, researchLogGate, siteMetadata } from "../data/site";
+import { brand, footerItems, navItems, orcid, personSchema, researchLogGate, siteMetadata } from "../data/site";
 import CosmicArrival from './CosmicArrival.astro';
 import ContinueReading from './ContinueReading.astro';
 import { stylesheetBundle } from "../lib/stylesheet-bundle";
@@ -31,6 +31,7 @@ const { version: stylesheetVersion } = await stylesheetBundle();
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{title}</title>
   <meta name="description" content={description}>
+  <meta name="author" content={siteMetadata.author}>
   <link rel="canonical" href={canonicalUrl}>
   {noindex && <meta name="robots" content="noindex, nofollow">}
   <meta name="theme-color" content="#040910" media="(prefers-color-scheme: dark)">
@@ -145,7 +146,8 @@ const { version: stylesheetVersion } = await stylesheetBundle();
 </main>
 <footer class="site-footer">
   <div class="footer-inner">
-    {footerItems.map((item) => <span>{item}</span>)}
+    <span class="footer-identity">{footerItems[0]} <a class="orcid-link orcid-link--compact" href={orcid.url} target="_blank" rel="me noopener noreferrer"><img src={orcid.icon} width="16" height="16" alt="ORCID iD"><span>{orcid.id}</span><span class="orcid-new-tab"> (opens in a new tab)</span></a></span>
+    {footerItems.slice(1).map((item) => <span>{item}</span>)}
     <a href="#main-content">Back to top ↑</a>
   </div>
 </footer>

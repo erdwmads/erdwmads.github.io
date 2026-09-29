@@ -11075,7 +11075,7 @@ body.entry-gate-active > .ui2046-progress {
    Problem:
    - V2 hid the split-name spans at opacity:0 and relied on animation.
    - On some browsers / timing states this leaves a large empty area where
-     Mads LIU Yong should appear.
+     the name should appear.
    Fix:
    - The identity line is visible by default.
    - Animation becomes a subtle visible movement, not a hidden-to-visible risk.
@@ -12262,7 +12262,7 @@ body.ui-page-research-graduation #mission-index > .section-label::before {
    Entry Gate More Gold / Light Name Refinement
    Scope:
    - Entry screen only.
-   - Keeps Mads LIU Yong as stable light text.
+   - Keeps the name as stable light text.
    - Increases gold presence through archive labels, code, pills, borders,
      and scanner accents.
    - Does not touch page layout, Mission Log, Navigator, Paper Shelf, cards,

@@ -1,6 +1,7 @@
 ﻿import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { createHash } from "node:crypto";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const distDir = path.join(root, "dist");
@@ -25,14 +26,34 @@ const pages = [
 ];
 
 const failures = [];
-const expectedDisplayName = "Mads LIU Yong";
-const staleNameNeedles = [
-  ["Mads", "LIU", "YONG"].join(" "),
-  ["MADS", "LIU", "YONG"].join(" "),
-  ["LIU", "YONG"].join(" "),
-  ["Mads", "LIU", "YONG"].join("_"),
-  ["LIU", "YONG"].join("_")
-];
+const expectedDisplayName = "Y. Mads Lieu";
+// Retired spellings of the owner's name in any case, joined by spaces, underscores, hyphens, entities or markup,
+// and Chinese-character forms (built from code points so this file never carries them).
+const staleNamePattern = new RegExp(
+  `(?:liu|lieu)(?:[\\s_-]|&nbsp;|&#160;|<[^>]+>)*yong|${String.fromCodePoint(0x5289, 0x96cd)}|${String.fromCodePoint(0x5218, 0x96cd)}`,
+  "i"
+);
+// The research proposal is published under a neutral filename (the document itself is unchanged).
+// Its former filename is still cited in archived plans under docs/, which are historical records and stay as written.
+const proposalPath = "assets/files/Bachelors_Thesis_Research_Proposal.pdf";
+const retiredProposalPath = `assets/files/Bachelors_Thesis_Research_Proposal_${["Mads", "LIU", "Yong"].join("_")}.pdf`;
+function withoutHeldNames(relativePath, text) {
+  return relativePath.startsWith("docs/") ? text.split(retiredProposalPath).join("") : text;
+}
+// Decodes the entity and percent forms a harvester would also decode.
+function decodeText(text) {
+  return text
+    .replace(/&#x([0-9a-f]+);?/gi, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);?/g, (_, decimal) => String.fromCodePoint(Number(decimal)))
+    .replace(/&(commat|period|colon|nbsp|amp);/gi, (_, name) => ({ commat: "@", period: ".", colon: ":", nbsp: " ", amp: "&" })[name.toLowerCase()])
+    .replace(/%(40|2e|3a)/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+}
+const orcidUrl = "https://orcid.org/0009-0007-3960-3959";
+const orcidIcon = "assets/img/orcid/ORCID-iD_icon-vector.svg";
+// ORCID's official iD icon (ORCID-iD_icon-vector.svg from ORCID's iD icon deposit), kept byte-for-byte.
+const orcidIconSha256 = "020778f61ea32e76f938bfd059543cfc99f0f7beed304e9b018a141fc3b0b7dd";
+const publicEmail = ["madslieu", "gmail.com"].join("@");
+const publicEmailShown = "madslieu [at] gmail [dot] com";
 const textFilePattern = /\.(?:astro|css|html|js|json|md|mjs|svg|ts|txt|xml)$/i;
 
 const legacyShellSource = fs.readFileSync(path.join(root, "src", "components", "LegacyShell.astro"), "utf8");
@@ -229,17 +250,10 @@ for (const targetPath of [
 ]) {
   for (const filePath of collectFiles(path.join(root, targetPath))) {
     const relativePath = path.relative(root, filePath).replace(/\\/g, "/");
-    for (const staleName of staleNameNeedles) {
-      if (relativePath.includes(staleName)) {
-        fail(`${relativePath}: stale display-name spelling in file path`);
-      }
-    }
+    if (staleNamePattern.test(relativePath)) fail(`${relativePath}: stale display-name spelling in file path`);
     if (!textFilePattern.test(filePath)) continue;
-    const text = fs.readFileSync(filePath, "utf8");
-    for (const staleName of staleNameNeedles) {
-      if (text.includes(staleName)) {
-        fail(`${relativePath}: stale display-name spelling ${staleName}`);
-      }
+    if (staleNamePattern.test(withoutHeldNames(relativePath, decodeText(fs.readFileSync(filePath, "utf8"))))) {
+      fail(`${relativePath}: stale display-name spelling`);
     }
   }
 }
@@ -247,11 +261,6 @@ for (const targetPath of [
 for (const page of pages) {
   const html = readDistPage(page);
   if (!html) continue;
-
-  if (!html.includes(expectedDisplayName)) fail(`${page}: must use the canonical display name ${expectedDisplayName}`);
-  for (const staleName of staleNameNeedles) {
-    if (html.includes(staleName)) fail(`${page}: stale display-name spelling ${staleName}`);
-  }
 
   if (!html.includes("assets/js/power-manager.js")) fail(`${page}: missing power-manager.js`);
   if (!html.includes("assets/js/legacy-navigation.js")) fail(`${page}: missing legacy-navigation.js`);
@@ -377,7 +386,7 @@ const researchLog = readDistPage("research-log.html");
 if (researchLog.includes("assets/js/research-lock.js") || researchLog.includes("data-research-lock-content") || researchLog.includes("data-research-lock-gate") || researchLog.includes("Research Log Locked")) {
   fail("research-log.html: password gate must be removed from the public Research Log");
 }
-if (!researchLog.includes("Download research proposal") || !researchLog.includes("assets/files/Bachelors_Thesis_Research_Proposal_Mads_LIU_Yong.pdf")) {
+if (!researchLog.includes("Download research proposal") || !researchLog.includes(proposalPath)) {
   fail("research-log.html: must keep the research proposal download before the private Mission Log boundary");
 }
 if (!researchLog.includes("Dolomite in the Orgueil CI1 Chondrite")) {
@@ -430,10 +439,79 @@ for (const file of ["index.html", "research.html", "contact.html"]) {
     fail(`${file}: expected exactly one versioned link to assets/css/site.css`);
   }
 }
+// Every generated page, including Origins and 404: the owner's name in the page metadata, and the footer ORCID iD.
+const titleSuffix = `| ${expectedDisplayName}`;
 for (const file of fs.readdirSync(distDir).filter((name) => name.endsWith(".html"))) {
-  if (fs.readFileSync(path.join(distDir, file), "utf8").includes("rivieraliuyong@")) {
-    fail(`${file}: publish the email only in its [at] form; contact.js and cv.js assemble the address`);
+  const html = fs.readFileSync(path.join(distDir, file), "utf8");
+  const title = (html.match(/<title>([^<]*)<\/title>/) || [])[1] || "";
+  if (!title.endsWith(titleSuffix)) fail(`${file}: <title> must end with "${titleSuffix}"`);
+  for (const property of ["og:title", "twitter:title"]) {
+    const content = (html.match(new RegExp(`<meta (?:property|name)="${property}" content="([^"]*)"`)) || [])[1] || "";
+    if (!content.endsWith(titleSuffix)) fail(`${file}: ${property} must end with "${titleSuffix}"`);
   }
+  if (!html.includes(`<meta property="og:site_name" content="${expectedDisplayName} Academic Website">`)) fail(`${file}: og:site_name must be the site title`);
+  if (!html.includes(`<meta name="author" content="${expectedDisplayName}">`)) fail(`${file}: missing author metadata`);
+  const footerStart = html.indexOf('<footer class="site-footer">');
+  const footer = footerStart >= 0 ? html.slice(footerStart) : "";
+  if (!footer.includes(`© 2026 ${expectedDisplayName}`) || !footer.includes(`href="${orcidUrl}"`) || !footer.includes(`src="${orcidIcon}"`)) {
+    fail(`${file}: footer must carry the owner's name and the ORCID iD with the local iD icon`);
+  }
+  if (/(?:\bsrcset?\s*=\s*["']?[^"'>]*|url\(\s*["']?)https?:\/\/[^"'\s)>]*orcid/i.test(html)) fail(`${file}: the ORCID iD icon must be served locally`);
+  if (/[a-z0-9._%+-]+@[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?!(?:png|jpe?g|webp|avif|gif|svg)\b)[a-z]{2,}\b/i.test(decodeText(html))) {
+    fail(`${file}: plain email address in static HTML`);
+  }
+}
+for (const [file, marker] of [
+  ["index.html", `<h1 id="home-name">${expectedDisplayName}</h1>`],
+  ["cv.html", `<p class="cv-identity">${expectedDisplayName} `],
+  ["contact.html", `<h3>${expectedDisplayName}</h3>`]
+]) {
+  if (!readDistPage(file).includes(marker)) fail(`${file}: missing the owner's name in ${marker}`);
+}
+
+// Every generated text file: no retired name, and the email only as "madslieu [at] gmail [dot] com" with no mailto.
+// contact.js assembles the address and its mailto at runtime; cv.js decodes it only for printing.
+for (const filePath of collectFiles(distDir).filter((file) => textFilePattern.test(file))) {
+  const relativePath = path.relative(distDir, filePath).replace(/\\/g, "/");
+  const text = fs.readFileSync(filePath, "utf8");
+  const decoded = decodeText(text);
+  if (staleNamePattern.test(withoutHeldNames(relativePath, decoded))) fail(`${relativePath}: stale display-name spelling`);
+  const flat = decoded.replace(/<[^>]*>/g, "").replace(/\s+/g, "").toLowerCase();
+  for (const needle of [publicEmail, "madslieu@", "rivieraliuyong", "fuji.waseda"]) {
+    if (flat.includes(needle)) fail(`${relativePath}: publish the email only as "${publicEmailShown}"`);
+  }
+  const runtimeMailto = relativePath === "assets/js/contact.js" && text.split("mailto:").length === 2 && text.includes("'mailto:'+email");
+  if (/mailto:/i.test(decoded.replace(/\s+/g, "")) && !runtimeMailto) fail(`${relativePath}: no mailto links; contact.js adds one at runtime`);
+}
+for (const file of ["README.md", "src", "public"].flatMap((target) => collectFiles(path.join(root, target)))) {
+  if (!textFilePattern.test(file)) continue;
+  const flat = decodeText(fs.readFileSync(file, "utf8")).replace(/\s+/g, "").toLowerCase();
+  if (flat.includes(publicEmail) || flat.includes("rivieraliuyong")) fail(`${path.relative(root, file)}: the email must not appear in full in the source`);
+}
+const contactPage = readDistPage("contact.html");
+if (!contactPage.includes(`<code data-email-address>${publicEmailShown}</code>`) || !/data-email-actions hidden/.test(contactPage)) {
+  fail("contact.html: expected the obfuscated address with script-only actions");
+}
+if (!readDistPage("cv.html").includes(`<span data-email-print>${publicEmailShown}</span>`)) fail("cv.html: expected the obfuscated print address");
+for (const iconPath of [path.join(publicDir, orcidIcon), path.join(distDir, orcidIcon)]) {
+  if (!fs.existsSync(iconPath) || createHash("sha256").update(fs.readFileSync(iconPath)).digest("hex") !== orcidIconSha256) {
+    fail(`${path.relative(root, iconPath)}: the ORCID iD icon must be ORCID's unmodified official SVG`);
+  }
+}
+for (const file of ["index.html", "cv.html", "contact.html"]) {
+  const html = readDistPage(file);
+  if (!html.includes(`<span>${orcidUrl}</span>`) || !html.includes(`src="${orcidIcon}" width="24" height="24" alt="ORCID iD"`)) {
+    fail(`${file}: expected the full ORCID iD link with the 24px iD icon`);
+  }
+}
+const homeSchema = (readDistPage("index.html").match(/<script type="application\/ld\+json">([^<]+)<\/script>/) || [])[1];
+try {
+  const person = JSON.parse(homeSchema);
+  if (person.name !== expectedDisplayName || !person.sameAs?.includes(orcidUrl) || JSON.stringify(person).includes("@gmail")) {
+    fail("index.html: Person structured data must name the owner and list the ORCID iD in sameAs, without the email");
+  }
+} catch {
+  fail("index.html: missing or unreadable Person structured data");
 }
 const graduationPage = readDistPage("research-graduation.html");
 if (!graduationPage.includes("assets/js/research-lock.js") || !graduationPage.includes("data-research-lock-gate") || !graduationPage.includes("data-research-lock-content")) {

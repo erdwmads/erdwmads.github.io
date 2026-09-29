@@ -10,7 +10,8 @@ const images=new Map();
 for(const file of readdirSync('dist').filter(file=>file.endsWith('.html'))){
   const html=readFileSync('dist/'+file,'utf8');
   for(const match of html.matchAll(/<img\b[^>]*?\bsrc="([^"#?]+)"/g)){
-    const src=decodeURIComponent(match[1]).replace(/^\//,'');if(!src.startsWith('assets/'))continue;
+    // The ORCID iD icon is an interface mark repeated on purpose (every footer, Home, CV, Contact), not content.
+    const src=decodeURIComponent(match[1]).replace(/^\//,'');if(!src.startsWith('assets/')||src.startsWith('assets/img/orcid/'))continue;
     const hash=createHash('sha256').update(readFileSync('dist/'+src)).digest('hex');
     assert(!images.has(hash),'Repeated content image: '+file+' '+src+' and '+images.get(hash));images.set(hash,file+' '+src);
   }

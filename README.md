@@ -1,4 +1,4 @@
-# Mads LIU Yong Academic Website
+# Y. Mads Lieu Academic Website
 
 Astro-based GitHub Pages site for `erdwmads.github.io`.
 

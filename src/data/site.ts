@@ -1,35 +1,48 @@
 export const brand = {
-  name: "Mads LIU Yong",
+  name: "Y. Mads Lieu",
   tagline: "Cosmic Mineralogy &bull; Planetary Sciences &bull; Meteoritics",
   homeHref: "index.html"
 } as const;
 
 export const siteMetadata = {
   url: "https://erdwmads.github.io",
-  title: "Mads LIU Yong Academic Website",
-  description: "Academic website of Mads LIU Yong, focused on cosmic mineralogy, planetary sciences, meteoritics, and primitive Solar System materials.",
+  title: "Y. Mads Lieu Academic Website",
+  author: "Y. Mads Lieu",
+  description: "Academic website of Y. Mads Lieu, focused on cosmic mineralogy, planetary sciences, meteoritics, and primitive Solar System materials.",
   image: "assets/img/og-cover.jpg",
   locale: "en_US"
+} as const;
+
+// ORCID iD, shown with ORCID's green iD icon (kept byte-for-byte as ORCID provides it).
+export const orcid = {
+  id: "0009-0007-3960-3959",
+  url: "https://orcid.org/0009-0007-3960-3959",
+  icon: "assets/img/orcid/ORCID-iD_icon-vector.svg"
 } as const;
 
 // Public profile facts only; keep the email out so the contact page's obfuscation still matters.
 export const personSchema = {
   "@context": "https://schema.org",
   "@type": "Person",
-  name: "Mads LIU Yong",
+  name: "Y. Mads Lieu",
   url: `${siteMetadata.url}/`,
   image: `${siteMetadata.url}/assets/img/profile.jpg`,
   description: siteMetadata.description,
+  sameAs: [orcid.url],
   affiliation: [
     {
       "@type": "CollegeOrUniversity",
       name: "Waseda University",
-      department: "Mineralogy Laboratory, Department of Earth Sciences"
+      department: "Department of Earth Sciences, School of Education"
     },
     {
-      "@type": "CollegeOrUniversity",
-      name: "The University of Tokyo",
-      department: "Mikouchi Laboratory, The University Museum"
+      "@type": "OrganizationRole",
+      roleName: "External Research Student",
+      affiliation: {
+        "@type": "CollegeOrUniversity",
+        name: "The University of Tokyo",
+        department: "The University Museum"
+      }
     }
   ],
   knowsAbout: ["Cosmic mineralogy", "Meteoritics", "Planetary sciences", "Carbonaceous chondrites", "Orgueil CI1 chondrite"]
@@ -87,7 +100,7 @@ export const stylesheets = [
   "quiet-observatory.css"
 ] as const;
 
-export const footerItems = ["© 2026 Mads LIU Yong", "What was responsible for making diverse planets in the Solar System?"] as const;
+export const footerItems = ["© 2026 Y. Mads Lieu", "What was responsible for making diverse planets in the Solar System?"] as const;
 
 type ScriptSpec = {
   src: string;
@@ -101,13 +114,13 @@ const commonScripts: ScriptSpec[] = [
   { src: "assets/js/research-coordinates.js?v=20260914-viewport", defer: true }
 ];
 
-const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20260914-viewport", defer: true };
+const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20260929-identity", defer: true };
 const powerManagerScript: ScriptSpec = { src: "assets/js/power-manager.js?v=20260914-viewport" };
 const legacyNavigationScript: ScriptSpec = { src: "assets/js/legacy-navigation.js?v=20260925-comparison", defer: true };
 
 const pageScripts: Record<string, ScriptSpec[]> = {
-  contact: [...commonScripts, { src: "assets/js/contact.js?v=20260925-email", defer: true }, interfaceScript],
-  cv: [...commonScripts, { src: "assets/js/cv.js?v=20260925-email", defer: true }, interfaceScript],
+  contact: [...commonScripts, { src: "assets/js/contact.js?v=20260929-identity", defer: true }, interfaceScript],
+  cv: [...commonScripts, { src: "assets/js/cv.js?v=20260929-identity", defer: true }, interfaceScript],
   home: [...commonScripts, interfaceScript],
   "paper-shelf": [...commonScripts, { src: "assets/js/paper-shelf.js?v=20260913-reviewed", defer: true }, interfaceScript],
   photography: [...commonScripts, interfaceScript],
@@ -118,7 +131,7 @@ const pageScripts: Record<string, ScriptSpec[]> = {
   // Password-gated public page; keep it out of sitemap contentPages.
   "research-graduation": [
     ...commonScripts,
-    { src: "assets/js/research-passkey.js?v=20260914-diagnostics", defer: true },
+    { src: "assets/js/research-passkey.js?v=20260929-identity", defer: true },
     { src: "assets/js/research-lock.js?v=20260914-diagnostics", defer: true },
     { src: "assets/js/mission-index.js?v=20260910-layout", defer: true },
     { src: "assets/js/mission-lightbox.js?v=20260909-comparison", defer: true },

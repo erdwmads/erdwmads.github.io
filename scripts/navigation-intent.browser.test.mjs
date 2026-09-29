@@ -11,7 +11,7 @@ try {
  await page.locator('.nav a[href="contact.html"]').click();await intercepted;
  await page.locator('.nav a[href="research.html"]').click();release();await page.waitForTimeout(600);
  assert.ok(page.url().endsWith('/research.html'),'current-page activation must cancel pending departure');
- assert.equal(await page.title(),'Research | Mads LIU Yong');
+ assert.equal(await page.title(),'Research | Y. Mads Lieu');
  assert.equal(await page.locator('main').getAttribute('aria-busy'),null);
  await page.unroute('**/contact.html');
  await page.goto(base+'/index.html');await page.waitForFunction(()=>window.__madsLegacyNavigationReady);
