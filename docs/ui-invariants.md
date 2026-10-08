@@ -1,6 +1,6 @@
 # UI Invariants
 
-This site is not a generic academic homepage. Its identity is a cosmic mineralogy research archive with an Interface 2046 / Mission Log language.
+This site is not a generic academic homepage. Its identity is an astromineralogy research archive with an Interface 2046 / Mission Log language.
 
 ## Preserve These Concepts
 
@@ -10,7 +10,7 @@ This site is not a generic academic homepage. Its identity is a cosmic mineralog
 - Current Focus
 - Analytical Pathway
 - Interface 2046
-- Cosmic Mineralogy
+- Astromineralogy (the research field; it replaced "Cosmic Mineralogy" on 2026-10-09)
 - Orgueil CI1 chondrite
 - Dolomite in Orgueil CI1
 

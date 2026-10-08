@@ -395,7 +395,7 @@
             <span>I. Mads</span>
             <span>Lieu</span>
           </h2>
-          <p class="entry-gate__archive">Cosmic mineralogy / primitive Solar System materials</p>
+          <p class="entry-gate__archive">Astromineralogy / primitive Solar System materials</p>
           <div class="entry-gate__meta">
             <span>CI Chondrite</span>
             <span>Orgueil</span>

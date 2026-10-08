@@ -1,6 +1,6 @@
 export const brand = {
   name: "I. Mads Lieu",
-  tagline: "Cosmic Mineralogy &bull; Planetary Sciences &bull; Meteoritics",
+  tagline: "Astromineralogy &bull; Planetology &bull; Meteoritics",
   homeHref: "index.html"
 } as const;
 
@@ -8,7 +8,7 @@ export const siteMetadata = {
   url: "https://erdwmads.github.io",
   title: "I. Mads Lieu Academic Website",
   author: "I. Mads Lieu",
-  description: "Academic website of I. Mads Lieu, focused on cosmic mineralogy, planetary sciences, meteoritics, and primitive Solar System materials.",
+  description: "Academic website of I. Mads Lieu, focused on astromineralogy, planetology, meteoritics, and primitive Solar System materials.",
   image: "assets/img/og-cover.jpg",
   locale: "en_US"
 } as const;
@@ -50,7 +50,7 @@ export const personSchema = {
       }
     }
   ],
-  knowsAbout: ["Cosmic mineralogy", "Meteoritics", "Planetary sciences", "Carbonaceous chondrites", "Orgueil CI1 chondrite"]
+  knowsAbout: ["Astromineralogy", "Planetology", "Meteoritics", "Carbonaceous chondrites", "Orgueil CI1 chondrite"]
 } as const;
 
 export const navItems = [
@@ -119,7 +119,7 @@ const commonScripts: ScriptSpec[] = [
   { src: "assets/js/research-coordinates.js?v=20260914-viewport", defer: true }
 ];
 
-const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20260930-name", defer: true };
+const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20261009-field", defer: true };
 const powerManagerScript: ScriptSpec = { src: "assets/js/power-manager.js?v=20260914-viewport" };
 const legacyNavigationScript: ScriptSpec = { src: "assets/js/legacy-navigation.js?v=20260925-comparison", defer: true };
 

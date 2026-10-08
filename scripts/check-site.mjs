@@ -278,7 +278,7 @@ for (const page of pages) {
 
   if (!html.includes("assets/js/power-manager.js")) fail(`${page}: missing power-manager.js`);
   if (!html.includes("assets/js/legacy-navigation.js")) fail(`${page}: missing legacy-navigation.js`);
-  if (html.includes("Planetary Sciences ??") || html.includes("Mineralogy ??")) fail(`${page}: header contains mojibake question marks`);
+  if (html.includes("Planetology ??") || html.includes("Mineralogy ??")) fail(`${page}: header contains mojibake question marks`);
   if (!html.includes('rel="canonical"')) fail(`${page}: missing canonical link`);
   if (!html.includes('property="og:title"')) fail(`${page}: missing Open Graph metadata`);
   if (html.includes('mission-log-data')) fail(`${page}: public page must not embed Mission Log data`);
