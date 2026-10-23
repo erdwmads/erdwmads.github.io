@@ -14,7 +14,7 @@ function harness(){
   saved:{active:'hayabusa2',views:{}},storage:{getItem:()=>stored,setItem:(_,v)=>stored=v},
   viewFromViewer,parseViewHash,viewURL,writeSession,restoreView,location:{href:'https://example.com/research/',hash:''},document:{hidden:false},
   action:n=>{if(!nodes.has(n))nodes.set(n,{});return nodes.get(n);},el:n=>{if(!nodes.has(n))nodes.set(n,{hidden:true,focus(){events.push('focus');},select(){events.push('select-link');}});return nodes.get(n);},
-  chapterUI(){},controlsUI(){},missionUI(){},busy(value){c.ready=!value;},start(){},
+  chapterUI(){},controlsUI(){},missionUI(){},touchMode(){},busy(value){c.ready=!value;},start(){},
   viewer:{state:{...first},async load(id){events.push(['load',id]);},play(v){events.push(['play',v]);this.state.playing=v;},select(stage,progress){this.state={...this.state,mission:c.mission,stage,progress,reference:'earth',focus:'both',context:'detail',cutaway:false};},action(v){if(v.startsWith('frame-'))this.state.reference=v.slice(6);else if(['both','spacecraft','asteroid'].includes(v))this.state.focus=v;else if(v==='cutaway')this.state.cutaway=!this.state.cutaway;else this.state.context=v;},visible(){}},
   navigator:{clipboard:{writeText:async()=>{throw Error('denied');}}}
  });

@@ -269,6 +269,7 @@ function init() {
     if (signal.aborted || error?.name === 'AbortError') return;
     playing = false; clockUI(); scheduleClock();
     root.dataset.renderState = 'error';
+    touchMode(false);
     shareUI();
     el('stage').querySelector('canvas')?.style.setProperty('visibility','hidden');
     el('labels').hidden = true;
@@ -402,12 +403,14 @@ function init() {
   }
   window.addEventListener('hashchange',restoreHash,{signal});
   window.addEventListener('popstate',restoreHash,{signal});
+  // Explore (touch-action:none) ends once the stage is mostly scrolled away, so a later swipe on it scrolls the page.
   const intersection = new IntersectionObserver(entries => {
     visible = entries[0].isIntersecting;
+    if (entries[0].intersectionRatio < .5 && el('stage').hasAttribute('data-touch-active')) touchMode(false);
     if (visible && needsRenderer(state)) start();
     viewer?.setVisible(visible && !el('stage').hidden && !document.hidden);
     scheduleClock();
-  });
+  }, { threshold: [0, .5] });
   intersection.observe(el('visual') || root.querySelector('.planetary-visual'));
   document.addEventListener('visibilitychange', () => { viewer?.setVisible(visible && !el('stage').hidden && !document.hidden); scheduleClock(); }, { signal });
   const theme = new MutationObserver(() => {if(!rendering && !restoring)viewer?.theme();});

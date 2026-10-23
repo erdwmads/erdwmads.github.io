@@ -201,6 +201,7 @@
     if (!isMobileMissionView()) return;
 
     document.body.classList.remove("mission-lightbox-open", "mission-lightbox-mobile-open");
+    document.documentElement.classList.remove("mission-lightbox-open");
 
     document.querySelectorAll(
       ".mission-lightbox, .mission-gallery-lightbox, .mission-modal, .gallery-modal, .lightbox"
@@ -226,34 +227,40 @@
     closeMissionLightbox();
   }
 
-  ["click", "dblclick", "pointerdown", "pointerup", "touchstart", "touchend"].forEach(function (type) {
-    document.addEventListener(type, suppressMissionLightbox, true);
-  });
+  // Soft navigation re-runs this block on every visit; bind the document and window listeners once
+  // (they look up the current page when they fire), so repeat visits do not pile up resize work while scrolling.
+  if (!window.madsMobileMissionGuardBound) {
+    window.madsMobileMissionGuardBound = true;
 
-  document.addEventListener("keydown", function (event) {
-    if (!isMobileMissionView()) return;
-    if (event.key !== "Enter" && event.key !== " ") return;
+    ["click", "dblclick", "pointerdown", "pointerup", "touchstart", "touchend"].forEach(function (type) {
+      document.addEventListener(type, suppressMissionLightbox, true);
+    });
 
-    const trigger = getMissionTrigger(event.target);
-    if (!trigger) return;
+    document.addEventListener("keydown", function (event) {
+      if (!isMobileMissionView()) return;
+      if (event.key !== "Enter" && event.key !== " ") return;
 
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
-    closeMissionLightbox();
-  }, true);
+      const trigger = getMissionTrigger(event.target);
+      if (!trigger) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      closeMissionLightbox();
+    }, true);
+
+    window.addEventListener("resize", function () {
+      setMobileFlag();
+      closeMissionLightbox();
+    }, { passive: true });
+
+    window.addEventListener("orientationchange", function () {
+      setMobileFlag();
+      window.setTimeout(closeMissionLightbox, 80);
+    }, { passive: true });
+  }
 
   setMobileFlag();
   closeMissionLightbox();
-
-  window.addEventListener("resize", function () {
-    setMobileFlag();
-    closeMissionLightbox();
-  }, { passive: true });
-
-  window.addEventListener("orientationchange", function () {
-    setMobileFlag();
-    window.setTimeout(closeMissionLightbox, 80);
-  }, { passive: true });
 })();
 </script>

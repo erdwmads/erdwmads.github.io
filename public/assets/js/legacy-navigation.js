@@ -31,11 +31,14 @@
 
   let softNavToken = 0;
   history.scrollRestoration="manual";
-  let scrollFrame=0;
+  // Save the scroll position once scrolling settles (not every frame: Safari throttles history.replaceState).
+  let scrollTimer=0;
+  const saveScroll=()=>{clearTimeout(scrollTimer);scrollTimer=0;if(!document.documentElement.classList.contains("mads-soft-nav-active"))history.replaceState({...history.state,madsScrollY:scrollY},"",location.href);};
   window.addEventListener("scroll",()=>{
-    if(scrollFrame||document.documentElement.classList.contains("mads-soft-nav-active"))return;
-    scrollFrame=requestAnimationFrame(()=>{scrollFrame=0;if(!document.documentElement.classList.contains("mads-soft-nav-active"))history.replaceState({...history.state,madsScrollY:scrollY},"",location.href);});
+    if(document.documentElement.classList.contains("mads-soft-nav-active"))return;
+    clearTimeout(scrollTimer);scrollTimer=setTimeout(saveScroll,150);
   },{passive:true});
+  window.addEventListener("pagehide",()=>{if(scrollTimer)saveScroll();});
   let contentAnimation;
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   function stopContentAnimation() {

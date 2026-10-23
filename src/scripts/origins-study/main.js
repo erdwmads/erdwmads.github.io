@@ -151,7 +151,8 @@ export function mountStudy(root,reader){
     const initial=reader.state;showStage(initial.stage,initial.progress);setPhase(initial.phase||false);setPlaying(initial.paused?false:playing);$('#loading').hidden=true;
     studyControls.forEach(control=>control.disabled=false);
     resizeObserver=new ResizeObserver(resize);resizeObserver.observe(viewport);
-    intersectionObserver=new IntersectionObserver(entries=>{visible=entries.some(entry=>entry.isIntersecting);root.dataset.inView=String(visible);last=performance.now();if(visible){dirty=true;requestFrame();}else{cancelAnimationFrame(frameId);frameId=0;}});intersectionObserver.observe(viewport);
+    // Explore (touch-action:none) ends once the scene is mostly scrolled away, so a later swipe on it scrolls the page.
+    intersectionObserver=new IntersectionObserver(entries=>{visible=entries.some(entry=>entry.isIntersecting);if(exploring&&entries.every(entry=>entry.intersectionRatio<.5))setExploring(false);root.dataset.inView=String(visible);last=performance.now();if(visible){dirty=true;requestFrame();}else{cancelAnimationFrame(frameId);frameId=0;}},{threshold:[0,.5]});intersectionObserver.observe(viewport);
     api={select:reader.select,setProgress(t){progress=t;setPlaying(false);sync();},setPhase,get state(){return{stage,progress,playing,phase,camera:camera.position.toArray(),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles};}};
     window.study=api;reader.connect(showStage);root.dataset.renderState="ready";
     function frame(now){frameId=0;if(disposed||!visible||document.hidden||contextLost)return;const dt=Math.max(0,(now-last)/1000);last=now;if(document.hidden)return;
@@ -180,7 +181,9 @@ export function mountStudy(root,reader){
     world.clear();renderer.dispose();renderer.forceContextLoss();
   }
   function dispose(){
-    if(disposed)return;disposed=true;
+    if(disposed)return;
+    // A lost context or failed scene must not leave the canvas in Explore (touch-action:none).
+    setExploring(false);disposed=true;
     abort.abort();clearDissolve();cancelAnimationFrame(frameId);resizeObserver?.disconnect();intersectionObserver?.disconnect();
     chapterMotionNodes.forEach(node=>node.getAnimations().forEach(animation=>animation.cancel()));controls.dispose();
     if(window.study===api)delete window.study;

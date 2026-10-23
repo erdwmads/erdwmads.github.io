@@ -58,5 +58,5 @@ if(gate){
  window.addEventListener('mads:soft-nav-ready',syncReplay);
  window.addEventListener('mads:fx-state',()=>{if(active&&!allowed())finish();syncReplay();});
  reduced.addEventListener('change',()=>{if(active&&reduced.matches)finish();syncReplay();});
- if(gate.open)play();else{gate.dataset.state='complete';syncReplay();}
+ if(gate.open)play();else{clearTimeout(window.cosmicArrivalFallback);root.classList.remove('cosmic-arrival-active');gate.dataset.state='complete';syncReplay();}
 }

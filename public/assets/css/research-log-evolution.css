@@ -276,3 +276,11 @@ body#academic-site [data-research-lock-session][hidden] { display: none !importa
 @media (max-width: 760px) {
   html[data-theme] body#academic-site .research-passkey-help summary { box-sizing: border-box; min-height: 44px; padding-block: 11px; }
 }
+
+/* Horizontal Mission Log strips scroll on one axis only, so a vertical swipe that starts on them still scrolls the page. */
+@media (max-width: 760px) {
+  html[data-theme] body#academic-site :is(.mission-jump-grid, .research-log-index-grid, .compact-mission-jump-grid) {
+    overflow-y: hidden !important;
+    touch-action: pan-x pan-y pinch-zoom;
+  }
+}

@@ -75,7 +75,7 @@ function enter(){
   pending=null;stage=Math.max(0,Math.min(missions[mission].stages.length-1,index));progress=clampProgress(p);playing=false;if(ready){viewer.play(false);viewer.select(stage,progress);}chapterUI();controlsUI();animateChapter();remember();
  }
  function setProgress(p){if(!ready)return;clearShare();progress=clampProgress(p);playing=false;viewer.progress(progress);controlsUI();remember();}
- function error(){playing=false;busy(true,'The 3D view could not load. Explore the chapters and mission sources below.');controlsUI();root.dataset.ready='error';el('range').textContent='Trajectory view unavailable';action('retry').hidden=false;}
+ function error(){playing=false;touchMode(false);busy(true,'The 3D view could not load. Explore the chapters and mission sources below.');controlsUI();root.dataset.ready='error';el('range').textContent='Trajectory view unavailable';action('retry').hidden=false;}
  async function start(){
   if(starting||viewer||disposed)return;starting=true;busy(true);
   try{
@@ -91,7 +91,7 @@ function enter(){
   el('chapters').replaceChildren(...missions[id].stages.map((s,i)=>{const b=document.createElement('button');b.type='button';b.dataset.missionStage=i;const number=document.createElement('span');number.textContent=String(i+1).padStart(2,'0');b.append(number,document.createTextNode(s.label));return b;}));
  }
  async function choose(id,view){
-  if(!Object.hasOwn(missions,id)||id===mission)return;clearShare();remember();mission=id;pending=view||saved.views[id];stage=pending?missions[id].stages.findIndex(s=>s.id===pending.chapter):0;progress=pending?.progress||0;playing=false;
+  if(!Object.hasOwn(missions,id)||id===mission)return;touchMode(false);clearShare();remember();mission=id;pending=view||saved.views[id];stage=pending?missions[id].stages.findIndex(s=>s.id===pending.chapter):0;progress=pending?.progress||0;playing=false;
   el('share-manual').hidden=true;el('share-status').textContent='';
   missionUI(id);busy(true);chapterUI();controlsUI();if(viewer)await viewer.load(id);else await start();
  }
@@ -135,7 +135,8 @@ function enter(){
   if(e.key==='Escape'){playing=false;viewer?.play(false);controlsUI();touchMode(false);}
  },{signal});
  coarse.addEventListener('change',()=>touchMode(false),{signal});
- const observer=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(visible)start();viewer?.visible(visible&&!document.hidden);},{threshold:0});
+ // Explore (touch-action:none) ends once the viewer is mostly scrolled away, so a later swipe on it scrolls the page.
+ const observer=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(entries[0].intersectionRatio<.5&&el('viewport').hasAttribute('data-touch-active'))touchMode(false);if(visible)start();viewer?.visible(visible&&!document.hidden);},{threshold:[0,.5]});
  observer.observe(el('viewport'));
  const displayObserver=new IntersectionObserver(entries=>document.documentElement.toggleAttribute('data-mission-in-view',entries[0].isIntersecting));displayObserver.observe(root);
  document.addEventListener('visibilitychange',()=>{if(document.hidden)remember();viewer?.visible(visible&&!document.hidden);},{signal});

@@ -121,7 +121,7 @@ const commonScripts: ScriptSpec[] = [
 
 const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20261009-field", defer: true };
 const powerManagerScript: ScriptSpec = { src: "assets/js/power-manager.js?v=20260914-viewport" };
-const legacyNavigationScript: ScriptSpec = { src: "assets/js/legacy-navigation.js?v=20260925-comparison", defer: true };
+const legacyNavigationScript: ScriptSpec = { src: "assets/js/legacy-navigation.js?v=20261023-scroll", defer: true };
 
 const pageScripts: Record<string, ScriptSpec[]> = {
   contact: [...commonScripts, { src: "assets/js/contact.js?v=20260929-identity", defer: true }, interfaceScript],

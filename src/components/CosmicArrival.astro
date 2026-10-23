@@ -25,6 +25,9 @@ const {home}=Astro.props;
     gate.showModal();gate.dataset.state='preparing';document.documentElement.classList.add('cosmic-arrival-active');
     // A failed module must never leave the page behind a modal or a scroll lock.
     window.cosmicArrivalFallback=setTimeout(()=>{gate.close();gate.dataset.state='complete';document.documentElement.classList.remove('cosmic-arrival-active');},11000);
+    // However the dialog closes (Skip or Back before the module has loaded), release the scroll lock at once.
+    gate.addEventListener('close',()=>{if(gate.open)return;clearTimeout(window.cosmicArrivalFallback);document.documentElement.classList.remove('cosmic-arrival-active');});
+    document.querySelector('#arrival-skip')?.addEventListener('click',()=>gate.close());
   })();
 </script>
 <script>
