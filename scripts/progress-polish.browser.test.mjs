@@ -98,6 +98,8 @@ try {
       await page.locator('.mission-progress').waitFor();
       for(const entry of realEntries) {
         await page.locator(`[data-mission-target="${entry.id}"]`).click();
+        // The record is swapped in after the click; wait for this entry before reading it.
+        await page.waitForFunction(id=>document.querySelector('.mission-log-entry')?.id===id&&document.querySelector('.mission-original-record')?.innerText.trim(),entry.id,{timeout:10000});
         assert.match(await page.locator('.mission-original-record').innerText(),/./);
         assert.equal(await page.locator('.research-note-body > .mission-progress dd').first().innerText(),entry.latestNote || entry.stageNote || entry.stage);
         assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);

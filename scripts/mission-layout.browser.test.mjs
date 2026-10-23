@@ -36,6 +36,8 @@ await page.locator('[data-mission-target="'+entries[0].id+'"]').evaluate(e=>e.cl
 await page.locator('.mission-record-header').screenshot({path:path.join(os.tmpdir(),'mission-header-'+width+'.png')});
 if(await page.locator('[data-present-mission]').count()){
 await page.locator('[data-present-mission]').click();await page.locator('.obs-presentation[open]').waitFor();
+// The slide image src is set once the presentation has opened; wait for it instead of sampling once.
+await page.waitForFunction(()=>document.querySelector('.obs-presentation img')?.getAttribute('src'),null,{timeout:10000});
 assert(await page.locator('.obs-presentation img').getAttribute('src'));await page.keyboard.press('Escape');
 assert.equal(await page.locator('.obs-presentation[open]').count(),0);
 }

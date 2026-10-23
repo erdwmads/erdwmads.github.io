@@ -116,8 +116,12 @@ const missionThumbCount = collectFiles(missionThumbDir).filter((file) => file.en
 if (photoThumbCount !== 21) {
   fail(`Photography: expected 21 WebP thumbnails, found ${photoThumbCount}`);
 }
-if (missionThumbCount !== 62) {
-  fail(`Mission Log: expected 62 WebP thumbnails, found ${missionThumbCount}`);
+// Every Mission Log display image needs its WebP thumbnail (npm run images:derive), and no thumbnail may be orphaned.
+const missionImages = fs.readdirSync(path.join(assetsDir, "img", "mission-log")).filter((name) => /^grad-log-.*\.jpg$/i.test(name));
+const missionThumbs = new Set(collectFiles(missionThumbDir).filter((file) => file.endsWith(".webp")).map((file) => path.basename(file, ".webp")));
+const missingThumbs = missionImages.filter((name) => !missionThumbs.has(name.replace(/\.jpg$/i, "")));
+if (missingThumbs.length || missionThumbCount !== missionImages.length) {
+  fail(`Mission Log: ${missionImages.length} display images but ${missionThumbCount} WebP thumbnails${missingThumbs.length ? ` (missing ${missingThumbs.slice(0, 3).join(", ")})` : ""}`);
 }
 
 const requiredEncryptedMissionPayloadKeys = ["cipher", "ciphertext", "iterations", "iv", "kdf", "salt", "version"];
