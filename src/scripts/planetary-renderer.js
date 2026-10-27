@@ -166,7 +166,7 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     if (!orbitTextures.has(name)) {
       const pending = new THREE.TextureLoader().loadAsync(`/assets/img/arrival/${name}`).then(texture => {
         if (!alive) { texture.dispose(); throw new DOMException('Viewer disposed','AbortError'); }
-        texture.colorSpace = name.endsWith('.jpg') ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+        texture.colorSpace = name.endsWith('.png') ? THREE.NoColorSpace : THREE.SRGBColorSpace;
         texture.anisotropy = Math.min(4,renderer.capabilities.getMaxAnisotropy());
         texture.userData.cached = true;
         return texture;
@@ -177,7 +177,8 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     return orbitTextures.get(name);
   }
   async function orbitGroup(state) {
-    const [bennu,ryugu,day,clouds] = await Promise.all([model('bennu'),model('ryugu'),orbitTexture('earth-day.jpg'),orbitTexture('earth-clouds.png')]);
+    // Earth is a small orbital body here, so a 2048 (or, on phones, 1024) derivative of the 4096 day map is enough.
+    const [bennu,ryugu,day,clouds] = await Promise.all([model('bennu'),model('ryugu'),orbitTexture(`earth-day-${innerWidth<700?1024:2048}.webp`),orbitTexture('earth-clouds.png')]);
     const shapes = {bennu,ryugu};
     const group = new THREE.Group(), pending = [], targets = [], colors = color();
     const extent = state.scope === 'solar' ? 34 : 2.05;

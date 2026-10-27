@@ -16,28 +16,28 @@
 
     if (document.querySelector(".research-coordinates")) return;
 
+    const isComparison = location.pathname.includes("ryugu-bennu");
     const isPaper = location.pathname.includes("paper-shelf");
-    const isSample = location.pathname.includes("sample-cabinet");
     const isPhoto = location.pathname.includes("photography");
     const isCV = location.pathname.includes("cv");
     const isContact = location.pathname.includes("contact");
 
     let target = "Orgueil CI1";
-    let phase = "Dolomite";
+    let phase = "Ca\u2013Mg carbonate";
     let mode = "Research";
 
     if (location.pathname.includes("origins-study")) {
       target = "Solar System";
       phase = "Parent-body evolution";
       mode = "Origins";
+    } else if (isComparison) {
+      target = "Ryugu \u00b7 Bennu";
+      phase = "Returned samples";
+      mode = "Comparison";
     } else if (isPaper) {
       target = "Reading Shelf";
       phase = "Carbonates / CI";
       mode = "Literature";
-    } else if (isSample) {
-      target = "Sample Cabinet";
-      phase = "Astromaterials";
-      mode = "Specimen";
     } else if (isPhoto) {
       target = "Pentax 6x7";
       phase = "Photography";

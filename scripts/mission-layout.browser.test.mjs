@@ -16,6 +16,10 @@ await page.addInitScript(()=>sessionStorage.setItem('mads-cosmic-arrival-v1','do
 await page.route('**/assets/data/mission-log.enc.json',route=>route.fulfill({json:payload}));
 await page.goto((process.env.TEST_BASE_URL||'http://127.0.0.1:52523')+'/research-graduation.html');
 await page.locator('[data-research-lock-input]').fill(password);await page.locator('[data-research-lock-form] button[type="submit"]').click();await page.locator('.mission-record-header').waitFor();
+// At 760px and below the photo grid stays inline figures (no viewer buttons); wider layouts keep the desktop viewer.
+const phone=width<=760,semantics=await page.locator('.mission-photo-grid figure').evaluateAll(nodes=>nodes.map(el=>[el.getAttribute('role'),el.getAttribute('tabindex')].join('|')));
+assert.equal(await page.evaluate(()=>document.documentElement.classList.contains('mobile-mission-lightbox-disabled')),phone);
+assert(semantics.every(value=>value===(phone?'|':'button|0'))&&(process.env.MISSION_PRIVATE_SOURCE||semantics.length===7),JSON.stringify({width,semantics}));
 for(const entry of entries){
 await page.locator('[data-mission-target="'+entry.id+'"]').evaluate(e=>e.click());
 for(const theme of ['space','light']){

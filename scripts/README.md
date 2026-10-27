@@ -1,42 +1,40 @@
 # Scripts
 
-Everything here runs with Node from the repository root. Files stay flat in this folder because tests import each other and `package.json`, the deploy workflow and older plans refer to them by path; this index groups them by purpose instead.
+Everything here runs with Node 22 or later (`.nvmrc`) from the repository root. Files stay flat in this folder because tests import each other and `package.json` and older plans refer to them by path; this index groups them by purpose instead.
 
 ## Run in CI (GitHub Actions, every push to `main`)
 
-The deploy workflow runs these, then builds and deploys `dist/`:
+`.github/workflows/deploy.yml` runs on `ubuntu-24.04` with Node from `.nvmrc` and a full-history checkout (so `spacecraft-model-simplify.test.mjs` can read the NASA GLB from git history instead of skipping). After `npm ci` it runs these, then uploads and deploys `dist/`:
 
 | Command | Script | Checks |
 |---|---|---|
-| `npm run test:mission-publisher` | `publish-protected-mission-log.test.mjs` | encrypted Mission Log payload format |
-| `npm run test:research-lock` | `research-lock.test.mjs`, `research-passkey.test.mjs` | password and passkey unlock |
-| `npm run test:mission-index` | `mission-index.test.mjs` | Mission Log renderer lifecycle |
-| `npm run test:mission-lightbox` | `mission-lightbox.test.mjs` | lightbox purge on lock |
+| `npm run test:unit` | `run-unit-tests.mjs` | every Node unit test (see Unit tests below); none needs `dist/` or a browser |
 | `npm run build` | Astro | generated pages and the stylesheet bundle |
 | `npm run export:ppt-data` | `export-ppt-data.mjs` | public data for slides (`dist/ppt-data.json`) |
-| `npm run check:site` | `check-site.mjs` | generated pages, assets, SEO, stylesheet bundle, protected archive boundary |
+| `npm run check:site` | `check-site.mjs` | generated pages, assets, SEO, stylesheet bundle, protected archive boundary, Mission Log display-image limits, the Sample Cabinet redirect stub, and the deploy workflow itself |
 
 ## Before publishing (local)
 
 | Command | What it does |
 |---|---|
 | `npm run check` | build, PPT export and site check (the CI build steps) |
-| `npm run check:all` | the CI unit tests, the mobile layout test and `npm run check` |
+| `npm run check:all` | every unit test (`npm run test:unit`, the suite CI runs) and `npm run check` |
 | `npm run test:unit` | every Node unit test (`run-unit-tests.mjs`): `scripts/*.test.mjs` and `src/**/*.test.mjs` |
 | `npm run test:browser` | every Playwright regression test (`run-browser-tests.mjs`) against the built `dist/`; see below |
 | `npm run audit:css:check` | fails if legacy `style.css` grows or a stylesheet is missing from `docs/css-baseline.json` |
-| `npm run audit:images` | thumbnail counts and `docs/image-inventory.md` |
+| `npm run audit:images` | derivative counts, Mission Log display limits (2400 px, 1.5 MB, no EXIF/XMP) and `docs/image-inventory.md` |
 
 ## Maintenance tools
 
 | Script | Purpose |
 |---|---|
-| `publish-protected-mission-log.mjs` | encrypts the private Mission Log JSON into `public/assets/data/mission-log.enc.json` (`npm run publish:mission-log`) |
+| `publish-protected-mission-log.mjs` | encrypts the private Mission Log JSON into `public/assets/data/mission-log.enc.json` (`npm run publish:mission-log`); refuses to write unless the passphrase decrypts the current archive (`--rotate-passphrase` changes it on purpose), decrypts the new file before replacing the old one, and `--check-leaks` scans `src/`, `public/` and `dist/` for entry text, reporting only paths and entry ids |
+| `publish-mission-log.ps1` | the owner's one-time passphrase handoff: prompts with `Read-Host -AsSecureString` and passes the passphrase only to the node publisher (`-CheckLeaks`, `-RotatePassphrase`, `-Node`) |
 | `audit-css.mjs` | stylesheet size report; `--write` refreshes the baseline, `--check` enforces it |
 | `prune-dead-css.mjs` | reports CSS rules whose selectors can never match; `--write` removes them. Build first and pass the private Mission Log JSON with `--extra` |
-| `audit-images.mjs` | image inventory and thumbnail checks |
-| `generate-image-derivatives.mjs` | Photography and Mission Log WebP thumbnails (`npm run images:derive`) |
-| `generate-site-backgrounds.mjs` | WebP backgrounds, portrait and the 1200×630 social card (`npm run images:backgrounds`) |
+| `audit-images.mjs` | image inventory, derivative counts and Mission Log display limits |
+| `generate-image-derivatives.mjs` | Photography 480w thumbnails and 640w/960w srcset tiers (1600w for the panorama), Mission Log WebP thumbnails (`npm run images:derive`; pass `photography` or `mission-log` to regenerate one group) |
+| `generate-site-backgrounds.mjs` | WebP backgrounds (grayscale 1600w Bennu), portrait and the 1200×630 social card (`npm run images:backgrounds`) |
 | `shape-model-glb.mjs` | lossless OBJ → GLB re-encoding of measured shape models |
 | `spacecraft-model-simplify.mjs` | reproducible display simplification of NASA's OSIRIS-REx GLB (reads the unmodified NASA file from git history or a path; see `SPACECRAFT-CREDITS.md`) |
 | `draco-sequential-encoder.mjs` | minimal Draco mesh encoder used by the simplifier; output is checked with the site's own decoder |
@@ -56,7 +54,7 @@ The deploy workflow runs these, then builds and deploys `dist/`:
 
 ## Unit tests
 
-`npm run test:unit` runs all of them with `node --test`. They need no browser:
+`npm run test:unit` runs all of them with `node --test`; they need no browser. `npm run test:mission-publisher`, `test:research-lock`, `test:mission-index`, `test:mission-lightbox` (purge on lock, phone guard, inert background, Tab containment) and `test:mobile-layout` run subsets. By area:
 
 - Mission Log and unlock: `publish-protected-mission-log`, `research-lock`, `research-passkey`, `mission-index`, `mission-lightbox`, `mission-layout`
 - Site shell and pages: `mobile-layout`, `site-header`, `paper-shelf`, `photography-loading`, `viewer-keyboard-boundaries`
@@ -80,8 +78,8 @@ The runner serves `dist/` on a free local port and passes it as `SITE_TEST_URL`.
 
 | Area | Tests |
 |---|---|
-| Home arrival and display settings | `arrival`, `arrival-performance`, `ambient-resize`, `home-background`, `home-focus`, `fullscreen-paint`, `prism-controls`, `theme-geometry`, `typography` |
-| Header, navigation and soft navigation | `site-header`, `navigation-beam`, `navigation-intent`, `navigation-lifecycle`, `site-control-clearance`, `page-alignment`, `interaction-stability` |
+| Home arrival and display settings | `arrival`, `arrival-focus`, `arrival-performance`, `ambient-resize`, `home-background`, `home-focus`, `fullscreen-paint`, `prism-controls`, `theme-geometry`, `typography` |
+| Header, navigation and soft navigation | `site-header`, `soft-nav-page-class`, `navigation-beam`, `navigation-intent`, `navigation-lifecycle`, `site-control-clearance`, `page-alignment`, `interaction-stability` |
 | Research page | `research-reading`, `research-flow-visual`, `research-workflow`, `mineral-interactions`, `reading-ui`, `reading-tools` |
 | Ryugu & Bennu: sample-return missions | `sample-missions*`, `mission-*`, `physical-missions`, `earth-*`, `flight-frames`, `readable-motion`, `sample-camera`, `observation-workspaces` |
 | Ryugu & Bennu: planetary field guide | `planetary-*`, `research-navigation`, `research-review` |

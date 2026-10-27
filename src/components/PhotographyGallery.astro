@@ -1,13 +1,19 @@
 ---
 import { photographs } from "../data/photography";
 
+// Rendered slot widths (observatory-experience.css): two columns with a 10px gap inside 20px gutters
+// up to 760px, then three columns with 16px gaps inside 40px gutters in a 1280px main. Panoramas span the wall.
+const sizes = {
+  tile: "(max-width: 760px) calc((100vw - 50px) / 2), (max-width: 1280px) calc((100vw - 112px) / 3), 390px",
+  wide: "(max-width: 760px) calc(100vw - 40px), (max-width: 1280px) calc(100vw - 80px), 1200px"
+};
 ---
 
 <section>
   <p class="eyebrow">Photography</p>
   <h1>Photography</h1>
   <p class="lead">
-    I use <span class="del">Hasselblad X2D</span> Pentax 6x7 for film-inspired
+    I use <s class="del">Hasselblad X2D</s><span class="visually-hidden"> (crossed out)</span> Pentax 6x7 for film-inspired
     photographs, environmental portraits, and visual notes.
   </p>
 </section>
@@ -17,17 +23,15 @@ import { photographs } from "../data/photography";
   <div class="photo-wall">
     {photographs.map((photo, index) => (
       <a
-        class:list={["photo-tile", { "photo-tile--wide": photo.width / photo.height > 2.3 }]}
+        class:list={["photo-tile", { "photo-tile--wide": photo.wide }]}
         href={photo.full}
         data-photo-index={index}
         aria-label={`Open photograph ${photo.number}: ${photo.alt}`}
       >
         <img
           src={photo.thumb}
-          srcset={`${photo.thumb} 480w, ${photo.full} ${photo.width}w`}
-          sizes={photo.width / photo.height > 2.3
-            ? '(max-width: 760px) calc(100vw - 40px), (max-width: 1280px) calc(100vw - 80px), 1200px'
-            : '(max-width: 760px) calc((100vw - 50px) / 2), (max-width: 1280px) calc((100vw - 112px) / 3), 390px'}
+          srcset={photo.srcset}
+          sizes={photo.wide ? sizes.wide : sizes.tile}
           data-full-src={photo.full}
           width={photo.width}
           height={photo.height}
@@ -43,11 +47,11 @@ import { photographs } from "../data/photography";
 </section>
 
 <section class="section two-col">
-  <div class="section-label">Camera</div>
+  <h2 class="section-label">Camera</h2>
   <div class="card">
     <h3>Current setup</h3>
     <p>
-      <span class="del">Hasselblad X2D</span> Pentax 6x7, SMC Pentax 67 90mm F2.8 Lens,
+      <s class="del">Hasselblad X2D</s><span class="visually-hidden"> (crossed out)</span> Pentax 6x7, SMC Pentax 67 90mm F2.8 Lens,
       and Samsung Galaxy series smartphones.
     </p>
   </div>

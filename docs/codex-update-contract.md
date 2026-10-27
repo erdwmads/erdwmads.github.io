@@ -10,9 +10,10 @@ The user supplies research content, notes, papers, images, or presentation goals
 - Mission Log shell and lazy loading: `src/components/MissionLogShell.astro`
 - Mission Log images: `public/assets/img/mission-log/`
 - Paper Shelf layout and filters: `src/components/PaperShelf.astro`
-- Research page (question, analytical pathway): `src/pages/research.astro`
+- Research page: `src/pages/research.astro`, with its body in the legacy fragments `src/legacy/research-main.html` (research question and research record) and `src/legacy/research-methods.html` (Analytical Pathway), plus `src/components/EvidenceAtlasData.astro`
+- Project facts (title, question, methods, pathway): hand-written copies in `src/legacy/` fragments, listed under Project Facts in `docs/content-workflow.md`
 - Comparison materials page (sample-return missions, planetary field guide, published microscopy): `src/pages/ryugu-bennu.astro`
-- Stylesheet cascade order and bundle: `stylesheets` in `src/data/site.ts`, built into `assets/css/site.css`
+- Stylesheet cascade order and bundle: `stylesheets` in `src/data/site.ts`, built into `assets/css/site.css`; every owner file is listed in `docs/ui-invariants.md`
 - Theme tokens: `public/assets/css/tokens.css`
 - Header, navigation, mobile shell, and HUD: `public/assets/css/shell-evolution.css`
 - Research Log dashboard and protected research surfaces: `public/assets/css/research-log-evolution.css`
@@ -27,10 +28,11 @@ When the user sends raw notes, Codex should:
 2. Write clear public-facing English.
 3. Preserve scientific details and uncertainty.
 4. Add or update the private Mission Log JSON outside the repository.
-5. Back up original photos to `C:\Users\tsuku\Desktop\Grad Research\Orgueil Grad Data\事前準備`, then update the public display copies under `public/assets/img/mission-log/`.
-6. Publish `public/assets/data/mission-log.enc.json` with the passphrase held only in process memory or a one-time local handoff.
+5. Back up original photos to `C:\Users\tsuku\Desktop\Grad Research\Orgueil Grad Data\事前準備`, then add display derivatives under `public/assets/img/mission-log/` (image rule in `docs/content-workflow.md`).
+6. Publish `public/assets/data/mission-log.enc.json` through the one-time local handoff `scripts/publish-mission-log.ps1 -CheckLeaks`: the owner runs it and types the passphrase at its hidden prompt, so the passphrase is never in a file, argument, log or prompt. A wrong passphrase aborts with nothing written unless `-RotatePassphrase` is passed.
 7. Run the protected tests, build, PPT export, and site check before committing website changes.
 8. Commit only the encrypted payload and public image derivatives, never the private JSON or passphrase.
+9. Delete temporary drafts and scratch files that hold entry text.
 
 The user should not be asked to produce HTML or TypeScript unless they explicitly want to.
 

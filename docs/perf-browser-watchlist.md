@@ -16,7 +16,7 @@ and mobile Mission Log lightbox disabled
 
 ## Ambient Rules
 
-- Default FX off.
+- FX default: see "Ambient FX" in `docs/ui-invariants.md` (on for desktop; off at 760px and below and with reduced motion).
 - Create the ambient DOM layer only when enabled.
 - Remove the layer when disabled.
 - Pause timers when the document is hidden.
@@ -46,7 +46,7 @@ Microsoft Edge has shown white rectangular tile artifacts around page close/tear
 
 Current practical policy:
 
-- keep FX off by default
+- FX defaults follow `docs/ui-invariants.md` (FX has been on by default on desktop since b8ab393); changing the default is the owner's decision, not an Edge workaround
 - use small, targeted Edge teardown guards
 - do not let teardown guards affect normal entry-gate exit
 - test opening screen, normal ambient visibility, mobile image behavior, and close-frame behavior together

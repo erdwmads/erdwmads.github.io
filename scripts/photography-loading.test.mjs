@@ -91,6 +91,43 @@ test('photography launch is progressive enhancement and individual originals sta
   const gallery = fs.readFileSync(new URL('../src/components/PhotographyGallery.astro', import.meta.url), 'utf8');
   assert.match(gallery, /<button[^>]*data-present-photos[^>]*hidden/);
   assert.match(gallery, /<a\s[\s\S]*?href=\{photo.full\}/);
+  assert.match(gallery, /srcset=\{photo.srcset\}[\s\S]*?data-full-src=\{photo.full\}/);
+});
+
+// Width of a lossy, lossless or extended WebP from its first chunk header.
+function webpWidth(buffer) {
+  const chunk = buffer.toString('ascii', 12, 16);
+  if (chunk === 'VP8 ') return buffer.readUInt16LE(26) & 0x3fff;
+  if (chunk === 'VP8L') return 1 + (buffer.readUInt32LE(21) & 0x3fff);
+  if (chunk === 'VP8X') return 1 + buffer.readUIntLE(24, 3);
+  throw new Error(`unknown WebP chunk ${chunk}`);
+}
+
+test('photograph srcsets list generated WebP tiers by width and end with the original JPEG', () => {
+  const data = fs.readFileSync(new URL('../src/data/photography.ts', import.meta.url), 'utf8');
+  const photographs = vm.runInNewContext(`${data.replace(/export const/g, 'const')}\nphotographs`);
+  assert.equal(photographs.length, 21);
+  for (const photo of photographs) {
+    assert.equal(photo.wide, photo.width / photo.height > 2.3);
+    const candidates = photo.srcset.split(', ').map(entry => entry.split(' ')).map(([src, width]) => ({ src, width: Number(width.slice(0, -1)) }));
+    assert.deepEqual(candidates.map(candidate => candidate.width), [480, 640, 960, ...(photo.wide ? [1600] : []), photo.width]);
+    assert.equal(candidates[0].src, photo.thumb);
+    assert.equal(candidates.at(-1).src, photo.full);
+    for (const candidate of candidates.slice(0, -1)) {
+      assert.equal(webpWidth(fs.readFileSync(new URL(`../public/${candidate.src}`, import.meta.url))), candidate.width, candidate.src);
+    }
+  }
+  assert.deepEqual([...photographs].filter(photo => photo.wide).map(photo => photo.number), [11]);
+});
+
+test('the crossed-out camera is announced and Camera is a section heading', () => {
+  const gallery = fs.readFileSync(new URL('../src/components/PhotographyGallery.astro', import.meta.url), 'utf8');
+  const struck = '<s class="del">Hasselblad X2D</s><span class="visually-hidden"> (crossed out)</span>';
+  assert.equal(gallery.split(struck).length - 1, 2);
+  assert.doesNotMatch(gallery, /<span class="del">/);
+  assert.match(gallery, /<h1>Photography<\/h1>[\s\S]*<h2 class="section-label">Camera<\/h2>[\s\S]*<h3>Current setup<\/h3>/);
+  const refinement = fs.readFileSync(new URL('../public/assets/css/site-refinement.css', import.meta.url), 'utf8');
+  assert.match(refinement, /\.visually-hidden \{[^}]*position:absolute[^}]*clip-path:inset\(50%\)[^}]*white-space:nowrap/);
 });
 
 test('a late error cannot replace the current loading or loaded state', () => {

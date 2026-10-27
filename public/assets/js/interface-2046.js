@@ -63,17 +63,7 @@
 
   window.addEventListener("pageshow", restoreEdgeTeardown, { passive: true });
 
-  const pageClassMap = {
-    'index': 'ui-page-home',
-    'research': 'ui-page-research',
-    'research-log': 'ui-page-research-log',
-    'paper-shelf': 'ui-page-paper-shelf',
-    'cv': 'ui-page-cv',
-    'photography': 'ui-page-photography',
-    'contact': 'ui-page-contact',
-    'sample-cabinet': 'ui-page-sample-cabinet'
-  };
-
+  // Body ui-page-* classes come from the server-rendered page (LegacyShell.astro) only.
   const shortRouteMap = {
     'index': 'Home',
     'research': 'Research',
@@ -81,8 +71,7 @@
     'paper-shelf': 'Paper Shelf',
     'cv': 'CV',
     'photography': 'Photography',
-    'contact': 'Contact',
-    'sample-cabinet': 'Sample Cabinet'
+    'contact': 'Contact'
   };
 
   const pageKeyFromName = (name) => {
@@ -91,10 +80,6 @@
   };
 
   const pageKeyFromLocation = () => pageKeyFromName(window.location.pathname.split('/').pop() || 'index.html');
-
-  const pageClassForKey = (key) => (
-    pageClassMap[key] || `ui-page-${key.replace(/[^a-z0-9-]/gi, '').toLowerCase()}`
-  );
 
   const shortenRoute = (value) => {
     const clean = String(value || '').replace(/\s+/g, ' ').trim();
@@ -110,9 +95,7 @@
     return shortenRoute(h1?.textContent || pageTitle);
   };
 
-  const initialPage = pageKeyFromLocation();
-  body.classList.add(pageClassForKey(initialPage));
-  const route = routeForPage(initialPage);
+  const route = routeForPage(pageKeyFromLocation());
 
   const orbitData = [
     { name: 'Mercury', label: 'Mercury', years: 0.241, w: 18, h: 11, angle: 26,  size: 2.0, color: 'rgba(180,190,196,.72)', cls: 'inner', alpha: .10, labelMode: 'minor' },

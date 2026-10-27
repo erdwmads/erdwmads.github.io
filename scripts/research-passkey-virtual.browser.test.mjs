@@ -33,11 +33,15 @@ try {
       try { await page.locator('[data-research-lock-content]').waitFor({state:'visible',timeout:12000}); }
       catch(error) { throw new Error('Native WebAuthn flow: '+await page.locator('[data-research-lock-error]').textContent()); }
       assert.equal(assertions,2,'Setup must use and verify the assertion key');
+      const noticeFocused=()=>page.evaluate(()=>document.activeElement?.matches('[data-research-session-notice]'));
+      assert.equal(await noticeFocused(),true,'Setup unlock must focus the session notice');
       await page.getByRole('button',{name:'Lock log',exact:true}).click();
       await page.reload();
       await page.locator('[data-passkey-unlock]').click();
       await page.locator('[data-research-lock-content]').waitFor({state:'visible'});
       assert.equal(assertions,3,'A reload unlocks through the native WebAuthn API');
+      assert.equal(await noticeFocused(),true,'Passkey unlock must focus the session notice');
+      assert.match(await page.locator('[data-research-session-notice]').innerText(),/^Mission Log unlocked · 1 record\./);
       assert.equal(await page.locator('[data-research-lock-input]').inputValue(),'');
     } else {
       await page.getByText(/does not support PRF/).waitFor({state:'visible'});

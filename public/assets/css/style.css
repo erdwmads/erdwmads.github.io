@@ -431,10 +431,8 @@ code {
 
 
 /* ============================================================
-   Global asteroid background
-   Put asteroid-bennu.jpg in: assets/img/asteroid-bennu.jpg
-   This method uses a fixed pseudo-element, so it is harder
-   for earlier body background rules to override.
+   Global asteroid background (fixed pseudo-element): the
+   grayscale derivative from generate-site-backgrounds.mjs.
    ============================================================ */
 
 body {
@@ -449,7 +447,7 @@ body::before {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image: url("../img/asteroid-bennu.webp");
+  background-image: url("../img/asteroid-bennu-1600.webp");
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -4762,7 +4760,7 @@ html:not([data-theme="space"]) .action-row a[href="research.html"] {
   .site-header::before {
     background-image:
       linear-gradient(rgba(5, 12, 23, .36), rgba(5, 12, 23, .56)),
-      url("../img/asteroid-bennu.webp") !important;
+      url("../img/asteroid-bennu-1600.webp") !important;
     background-size: cover !important;
     background-position: center center !important;
     filter: none !important;
@@ -4771,7 +4769,7 @@ html:not([data-theme="space"]) .action-row a[href="research.html"] {
   html:not([data-theme="space"]) .site-header::before {
     background-image:
       linear-gradient(rgba(235, 242, 248, .30), rgba(235, 242, 248, .48)),
-      url("../img/asteroid-bennu.webp") !important;
+      url("../img/asteroid-bennu-1600.webp") !important;
   }
 
   html[data-theme="space"] .site-header::before,
@@ -4779,7 +4777,7 @@ html:not([data-theme="space"]) .action-row a[href="research.html"] {
   body.space-mode .site-header::before {
     background-image:
       linear-gradient(rgba(5, 12, 23, .30), rgba(5, 12, 23, .58)),
-      url("../img/asteroid-bennu.webp") !important;
+      url("../img/asteroid-bennu-1600.webp") !important;
   }
 
   /* Keep the nav glass itself, but make it sit naturally on the asteroid background. */
@@ -8530,7 +8528,7 @@ body.ui-page-home .hero a[href="research.html"]::after,
 body.ui-page-home .hero-actions a[href="research.html"]::after,
 body.ui-page-home .cta-row a[href="research.html"]::after,
 body.ui-page-home .action-row a[href="research.html"]::after {
-  content: "\2192" !important;
+  content: "\2192" / "" !important;
   width: 24px !important;
   height: 24px !important;
   flex: 0 0 24px !important;
@@ -8549,7 +8547,7 @@ body.ui-page-home .hero a[href="cv.html"]::after,
 body.ui-page-home .hero-actions a[href="cv.html"]::after,
 body.ui-page-home .cta-row a[href="cv.html"]::after,
 body.ui-page-home .action-row a[href="cv.html"]::after {
-  content: "ID" !important;
+  content: "ID" / "" !important;
   width: 30px !important;
   height: 22px !important;
   flex: 0 0 30px !important;
@@ -10541,7 +10539,7 @@ body.ui-page-research-graduation #mission-index > .mission-index-panel {
   position: absolute !important;
   inset: -8% !important;
   z-index: -2 !important;
-  background-image: url("../img/asteroid-bennu.webp") !important;
+  background-image: url("../img/asteroid-bennu-1600.webp") !important;
   background-size: cover !important;
   background-position: center center !important;
   opacity: .20 !important;

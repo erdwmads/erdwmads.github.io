@@ -24,7 +24,7 @@ try {
     const page = await context.newPage();
     await page.addInitScript(theme => {sessionStorage.setItem('mads-entry-gate-v1','done');sessionStorage.setItem('mads-cosmic-arrival-v1','done');localStorage.setItem('mads-theme',theme);}, theme);
     // The planetary field guide moved from research to ryugu-bennu (8d592d6); Origins left it for origins-study (000abf8).
-    const routes = process.env.TEST_ROUTES?.split(',') || ([1440,390].includes(width) && !process.env.TEST_QUICK ? ['cv','research','ryugu-bennu','origins-study','index','paper-shelf','photography','contact','research-log','research-graduation','sample-cabinet'] : ['cv','ryugu-bennu','origins-study']);
+    const routes = process.env.TEST_ROUTES?.split(',') || ([1440,390].includes(width) && !process.env.TEST_QUICK ? ['cv','research','ryugu-bennu','origins-study','index','paper-shelf','photography','contact','research-log','research-graduation'] : ['cv','ryugu-bennu','origins-study']);
     const errors=[];page.on('pageerror',error=>errors.push(error.message));
     for (const route of routes) {
       try {

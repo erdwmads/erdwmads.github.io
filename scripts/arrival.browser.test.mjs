@@ -43,13 +43,25 @@ try{
   await page.reload();
   assert.equal(await page.locator('#cosmic-arrival').evaluate(el=>el.open),false,'Once per session');
   if(width===1440){
-   assert.equal(await page.locator('.ambient-fx-toggle').getAttribute('aria-pressed'),'true');
+   const fx=page.locator('.ambient-fx-toggle'),theme=page.locator('.theme-toggle');
+   assert.equal(await fx.getAttribute('aria-pressed'),'true');
+   assert.equal(await fx.getAttribute('aria-label'),null,'The visible FX text is the accessible name');
+   assert.equal(await fx.evaluate(el=>{const d=document.getElementById(el.getAttribute('aria-describedby'));return d?.hidden&&d.textContent;}),'Background stardust and meteor effects');
+   assert.match(await(await page.request.get(`${base}/index.html`)).text(),/<button class="theme-toggle" type="button" aria-label="Switch to Light Mode">Light Mode<\/button>/,'Server markup names the default Space theme action');
+   const themeState=()=>theme.evaluate(el=>[el.textContent,el.getAttribute('aria-label'),el.hasAttribute('aria-pressed')]);
+   assert.deepEqual(await themeState(),['Light Mode','Switch to Light Mode',false]);
+   await theme.click();
+   assert.deepEqual(await themeState(),['Space Mode','Switch to Space Mode',false]);
+   await theme.click();
+   assert.deepEqual(await themeState(),['Light Mode','Switch to Light Mode',false]);
    await page.locator('.obs-fx-settings').click();
+   assert.equal(await page.getByRole('button',{name:'FX On',exact:true}).count(),1,'FX toggle is named by its visible text');
    await page.locator('input[value="standard"]').check();
    await toggleFx(page);
    await page.reload();
    assert.equal(await page.locator('html').getAttribute('data-fx-intensity'),'standard','Explicit lower intensity is retained');
-   assert.equal(await page.locator('.ambient-fx-toggle').getAttribute('aria-pressed'),'false','Explicit FX off is retained');
+   assert.equal(await fx.getAttribute('aria-pressed'),'false','Explicit FX off is retained');
+   assert.equal(await fx.textContent(),'FX Off');
    await page.locator('.nav a[href="cv.html"]').click();
    await page.waitForURL('**/cv.html');
    assert.equal(await page.locator('#arrival-replay').isVisible(),false,'Replay is home-only');
@@ -65,7 +77,7 @@ try{
  assert.equal(await reduced.locator('#cosmic-arrival canvas').count(),0);
  await reduced.close();
  const failed=await browser.newPage();
- await failed.route('**/assets/img/arrival/earth-day.jpg',route=>route.abort());
+ await failed.route('**/assets/img/arrival/earth-day-*.webp',route=>route.abort());
  await failed.goto(`${base}/index.html`);
  await failed.waitForFunction(()=>document.querySelector('#cosmic-arrival').dataset.state==='complete');
  assert.equal(await failed.locator('#cosmic-arrival').evaluate(el=>el.open),false,'Texture failure does not block navigation');

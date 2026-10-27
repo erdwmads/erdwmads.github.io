@@ -2,24 +2,22 @@
   if (window.__madsLegacyNavigationReady) return;
   window.__madsLegacyNavigationReady = true;
 
-  const pageClassMap = {
-    "index.html": "ui-page-home",
-    "": "ui-page-home",
-    "research.html": "ui-page-research",
-    "ryugu-bennu.html": "ui-page-ryugu-bennu",
-    "origins-study.html": "ui-page-origins",
-    "research-log.html": "ui-page-research-log",
-    "research-graduation.html": "ui-page-research-log",
-    "paper-shelf.html": "ui-page-paper-shelf",
-    "cv.html": "ui-page-cv",
-    "photography.html": "ui-page-photography",
-    "contact.html": "ui-page-contact",
-    "sample-cabinet.html": "ui-page-sample-cabinet"
-  };
+  // Pages opened in place. Their body ui-page-* classes and header state come from the fetched page.
+  const softNavPages = new Set([
+    "index.html",
+    "research.html",
+    "ryugu-bennu.html",
+    "origins-study.html",
+    "research-log.html",
+    "research-graduation.html",
+    "paper-shelf.html",
+    "cv.html",
+    "photography.html",
+    "contact.html"
+  ]);
 
   const commonScripts = new Set([
     "assets/js/power-manager.js",
-    "assets/js/site-header.js",
     "assets/js/theme.js",
     "assets/js/ambient-space.js",
     "assets/js/research-coordinates.js",
@@ -120,29 +118,34 @@
     return name || "index.html";
   }
 
-  function setCurrentNav(pageName) {
+  function setCurrentNav(nextDoc) {
+    const nextLinks = Array.from(nextDoc.querySelectorAll(".nav a, .nav-log-gate"));
     document.querySelectorAll(".nav a, .nav-log-gate").forEach((link) => {
-      const linkPage = pageNameFromUrl(link.getAttribute("href") || "index.html");
-      if (linkPage === (pageName === "research-graduation.html" ? "research-log.html" : pageName)) {
-        link.setAttribute("aria-current", "page");
+      const next = nextLinks.find((item) => item.getAttribute("href") === link.getAttribute("href"));
+      const current = next && next.getAttribute("aria-current");
+      if (current) {
+        link.setAttribute("aria-current", current);
       } else {
         link.removeAttribute("aria-current");
       }
     });
   }
 
-  function setBodyPageClass(pageName) {
-    document.body.classList.forEach((className) => {
-      if (className.indexOf("ui-page-") === 0) {
-        document.body.classList.remove(className);
-      }
+  function setBodyPageClass(nextDoc) {
+    const isPageClass = (className) => className.indexOf("ui-page-") === 0;
+    const nextClasses = Array.from(nextDoc.body.classList).filter(isPageClass);
+    Array.from(document.body.classList).filter(isPageClass).forEach((className) => {
+      if (!nextClasses.includes(className)) document.body.classList.remove(className);
     });
-    document.body.classList.add(pageClassMap[pageName] || "ui-page-" + pageName.replace(".html", ""));
+    document.body.classList.add(...nextClasses);
   }
 
   function runPageScripts(nextDoc) {
     const scripts = Array.from(nextDoc.querySelectorAll("body script"));
     scripts.forEach((script) => {
+      // The header and the entrance dialog persist across soft navigation, so their inline scripts run once per load;
+      // re-running the entrance opener would reopen the dialog over another page.
+      if (script.hasAttribute("data-site-header") || script.hasAttribute("data-arrival-gate")) return;
       const src = script.getAttribute("src");
       const fresh = document.createElement("script");
       if (script.type === "module") {
@@ -207,8 +210,8 @@
       currentMain.replaceWith(nextMain);
       renderedDocument = documentKey(url);
       pageName = pageNameFromUrl(url);
-      setCurrentNav(pageName);
-      setBodyPageClass(pageName);
+      setCurrentNav(nextDoc);
+      setBodyPageClass(nextDoc);
       if (pushState) {
         history.pushState({ madsSoftNav: true }, "", url);
       }
@@ -246,7 +249,7 @@
       }
       return;
     }
-    if(!pageClassMap[pageNameFromUrl(target.href)])return;
+    if(!softNavPages.has(pageNameFromUrl(target.href)))return;
     event.preventDefault();
     history.replaceState({...history.state,madsScrollY:scrollY},"",location.href);
     navigate(target.href, true);

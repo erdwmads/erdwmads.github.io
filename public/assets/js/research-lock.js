@@ -17,6 +17,7 @@
   const sessionNotice = document.querySelector('[data-research-session-notice]');
 
   if (!gate || !content || !form || !input) return;
+  sessionNotice?.setAttribute('tabindex', '-1');
 
   const archiveIterations = 600000;
   const archiveUrl = gate.dataset.protectedArchiveUrl;
@@ -154,6 +155,8 @@
     if (session) session.hidden = false;
     document.documentElement.classList.add('research-unlocked');
     document.dispatchEvent(new CustomEvent('mads:research-unlocked'));
+    // The gate that held focus is now hidden; land on the unlock notice rather than the page body.
+    sessionNotice?.focus?.({ preventScroll: true });
   };
 
   const invalidateAccess = () => {
@@ -218,9 +221,9 @@
         await passkeys.register(password, {signal:currentController?.signal});
         if (currentAttempt !== attemptToken) return;
       }
-      if (sessionNotice) sessionNotice.textContent = mode === 'setup'
+      if (sessionNotice) sessionNotice.textContent = 'Mission Log unlocked · ' + entries.length + (entries.length === 1 ? ' record. ' : ' records. ') + (mode === 'setup'
         ? 'Passkey linked on this browser. Keep your archive password for recovery.'
-        : 'Unlocked for this page. Leaving the page locks the archive.';
+        : 'Leaving the page locks the archive.');
       unlock(entries);
     } catch (caughtError) {
       if (currentAttempt !== attemptToken) return;

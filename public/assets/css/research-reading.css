@@ -61,6 +61,7 @@ html[data-theme] body#academic-site .research-workflow {
   list-style: none; border: 1px solid var(--obs-line); border-radius: 16px; overflow: hidden; background: var(--obs-line);
 }
 html[data-theme] body#academic-site .research-workflow li { margin: 0; padding: 22px; background: var(--obs-surface); }
+html[data-theme] body#academic-site .research-workflow li:last-child:nth-child(3n+1) { grid-column: 1 / -1; }
 html[data-theme] body#academic-site .research-step-number { display: inline-block; font-size: 12px; font-weight: 600; color: var(--obs-accent); margin-bottom: 10px; }
 html[data-theme] body#academic-site .research-workflow h3 { font-size: 16px; line-height: 1.5; margin: 0 0 10px; text-shadow: none; }
 html[data-theme] body#academic-site .research-workflow p { margin: 0; color: var(--obs-muted); font-size: 13px; line-height: 1.8; }
@@ -91,6 +92,8 @@ html[data-theme] body#academic-site .research-reading-context { max-width: 900px
   html[data-theme] body#academic-site .research-context-card dl > div:last-child { grid-column: 1 / -1; }
   html[data-theme] body#academic-site .research-workflow { grid-template-columns: repeat(2,minmax(0,1fr)); }
   html[data-theme] body#academic-site .research-workflow li { padding: 16px; }
+  html[data-theme] body#academic-site .research-workflow li:last-child:nth-child(3n+1) { grid-column: auto; }
+  html[data-theme] body#academic-site .research-workflow li:last-child:nth-child(odd) { grid-column: 1 / -1; }
 }
 @media (max-width: 440px) {
   html[data-theme] body#academic-site .research-workflow { grid-template-columns: 1fr; }

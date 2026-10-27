@@ -27,12 +27,13 @@ Codex must:
 - Update `C:\Users\tsuku\Desktop\Grad Research\Orgueil Grad Data\Website Archive\mission-log.private.json`.
 - Keep the page rendered through `src/components/MissionLogShell.astro` and the lazy Mission Log scripts.
 - Keep latest-first Mission Log order and chronological Mission Index order.
-- Back up every new original image to `C:\Users\tsuku\Desktop\Grad Research\Orgueil Grad Data\事前準備`.
+- Back up every new original image to `C:\Users\tsuku\Desktop\Grad Research\Orgueil Grad Data\事前準備`, then publish only its display derivative (image rule in `docs/content-workflow.md`).
 - Verify image filenames exist under `public/assets/img/mission-log/`.
 - Use `assets/img/mission-log/...` paths for Mission Log images.
-- Generate the encrypted archive with the passphrase held only in process memory or a one-time local handoff.
+- Have the owner generate the encrypted archive with `scripts/publish-mission-log.ps1 -CheckLeaks`, which prompts for the passphrase; a mistyped passphrase aborts instead of re-keying the archive.
 - Run the protected tests, build, PPT export, and site check before committing website changes.
 - Never commit the private JSON or passphrase.
+- Delete temporary drafts that hold entry text.
 
 ## Add Papers
 
@@ -74,11 +75,12 @@ Can the file be resized/compressed for web display? yes/no
 
 Codex must:
 
-- Keep original research/photography images unless destructive replacement is explicitly approved.
-- Add thumbnails or CDN display URLs when useful.
+- Keep Photography originals in `public/assets/img/` unless destructive replacement is explicitly approved.
+- Mission Log images are display derivatives under the image rule in `docs/content-workflow.md`; their originals live in `事前準備`, and an existing public image is replaced only with the owner's approval.
+- Regenerate thumbnails and Photography srcset tiers with `npm run images:derive` when source images change.
 - Keep Mission Log images under `public/assets/img/mission-log/`.
 - Keep `loading="lazy"` and `decoding="async"` for Mission Log images.
-- Run `npm run audit:images` after larger image changes.
+- Run `npm run audit:images` after any image change; it fails on a Mission Log image over the display limits.
 - Run `npm run check`.
 
 ## Create A Presentation From Website Content

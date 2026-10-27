@@ -7,8 +7,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
@@ -16,29 +14,32 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      # configure-pages reads the Pages site configuration.
+      pages: read
     env:
       ASTRO_TELEMETRY_DISABLED: "1"
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/checkout@v7
         with:
-          node-version: 22
+          # Full history: spacecraft-model-simplify.test.mjs reads the unmodified NASA GLB from a past commit.
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
           cache: npm
       - name: Install dependencies
         run: npm ci
       - name: Configure Pages
-        uses: actions/configure-pages@v5
-      - name: Test protected Mission Log publisher
-        run: npm run test:mission-publisher
-      - name: Test protected Mission Log unlock
-        run: npm run test:research-lock
-      - name: Test protected Mission Log renderer lifecycle
-        run: npm run test:mission-index
-      - name: Test protected Mission Log lightbox purge
-        run: npm run test:mission-lightbox
+        uses: actions/configure-pages@v6
+      # Every Node unit test (scripts/*.test.mjs and src/**/*.test.mjs); none needs dist/ or a browser.
+      - name: Run unit tests
+        run: npm run test:unit
       - name: Build site
         run: npm run build
       - name: Export PPT data
@@ -46,17 +47,22 @@ jobs:
       - name: Check generated site
         run: npm run check:site
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: dist
+          # Since v4 dotfiles are skipped by default; keep public/.nojekyll in the artifact as before.
+          include-hidden-files: true
 
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: build
+    permissions:
+      pages: write
+      id-token: write
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

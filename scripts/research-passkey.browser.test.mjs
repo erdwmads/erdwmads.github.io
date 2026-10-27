@@ -43,12 +43,18 @@ try {
  const page=await context.newPage();page.setDefaultTimeout(12000);page.on('pageerror',e=>errors.push(e.message));
  const go=()=>page.goto(base+'/research-graduation.html?preview=passkey#archive-access');
  const input=page.locator('[data-research-lock-input]'),setup=page.locator('[data-passkey-setup]'),unlock=page.locator('[data-passkey-unlock]'),content=page.locator('[data-research-lock-content]'),gate=page.locator('[data-research-lock-gate]');
+ // Every unlock path lands focus on the session notice, which names the decrypted record count.
+ const noticeFocused=async(pattern,label)=>{
+   assert.equal(await page.evaluate(()=>document.activeElement?.matches('[data-research-session-notice]')),true,label+': unlock must focus the session notice');
+   assert.match(await page.locator('[data-research-session-notice]').innerText(),pattern);
+ };
  await go();await setup.waitFor({state:'visible'});
  await input.fill('incorrect');await setup.click();
  await page.getByText('Incorrect password.',{exact:true}).waitFor({state:'visible'});
  assert.equal(await page.evaluate(()=>window.__passkeyCalls),0);
  results.push('Wrong password does not create a passkey');
  await input.fill(password);await setup.click();await content.waitFor({state:'visible'});
+ await noticeFocused(/^Mission Log unlocked · 1 record\. Passkey linked on this browser\./,'setup');
  const stored=await page.evaluate(()=>Object.entries(localStorage).filter(([k])=>k.startsWith('mads-research-passkey-v1:')));
  assert.equal(stored.length,1);assert.equal(stored[0][1].includes(password),false);
  results.push('Enrollment verifies password, saves ciphertext and opens synthetic archive');
@@ -56,6 +62,7 @@ try {
  assert.equal(await page.locator('[data-test-private]').count(),0);
  assert.equal(await page.evaluate(()=>window.MadsProtectedArchive),undefined);
  await page.reload();await unlock.waitFor({state:'visible'});await unlock.click();await content.waitFor({state:'visible'});
+ await noticeFocused(/^Mission Log unlocked · 1 record\. Leaving the page locks the archive\.$/,'passkey');
  results.push('Reloaded page unlocks with passkey and no password input');
  payload=archive();
  await page.getByRole('button',{name:'Lock log',exact:true}).click();await unlock.click();await content.waitFor({state:'visible'});
@@ -67,6 +74,7 @@ try {
  await page.getByText(/verification was cancelled or timed out/).waitFor({state:'visible'});
  assert.equal(await content.isVisible(),false);
  await input.fill(password);await page.getByRole('button',{name:'Unlock with password',exact:true}).click();await content.waitFor({state:'visible'});
+ await noticeFocused(/^Mission Log unlocked · 1 record\. Leaving the page locks the archive\.$/,'password fallback');
  results.push('Soft navigation relocks; cancelled passkey keeps password fallback working');
  await page.getByRole('button',{name:'Lock log',exact:true}).click();
  await page.getByRole('button',{name:'Forget this browser',exact:true}).click();

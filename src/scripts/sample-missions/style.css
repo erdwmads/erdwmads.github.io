@@ -10,6 +10,7 @@ html[data-theme] body#academic-site .mission-selector button{display:grid;grid-t
 .mission-selector strong{font-size:19px;}
 .mission-selector button>span:last-child{font-size:12px;color:var(--obs-muted);}
 html[data-theme] body#academic-site .mission-selector [aria-selected=true]{border-color:var(--obs-accent)!important;background:linear-gradient(115deg,var(--obs-gold-glow),transparent),var(--obs-glass)!important;}
+html[data-theme] body#academic-site .mission-selector [aria-selected=true] .mission-agency{color:var(--obs-text);}
 .mission-player{border:1px solid var(--obs-line);border-radius:20px;overflow:clip;background:var(--obs-glass);}
 .mission-chapters{display:flex;gap:2px;overflow-x:auto;overflow-y:hidden;touch-action:pan-x pan-y pinch-zoom;padding:8px 12px;border-bottom:1px solid var(--obs-line);scrollbar-width:thin;scrollbar-color:var(--obs-line) transparent;}
 html[data-theme] body#academic-site .mission-chapters button{flex:1 0 auto;display:grid;gap:5px;text-align:left;padding:10px 13px;border:0!important;border-radius:8px!important;background:transparent!important;box-shadow:none!important;font-size:12px;min-height:58px;}
@@ -116,7 +117,7 @@ html[data-theme] body#academic-site .sample-missions .mission-camera-tools p{col
 
 .mission-context{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 18px;border-bottom:1px solid #26343e;background:#0b1721;}
 .mission-location{display:grid;gap:4px;min-width:0;}
-html[data-theme] body#academic-site .sample-missions .mission-location a{color:#d7be81!important;font-size:12px!important;line-height:1.5!important;}
+html[data-theme] body#academic-site .sample-missions .mission-location a{color:var(--obs-link)!important;font-size:12px!important;line-height:1.5!important;}
 .mission-location small{color:#9eafb9;font-size:10px;}
 .mission-context>div:last-child{display:flex;gap:6px;flex-shrink:0;}
 html[data-theme] body#academic-site .mission-context button{font-size:11px;background:#172731!important;color:#d8e4eb!important;box-shadow:none!important;}

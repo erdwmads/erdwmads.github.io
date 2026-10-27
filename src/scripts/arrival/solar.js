@@ -18,7 +18,9 @@ export function createSolarJourney(host){
   map.anisotropy=4;textures.push(map);
   return map;
  }
- const day=texture('/assets/img/arrival/earth-day.jpg'),night=texture('/assets/img/arrival/earth-night.jpg'),cloudMap=texture('/assets/img/arrival/earth-clouds.png',false);
+ // 2048 and 1024 WebP derivatives of the 4096 maps; the closing globe never needs the full-size originals.
+ const res=innerWidth<700?1024:2048;
+ const day=texture(`/assets/img/arrival/earth-day-${res}.webp`),night=texture(`/assets/img/arrival/earth-night-${res}.webp`),cloudMap=texture('/assets/img/arrival/earth-clouds.png',false);
  const sphere=new THREE.SphereGeometry(1,96,64);geometries.push(sphere);
  function material(value){materials.push(value);return value;}
  function globe(radius,mat,parent=group){const mesh=new THREE.Mesh(sphere,material(mat));mesh.scale.setScalar(radius);parent.add(mesh);return mesh;}

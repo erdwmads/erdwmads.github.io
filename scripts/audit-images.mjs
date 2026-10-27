@@ -1,17 +1,36 @@
 import fs from "node:fs";
 import path from "node:path";
+import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const imageDir = path.join(root, "public/assets/img");
 const docsDir = path.join(root, "docs");
 const outputPath = path.join(docsDir, "image-inventory.md");
+const requireFromRoot = createRequire(path.join(root, "package.json"));
+const sharp = createRequire(requireFromRoot.resolve("astro/package.json"))("sharp");
+
+// Public Mission Log images are display derivatives; instrument and camera originals stay in the private backup.
+const missionDir = path.join(imageDir, "mission-log");
+const MISSION_MAX_EDGE = 2400;
+const MISSION_MAX_BYTES = 1.5 * 1024 * 1024;
+const PANORAMA_RATIO = 2.3;
+
 // Every Mission Log display image needs a thumbnail; count the sources the same
 // way generate-image-derivatives.mjs does so new entries do not stale this check.
-const missionSourceCount = fs.readdirSync(path.join(imageDir, "mission-log"))
+const missionSourceCount = fs.readdirSync(missionDir)
   .filter((name) => /^grad-log-.*\.jpg$/i.test(name)).length;
+// Photography srcset tiers: every photograph at 640w and 960w, panoramas also at 1600w.
+const photoSources = Array.from({ length: 21 }, (_, index) => path.join(imageDir, `photo (${index + 1}).jpg`));
+const panoramaCount = (await Promise.all(photoSources.map(async (source) => {
+  const { width, height, orientation = 1 } = await sharp(source).metadata();
+  return (orientation >= 5 ? height / width : width / height) > PANORAMA_RATIO;
+}))).filter(Boolean).length;
 const derivativeTargets = [
-  { label: "Photography", dir: path.join(imageDir, "thumbs", "photography"), expected: 21 },
+  { label: "Photography 480w", dir: path.join(imageDir, "thumbs", "photography"), expected: photoSources.length },
+  { label: "Photography 640w", dir: path.join(imageDir, "photography", "w640"), expected: photoSources.length },
+  { label: "Photography 960w", dir: path.join(imageDir, "photography", "w960"), expected: photoSources.length },
+  { label: "Photography 1600w", dir: path.join(imageDir, "photography", "w1600"), expected: panoramaCount },
   { label: "Mission Log", dir: path.join(imageDir, "thumbs", "mission-log"), expected: missionSourceCount }
 ];
 
@@ -32,8 +51,25 @@ for (const target of derivativeTargets) {
     ? walk(target.dir).filter((file) => file.endsWith(".webp")).length
     : 0;
   if (count !== target.expected) {
-    throw new Error(`${target.label}: expected ${target.expected} WebP thumbnails, found ${count}`);
+    throw new Error(`${target.label}: expected ${target.expected} WebP derivatives, found ${count}; run npm run images:derive`);
   }
+}
+
+const missionProblems = [];
+for (const name of fs.readdirSync(missionDir).sort()) {
+  const file = path.join(missionDir, name);
+  const bytes = fs.statSync(file).size;
+  const { width, height, exif, xmp } = await sharp(file).metadata();
+  const problems = [
+    Math.max(width, height) > MISSION_MAX_EDGE && `${width}x${height} px`,
+    bytes > MISSION_MAX_BYTES && formatBytes(bytes),
+    exif && "EXIF",
+    xmp && "XMP"
+  ].filter(Boolean);
+  if (problems.length) missionProblems.push(`${name} (${problems.join(", ")})`);
+}
+if (missionProblems.length) {
+  throw new Error(`Mission Log images must be display derivatives (at most ${MISSION_MAX_EDGE} px on the long edge and ${formatBytes(MISSION_MAX_BYTES)}, EXIF/XMP stripped); back up the original to 事前準備 and replace: ${missionProblems.join("; ")}`);
 }
 
 const imageFiles = walk(imageDir)
@@ -47,6 +83,7 @@ const imageFiles = walk(imageDir)
 
 const largeImages = imageFiles.filter((image) => image.bytes >= 1024 * 1024);
 const totalBytes = imageFiles.reduce((sum, image) => sum + image.bytes, 0);
+const missionCount = fs.readdirSync(missionDir).length;
 
 const lines = [
   "# Image Inventory",
@@ -56,6 +93,7 @@ const lines = [
   `Total images: ${imageFiles.length}`,
   `Total image weight: ${formatBytes(totalBytes)}`,
   `Images over 1 MB: ${largeImages.length}`,
+  `Mission Log display images: ${missionCount}, all within ${MISSION_MAX_EDGE} px, ${formatBytes(MISSION_MAX_BYTES)} and no EXIF/XMP`,
   "",
   "## Largest Images",
   "",
@@ -65,9 +103,9 @@ const lines = [
   "",
   "## Optimization Policy",
   "",
-  "- Keep original research/photography files in `public/assets/img/` unless the user explicitly approves destructive replacement.",
-  "- Prefer adding generated thumbnails or CDN-sized URLs for page display instead of overwriting originals.",
-  "- Keep Mission Log images under `public/assets/img/mission-log/`.",
+  `- New Mission Log images publish display derivatives in \`public/assets/img/mission-log/\`: auto-oriented sRGB JPEG, at most ${MISSION_MAX_EDGE} px on the long edge and ${formatBytes(MISSION_MAX_BYTES)}, EXIF/XMP stripped. This audit fails otherwise.`,
+  "- Instrument and camera originals live in `C:\\Users\\tsuku\\Desktop\\Grad Research\\Orgueil Grad Data\\事前準備` as `orgueil-mission-log-YYYYMMDD-figNN.jpg`; back up the original there before publishing its derivative.",
+  "- Keep Photography originals and other original files in `public/assets/img/` unless the owner explicitly approves destructive replacement; page display uses generated derivatives (`npm run images:derive`, `npm run images:backgrounds`).",
   "- Mission Log images should keep `loading=\"lazy\"` and `decoding=\"async\"`.",
   "- Before replacing public or Mission Log images, run `npm run check`."
 ];

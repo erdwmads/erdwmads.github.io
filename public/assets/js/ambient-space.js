@@ -56,7 +56,12 @@
     const button = document.createElement("button");
     button.type = "button";
     button.className = "ambient-fx-toggle";
-    button.setAttribute("aria-label", "Toggle background stardust and meteor effects");
+    // The visible "FX On" / "FX Off" text is the name; a hidden element can still describe it.
+    const description = document.createElement("span");
+    description.id = "ambient-fx-description";
+    description.hidden = true;
+    description.textContent = "Background stardust and meteor effects";
+    button.setAttribute("aria-describedby", description.id);
     updateAmbientToggle(button);
 
     button.addEventListener("click", function () {
@@ -75,7 +80,7 @@
       emitAmbientState();
     });
 
-    document.body.appendChild(button);
+    document.body.append(button, description);
   }
 
   function rand(min, max) {

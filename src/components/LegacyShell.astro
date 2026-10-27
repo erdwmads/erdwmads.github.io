@@ -3,24 +3,30 @@ import { brand, footerItems, navItems, orcid, personSchema, researchLogGate, sit
 import CosmicArrival from './CosmicArrival.astro';
 import ContinueReading from './ContinueReading.astro';
 import { stylesheetBundle } from "../lib/stylesheet-bundle";
+// Inlined after the header so the compact mobile navigation is ready before first paint.
+import siteHeaderSource from "../../public/assets/js/site-header.js?raw";
 import '../scripts/origins-study/style.css';
 import '../scripts/sample-missions/style.css';
 
 interface Props {
   title: string;
   description: string;
+  // Navigation key: marks the active header link and sets ui-page-<current>.
   current: string;
+  // Extra page key for a page that shares another page's navigation entry: adds ui-page-<pageClass>.
+  pageClass?: string;
   mainClass?: string;
   path?: string;
   scriptHtml: string;
   noindex?: boolean;
 }
 
-const { title, description, current, mainClass = "main", path, scriptHtml, noindex = false } = Astro.props;
+const { title, description, current, pageClass, mainClass = "main", path, scriptHtml, noindex = false } = Astro.props;
 const canonicalPath = path || "index.html";
 const canonicalUrl = new URL(canonicalPath, `${siteMetadata.url}/`).toString();
 const imageUrl = new URL(siteMetadata.image, `${siteMetadata.url}/`).toString();
-const bodyClass = `site-refined ui-page-${current}`;
+// The only source of ui-page-* classes: soft navigation copies them from the fetched page's body.
+const bodyClass = ["site-refined", `ui-page-${current}`, pageClass && pageClass !== current && `ui-page-${pageClass}`].filter(Boolean).join(" ");
 const { version: stylesheetVersion } = await stylesheetBundle();
 ---
 
@@ -101,12 +107,11 @@ const { version: stylesheetVersion } = await stylesheetBundle();
       import '../scripts/photo-layout.js';
     </script>
   <link rel="icon" href="favicon.ico" sizes="any">
-  <link rel="icon" type="image/png" href="assets/img/favicon.png">
+  <link rel="icon" type="image/png" href="assets/img/favicon-32x32.png" sizes="32x32">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 </head>
 <body id="academic-site" class={bodyClass}>
-<a class="site-skip-link" href="#main-content">Skip to content</a>
-<CosmicArrival home={current === 'home'} />
+<CosmicArrival home={current === 'home'}><a class="site-skip-link" href="#main-content">Skip to content</a></CosmicArrival>
 <header class="site-header">
   <div class="header-inner">
     <a class="brand" href={brand.homeHref}>
@@ -136,10 +141,11 @@ const { version: stylesheetVersion } = await stylesheetBundle();
           <small>{researchLogGate.status}</small>
         </span>
       </a>
-      <button class="theme-toggle" type="button" aria-label="Toggle light and space mode" aria-pressed="true">Light Mode</button>
+      <button class="theme-toggle" type="button" aria-label="Switch to Light Mode">Light Mode</button>
     </div>
   </div>
 </header>
+<script is:inline data-site-header set:html={siteHeaderSource}></script>
 <main id="main-content" class={mainClass} tabindex="-1">
   <slot />
   <ContinueReading current={current} />

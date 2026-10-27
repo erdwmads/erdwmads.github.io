@@ -21,8 +21,7 @@ const pages = [
   "paper-shelf.html",
   "cv.html",
   "photography.html",
-  "contact.html",
-  "sample-cabinet.html"
+  "contact.html"
 ];
 
 const failures = [];
@@ -46,9 +45,8 @@ const staleNamePattern = new RegExp(
 // The former romanization is published once on purpose, in the Home Person alternateName, so older search results match.
 const formerName = ["Mads", "LIU", "Yong"].join(" ");
 const formerNameHolds = new Set(["src/data/site.ts", "index.html"]);
-// The research proposal is published under a neutral filename (the document itself is unchanged).
-// Its former filename is still cited in archived plans under docs/, which are historical records and stay as written.
-const proposalPath = "assets/files/Bachelors_Thesis_Research_Proposal.pdf";
+// The research proposal is no longer published (backed up privately on 2026-10-24). Its former filename is still
+// cited in archived plans under docs/, which are historical records and stay as written.
 const retiredProposalPath = `assets/files/Bachelors_Thesis_Research_Proposal_${["Mads", "LIU", "Yong"].join("_")}.pdf`;
 function withoutHeldNames(relativePath, text) {
   if (formerNameHolds.has(relativePath)) text = text.replace(`"${formerName}"`, "");
@@ -120,6 +118,22 @@ if (photoThumbCount !== 21) {
 const missionImages = fs.readdirSync(path.join(assetsDir, "img", "mission-log")).filter((name) => /^grad-log-.*\.jpg$/i.test(name));
 const missionThumbs = new Set(collectFiles(missionThumbDir).filter((file) => file.endsWith(".webp")).map((file) => path.basename(file, ".webp")));
 const missingThumbs = missionImages.filter((name) => !missionThumbs.has(name.replace(/\.jpg$/i, "")));
+// Public Mission Log images are display derivatives: at most 2400 px on the long edge and 1.5 MiB, no EXIF/XMP (APP1).
+function jpegInfo(buffer) {
+  let offset = 2, exif = false;
+  while (offset + 4 <= buffer.length && buffer[offset] === 0xff) {
+    const marker = buffer[offset + 1];
+    if (marker === 0xe1) exif = true;
+    if (marker >= 0xc0 && marker <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(marker)) return { width: buffer.readUInt16BE(offset + 7), height: buffer.readUInt16BE(offset + 5), exif };
+    offset += 2 + buffer.readUInt16BE(offset + 2);
+  }
+  return { width: 0, height: 0, exif };
+}
+for (const name of missionImages) {
+  const file = path.join(assetsDir, "img", "mission-log", name);
+  const { width, height, exif } = jpegInfo(fs.readFileSync(file));
+  if (!width || Math.max(width, height) > 2400 || fs.statSync(file).size > 1.5 * 1024 * 1024 || exif) fail(`Mission Log: ${name} must be a display derivative (<= 2400 px long edge, <= 1.5 MiB, no EXIF/XMP)`);
+}
 if (missingThumbs.length || missionThumbCount !== missionImages.length) {
   fail(`Mission Log: ${missionImages.length} display images but ${missionThumbCount} WebP thumbnails${missingThumbs.length ? ` (missing ${missingThumbs.slice(0, 3).join(", ")})` : ""}`);
 }
@@ -300,6 +314,15 @@ for (const page of pages) {
 
 
 const homePage = readDistPage("index.html");
+if (!homePage.includes('<link rel="icon" type="image/png" href="assets/img/favicon-32x32.png" sizes="32x32">')) {
+  fail("index.html: the PNG icon must be the 32 px favicon, not the 512 px original");
+}
+if (!homePage.includes('<button class="theme-toggle" type="button" aria-label="Switch to Light Mode">Light Mode</button>')) {
+  fail("index.html: theme toggle must name its action, match the default Space theme and carry no aria-pressed");
+}
+if (!/<dialog id="cosmic-arrival"[\s\S]*?<\/dialog>\s*<a class="site-skip-link" href="#main-content">/.test(homePage)) {
+  fail("index.html: the skip link must follow the entrance dialog so the first Tab after the entrance reaches it");
+}
 const researchPage = readDistPage("research.html");
 const comparisonPage = readDistPage("ryugu-bennu.html");
 // Research presents the Orgueil question and pathway; the comparison materials live on their own page.
@@ -358,6 +381,24 @@ if (!/<a\b(?=[^>]*href="research-log\.html")(?=[^>]*class="[^"]*\bnav-log-gate\b
 }
 
 const legacyNavigationSource = fs.readFileSync(path.join(root, "public", "assets", "js", "legacy-navigation.js"), "utf8");
+// ui-page-* classes come only from LegacyShell; soft navigation copies them from the fetched page.
+if (!/<body\b[^>]*class="[^"]*\bui-page-research-log\b[^"]*\bui-page-research-graduation\b/i.test(readDistPage("research-graduation.html"))) {
+  fail("research-graduation.html: body must render ui-page-research-log and ui-page-research-graduation");
+}
+if (legacyNavigationSource.includes("pageClassMap") || /pageClassMap|ui-page-\$\{/.test(fs.readFileSync(path.join(assetsDir, "js", "interface-2046.js"), "utf8"))) {
+  fail("legacy-navigation.js / interface-2046.js: ui-page-* classes must come only from the server-rendered body");
+}
+// The entrance dialog persists across soft navigation; re-running its inline opener would reopen it over another page.
+if (!legacyNavigationSource.includes('script.hasAttribute("data-arrival-gate")') || !readDistPage("index.html").includes("<script data-arrival-gate>")) {
+  fail("legacy-navigation.js: soft navigation must not re-run the entrance opener (data-arrival-gate)");
+}
+// The header controller runs as a classic script right after </header>, so the compact phone header is ready before first paint.
+for (const page of pages) {
+  const html = readDistPage(page);
+  if (!html) continue;
+  if (!/<\/header>\s*<script data-site-header>[\s\S]*?data-nav-ready[\s\S]*?<\/script>\s*<main\b/i.test(html)) fail(`${page}: site-header.js must be inlined as a classic script directly after </header>`);
+  if (html.includes("assets/js/site-header.js")) fail(`${page}: site-header.js must not also load as an external script`);
+}
 if (!legacyNavigationSource.includes('document.querySelectorAll(".nav a, .nav-log-gate")')) {
   fail("legacy-navigation.js: soft navigation must update the independent Research Log gate");
 }
@@ -404,8 +445,8 @@ const researchLog = readDistPage("research-log.html");
 if (researchLog.includes("assets/js/research-lock.js") || researchLog.includes("data-research-lock-content") || researchLog.includes("data-research-lock-gate") || researchLog.includes("Research Log Locked")) {
   fail("research-log.html: password gate must be removed from the public Research Log");
 }
-if (!researchLog.includes("Download research proposal") || !researchLog.includes(proposalPath)) {
-  fail("research-log.html: must keep the research proposal download before the private Mission Log boundary");
+if (/Research_Proposal|research proposal/i.test(researchLog + readDistPage("research-graduation.html")) || fs.existsSync(path.join(publicDir, "assets", "files", "Bachelors_Thesis_Research_Proposal.pdf"))) {
+  fail("research proposal: no longer published; remove the download links and the PDF");
 }
 if (!researchLog.includes("Dolomite in the Orgueil CI1 Chondrite")) {
   fail("research-log.html: missing concise display title");
@@ -457,9 +498,15 @@ for (const file of ["index.html", "research.html", "contact.html"]) {
     fail(`${file}: expected exactly one versioned link to assets/css/site.css`);
   }
 }
-// Every generated page, including Origins and 404: the owner's name in the page metadata, and the footer ORCID iD.
+// The retired Sample Cabinet URL is a shell-less noindex redirect to Research, with no dolomite wording.
+const sampleCabinetStub = readDistPage("sample-cabinet.html");
+if (!sampleCabinetStub.includes('<meta name="robots" content="noindex">') || !sampleCabinetStub.includes('<link rel="canonical" href="https://erdwmads.github.io/research.html">') || !sampleCabinetStub.includes('<meta http-equiv="refresh" content="0; url=research.html">') || !sampleCabinetStub.includes('<a href="research.html">This page has moved to Research.</a>') || /dolomite/i.test(sampleCabinetStub)) {
+  fail("sample-cabinet.html: must be a noindex redirect stub to research.html");
+}
+// Every generated page, including Origins and 404 (but not the Sample Cabinet redirect stub): the owner's name in the
+// page metadata, and the footer ORCID iD.
 const titleSuffix = `| ${expectedDisplayName}`;
-for (const file of fs.readdirSync(distDir).filter((name) => name.endsWith(".html"))) {
+for (const file of fs.readdirSync(distDir).filter((name) => name.endsWith(".html") && name !== "sample-cabinet.html")) {
   const html = fs.readFileSync(path.join(distDir, file), "utf8");
   const title = (html.match(/<title>([^<]*)<\/title>/) || [])[1] || "";
   if (!title.endsWith(titleSuffix)) fail(`${file}: <title> must end with "${titleSuffix}"`);
@@ -536,6 +583,25 @@ try {
   fail("index.html: missing or unreadable Person structured data");
 }
 const graduationPage = readDistPage("research-graduation.html");
+if (!researchPage.includes("<dd>Ca–Mg carbonate <span>Reported as dolomite</span></dd>")) {
+  fail("research.html: mineral record must read Ca–Mg carbonate, reported as dolomite");
+}
+for (const [file, html] of [["index.html", homePage], ["research.html", researchPage], ["research-graduation.html", graduationPage]]) {
+  if (/primitive chondritic constituent/i.test(html)) fail(`${file}: use the plain-English formation wording`);
+}
+if (!researchPage.includes("EBSD-guided FIB preparation") || !researchPage.includes("not a checklist of completed results")) {
+  fail("research.html: Analytical Pathway must show the planned EBSD-guided FIB step and the not-completed caveat");
+}
+if (!readDistPage("cv.html").includes('<h2 class="section-label">Research experience</h2>')) {
+  fail("cv.html: missing Research experience entry");
+}
+const originsPage = readDistPage("origins-study.html");
+if (!/<dialog\b(?=[^>]*\bid="sources")(?=[^>]*\baria-labelledby="sources-title")/.test(originsPage) || !originsPage.includes('id="sources-title"')) {
+  fail("origins-study.html: the scientific-context dialog must be named by its heading");
+}
+if (!/<div class="planetary-stage" data-stage[^>]*aria-describedby="planetary-stage-hint"/.test(comparisonPage) || !comparisonPage.includes('id="planetary-stage-hint"')) {
+  fail("ryugu-bennu.html: the planetary viewer must describe its keyboard controls");
+}
 if (!graduationPage.includes("assets/js/research-lock.js") || !graduationPage.includes("data-research-lock-gate") || !graduationPage.includes("data-research-lock-content")) {
   fail("research-graduation.html: missing password gate");
 }
@@ -549,6 +615,16 @@ if (!photographyPage.includes("assets/img/thumbs/photography/photo-01.webp")) {
 }
 if ((photographyPage.match(/data-full-src="assets\/img\/photo%20%28\d+%29\.jpg"/g) || []).length !== 21) {
   fail("Photography: expected 21 independently hydratable full-image sources");
+}
+for (const [tier, expected] of [["w640", 21], ["w960", 21], ["w1600", 1]]) {
+  const count = collectFiles(path.join(assetsDir, "img", "photography", tier)).filter((file) => file.endsWith(".webp")).length;
+  if (count !== expected) fail(`Photography: expected ${expected} ${tier} WebP tiers, found ${count} (npm run images:derive photography)`);
+}
+if ((photographyPage.match(/assets\/img\/photography\/w(?:640|960)\/photo-\d\d\.webp (?:640|960)w/g) || []).length !== 42 || !photographyPage.includes("assets/img/photography/w1600/photo-11.webp 1600w")) {
+  fail("Photography: srcset must list the 640w and 960w WebP tiers for every photograph and 1600w for the panorama");
+}
+if (!photographyPage.includes('<h2 class="section-label">Camera</h2>') || (photographyPage.match(/<s class="del">Hasselblad X2D<\/s><span class="visually-hidden"> \(crossed out\)<\/span>/g) || []).length !== 2) {
+  fail("Photography: Camera must be an h2 and the crossed-out camera must be announced");
 }
 if (!photographyPage.includes('class="photo-wall"') || photographyPage.includes('assets/js/photography.js')) {
   fail("Photography: expected a static photo wall without the retired autoplay controller");
@@ -609,6 +685,9 @@ const researchCoordinates = fs.readFileSync(path.join(assetsDir, "js", "research
 if (!researchCoordinates.includes("MOBILE_COORDINATES_MEDIA") || !researchCoordinates.includes("removeCoordinates")) {
   fail("research-coordinates.js: mobile views must not create the supporting coordinates panel");
 }
+if (!researchCoordinates.includes('location.pathname.includes("ryugu-bennu")') || !researchCoordinates.includes('mode = "Comparison"') || researchCoordinates.includes('phase = "Dolomite"') || researchCoordinates.includes("sample-cabinet")) {
+  fail("research-coordinates.js: HUD must label Ryugu & Bennu as a comparison, default to Ca–Mg carbonate and drop Sample Cabinet");
+}
 if (researchCoordinates.includes("6ﾃ・")) {
   fail("research-coordinates.js: photography camera label contains mojibake");
 }
@@ -642,6 +721,12 @@ if (!siteHeaderScript.includes(`const COLLAPSIBLE_NAVIGATION_MEDIA = "${collapsi
 }
 
 const styleCss = fs.readFileSync(path.join(assetsDir, "css", "style.css"), "utf8");
+if (!styleCss.includes('content: "\\2192" / "" !important;') || !styleCss.includes('content: "ID" / "" !important;')) {
+  fail("style.css: home hero glyphs must keep empty alt text so the links are named Research and CV");
+}
+if (styleCss.includes("asteroid-bennu.webp") || !fs.existsSync(path.join(assetsDir, "img", "asteroid-bennu-1600.webp"))) {
+  fail("style.css: the page background must use the grayscale asteroid-bennu-1600.webp derivative");
+}
 if (styleCss.includes("/* compact-desktop-header */")) {
   fail("style.css: narrow desktop navigation must not remain permanently expanded");
 }
@@ -735,6 +820,9 @@ if (!fs.existsSync(researchLockPath)) {
   if (/\b(sessionStorage|localStorage)\b/.test(researchLock)) {
     fail("research-lock.js: must request the password on each page entry, without browser storage unlock caching");
   }
+  if (!researchLock.includes("sessionNotice?.focus?.({ preventScroll: true })") || !researchLock.includes("'Mission Log unlocked · '")) {
+    fail("research-lock.js: unlock must focus the session notice that states the record count");
+  }
 }
 const missionIndexPath = path.join(assetsDir, "js", "mission-index.js");
 const missionIndex = fs.readFileSync(missionIndexPath, "utf8");
@@ -773,6 +861,19 @@ if (
   missionLightbox.includes("mission-lightbox__kicker")
 ) {
   fail("mission-lightbox.js: image viewer must use minimal image-first layout without side information panel");
+}
+if (!missionLightbox.includes("mobile-mission-lightbox-disabled") || !missionLightbox.includes("if (locked || isTouch) return;") || !missionLightbox.includes("setBackgroundInert(true)")) {
+  fail("mission-lightbox.js: phones keep inline figures (no viewer buttons) and the open viewer makes the page behind it inert");
+}
+if (/data-mission-index-list[^>]*aria-live/.test(missionLogShell)) {
+  fail("MissionLogShell.astro: the Mission Index must not be a live region; unlock moves focus to the session notice instead");
+}
+if (fs.existsSync(path.join(root, "src", "legacy", "research-graduation-inline-scripts.html"))) {
+  fail("src/legacy/research-graduation-inline-scripts.html: unused fragment must stay deleted; the phone guard lives in mission-lightbox.js");
+}
+const deployWorkflow = fs.readFileSync(path.join(root, ".github", "workflows", "deploy.yml"), "utf8");
+if (!/run: npm run test:unit\b/.test(deployWorkflow) || /runs-on:\s*ubuntu-latest/.test(deployWorkflow)) {
+  fail(".github/workflows/deploy.yml: CI must run the whole unit suite on a pinned runner image");
 }
 const ambientSpace = fs.readFileSync(path.join(assetsDir, "js", "ambient-space.js"), "utf8");
 if (!ambientSpace.includes("mission-lightbox-open") || !fs.readFileSync(path.join(assetsDir, "js", "interface-2046.js"), "utf8").includes("mission-lightbox-open")) {

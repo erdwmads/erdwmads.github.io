@@ -53,11 +53,12 @@ import ResearchQuestions from './ResearchQuestions.astro';
     <div class="planetary-layout">
       <div class="planetary-visual">
         <div class="planetary-interaction-bar"><span>Swipe to scroll the page</span><button type="button" data-action="interact" aria-label="Enable model rotation and pinch zoom" title="Enable model rotation and pinch zoom" aria-pressed="false" class="planetary-touch"><span data-icon="hand"></span><span data-interact-label>Explore</span></button></div>
-        <div class="planetary-stage" data-stage tabindex="0" role="group" aria-label="Interactive solar system, asteroid and mineral models">
+        <div class="planetary-stage" data-stage tabindex="0" role="group" aria-label="Interactive solar system, asteroid and mineral models" aria-describedby="planetary-stage-hint">
           <div class="planetary-labels" data-labels></div>
           <img class="planetary-fallback" data-fallback hidden alt="Public reference image of the selected material" />
           <p class="planetary-status" data-status role="status">Loading orbital data...</p>
           <button type="button" data-retry data-action="retry" hidden>Retry view</button>
+          <span class="planetary-sr-only" id="planetary-stage-hint">Arrow keys rotate the model. Zoom in, Zoom out and Reset view buttons are above it.</span>
         </div>
         <div class="planetary-ci" data-ci-figure hidden>
           <p class="eyebrow">CI / Orgueil</p>

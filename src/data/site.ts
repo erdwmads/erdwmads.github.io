@@ -113,15 +113,14 @@ type ScriptSpec = {
 };
 
 const commonScripts: ScriptSpec[] = [
-  { src: "assets/js/site-header.js?v=20260913-reviewed", defer: true },
-  { src: "assets/js/theme.js?v=20260831-stability", defer: true },
-  { src: "assets/js/ambient-space.js?v=20260914-viewport", defer: true },
-  { src: "assets/js/research-coordinates.js?v=20260914-viewport", defer: true }
+  { src: "assets/js/theme.js?v=20261024-toggle-name", defer: true },
+  { src: "assets/js/ambient-space.js?v=20261024-toggle-name", defer: true },
+  { src: "assets/js/research-coordinates.js?v=20261024-comparison-hud", defer: true }
 ];
 
-const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20261009-field", defer: true };
+const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20261024-page-class", defer: true };
 const powerManagerScript: ScriptSpec = { src: "assets/js/power-manager.js?v=20260914-viewport" };
-const legacyNavigationScript: ScriptSpec = { src: "assets/js/legacy-navigation.js?v=20261023-scroll", defer: true };
+const legacyNavigationScript: ScriptSpec = { src: "assets/js/legacy-navigation.js?v=20261024-page-class", defer: true };
 
 const pageScripts: Record<string, ScriptSpec[]> = {
   contact: [...commonScripts, { src: "assets/js/contact.js?v=20260929-identity", defer: true }, interfaceScript],
@@ -137,13 +136,12 @@ const pageScripts: Record<string, ScriptSpec[]> = {
   "research-graduation": [
     ...commonScripts,
     { src: "assets/js/research-passkey.js?v=20260930-name", defer: true },
-    { src: "assets/js/research-lock.js?v=20260914-diagnostics", defer: true },
+    { src: "assets/js/research-lock.js?v=20261024-unlock-focus", defer: true },
     { src: "assets/js/mission-index.js?v=20260910-layout", defer: true },
-    { src: "assets/js/mission-lightbox.js?v=20260909-comparison", defer: true },
+    { src: "assets/js/mission-lightbox.js?v=20261024-phone-guard", defer: true },
     { src: "assets/js/mission-status-sync.js", defer: true },
     interfaceScript
-  ],
-  "sample-cabinet": commonScripts
+  ]
 };
 
 function renderScript(spec: ScriptSpec) {
@@ -157,7 +155,7 @@ export function getPageScripts(pageKey: keyof typeof pageScripts | string, inlin
     renderScript(powerManagerScript),
     scripts.map(renderScript).join("\n"),
     renderScript({ src: "assets/js/observatory-interactions.js?v=20260914-viewport", defer: true }),
-    renderScript({ src: "assets/js/mineral-interactions.js?v=20260925-comparison", defer: true }),
+    renderScript({ src: "assets/js/mineral-interactions.js?v=20261024-calibrated", defer: true }),
     inlineHtml,
     renderScript(legacyNavigationScript)
   ].filter(Boolean).join("\n\n");

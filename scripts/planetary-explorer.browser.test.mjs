@@ -7,10 +7,16 @@ const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const sharp = require('sharp');
 const browser = await chromium.launch({ headless: true, ...(process.env.EDGE_EXECUTABLE ? { executablePath: process.env.EDGE_EXECUTABLE } : {}) });
+// The explorer opens on today's UTC date; the label clicks and orbit pixels below depend on it. Pin today to 2026-09-07 UTC
+// (timeline day 614, the orbit-guide epoch) on every page so the run date cannot change the layout. Time still
+// flows from the moment the page is set up.
+const today = { iso: '2026-09-07T00:00:00Z', day: 614 };
+const pinToday = page => page.addInitScript(offset => { const real = Date.now; Date.now = () => real.call(Date) + offset; }, Date.parse(today.iso) - Date.now());
 const base = process.env.SITE_TEST_URL || 'http://127.0.0.1:4322';
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1050 } });
   const errors = [];
+  await pinToday(page);
   await page.addInitScript(() => {
     window.__sceneDraws = 0;
     for (const name of ['drawElements','drawArrays']) {
@@ -24,7 +30,8 @@ try {
   assert.equal(await page.locator('[data-planetary-explorer]').count(), 1);
   const root = page.locator('[data-planetary-explorer]');
   await root.scrollIntoViewIfNeeded();
-  await page.waitForFunction(() => document.querySelector('[data-planetary-explorer]')?.dataset.renderState === 'ready');
+  await page.waitForFunction(() => document.querySelector('[data-planetary-explorer]')?.dataset.renderState === 'ready' && document.querySelector('[data-planetary-explorer]').dataset.day);
+  assert.equal(Math.floor(Number(await root.getAttribute('data-day'))), today.day, 'today is pinned');
   assert.ok(await root.locator('canvas').isVisible());
   async function pixels(container, model = false) {
     // Fixed site controls and the sticky section guide are outside the scene and must not enter its pixel bounds.
@@ -147,6 +154,7 @@ try {
   await page.waitForTimeout(300);
   assert.equal(await page.evaluate(() => window.__sceneDraws),draws,'Offscreen rendering must stop');
   const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
+  await pinToday(mobile);
   await mobile.goto(`${base}/ryugu-bennu.html`, { waitUntil: 'networkidle' });
   await mobile.addStyleTag({content:'astro-dev-toolbar { display:none !important; }'});
   const mr = mobile.locator('[data-planetary-explorer]');
@@ -198,6 +206,7 @@ try {
   await mobile.waitForFunction(() => document.querySelector('.planetary').dataset.modelReady==='compare');
   await pixels(mr,true);
   const failed = await browser.newPage();
+  await pinToday(failed);
   await failed.route('**/assets/data/planetary/orbits.json',route=>route.abort());
   await failed.goto(`${base}/ryugu-bennu.html`,{waitUntil:'networkidle'});
   await failed.locator('.planetary-stage').scrollIntoViewIfNeeded();

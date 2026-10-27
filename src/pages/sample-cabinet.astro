@@ -1,11 +1,16 @@
 ---
-import LegacyShell from "../components/LegacyShell.astro";
-import { getPageScripts } from "../data/site";
-import mainHtml from "../legacy/sample-cabinet-main.html?raw";
-
-const scriptHtml = getPageScripts("sample-cabinet");
+// Retired page. Old links land on this noindex stub and are sent on to Research; it has no site shell or scripts.
 ---
-
-<LegacyShell title='Sample Cabinet | I. Mads Lieu' description="Sample cabinet for I. Mads Lieu's research interests in astromineralogy, planetology, meteorites, and primitive Solar System materials." current='research' mainClass='main sample-cabinet-page' path="sample-cabinet.html" scriptHtml={scriptHtml}>
-  <Fragment set:html={mainHtml} />
-</LegacyShell>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Moved | I. Mads Lieu</title>
+    <meta name="robots" content="noindex">
+    <link rel="canonical" href="https://erdwmads.github.io/research.html">
+    <meta http-equiv="refresh" content="0; url=research.html">
+  </head>
+  <body>
+    <p><a href="research.html">This page has moved to Research.</a></p>
+  </body>
+</html>

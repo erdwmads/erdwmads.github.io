@@ -10,9 +10,11 @@ const sharp = requireFromAstro("sharp");
 
 // Display derivatives for site-wide backgrounds and the portrait. The JPEG
 // originals stay in place as the archival source and the <picture> fallback.
+// The Bennu page background is always shown through grayscale(1) at low opacity
+// (observatory.css, site-refinement.css), so it ships pre-grayscaled at 1600w.
 const webpJobs = [
   { source: "Solar_System_true_color.jpg", output: "Solar_System_true_color.webp", width: 2560, quality: 74 },
-  { source: "asteroid-bennu.jpg", output: "asteroid-bennu.webp", width: 1920, quality: 72 },
+  { source: "asteroid-bennu.jpg", output: "asteroid-bennu-1600.webp", width: 1600, quality: 60, grayscale: true },
   { source: "profile.jpg", output: "profile.webp", width: 960, quality: 80 }
 ];
 
@@ -20,6 +22,7 @@ for (const job of webpJobs) {
   await sharp(path.join(imageRoot, job.source))
     .rotate()
     .resize({ width: job.width, withoutEnlargement: true })
+    .grayscale(Boolean(job.grayscale))
     .webp({ quality: job.quality, effort: 6 })
     .toFile(path.join(imageRoot, job.output));
 }

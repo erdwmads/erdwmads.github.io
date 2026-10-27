@@ -5,19 +5,26 @@ import { join } from 'node:path';
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const browser = await chromium.launch({headless:true,...(process.env.EDGE_EXECUTABLE ? {executablePath:process.env.EDGE_EXECUTABLE} : {})});
+// The explorer opens on today's UTC date, and the Earth click below uses its live position. Pin today to 2026-09-07 UTC
+// (timeline day 614, the orbit-guide epoch) so the run date cannot move Earth under a label. Time still flows
+// from the moment the page is set up.
+const today = { iso: '2026-09-07T00:00:00Z', day: 614 };
+const pinToday = page => page.addInitScript(offset => { const real = Date.now; Date.now = () => real.call(Date) + offset; }, Date.parse(today.iso) - Date.now());
 const base = process.env.SITE_TEST_URL || 'http://127.0.0.1:52523';
 try {
   const page = await browser.newPage({viewport:{width:1440,height:1050}});
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   page.on('console', message => { if(message.type()==='error') errors.push(message.text()); });
+  await pinToday(page);
   await page.goto(`${base}/ryugu-bennu.html`,{waitUntil:'networkidle'});
   await page.addStyleTag({content:'.obs-fx-settings,astro-dev-toolbar {visibility:hidden!important;}'});
   const root = page.locator('[data-planetary-explorer]');
   await root.scrollIntoViewIfNeeded();
-  await page.waitForFunction(()=>document.querySelector('[data-planetary-explorer]').dataset.renderState==='ready');
+  await page.waitForFunction(()=>document.querySelector('[data-planetary-explorer]').dataset.renderState==='ready'&&document.querySelector('[data-planetary-explorer]').dataset.day);
+  assert.equal(Math.floor(Number(await root.getAttribute('data-day'))),today.day,'today is pinned');
   const resources = await page.evaluate(()=>performance.getEntriesByType('resource').map(entry=>entry.name));
-  for(const path of ['/planetary/bennu.glb','/planetary/ryugu.glb','/arrival/earth-day.jpg','/arrival/earth-clouds.png']) {
+  for(const path of ['/planetary/bennu.glb','/planetary/ryugu.glb','/arrival/earth-day-2048.webp','/arrival/earth-clouds.png']) {
     assert.ok(resources.some(name=>name.endsWith(path)),`${path} must be requested`);
   }
   const stage = root.locator('[data-stage]');

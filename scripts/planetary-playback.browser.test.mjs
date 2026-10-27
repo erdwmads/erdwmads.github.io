@@ -2,13 +2,19 @@ import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+// "Now" follows the clock, and the timeline ends on 2031-01-01. Pin today to 2026-01-01 UTC (timeline day 365) so current-time
+// mode stays inside the cached range whatever the run date; time still flows from the moment the page is set up.
+const today = { iso: '2026-01-01T00:00:00Z', day: 365 };
+const pinToday = page => page.addInitScript(offset => { const real = Date.now; Date.now = () => real.call(Date) + offset; }, Date.parse(today.iso) - Date.now());
 const browser = await chromium.launch({headless:true,...(process.env.EDGE_EXECUTABLE?{executablePath:process.env.EDGE_EXECUTABLE}:{})});
 try {
   const page = await browser.newPage({viewport:{width:1440,height:1000}});
+  await pinToday(page);
   await page.goto(`${process.env.SITE_TEST_URL || 'http://127.0.0.1:4322'}/ryugu-bennu.html`,{waitUntil:'networkidle'});
   const root = page.locator('.planetary');
   await root.locator('[data-stage]').scrollIntoViewIfNeeded();
-  await page.waitForFunction(()=>document.querySelector('.planetary').dataset.renderState==='ready');
+  await page.waitForFunction(()=>document.querySelector('.planetary').dataset.renderState==='ready'&&document.querySelector('.planetary').dataset.day);
+  assert.equal(Math.floor(Number(await root.getAttribute('data-day'))),today.day,'today is pinned');
   assert.equal(await root.locator('[data-time-controls]').count(),1,'Date-driven playback controls must exist');
   await root.locator('[data-date]').fill('2026-09-07T00:00');
   await root.locator('[data-date]').dispatchEvent('change');
@@ -38,6 +44,7 @@ try {
   await root.locator('[data-action="now"]').click();
   assert.equal(await root.locator('[data-speed]').inputValue(),'1');
   assert.match(await root.locator('[data-clock-status]').innerText(),/Current clock/);
+  assert.equal(Math.floor(Number(await root.getAttribute('data-day'))),today.day,'Current-time mode shows the current UTC date');
   await root.locator('[data-date]').focus();
   assert.equal(await root.locator('[data-action="play"]').getAttribute('aria-pressed'),'false','Editing the date pauses playback so it cannot overwrite the input');
   await root.locator('[data-date]').fill('2030-12-31T23:59');

@@ -51,6 +51,10 @@ try {
     await page.locator('[data-research-lock-input]').fill(password);
     await page.locator('[data-research-lock-form] button[type="submit"]').click();
     await page.locator('.mission-progress').waitFor();
+    // Unlock focuses the session notice, which states the record count; the Mission Index is not a live region.
+    assert.equal(await page.evaluate(()=>document.activeElement?.matches('[data-research-session-notice]')),true,'unlock must focus the session notice');
+    assert.match(await page.locator('[data-research-session-notice]').innerText(),/^Mission Log unlocked · 3 records\./);
+    assert.equal(await page.locator('[data-mission-index-list]').getAttribute('aria-live'),null);
     assert.match(await page.locator('.mission-progress').innerText(),/Recorded observation 3/);
     assert.match(await page.locator('.research-note-body').innerText(),/Original record 3/);
     await page.locator('[data-mission-compare-toggle]').click();
@@ -58,11 +62,39 @@ try {
     assert.match(await comparison.innerText(),/2026\/09\/02/);
     assert.match(await comparison.innerText(),/2026\/09\/03/);
     assert.equal(await comparison.locator('img').count(),2);
+    const figureSemantics=()=>comparison.locator('.mission-comparison-figure').evaluateAll(nodes=>nodes.map(el=>[el.getAttribute('role'),el.getAttribute('tabindex')].join('|')));
     if(width===1440) {
+      assert.deepEqual(await figureSemantics(),['button|0','button|0']);
       await comparison.locator('img').first().click();
       await page.locator('.mission-lightbox.is-open').waitFor();
       assert.match(await page.locator('.mission-lightbox__caption').innerText(),/Original caption 2/);
+      // The page behind the open viewer is inert, and Tab cycles through Close, Previous and Next only.
+      const focusState=()=>page.evaluate(()=>({control:[...document.activeElement.classList].find(name=>/^mission-lightbox__(close|prev|next)$/.test(name))||document.activeElement.tagName,
+        outsideInert:[...document.querySelectorAll('body > header, body > main, body > footer, .obs-fx-dock, .site-skip-link')].filter(el=>!el.closest('[inert]')).length}));
+      assert.deepEqual(await focusState(),{control:'mission-lightbox__close',outsideInert:0});
+      for(const expected of ['prev','next','close']) {
+        await page.keyboard.press('Tab');
+        assert.equal((await focusState()).control,'mission-lightbox__'+expected,'Tab must stay inside the open viewer');
+      }
+      await page.keyboard.press('Shift+Tab');
+      assert.equal((await focusState()).control,'mission-lightbox__next','Shift+Tab from Close wraps to Next');
+      await page.keyboard.press('Escape');
+      await page.waitForFunction(()=>!document.querySelector('.mission-lightbox.is-open'));
+      assert.equal(await page.evaluate(()=>document.activeElement?.classList.contains('mission-comparison-figure')),true,'closing returns focus to the opening figure');
+      assert.equal(await page.evaluate(()=>[...document.body.children].some(el=>el.inert)),false);
+      await page.keyboard.press('Enter');
+      await page.locator('.mission-lightbox.is-open').waitFor();
       await page.locator('.mission-lightbox__close').click();
+      await page.waitForFunction(()=>!document.querySelector('.mission-lightbox.is-open'));
+    } else {
+      // Phones keep captioned inline figures: no button semantics, and a tap opens nothing.
+      assert.equal(await page.evaluate(()=>document.documentElement.classList.contains('mobile-mission-lightbox-disabled')),true);
+      assert.deepEqual(await figureSemantics(),['|','|'],'phone figures must not be buttons');
+      const image=comparison.locator('img').first();
+      await image.evaluate(el=>el.scrollIntoView({block:'center'}));
+      await image.tap();
+      assert.equal(await page.locator('.mission-lightbox.is-open').count(),0,'a tap must not open the viewer on phones');
+      assert.equal(await page.evaluate(()=>document.documentElement.classList.contains('mission-lightbox-open')||[...document.body.children].some(el=>el.inert)),false);
     }
     await page.locator('[data-mission-compare-select]').selectOption('log-001');
     assert.match(await comparison.innerText(),/Original caption 1/);

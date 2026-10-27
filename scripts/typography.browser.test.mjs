@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {pathToFileURL} from 'node:url';
 const {chromium}=await import(pathToFileURL(`${process.env.PLAYWRIGHT_MODULE}/index.mjs`).href);
 const browser=await chromium.launch({headless:true,executablePath:process.env.EDGE_EXECUTABLE});
-const routes=['index','research','cv','paper-shelf','photography','contact','research-log','research-graduation','sample-cabinet'];
+const routes=['index','research','cv','paper-shelf','photography','contact','research-log','research-graduation'];
 const failures=[];
 try {
   for(const width of (process.env.TEST_WIDTHS?.split(',').map(Number)||[1440,390,320]))for(const theme of ['space','light']){

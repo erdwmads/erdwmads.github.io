@@ -32,6 +32,9 @@ try {
         assert.ok(Math.abs(box.tileWidth - box.width) < 1 && Math.abs(box.tileHeight - box.height) < 1, 'photo has a padded frame');
       }
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+      // At 1x every column slot fits the 480w thumbnail tier.
+      const firstSrc = await page.waitForFunction(() => { const img = document.querySelector('[data-photo-index="0"] img'); return img.complete && img.currentSrc; }).then(result => result.jsonValue());
+      assert.match(firstSrc, /\/assets\/img\/thumbs\/photography\/photo-01\.webp$/);
       const tile = page.locator('[data-photo-index="3"]');
       await tile.click();
       assert.equal(await shown(), '04 / 21');
@@ -49,5 +52,20 @@ try {
     }
   }
   assert.deepEqual(errors, []);
-  console.log('Photo wall: 21 unique uncropped tiles, responsive columns, no frames/overflow, selected image, keyboard and focus passed.');
+  // A 3x phone takes the 640w WebP tier (1600w for the panorama) and never downloads an original JPEG until a photograph is opened.
+  const phone = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3 });
+  const phonePage = await phone.newPage();
+  const originals = [];
+  phonePage.on('request', request => { if (decodeURIComponent(request.url()).includes('/assets/img/photo (')) originals.push(request.url()); });
+  await phonePage.goto(`${base}/photography.html`, { waitUntil: 'networkidle' });
+  for (const [index, tier] of [[0, /\/assets\/img\/photography\/w640\/photo-01\.webp$/], [10, /\/assets\/img\/photography\/w1600\/photo-11\.webp$/]]) {
+    await phonePage.locator(`[data-photo-index="${index}"]`).scrollIntoViewIfNeeded();
+    const src = await phonePage.waitForFunction(index => { const img = document.querySelector(`[data-photo-index="${index}"] img`); return img.complete && img.currentSrc; }, index).then(result => result.jsonValue());
+    assert.match(src, tier);
+  }
+  assert.equal(await phonePage.locator('[data-photo-index="0"]').getAttribute('href'), 'assets/img/photo%20%281%29.jpg');
+  assert.equal(await phonePage.locator('[data-photo-index="0"] img').getAttribute('data-full-src'), 'assets/img/photo%20%281%29.jpg');
+  assert.deepEqual(originals, [], 'phone wall downloaded an original JPEG');
+  await phone.close();
+  console.log('Photo wall: 21 unique uncropped tiles, responsive columns, no frames/overflow, srcset tiers, selected image, keyboard and focus passed.');
 } finally { await browser.close(); }

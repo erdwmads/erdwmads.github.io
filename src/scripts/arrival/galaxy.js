@@ -125,13 +125,14 @@ export function createGalaxy(host){
  }
  async function prepare(){
   host.style.visibility='hidden';
-  await solar.prepare(renderer);if(disposed)return;
   // The dust structure is static. Bake its expensive noise once; retain the live 3D stars and camera.
+  // Bake and compile while the Earth maps are still downloading, so GPU set-up and the network overlap.
   const bakeScene=new THREE.Scene(),bakeCamera=new THREE.OrthographicCamera(-12.5,12.5,12.5,-12.5,.1,10);
   bakeCamera.position.z=1;bakeScene.add(new THREE.Mesh(diskGeometry,diskMaterial));
   diskMaterial.blending=THREE.NoBlending;diskMaterial.transparent=false;diskMaterial.uniforms.fade.value=1;
   renderer.setRenderTarget(diskTexture);renderer.render(bakeScene,bakeCamera);renderer.setRenderTarget(null);
   renderer.compile(scene,camera);
+  await solar.prepare(renderer);if(disposed)return;
   // Render real-size frames before starting the clock: compilation alone does not upload geometry or exercise every draw path.
   for(const progress of [.14,.42,.77]){
    if(disposed)return;

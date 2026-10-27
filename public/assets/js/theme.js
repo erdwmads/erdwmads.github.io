@@ -30,9 +30,12 @@
       document.body.classList.toggle("space-mode", useSpace);
     }
 
+    // The label names the action, as the visible text does; a pressed state would contradict it.
     document.querySelectorAll(".theme-toggle").forEach((button) => {
-      button.textContent = useSpace ? "Light Mode" : "Space Mode";
-      button.setAttribute("aria-pressed", String(useSpace));
+      const action = useSpace ? "Light Mode" : "Space Mode";
+      button.textContent = action;
+      button.setAttribute("aria-label", "Switch to " + action);
+      button.removeAttribute("aria-pressed");
     });
   }
 

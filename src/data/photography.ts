@@ -31,14 +31,24 @@ const descriptions = [
   "A person on a boardwalk across open grassland beneath mountains"
 ];
 
+// WebP srcset tiers come from scripts/generate-image-derivatives.mjs. Panoramas (wider than 2.3:1)
+// span the whole photo wall, so they also get 1600w. The original JPEG stays the largest
+// candidate, the link target and the presentation-view source.
 export const photographs = dimensions.map(([width, height], index) => {
   const number = index + 1;
+  const name = `photo-${String(number).padStart(2, "0")}.webp`;
+  const wide = width / height > 2.3;
+  const full = `assets/img/photo%20%28${number}%29.jpg`;
+  const thumb = `assets/img/thumbs/photography/${name}`;
+  const tiers = (wide ? [640, 960, 1600] : [640, 960]).map((tier) => `assets/img/photography/w${tier}/${name} ${tier}w`);
   return {
     number,
     width,
     height,
-    full: `assets/img/photo%20%28${number}%29.jpg`,
-    thumb: `assets/img/thumbs/photography/photo-${String(number).padStart(2, "0")}.webp`,
+    wide,
+    full,
+    thumb,
+    srcset: [`${thumb} 480w`, ...tiers, `${full} ${width}w`].join(", "),
     alt: descriptions[index]
   };
 });

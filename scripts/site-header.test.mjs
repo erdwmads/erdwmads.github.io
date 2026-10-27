@@ -4,6 +4,7 @@ import test from 'node:test';
 import vm from 'node:vm';
 
 const source = fs.readFileSync(new URL('../public/assets/js/site-header.js', import.meta.url), 'utf8');
+const read = (path) => fs.readFileSync(new URL(path, import.meta.url), 'utf8');
 function setup({ missingToggle = false, failInitialization = false } = {}) {
   const listeners = new Map();
   const rootAttributes = new Map();
@@ -36,10 +37,12 @@ function setup({ missingToggle = false, failInitialization = false } = {}) {
   const media = { matches: true, addEventListener() { if (failInitialization) throw new Error('initialization interrupted'); } };
   document.querySelector = (selector) => selector === '[data-nav-toggle]' ? (missingToggle ? null : toggle) : navigation;
   const window = { matchMedia: () => media, addEventListener: (name, callback) => listeners.set(`window:${name}`, callback) };
+  const context = vm.createContext({ document, window, AbortController });
+  const run = () => vm.runInContext(source, context);
   let error;
-  try { vm.runInNewContext(source, { document, window, AbortController }); } catch (caught) { error = caught; }
+  try { run(); } catch (caught) { error = caught; }
   const clickLink = (options = {}) => listeners.get('navigation:click')({ target: { closest: () => link }, button: 0, ...options });
-  return { document, toggle, link, rootAttributes, error, clickLink, listeners, open: () => listeners.get('toggle:click')(), isOpen: () => classes.has('mobile-nav-open') };
+  return { document, window, toggle, link, rootAttributes, error, run, clickLink, listeners, open: () => listeners.get('toggle:click')(), isOpen: () => classes.has('mobile-nav-open') };
 }
 
 test('navigation becomes collapsible only after successful initialization', () => {
@@ -76,4 +79,26 @@ test('Escape closes navigation and restores toggle focus', () => {
   header.listeners.get('document:keydown')({ key: 'Escape' });
   assert.equal(header.isOpen(), false);
   assert.equal(header.document.activeElement, header.toggle);
+});
+
+test('a second run replaces the first controller and leaves the navigation ready and closed', () => {
+  const header = setup();
+  const first = header.window.__madsSiteHeaderAbort;
+  header.open();
+  header.run();
+  assert.equal(first.signal.aborted, true);
+  assert.notEqual(header.window.__madsSiteHeaderAbort, first);
+  assert.equal(header.window.__madsSiteHeaderAbort.signal.aborted, false);
+  assert.equal(header.rootAttributes.has('data-nav-ready'), true);
+  assert.equal(header.isOpen(), false);
+});
+
+test('the header controller is inlined right after the header and runs once per page load', () => {
+  const shell = read('../src/components/LegacyShell.astro');
+  assert.match(shell, /import siteHeaderSource from "\.\.\/\.\.\/public\/assets\/js\/site-header\.js\?raw";/);
+  assert.match(shell, /<\/header>\s*<script is:inline data-site-header set:html=\{siteHeaderSource\}><\/script>\s*<main\b/);
+  const navigation = read('../public/assets/js/legacy-navigation.js');
+  assert.ok(navigation.includes('if (script.hasAttribute("data-site-header") || script.hasAttribute("data-arrival-gate")) return;'), 'soft navigation must not re-run the header controller or the entrance opener');
+  assert.equal(navigation.includes('assets/js/site-header.js'), false, 'site-header.js is no longer a soft-navigation script');
+  assert.equal(read('../src/data/site.ts').includes('assets/js/site-header.js'), false, 'site-header.js must not also load as an external script');
 });

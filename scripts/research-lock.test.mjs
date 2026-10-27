@@ -13,12 +13,12 @@ const entries = [{ id: "log-001", label: "Test entry" }];
 
 const toBase64 = (value) => Buffer.from(value).toString("base64");
 
-const createPayload = () => {
+const createPayload = (items = entries) => {
   const salt = randomBytes(16);
   const iv = randomBytes(12);
   const key = pbkdf2Sync(password, salt, 600000, 32, "sha256");
   const cipher = createCipheriv("aes-256-gcm", key, iv);
-  const ciphertext = Buffer.concat([cipher.update(JSON.stringify(entries), "utf8"), cipher.final()]);
+  const ciphertext = Buffer.concat([cipher.update(JSON.stringify(items), "utf8"), cipher.final()]);
 
   return {
     version: 1,
@@ -116,9 +116,12 @@ const bootLock = (fetchImpl, { crypto = webcrypto, passkey } = {}) => {
   input.setAttribute("aria-describedby", "research-lock-error");
   const error = new FakeElement();
   error.hidden = true;
-  const passkeySetup=new FakeElement(),passkeyUnlock=new FakeElement(),passkeyForget=new FakeElement(),passkeyStatus=new FakeElement(),passkeyControls=new FakeElement(),session=new FakeElement(),lockButton=new FakeElement();
+  const passkeySetup=new FakeElement(),passkeyUnlock=new FakeElement(),passkeyForget=new FakeElement(),passkeyStatus=new FakeElement(),passkeyControls=new FakeElement(),session=new FakeElement(),lockButton=new FakeElement(),sessionNotice=new FakeElement();
   form.reportValidity=()=>!!input.value;
   session.hidden=true;
+  // Record where focus lands after unlock and whether its section was already visible.
+  const noticeFocus=[];
+  sessionNotice.focus=(options)=>noticeFocus.push({options:{...options},sessionHidden:session.hidden,gateHidden:gate.hidden});
   const documentEvents = [];
   const documentEventListeners = new Map();
   const windowEvents = new Map();
@@ -130,7 +133,7 @@ const bootLock = (fetchImpl, { crypto = webcrypto, passkey } = {}) => {
         "[data-research-lock-content]": content,
         "[data-research-lock-form]": form,
         "[data-research-lock-input]": input,
-        "[data-research-lock-error]": error, "[data-passkey-setup]":passkeySetup, "[data-passkey-unlock]":passkeyUnlock, "[data-passkey-forget]":passkeyForget, "[data-passkey-status]":passkeyStatus, "[data-passkey-controls]":passkeyControls, "[data-research-lock-session]":session, "[data-research-lock-now]":lockButton
+        "[data-research-lock-error]": error, "[data-passkey-setup]":passkeySetup, "[data-passkey-unlock]":passkeyUnlock, "[data-passkey-forget]":passkeyForget, "[data-passkey-status]":passkeyStatus, "[data-passkey-controls]":passkeyControls, "[data-research-lock-session]":session, "[data-research-lock-now]":lockButton, "[data-research-session-notice]":sessionNotice
       }[selector] || null;
     },
     dispatchEvent(event) {
@@ -188,7 +191,7 @@ const bootLock = (fetchImpl, { crypto = webcrypto, passkey } = {}) => {
   const initialize = () => vm.runInNewContext(researchLock, context, { filename: "research-lock.js" });
   initialize();
 
-  return { content, document, documentEvents, error, form, gate, initialize, input, lockedMarkup, window, passkeySetup, passkeyUnlock, passkeyForget,passkeyStatus,session,lockButton };
+  return { content, document, documentEvents, error, form, gate, initialize, input, lockedMarkup, window, passkeySetup, passkeyUnlock, passkeyForget,passkeyStatus,session,lockButton,sessionNotice,noticeFocus };
 };
 
 const responseFor = (payload) => ({
@@ -211,6 +214,26 @@ test("decrypts a valid archive and announces the unlock", async () => {
   assert.deepEqual(page.documentEvents, ["mads:research-unlocked"]);
   assert.equal(page.input.value, "");
   assert.equal(page.input.getAttribute("aria-invalid"), null);
+});
+
+test("password unlock moves focus to the session notice, which states the record count", async () => {
+  const page = bootLock(async () => responseFor(validPayload));
+  assert.equal(page.sessionNotice.getAttribute("tabindex"), "-1");
+  page.input.value = "wrong password";
+  await page.form.emit("submit");
+  assert.deepEqual(page.noticeFocus, [], "a failed attempt keeps focus in the gate");
+
+  page.input.value = password;
+  await page.form.emit("submit");
+  assert.equal(page.sessionNotice.textContent, "Mission Log unlocked · 1 record. Leaving the page locks the archive.");
+  assert.deepEqual(page.noticeFocus, [{ options: { preventScroll: true }, sessionHidden: false, gateHidden: true }]);
+
+  const threeRecords = [1, 2, 3].map((n) => ({ id: `log-00${n}`, label: `Test entry ${n}` }));
+  const larger = bootLock(async () => responseFor(createPayload(threeRecords)));
+  larger.input.value = password;
+  await larger.form.emit("submit");
+  assert.equal(larger.sessionNotice.textContent, "Mission Log unlocked · 3 records. Leaving the page locks the archive.");
+  assert.equal(larger.noticeFocus.length, 1);
 });
 
 test("pagehide fully relocks the archive and restores locked-safe markup", async () => {
@@ -474,6 +497,8 @@ test("passkey setup validates the archive password before creating a credential"
   assert.deepEqual(registrations,[password]);
   assert.deepEqual(archiveState(page),{entries});
   assert.equal(page.input.value,'');
+  assert.equal(page.sessionNotice.textContent,'Mission Log unlocked · 1 record. Passkey linked on this browser. Keep your archive password for recovery.');
+  assert.deepEqual(page.noticeFocus,[{options:{preventScroll:true},sessionHidden:false,gateHidden:true}]);
 });
 
 test("passkey recovery still decrypts the real archive and lock clears the session", async () => {
@@ -483,6 +508,8 @@ test("passkey recovery still decrypts the real archive and lock clears the sessi
   await page.passkeyUnlock.emit('click');
   assert.deepEqual(archiveState(page),{entries});
   assert.equal(page.session.hidden,false);
+  assert.match(page.sessionNotice.textContent,/^Mission Log unlocked · 1 record\. /);
+  assert.deepEqual(page.noticeFocus,[{options:{preventScroll:true},sessionHidden:false,gateHidden:true}]);
   await page.lockButton.emit('click');
   assert.equal(page.window.MadsProtectedArchive,undefined);
   assert.equal(page.gate.hidden,false);

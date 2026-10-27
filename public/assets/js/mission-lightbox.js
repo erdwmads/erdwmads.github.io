@@ -4,7 +4,10 @@
     return;
   }
 
-  const isTouch = window.matchMedia('(hover: none), (pointer: coarse), (max-width: 760px)').matches;
+  // Phones and coarse pointers keep Mission Log images as inline captioned figures, never viewer buttons
+  // (docs/ui-invariants.md); html.mobile-mission-lightbox-disabled drives the matching style.css rules.
+  const touchQuery = window.matchMedia('(hover: none), (pointer: coarse), (max-width: 760px)');
+  let isTouch = Boolean(touchQuery.matches);
   const figureSelector = '.mission-photo-grid figure, .mission-comparison-figure';
 
   function fullSrc(img) {
@@ -74,6 +77,7 @@
   let token = 0;
   let items = [];
   let locked = false;
+  let inertNodes = [];
 
   function emitLightboxPowerState() {
     window.dispatchEvent(new CustomEvent('mads:power-state', {
@@ -81,15 +85,32 @@
     }));
   }
 
-  function prepare(scope = document) {
-    const figures = scope.querySelectorAll(figureSelector);
-    if (figures.length) locked = false;
+  // While the viewer is open, everything else on the page is inert; only nodes set here are restored.
+  function setBackgroundInert(active) {
+    inertNodes.forEach((node) => node.removeAttribute('inert'));
+    inertNodes = active
+      ? Array.from(document.body.children).filter((node) => node !== overlay && node.tagName !== 'SCRIPT' && !node.hasAttribute('inert'))
+      : [];
+    inertNodes.forEach((node) => node.setAttribute('inert', ''));
+  }
+
+  function setFigureSemantics(figures) {
     figures.forEach((figure, index) => {
       const item = itemFromFigure(figure, index);
+      if (isTouch) {
+        if (figure.getAttribute('role') === 'button') ['tabindex', 'role', 'aria-label'].forEach((name) => figure.removeAttribute(name));
+        return;
+      }
       figure.setAttribute('tabindex', '0');
       figure.setAttribute('role', 'button');
       figure.setAttribute('aria-label', `Open large image: ${item.caption}`);
     });
+  }
+
+  function prepare(scope = document) {
+    const figures = scope.querySelectorAll(figureSelector);
+    if (figures.length) locked = false;
+    setFigureSemantics(figures);
   }
 
   function show(index) {
@@ -128,11 +149,12 @@
   function open(index, nextItems) {
     if (locked || !nextItems.length) return;
     items = nextItems;
-    lastFocus = document.activeElement;
+    if (!overlay.classList.contains('is-open')) lastFocus = document.activeElement;
     show(index);
     overlay.classList.add('is-open');
     document.documentElement.classList.add('mission-lightbox-open');
     document.body.classList.add('mission-lightbox-open');
+    setBackgroundInert(true);
     emitLightboxPowerState();
     closeBtn.focus({ preventScroll: true });
   }
@@ -141,6 +163,7 @@
     overlay.classList.remove('is-open');
     document.documentElement.classList.remove('mission-lightbox-open');
     document.body.classList.remove('mission-lightbox-open');
+    setBackgroundInert(false);
     emitLightboxPowerState();
     if (lastFocus && typeof lastFocus.focus === 'function') {
       lastFocus.focus({ preventScroll: true });
@@ -158,6 +181,7 @@
     overlay.classList.remove('is-open');
     document.documentElement.classList.remove('mission-lightbox-open');
     document.body.classList.remove('mission-lightbox-open');
+    setBackgroundInert(false);
     imgEl.onload = null;
     imgEl.onerror = null;
     imgEl.src = '';
@@ -183,8 +207,21 @@
     open(initialIndex, scopedItems);
   }
 
+  // Tab and Shift+Tab wrap between the viewer controls instead of leaving the page.
+  function trapTab(event) {
+    const controls = [closeBtn, prevBtn, nextBtn].filter((node) => !node.disabled && node.getClientRects?.().length !== 0);
+    const first = controls[0];
+    const last = controls[controls.length - 1];
+    if (!first) return;
+    const active = document.activeElement;
+    if (!overlay.contains(active) || (event.shiftKey ? active === first : active === last)) {
+      event.preventDefault();
+      (event.shiftKey ? last : first).focus({ preventScroll: true });
+    }
+  }
+
   document.addEventListener('click', (event) => {
-    if (locked) return;
+    if (locked || isTouch) return;
     const figure = event.target.closest?.(figureSelector);
     if (!figure) return;
     openFromFigure(figure);
@@ -196,10 +233,11 @@
       if (event.key === 'Escape') close();
       if (event.key === 'ArrowRight') next();
       if (event.key === 'ArrowLeft') prev();
+      if (event.key === 'Tab') trapTab(event);
       return;
     }
 
-    if (event.key !== 'Enter' && event.key !== ' ') return;
+    if (isTouch || (event.key !== 'Enter' && event.key !== ' ')) return;
     const figure = event.target.closest?.(figureSelector);
     if (!figure) return;
     event.preventDefault();
@@ -239,6 +277,17 @@
       else prev();
     }
   }, { passive: true });
+
+  function onTouchModeChange() {
+    isTouch = Boolean(touchQuery.matches);
+    document.documentElement.classList.toggle('mobile-mission-lightbox-disabled', isTouch);
+    if (isTouch && overlay.classList.contains('is-open')) close();
+    setFigureSemantics(document.querySelectorAll(figureSelector));
+  }
+
+  if (touchQuery.addEventListener) touchQuery.addEventListener('change', onTouchModeChange);
+  else touchQuery.addListener?.(onTouchModeChange);
+  document.documentElement.classList.toggle('mobile-mission-lightbox-disabled', isTouch);
 
   window.MadsMissionLightbox = { prepare };
   prepare();

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {missions} from '../src/scripts/sample-missions/data.js';
 import {createRequire} from 'node:module';
-const require=createRequire(import.meta.url),{chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const require=createRequire(import.meta.url),{chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright'),sharp=require('sharp');
 const browser=await chromium.launch({headless:true,...(process.env.EDGE_EXECUTABLE?{executablePath:process.env.EDGE_EXECUTABLE}:{})});
 const base=process.env.SITE_TEST_URL||'http://127.0.0.1:52523';
 try{
@@ -61,6 +61,29 @@ try{
    assert(bounds.every(r=>r.left>=-1&&r.right<=width+1&&r.width>=40&&r.height>=40),'usable controls '+width+'/'+theme+' '+JSON.stringify(bounds));
   }
  }
+ // WCAG AA: the computed text colour against every pixel painted behind the text (text hidden for the capture), so the
+ // selected tab's gold glow and the notebook surface count. Launch-site link, trajectory source link, selected agency label.
+ const lum=c=>c.map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0);
+ const contrast=async target=>{
+  const fg=lum(await target.evaluate(el=>{el.scrollIntoView({block:'center'});el.__style=el.getAttribute('style');el.style.setProperty('transition','none','important');const c=getComputedStyle(el).color.match(/[\d.]+/g).slice(0,3).map(Number);for(const p of ['color','text-decoration-color'])el.style.setProperty(p,'transparent','important');el.style.setProperty('text-shadow','none','important');return c;}));
+  const {data,info}=await sharp(await target.screenshot({animations:'disabled'})).raw().toBuffer({resolveWithObject:true});
+  await target.evaluate(el=>{if(el.__style==null)el.removeAttribute('style');else el.setAttribute('style',el.__style);});
+  let min=Infinity;for(let i=0;i<data.length;i+=info.channels){const b=lum([data[i],data[i+1],data[i+2]]);min=Math.min(min,(Math.max(fg,b)+.05)/(Math.min(fg,b)+.05));}
+  return Number(min.toFixed(2));
+ };
+ await page.setViewportSize({width:1440,height:1050});await page.waitForFunction(()=>document.querySelector('[data-mission-notebook]').open);
+ await page.evaluate(()=>sampleMissions.choose('hayabusa2'));await ready();
+ const rendezvous=missions.hayabusa2.stages.findIndex(s=>s.kind==='rendezvous'),orbit=root.locator('.mission-orbit-details');
+ for(const theme of ['light','space']){
+  await page.evaluate(theme=>{document.documentElement.dataset.theme=theme;document.documentElement.toggleAttribute('data-theme-space',theme==='space');},theme);
+  await page.evaluate(()=>sampleMissions.select(0,.3));await page.waitForFunction(()=>!document.querySelector('[data-mission-context]').hidden);
+  const measured={agency:await contrast(root.locator('.mission-selector [aria-selected="true"] .mission-agency')),location:await contrast(root.locator('[data-mission-location]'))};
+  await page.evaluate(stage=>sampleMissions.select(stage,.5),rendezvous);await view.scrollIntoViewIfNeeded();
+  await page.waitForFunction(()=>!document.querySelector('[data-mission-physical]').hidden&&document.querySelector('[data-mission-trajectory-source]').textContent.trim()!=='',null,{timeout:15000});
+  await orbit.evaluate(d=>d.open=true);measured.trajectory=await contrast(root.locator('[data-mission-trajectory-source]'));await orbit.evaluate(d=>d.open=false);
+  assert(Object.values(measured).every(r=>r>=4.5),theme+' mission workspace text contrast '+JSON.stringify(measured));
+  console.log('CONTRAST '+theme+' '+JSON.stringify(measured));
+ }
  assert.deepEqual(errors,[]);
  await page.close();
  const mobile=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
@@ -73,5 +96,5 @@ try{
  assert.equal(await touch.getAttribute('aria-label'),'Enable model rotation and pinch zoom');
  await mobile.locator('[data-mission-chapters] [data-mission-stage="5"]').click();await mobile.locator('[data-mission-progress]').fill('500');await mv.scrollIntoViewIfNeeded();
  await mobile.locator('.mission-scene').screenshot({path:process.env.TEMP+'/mission-mobile.png'});
- console.log('PASS play/pause/scrub, auto chapters, keyboard mission tabs, offscreen pause, reduced motion, sample destination, navigation cleanup, rapid switches, BFCache restore, 4 widths x 2 themes and mobile touch');
+ console.log('PASS play/pause/scrub, auto chapters, keyboard mission tabs, offscreen pause, reduced motion, sample destination, navigation cleanup, rapid switches, BFCache restore, 4 widths x 2 themes, both-theme text contrast and mobile touch');
 }finally{await browser.close();}

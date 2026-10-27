@@ -8,15 +8,25 @@ if(gate){
  const name=gate.querySelector('.arrival-name');
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  const smooth=(a,b,v)=>{const t=Math.max(0,Math.min(1,(v-a)/(b-a)));return t*t*(3-2*t);};
- let scene,frame,timer,serial=0,active=false,chapter=-1;
+ // Matches the inline fallback in CosmicArrival.astro: a slow load skips the entrance rather than holding the page.
+ const PREPARE_CAP=3000;
+ let scene,frame,timer,serial=0,active=false,chapter=-1,replayed=false;
  const isHome=()=>document.body.classList.contains('ui-page-home');
- const allowed=()=>{try{return !reduced.matches&&localStorage.getItem('madsAmbientFxEnabled')!=='0';}catch{return !reduced.matches;}};
+ // Reduced motion and Save-Data both skip the entrance and hide Replay, as FX off does.
+ const quiet=()=>reduced.matches||Boolean(navigator.connection?.saveData);
+ const allowed=()=>{try{return !quiet()&&localStorage.getItem('madsAmbientFxEnabled')!=='0';}catch{return !quiet();}};
  const syncReplay=()=>{replay.hidden=active||!isHome()||!allowed();};
  for(const [name,icon] of [['next',ArrowRight],['replay',RotateCcw]])document.querySelector(`[data-arrival-icon="${name}"]`).append(createElement(icon,{'aria-hidden':'true'}));
- function finish(){
+ function finish(restarting){
+  // The inline Skip handler may already have closed the dialog, so an active run also counts as shown.
+  const shown=gate.open||active;
   serial++;active=false;cancelAnimationFrame(frame);clearTimeout(timer);clearTimeout(window.cosmicArrivalFallback);
   scene?.dispose();scene=null;gate.close();gate.style.opacity='0';gate.dataset.state='complete';
   root.classList.remove('cosmic-arrival-active');syncReplay();
+  // The skip link follows the dialog, so after the first close the next Tab reaches it; after a replay, focus returns to Replay.
+  const focused=document.activeElement;
+  if(shown&&restarting!==true&&replayed&&!replay.hidden&&(!focused||focused===document.body||gate.contains(focused)))replay.focus({preventScroll:true});
+  if(restarting!==true)replayed=false;
   try{sessionStorage.setItem('mads-cosmic-arrival-v1','done');}catch{}
  }
  function draw(time){
@@ -28,14 +38,16 @@ if(gate){
   if(next!==chapter){number.textContent=['01','02','03','04'][next];label.textContent=['GALACTIC DUST','SOLAR SYSTEM','EARTH','THE MINERAL RECORD'][next];chapter=next;}
   track.style.transform=`scaleX(${p})`;gate.dataset.progress=p.toFixed(3);
  }
- async function play(){
+ async function play(event){
+  // The first run counts from when the inline script opened the dialog, so the whole wait stays within the cap.
+  const opened=gate.open&&window.cosmicArrivalOpened||performance.now();
   if(!allowed()||!isHome()){finish();return;}
-  finish();const run=++serial;active=true;replay.hidden=true;chapter=-1;
+  finish(true);replayed=Boolean(event);const run=++serial;active=true;replay.hidden=true;chapter=-1;
   gate.showModal();root.classList.add('cosmic-arrival-active');gate.dataset.state='preparing';gate.dataset.progress='0';
   // Prime the underlying homepage compositor before the final single-overlay fade.
   gate.style.opacity='.999';signature.style.opacity='0';name.style.opacity='0';track.style.transform='scaleX(0)';
   number.textContent='01';label.textContent='GALACTIC DUST';skip.focus({preventScroll:true});
-  timer=setTimeout(finish,11000);
+  timer=setTimeout(finish,Math.max(0,opened+PREPARE_CAP-performance.now()));
   try{
    const {createGalaxy}=await import('./galaxy.js');if(run!==serial)return;
    scene=createGalaxy(document.querySelector('#arrival-universe'));

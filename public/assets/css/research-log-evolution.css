@@ -284,3 +284,11 @@ body#academic-site [data-research-lock-session][hidden] { display: none !importa
     touch-action: pan-x pan-y pinch-zoom;
   }
 }
+
+/* The phone Mission Log guard (html.mobile-mission-lightbox-disabled) revives a legacy style.css rule that sets body overflow
+   to visible; keep the site-wide horizontal clip on body while it is active. */
+@media (max-width: 760px), (pointer: coarse) {
+  @supports (overflow: clip) {
+    html.mobile-mission-lightbox-disabled :is(body, body.mission-lightbox-open, body.mission-lightbox-mobile-open) { overflow-x: clip !important; }
+  }
+}
