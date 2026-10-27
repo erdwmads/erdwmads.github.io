@@ -1,6 +1,6 @@
 # Scripts
 
-Everything here runs with Node 22 or later (`.nvmrc`) from the repository root. Files stay flat in this folder because tests import each other and `package.json` and older plans refer to them by path; this index groups them by purpose instead.
+Everything here runs with Node 24 or later (`.nvmrc`) from the repository root. Files stay flat in this folder because tests import each other and `package.json` and older plans refer to them by path; this index groups them by purpose instead.
 
 ## Run in CI (GitHub Actions, every push to `main`)
 

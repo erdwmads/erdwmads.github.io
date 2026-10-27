@@ -76,7 +76,7 @@ if ($Node) {
 } else {
   $command = Get-Command node -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
   if (-not $command) {
-    Stop-Publish "node was not found on PATH. Install Node.js 22 or later (see .nvmrc) or pass -Node 'C:\path\to\node.exe'."
+    Stop-Publish "node was not found on PATH. Install Node.js 24 or later (see .nvmrc) or pass -Node 'C:\path\to\node.exe'."
   }
   $nodePath = $command.Path
 }

@@ -6,7 +6,7 @@ The current version preserves the original visual effects and interactions, whil
 
 ## Local Use
 
-Requires Node.js 22 or later (`.nvmrc`).
+Requires Node.js 24 or later (`.nvmrc`); CI uses the same Node major as local development.
 
 ```powershell
 npm install
