@@ -35,8 +35,11 @@ try {
   assert.equal(await panel.getAttribute('aria-labelledby'), await step('Material').getAttribute('id'));
   assert.equal(await panel.locator('img').count(),0);
   assert.match(await panel.locator('a[href*="view=sample"]').getAttribute('href'),/material=orgueil/);
+  assert.doesNotMatch(await panel.innerText(), /photograph/i, 'the Material tab must not describe a photograph it does not show');
   await step('Question').click();
   assert.match(await panel.innerText(), /How did dolomite form in Orgueil\?/);
+  assert.ok((await panel.innerText()).includes('What controlled dolomite formation in the Orgueil CI1 chondrite?'), 'the atlas states the canonical question from project.mjs');
+  assert.equal(await panel.locator('article h4').count(), 3, 'three sub-questions from project.mjs');
   assert.match(await panel.innerText(), /clay|water/i);
   await step('Methods').click();
   for (const method of ['SEM', 'EPMA', 'XRD', 'TEM']) {
@@ -44,6 +47,7 @@ try {
     assert.equal(await row.count(), 1, `${method} needs its own explanation`);
     assert.match(await row.innerText(), /Answers/);
     assert.match(await row.innerText(), /Limitations/);
+    assert.match(await row.innerText(), /Status: (In progress|Next|Planned) \(as of October 2026\)/, `${method} shows its owner-set status`);
   }
   await step('Evidence').click();
   assert.match(await panel.innerText(), /Public references/);

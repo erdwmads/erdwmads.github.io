@@ -7,7 +7,17 @@
 // - tokens inside :not()/:is()/:where()/:has() and attribute selectors are not required;
 // - a rule is removed only when all of its selectors are dead, so no selector list is
 //   rewritten (removing one selector from a list can revive a rule the browser drops).
-// Usage: node scripts/prune-dead-css.mjs [--css public/assets/css/style.css] [--extra file,...] [--report out.json] [--write]
+// --strict lists candidates for review instead: prefix and suffix tokens shorter than
+// --min-affix characters (default 12) no longer protect class families, so a stray "is-",
+// "-card" or "planetary-" cannot keep a whole retired family alive. It cannot be combined
+// with --write; check each candidate (git log -S, template-built names, the private Mission Log
+// JSON) and delete by hand. Known false candidates: .is-major/.is-minor (`is-${o.labelMode}`
+// in interface-2046.js).
+// The encrypted Mission Log entries use classes that no other file mentions (.mission-data-table,
+// .mission-entry-kicker, .log-tags and more), so without --extra those rules only "have no reference
+// outside the encrypted Mission Log". --write therefore needs the unlocked entries through --extra
+// (an owner-provided or synthetic file), or --no-private-content to accept removing such rules.
+// Usage: node scripts/prune-dead-css.mjs [--css public/assets/css/style.css] [--extra file,...] [--report out.json] [--write (needs --extra or --no-private-content) | --strict [--min-affix 12]]
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
@@ -24,6 +34,17 @@ const cssPath = path.resolve(root, option("css") || "public/assets/css/style.css
 const extra = (option("extra") || "").split(",").filter(Boolean);
 const reportPath = option("report");
 const write = args.includes("--write");
+const strict = args.includes("--strict");
+const minAffix = strict ? Number(option("min-affix") || 12) : 0;
+const noPrivateContent = args.includes("--no-private-content");
+if (strict && write) {
+  console.error("--strict only lists candidates for review; it cannot be combined with --write.");
+  process.exit(1);
+}
+if (write && !extra.length && !noPrivateContent) {
+  console.error("--write needs the unlocked Mission Log content: pass it with --extra (an owner-provided or synthetic file), or pass --no-private-content to accept removing rules that only encrypted entries use.");
+  process.exit(1);
+}
 
 const contentExtensions = new Set([".html", ".js", ".mjs", ".json", ".astro", ".ts", ".svg", ".md", ".txt", ".xml"]);
 function walk(dir) {
@@ -43,9 +64,13 @@ if (!fs.existsSync(path.join(distDir, "index.html"))) {
 const contentFiles = [...walk(distDir), ...walk(path.join(root, "src")), ...extra.map((file) => path.resolve(file))];
 const tokens = new Set();
 for (const file of contentFiles) for (const token of fs.readFileSync(file, "utf8").split(/[^A-Za-z0-9_-]+/)) if (token) tokens.add(token);
-const prefixes = [...tokens].filter((token) => token.length >= 2 && /[-_]$/.test(token) && /[A-Za-z]/.test(token));
-const suffixes = [...tokens].filter((token) => token.length >= 3 && /^[-_]/.test(token) && /[A-Za-z]/.test(token));
-const present = (name) => tokens.has(name) || prefixes.some((prefix) => name.startsWith(prefix)) || suffixes.some((suffix) => name.endsWith(suffix));
+const prefixes = [...tokens].filter((token) => token.length >= Math.max(2, minAffix) && /[-_]$/.test(token) && /[A-Za-z]/.test(token));
+const suffixes = [...tokens].filter((token) => token.length >= Math.max(3, minAffix) && /^[-_]/.test(token) && /[A-Za-z]/.test(token));
+const presentCache = new Map();
+const present = (name) => {
+  if (!presentCache.has(name)) presentCache.set(name, tokens.has(name) || prefixes.some((prefix) => name.startsWith(prefix)) || suffixes.some((suffix) => name.endsWith(suffix)));
+  return presentCache.get(name);
+};
 
 function splitSelectorList(selector) {
   const parts = [];
@@ -92,7 +117,23 @@ ast.walkRules((rule) => {
 });
 
 const removedBytes = dead.reduce((sum, entry) => sum + entry.rule.toString().length, 0);
-console.log(`${path.relative(root, cssPath)}: ${dead.length} of ${totalRules} rules can never match (${Math.round(removedBytes / 1024)} KB); scanned ${contentFiles.length} content files, ${tokens.size} tokens.`);
+const verdict = strict
+  ? `are removal candidates with prefix/suffix tokens under ${minAffix} characters ignored`
+  : extra.length ? "can never match" : "have no reference outside the encrypted Mission Log";
+console.log(`${path.relative(root, cssPath)}: ${dead.length} of ${totalRules} rules ${verdict} (${Math.round(removedBytes / 1024)} KB); scanned ${contentFiles.length} content files, ${tokens.size} tokens.`);
+if (strict) {
+  // Group candidates by the class or id names nobody mentions, largest family first.
+  const families = new Map();
+  for (const entry of dead) {
+    const key = entry.missing.join(" ");
+    if (!families.has(key)) families.set(key, []);
+    families.get(key).push(entry);
+  }
+  for (const [names, entries] of [...families].sort((a, b) => b[1].length - a[1].length)) {
+    console.log(`\n${names} (${entries.length} rule${entries.length === 1 ? "" : "s"})`);
+    for (const { line, selector } of entries) console.log(`  ${line}: ${selector.length > 110 ? `${selector.slice(0, 107)}...` : selector}`);
+  }
+}
 if (reportPath) {
   fs.writeFileSync(reportPath, JSON.stringify(dead.map(({ selector, missing, line }) => ({ line, selector, missing })), null, 2));
   console.log(`Report: ${reportPath}`);

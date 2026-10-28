@@ -54,7 +54,7 @@ Keep the gold ratios unless intentionally redesigning ambient visuals:
 
 ## Desktop And Mobile Mission Log Images
 
-Both are implemented in `public/assets/js/mission-lightbox.js`. There is no thumbnail strip or hydration helper: entry images are ordinary lazy `src` images (720w WebP thumbnails written by the publisher), and the viewer loads `data-full-src`.
+Both are implemented in `public/assets/js/mission-lightbox.js`. There is no thumbnail strip or hydration helper: entry images are ordinary lazy `src` images (720w WebP thumbnails from `npm run images:derive`; the publisher points `src` at them), and the viewer loads `data-full-src`.
 
 Desktop:
 
@@ -72,8 +72,20 @@ After unlock, focus moves to the session notice ("Mission Log unlocked · N reco
 
 ## Header Controller And Page Classes
 
-- `LegacyShell.astro` inlines `public/assets/js/site-header.js` as `<script is:inline data-site-header>` directly after `</header>`, so the mobile navigation is ready before first paint. Soft navigation skips it. Do not add it back to `commonScripts` in `src/data/site.ts`.
+- `LegacyShell.astro` inlines `public/assets/js/site-header.js` as `<script is:inline data-site-header>` directly after `</header>`, so the mobile navigation is ready before first paint. Soft navigation skips it. Do not add it back to the script registry in `src/data/site.ts`.
+- Soft navigation (`public/assets/js/legacy-navigation.js`) re-runs only body scripts marked `data-page-script`: the page-scoped scripts `getPageScripts` renders, any inline script in its `inlineHtml` marked by hand, and research.html's legacy-link forwarder (`src/scripts/inline/research-forward.js`). Other scripts inside `<main>` are swapped in inert, and a bundled module loads only if the document does not have it yet. Shell scripts and the inline theme preload, header controller, entrance opener and JSON-LD never run twice.
+- Every `assets/js/*.js` URL carries `?v=` with a content hash of the file, added at build time (`src/lib/script-version.ts`); nobody edits a version string. `npm run check:site` checks the hashes and that exactly the page-scoped scripts carry `data-page-script`.
+- A fetched page whose `<head>` names a module script or stylesheet the open document did not load comes from a newer deploy, so it opens with a full page load (a reload after Back or Forward) instead of a `<main>` swap.
+- The heavier features (planetary explorer, Origins, sample missions, image inspector) load only on pages that contain their root element: `src/scripts/feature-loader.js`, imported by the `LegacyShell.astro` module, imports them on load and on `mads:soft-nav-content`, and starts fetching Origins while the pointer or focus is on its header link. Each one initialises itself when imported and keeps its own soft-navigation listeners.
 - Body `ui-page-*` classes come only from `LegacyShell.astro` (`current`, plus the optional `pageClass`); soft navigation copies them from the fetched page. There is no client-side page-class map.
+
+## Content Security Policy
+
+- GitHub Pages cannot send headers, so every page carries one `<meta http-equiv="Content-Security-Policy">` as the first element after the viewport meta (`LegacyShell.astro`; the Sample Cabinet stub has its own). The policy lives in `src/lib/csp.mjs`: everything from this origin, no third-party scripts, styles, fonts, images, frames or connections.
+- Inline scripts run only by hash. Each executable inline script is a file in `src/scripts/inline/` (theme preload, entrance opener, research.html forwarder) or `public/assets/js/site-header.js`, registered in `src/lib/inline-scripts.ts`, rendered with `set:html` and hashed from the same string at build time. A new inline script must go there, and one policy covers all pages because soft navigation keeps the first page's policy. JSON-LD needs no hash. No inline event handlers or `javascript:` URLs.
+- `'wasm-unsafe-eval'` and `worker-src blob:` exist for the Draco decoder of the OSIRIS-REx model on Ryugu & Bennu (a blob: worker that compiles WebAssembly); without them the spacecraft never loads. `img-src data: blob:` covers CSS data URIs, canvas snapshots and GLB textures. `style-src 'unsafe-inline'` stays because pages and scripts set style attributes.
+- `npm run check:site` enforces, over every generated page, the meta before the first script, one identical policy with exactly these directives, a hash for every inline script and no unused hash, and the no-external-request rule (no off-origin `src`/`href` in scripts, stylesheets, images, frames or media, and no off-origin CSS `url()`). The scanner lives in `src/lib/csp.mjs`, with unit tests in `src/lib/csp.test.mjs`. Plain links to other sites are fine.
+- The Mission Log publisher runs the same scanner over each entry's `bodyHtml` and refuses, with nothing written, an entry with an off-site image or media, an inline event handler or a `javascript:` URL, which the policy would block silently after unlock.
 
 ## Floating UI Placement
 
@@ -87,14 +99,16 @@ When changing a component, check both themes explicitly.
 
 ## Stylesheet Ownership
 
-The 16 files of `stylesheets` in `src/data/site.ts`, in cascade order (all in `public/assets/css/`):
+Pages link one stylesheet, `assets/css/site.css?v=<content hash>`, generated at build time (`src/pages/assets/css/site.css.ts`, `src/lib/stylesheet-bundle.ts`) from the `stylesheets` array in `src/data/site.ts` and then `componentStylesheets`, in that order. The bundle only removes whitespace and comments (each file keeps a `/*! name */` marker), so ownership and cascade order are exactly as in the source files. Edit the owner files, never the bundle.
+
+`stylesheets`, in cascade order (all in `public/assets/css/`):
 
 1. `style.css`: legacy compatibility rules only; do not append new component work here (`npm run audit:css:check` fails if it grows).
-2. `tokens.css`: current Light/Space theme tokens (`--evo-*`).
-3. `shell-evolution.css`: header, navigation, theme controls, mobile shell, and supporting HUD visibility.
+2. `tokens.css`: the theme tokens, each defined once: `--obs-*` (the shared observatory colours, glass and metal faces, the prism-control faces and shadows, their Light values and the stronger glow of the immersive Visual effects setting) and the shell's `--evo-*`. Components may still set a token locally (for example `--obs-control-face` on a button); the page-wide definitions live here.
+3. `shell-evolution.css`: header, navigation, theme controls, mobile shell, and supporting HUD visibility. It ends with one block each for the header navigation links (`.nav__links a`, the current-page link, `::before`/`::after`), the theme toggle and the Research Log gate (`.nav-log-gate`): every declaration that decides those components is written there once, with its selector, media condition and cascade order. Change them there, not in the older layers.
 4. `research-log-evolution.css`: Research Log dashboard, protected gate, graduation research surfaces and the Mission Log photo grid.
-5. `observatory.css`: shared visual language and `--obs-*` tokens; home composition, records, Paper Shelf cards and narrow-desktop navigation.
-6. `observatory-experience.css`: glass shell, prism controls, the moving navigation marker, the display-settings dock (`.obs-fx-*`), presentation view and Mission Index cards.
+5. `observatory.css`: shared visual language (its `--obs-*` tokens are in `tokens.css`); home composition, records, Paper Shelf cards and narrow-desktop navigation.
+6. `observatory-experience.css`: glass shell, prism controls, the moving navigation marker, the display-settings dock (`.obs-fx-*`), the Photography wall (justified rows; row breaks from `src/lib/photo-rows.js`), presentation view and Mission Index cards.
 7. `mineral-interactions.css`: event-driven mineral effects and the Evidence Atlas (`.atlas-*`).
 8. `research-scale.css`: published microscopy scale figures (`.research-scale`).
 9. `planetary-explorer.css`: planetary field guide viewer (`.planetary-*`, including `.planetary-sr-only`).
@@ -104,10 +118,21 @@ The 16 files of `stylesheets` in `src/data/site.ts`, in cascade order (all in `p
 13. `research-reading.css`: Research page section guide, question, Analytical Pathway grid (`.research-workflow`) and context cards.
 14. `experimental-folio.css`: page `h1` scale, home hero composition and the Photography contact sheet.
 15. `image-inspector.css`: image inspector for the published microscopy figures.
-16. `quiet-observatory.css`: the final shared frame: one control grammar for buttons and filters, plus the mission notebook and Origins study workspaces.
+16. `quiet-observatory.css`: the quiet shared frame: one control grammar for buttons and filters, plus the mission notebook and Origins study workspaces.
+17. `components.css`: one block per shared component, each written once; at present the buttons (`.button` and `.button.secondary`). The control face that buttons share with filters, the theme toggle and the Research Log gate stays in the prism-control rules of `observatory-experience.css` and the control grammar of `quiet-observatory.css`; a button placement inside a feature (home hero, Paper Shelf copy action, Mission Log actions) stays with that feature's file.
+18. `research-hub.css`: the project facts from `src/data/project.mjs`: the Analytical Pathway component (status chips, step details, compact variant; the step grid itself stays in `research-reading.css`), the Research sub-questions and comparison card, the Research Log front door sections and the graduation page's project context line.
+19. `evidence-status.css`: the evidence status line (`.evidence-status`, from `src/components/EvidenceStatus.astro`) under scene and figure titles on Ryugu & Bennu and Origins: a visible tag (My measurement, Literature, Illustrative model, Planned or Interpretation) and one sentence.
+20. `paper-shelf.css`: the Paper Shelf grouped by category, year markers, citation lines and the compact phone cards.
+21. `home-shell.css`: Home layout (compact Explore list, timeline, phone intro sizing) and the phone placement of the shell's floating controls: Visual effects joins the navigation sheet after the theme toggle, and Replay entrance moves to the footer (the fixed `#arrival-replay` is hidden at 760 px and below). It is the last public file, so its phone rules override the older dock placement.
 
-Two component stylesheets are not in that list: `src/scripts/sample-missions/style.css` (sample-return mission workspace on Ryugu & Bennu) and `src/scripts/origins-study/style.css` (Origins study page). `LegacyShell.astro` imports both, so Astro bundles them into a separate `_astro/*.css` file that loads after `site.css`.
+`componentStylesheets` live next to their code in `src/` and close the cascade, after `home-shell.css`:
 
-The evolved styles remain globally loaded because soft navigation replaces the page body without replacing the document head. A future page-specific split must first teach soft navigation to synchronise stylesheet links.
+22. `src/styles/arrival.css`: the home arrival dialog (`#cosmic-arrival`, `src/components/CosmicArrival.astro`) and the fixed Replay entrance button (`#arrival-replay`).
+23. `src/scripts/origins-study/style.css`: the Origins study page (`.origins-study`).
+24. `src/scripts/sample-missions/style.css`: the sample-return mission workspace on Ryugu & Bennu (`.sample-missions`).
 
-Pages link one generated bundle, `assets/css/site.css`, built from these files in the order of `stylesheets` in `src/data/site.ts`. The bundle only strips whitespace and comments, so ownership and cascade order are exactly as in the source files. Keep editing the owner files; the file-level `?v=` strings were replaced by one content hash on the bundle.
+No component imports CSS; a new stylesheet goes into one of the two lists. `npm run check:site` fails on a CSS import under `src/`, a public stylesheet missing from `stylesheets`, a file missing or out of order in the bundle, and a page that links any stylesheet other than the bundle.
+
+Consolidated components follow one rule: a declaration that is overridden in every state (both themes, every breakpoint, hover, focus, the open phone menu) is deleted, and the declarations that win are written once in the owner block. Rules that reach several components through one selector, such as `:is(.nav-log-gate, .theme-toggle)`, stay shared where they are.
+
+All styles stay globally loaded because soft navigation replaces `<main>`, not the document head. A page-specific split would also turn soft navigation into full page loads, because a fetched page whose head names a stylesheet the open document lacks is treated as a newer deploy.

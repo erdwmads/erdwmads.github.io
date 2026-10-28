@@ -9,7 +9,10 @@
     <button class="button secondary cv-print-action" type="button" data-print-cv hidden>Print / save CV</button>
   </div>
   <figure class="cv-photo">
-    <img src="assets/img/CV.jpg" width="2275" height="1280" alt="I. Mads Lieu at the Bund, with the Shanghai skyline behind him" decoding="async">
+    <picture>
+      <source srcset="assets/img/CV-800.webp 800w, assets/img/CV-1200.webp 1200w" sizes="(max-width: 520px) calc(100vw - 40px), 480px" type="image/webp">
+      <img src="assets/img/CV.jpg" width="2275" height="1280" alt="I. Mads Lieu at the Bund, with the Shanghai skyline behind him" decoding="async" fetchpriority="high">
+    </picture>
   </figure>
 </section>
 

@@ -66,9 +66,9 @@ test('initialization exceptions retain a working reader after the scene is dispo
   const {root,nodes,chapters}=fixture(),reader=createChapterReader(root,{stage:2,progress:.6},new AbortController().signal);
   const source=await readFile(new URL('../src/scripts/origins-study/main.js',import.meta.url),'utf8');
   const initialize=source.slice(source.indexOf('  async function initialize(){'),source.indexOf('  function releaseResources(){'));
-  const bindings={root,reader,$:selector=>nodes.get(selector),disposed:false,console:{error(){}},requestAnimationFrame:callback=>callback(),nebula(){throw Error('GPU initialization failed');},accretion(){},alteration(){},inheritance(){},dispose(){bindings.disposed=true;}};
+  const logged=[],bindings={root,reader,$:selector=>nodes.get(selector),disposed:false,abort:new AbortController(),prepareMineralAtlas:()=>Promise.resolve(null),console:{error(error){logged.push(error.message);}},requestAnimationFrame:callback=>callback(),nebula(){throw Error('GPU initialization failed');},accretion(){},alteration(){},inheritance(){},dispose(){bindings.disposed=true;}};
   await vm.runInNewContext(initialize+'initialize();',bindings);
-  assert.equal(root.dataset.renderState,'error');assert.equal(bindings.disposed,true);assert.equal(nodes.get('#loading').hidden,false);
+  assert.deepEqual(logged,['GPU initialization failed']);assert.equal(root.dataset.renderState,'error');assert.equal(bindings.disposed,true);assert.equal(nodes.get('#loading').hidden,false);
   chapters[3].click();assert.equal(nodes.get('#title').textContent,descriptions[3].title);
 });
 test('context loss stops scene callbacks and subsequent initialization, without resetting chapter reading',async()=>{

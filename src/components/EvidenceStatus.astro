@@ -1,0 +1,22 @@
+---
+// One evidence-status line under a scene or figure title: a visible tag naming the kind of evidence,
+// then one sentence. The tag text carries the meaning; its marker and colour only repeat it.
+// Styles: public/assets/css/evidence-status.css.
+import { evidenceKinds } from "./evidence-status.js";
+
+type EvidenceKind = keyof typeof evidenceKinds;
+
+interface Props {
+  kind: EvidenceKind;
+  id?: string;
+  class?: string;
+}
+
+const { kind, id, class: className } = Astro.props;
+const tag = evidenceKinds[kind];
+if (!tag) throw new Error(`EvidenceStatus: unknown kind "${kind}"`);
+---
+<p class:list={["evidence-status", className]} data-evidence-status={kind} id={id}>
+  <span class="evidence-status__tag">{tag}<span class="visually-hidden">:</span></span>
+  <span class="evidence-status__text"><slot /></span>
+</p>

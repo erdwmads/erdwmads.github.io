@@ -1,30 +1,35 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { formalTitle } from "../src/data/project.mjs";
+// Node 24 strips the types, so the display strings come from the same helpers the site uses.
+import { papers, paperAuthorYear, paperReference } from "../src/data/papers.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const distDir = path.join(root, "dist");
 
-function readConstArray(relativePath, exportName) {
-  const source = fs.readFileSync(path.join(root, relativePath), "utf8");
-  const pattern = new RegExp(`export const ${exportName} = ([\\s\\S]*?) as const;`);
-  const match = source.match(pattern);
-  if (!match) throw new Error(`Cannot find ${exportName} in ${relativePath}`);
-  return JSON.parse(match[1]);
-}
-
-const papers = readConstArray("src/data/papers.ts", "papers");
-
 const payload = {
   generatedAt: new Date().toISOString(),
   site: "https://erdwmads.github.io",
-  researchTheme: "Astromineralogical Study of Ca–Mg Carbonates Reported as Dolomite in the Orgueil CI1 Chondrite: Crystallographic Identification and Implications for Parent-Body Aqueous Alteration",
+  // The formal title comes from the project facts (src/data/project.mjs), not a copy.
+  researchTheme: formalTitle,
   papers: papers.map((paper) => ({
-    status: paper.status,
+    id: paper.id,
+    relevance: paper.relevance,
     title: paper.title,
-    authors: paper.authors,
+    authors: paper.authors.map((author) => ({ ...author })),
+    authorCount: paper.authorCount,
+    authorYear: paperAuthorYear(paper),
+    reference: paperReference(paper),
+    year: paper.year,
+    journal: paper.journal,
+    volume: paper.volume,
+    pages: paper.pages,
+    articleNumber: paper.articleNumber,
+    doi: paper.doi,
     summary: paper.summary,
     tags: [...paper.tags],
+    primaryFilter: paper.primaryFilter,
     filters: [...paper.filters]
   }))
 };

@@ -307,27 +307,51 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     const axis = key==='ArrowLeft'||key==='ArrowRight' ? new THREE.Vector3(0,1,0) : new THREE.Vector3(1,0,0);
     camera.position.sub(controls.target).applyAxisAngle(axis,(key==='ArrowLeft'||key==='ArrowUp'?1:-1)*0.14).add(controls.target); camera.lookAt(controls.target); controls.update(); requestRender();
   }
-  let down = null;
+  let down = null, ignoreTouchClickUntil = 0;
   // Labels are drawn compactly over the scene; on touch, a tap within a 44px target centred on a
-  // label selects it (nearest label wins). Their drawn size and placement are unchanged.
+  // label selects it (a tap inside a drawn label selects that label, the top-painted one where labels overlap;
+  // otherwise the nearest centre wins). Their drawn size and placement are unchanged.
   function labelNear(x, y) {
     let best = null, bestDistance = Infinity;
     for (const {element} of labels) {
       if (element.hidden || element.tagName !== 'BUTTON') continue;
       const b = element.getBoundingClientRect(), padX = Math.max(0,(44-b.width)/2), padY = Math.max(0,(44-b.height)/2);
       if (x < b.left-padX || x > b.right+padX || y < b.top-padY || y > b.bottom+padY) continue;
-      const distance = Math.hypot(x-(b.left+b.width/2), y-(b.top+b.height/2));
-      if (distance < bestDistance) { best = element; bestDistance = distance; }
+      const inside = x >= b.left && x <= b.right && y >= b.top && y <= b.bottom;
+      const distance = inside ? -1 : Math.hypot(x-(b.left+b.width/2), y-(b.top+b.height/2));
+      // Later labels paint on top, so among labels that contain the point the later one wins.
+      if (distance < bestDistance || inside && distance === bestDistance) { best = element; bestDistance = distance; }
     }
     return best;
   }
-  renderer.domElement.addEventListener('pointerdown', e=> {down=[e.clientX,e.clientY];}, {signal});
+  // Touch taps that start on the scene or on a label are resolved once, in pointerup below. Mouse and pen
+  // taps keep the previous path: labels take their own clicks, and only presses on the canvas are tracked.
+  stage.addEventListener('pointerdown', e=> {
+    const touch = e.pointerType === 'touch';
+    // A second finger cancels the tap (pinch or two-finger gestures).
+    if (!e.isPrimary) { down = null; return; }
+    // A new gesture: the previous tap's native click has already arrived, so stop dropping clicks.
+    ignoreTouchClickUntil = 0;
+    down = e.target === renderer.domElement || touch && labelLayer.contains(e.target) ? {id:e.pointerId,x:e.clientX,y:e.clientY,touch} : null;
+  }, {capture:true,signal});
+  // The browser's own click for a touch tap handled here can, after touch adjustment, land on a neighbouring
+  // label in a crowded layout. Only the nearest-label result counts, so that trailing native click is dropped.
+  // Mouse and pen clicks are never dropped; an empty pointerType (keyboard, or a browser whose clicks are not
+  // PointerEvents) is treated like touch. Any new pointerdown ends the window first.
+  stage.addEventListener('click', e=> {
+    if (!e.isTrusted || e.pointerType && e.pointerType !== 'touch' || performance.now() > ignoreTouchClickUntil || !labelLayer.contains(e.target)) return;
+    ignoreTouchClickUntil = 0;
+    e.preventDefault(); e.stopPropagation();
+  }, {capture:true,signal});
   // OrbitControls captures pointers on the stage, so pointerup is retargeted there.
   stage.addEventListener('pointerup', e=> {
     const start = down; down = null;
-    if (!start || Math.hypot(e.clientX-start[0],e.clientY-start[1])>5) return;
-    const nearLabel = e.pointerType === 'touch' ? labelNear(e.clientX, e.clientY) : null;
-    if (nearLabel) { nearLabel.click(); return; }
+    if (!start || start.id !== e.pointerId || Math.hypot(e.clientX-start.x,e.clientY-start.y)>5) return;
+    if (start.touch) {
+      ignoreTouchClickUntil = performance.now()+800;
+      const nearLabel = labelNear(e.clientX, e.clientY);
+      if (nearLabel) { nearLabel.click(); return; }
+    }
     if (current?.view!=='orbit') return;
     const r = stage.getBoundingClientRect(), ray = new THREE.Raycaster();
     ray.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,1-(e.clientY-r.top)/r.height*2),camera);

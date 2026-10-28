@@ -1,7 +1,8 @@
 // Physical lengths in metres; scene coordinates in kilometres.
+// Asteroid diameters: Ryugu https://www.hayabusa2.jaxa.jp/science/ryuugu/ ; Bennu https://www.asteroidmission.org/objectives/bennu/
 export const physicalSizes={
- 'hayabusa2':{spanM:6,diameterM:900,target:'Ryugu',source:'https://global.jaxa.jp/projects/sas/hayabusa2/index.html',bodySource:'https://www.hayabusa2.jaxa.jp/science/ryuugu/'},
- 'osiris-rex':{spanM:6.2,diameterM:500,target:'Bennu',source:'https://www.nasa.gov/wp-content/uploads/2016/06/osiris_rex_factsheet5-9.pdf',bodySource:'https://www.asteroidmission.org/objectives/bennu/'}
+ 'hayabusa2':{spanM:6,diameterM:900,target:'Ryugu',source:'https://global.jaxa.jp/projects/sas/hayabusa2/index.html'},
+ 'osiris-rex':{spanM:6.2,diameterM:500,target:'Bennu',source:'https://www.nasa.gov/wp-content/uploads/2016/06/osiris_rex_factsheet5-9.pdf'}
 };
 export const isProximity=kind=>kind==='rendezvous'||kind==='depart'||kind==='flyby';
 export const physicalScale=(nativeSpan,metres)=>metres/1000/nativeSpan;

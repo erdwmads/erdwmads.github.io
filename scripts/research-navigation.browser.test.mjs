@@ -31,7 +31,8 @@ for(const width of [1536,1280,1152,1024,768,390,320]){
  assert.equal(await page.locator('.site-header .nav a[aria-current="page"]').innerText(),'Origins');assert.equal(await page.locator('.site-header').count(),1,'Origins shares the site header');
  if(width<=760){
    await page.locator('[data-nav-toggle]').focus();await page.keyboard.press('Enter');
-   await page.keyboard.press('Tab');assert.equal(await page.evaluate(()=>document.activeElement.getAttribute('href')),'index.html');
+   // The brand links home, so the first link in the opened menu is Research.
+   await page.keyboard.press('Tab');assert.equal(await page.evaluate(()=>document.activeElement.getAttribute('href')),'research.html');
    await page.keyboard.press('Escape');assert.equal(await page.locator('[data-nav-toggle]').getAttribute('aria-expanded'),'false');
    await page.keyboard.press('Enter');
  }

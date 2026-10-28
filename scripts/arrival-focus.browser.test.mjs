@@ -4,6 +4,8 @@
 //   when the module never loads, nothing is focused by script (pointer users never see the skip link appear) and
 //   the first Tab reaches the skip link instead of #arrival-replay.
 // - Replay is the skip link's successor, and a replay returns focus to the Replay button.
+// - Phones (760 px and below) hide the fixed Replay button and offer Replay entrance in the footer instead;
+//   a replay started there returns focus to it.
 // - A Save-Data skip never opens the dialog or moves focus.
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
@@ -11,7 +13,7 @@ const require=createRequire(import.meta.url);
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const base=process.env.SITE_TEST_URL||'http://127.0.0.1:4322';
 const browser=await chromium.launch({headless:true,...(process.env.EDGE_EXECUTABLE?{executablePath:process.env.EDGE_EXECUTABLE}:{})});
-const active=page=>page.evaluate(()=>{const el=document.activeElement;return !el||el===document.body?'body':el.matches('.site-skip-link')?'skip-link':el.id||el.tagName;});
+const active=page=>page.evaluate(()=>{const el=document.activeElement;return !el||el===document.body?'body':el.matches('.site-skip-link')?'skip-link':el.matches('.footer-replay')?'footer-replay':el.matches('.brand')?'brand':el.id||el.tagName;});
 const closed=page=>page.waitForFunction(()=>{const gate=document.querySelector('#cosmic-arrival');return !gate.open&&gate.dataset.state==='complete';});
 const playing=page=>page.waitForFunction(()=>document.querySelector('#cosmic-arrival').dataset.state==='playing'&&document.activeElement?.id==='arrival-skip');
 try{
@@ -29,9 +31,24 @@ try{
   await page.keyboard.press('Tab');
   assert.equal(await active(page),'skip-link','The first Tab after the intro reaches the skip link, not Replay');
   await page.keyboard.press('Tab');
-  assert.equal(await active(page),'arrival-replay','Replay follows the skip link');
-  await page.keyboard.press('Shift+Tab');
-  assert.equal(await active(page),'skip-link','The skip link precedes Replay in the sequential order');
+  if(width<=760){
+   // The fixed button would cover the reading column on a phone, so the next stop is the brand.
+   assert.equal(await page.locator('#arrival-replay').isVisible(),false,'Phones hide the fixed Replay button');
+   assert.equal(await active(page),'brand','On phones the skip link is followed by the brand');
+   const footerReplay=page.locator('.footer-replay');
+   assert.equal(await footerReplay.isVisible(),true,'Phones offer Replay entrance in the footer');
+   await footerReplay.focus();
+   await page.keyboard.press('Enter');
+   await playing(page);
+   await page.keyboard.press('Escape');
+   await closed(page);
+   assert.equal(await active(page),'footer-replay','After a replay from the footer, focus returns there');
+  }else{
+   assert.equal(await active(page),'arrival-replay','Replay follows the skip link');
+   assert.equal(await page.locator('.footer-replay').isVisible(),false,'Wider windows keep only the fixed Replay button');
+   await page.keyboard.press('Shift+Tab');
+   assert.equal(await active(page),'skip-link','The skip link precedes Replay in the sequential order');
+  }
   if(width===1440){
    await page.keyboard.press('Tab');
    await page.keyboard.press('Enter');

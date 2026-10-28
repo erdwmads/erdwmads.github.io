@@ -3,6 +3,12 @@
   const cards = Array.from(document.querySelectorAll("[data-paper-card]"));
   const search = document.querySelector("[data-paper-search]");
   const filters = Array.from(document.querySelectorAll("[data-paper-filter]"));
+  // Each topic group hides when none of its papers match and counts the ones that do.
+  const groups = Array.from(document.querySelectorAll("[data-paper-group]")).map((group) => ({
+    group,
+    cards: Array.from(group.querySelectorAll("[data-paper-card]")),
+    count: group.querySelector("[data-paper-group-count]")
+  }));
 
   if (!cards.length || !search || !filters.length) return;
 
@@ -30,6 +36,15 @@
       const visible = matchesAllTerms(text, query) && matchesFilter;
       card.hidden = !visible;
       if (visible) visibleCount += 1;
+    });
+
+    const narrowed = Boolean(query || activeFilter);
+    groups.forEach(({ group, cards: groupCards, count }) => {
+      const shown = groupCards.filter((card) => !card.hidden).length;
+      group.hidden = shown === 0;
+      if (!count) return;
+      const total = groupCards.length;
+      count.textContent = narrowed ? `${shown} of ${total}` : `${total} ${total === 1 ? "paper" : "papers"}`;
     });
 
     filters.forEach((button) => button.setAttribute("aria-pressed", String((button.dataset.paperFilter || "") === activeFilter)));

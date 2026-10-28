@@ -1,0 +1,29 @@
+/* Component owners: one block per shared component, each written once. Loads after quiet-observatory.css. */
+
+/* Buttons (.button primary and .button.secondary).
+   Written once: the declarations that decide this component, moved here from the older layers with their
+   selectors, media conditions and cascade order; the declarations they overrode were removed.
+   The control face the buttons share with filters, the theme toggle and the Research Log gate stays in the
+   prism-control rules (observatory-experience.css) and the quiet control grammar (quiet-observatory.css);
+   placements inside a feature (home hero, Paper Shelf copy, Mission Log actions) stay with that feature. */
+html body .button,
+html body a.button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+html[data-theme] body#academic-site main .button:not(.secondary):not(.atlas-launch) {
+  --obs-control-face: var(--obs-control-primary);
+  --obs-control-shadow: inset 0 1px rgba(228, 244, 252, .2), inset 0 0 0 3px rgba(7, 15, 23, .12), 0 3px 8px rgba(0, 0, 0, .16), 0 0 12px color-mix(in srgb, var(--obs-cyan) 12%, transparent);
+}
+html[data-theme="light"] body#academic-site main .button:not(.secondary):not(.atlas-launch) {
+  --obs-control-shadow: inset 0 1px #fff, inset 0 0 0 3px rgba(255, 255, 255, .38), 0 2px 5px rgba(36, 65, 82, .09), 0 0 10px rgba(55, 128, 168, .1);
+}
+html[data-theme] body#academic-site main .button.secondary {
+  --obs-control-face: var(--obs-control-secondary);
+  background: var(--obs-control-face) !important;
+}
+html[data-theme] body#academic-site.site-refined .button::before,
+html[data-theme] body#academic-site.site-refined .button::after {
+  box-shadow: none !important;
+}

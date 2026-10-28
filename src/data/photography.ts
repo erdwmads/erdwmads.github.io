@@ -32,11 +32,13 @@ const descriptions = [
 ];
 
 // WebP srcset tiers come from scripts/generate-image-derivatives.mjs. Panoramas (wider than 2.3:1)
-// span the whole photo wall, so they also get 1600w. The original JPEG stays the largest
-// candidate, the link target and the presentation-view source.
+// can fill a whole phone row, so they also get 1600w. The original JPEG stays the largest
+// candidate, the link target and the presentation-view source. `ratio` sizes each tile in the
+// justified rows of the photo wall (flex-grow and flex-basis in observatory-experience.css).
 export const photographs = dimensions.map(([width, height], index) => {
   const number = index + 1;
   const name = `photo-${String(number).padStart(2, "0")}.webp`;
+  const ratio = Math.round((width / height) * 10000) / 10000;
   const wide = width / height > 2.3;
   const full = `assets/img/photo%20%28${number}%29.jpg`;
   const thumb = `assets/img/thumbs/photography/${name}`;
@@ -45,6 +47,7 @@ export const photographs = dimensions.map(([width, height], index) => {
     number,
     width,
     height,
+    ratio,
     wide,
     full,
     thumb,

@@ -1,6 +1,6 @@
 # Content Workflow
 
-Structured Mission Log entries are the source of truth for the protected archive. Public pages are not derived from entries: their project facts are hand-written copies (see Project Facts below), so a change of project status must be made in every copy.
+Structured Mission Log entries are the source of truth for the protected archive. Public pages are not derived from entries: their project facts come from one data file, `src/data/project.mjs` (see Project Facts below).
 
 The user can send rough notes, images, paper citations, or meeting summaries. Codex is responsible for turning that material into structured entries and editing the website files.
 
@@ -49,7 +49,7 @@ Split into multiple entries when the process phase changes. For example, cutting
 }
 ```
 
-This example is illustrative. The current private JSON is authoritative; the publisher requires `id`, `number`, `label`, `bodyHtml`, and `isoDate` or `date`.
+This example is illustrative. The current private JSON is authoritative; the publisher (`scripts/publish-protected-mission-log.mjs`) requires a unique `id`, a positive `number`, `label`, `bodyHtml`, and `isoDate` or `date`.
 
 The private implementation source is `C:\Users\tsuku\Desktop\Grad Research\Orgueil Grad Data\Website Archive\mission-log.private.json`. The page shell is rendered by `src/components/MissionLogShell.astro`, and entries are loaded from the encrypted archive only after the Graduation Research password gate.
 The public Research Log page may show a project summary; the detailed Mission Log should load only on the password-gated Graduation Research page.
@@ -58,14 +58,14 @@ The public Research Log page may show a project summary; the detailed Mission Lo
 
 1. Edit the private source at `C:\Users\tsuku\Desktop\Grad Research\Orgueil Grad Data\Website Archive\mission-log.private.json`.
 2. Back up new original images to `C:\Users\tsuku\Desktop\Grad Research\Orgueil Grad Data\事前準備` and publish display derivatives only (see the image rule below).
-3. The owner runs `powershell -NoProfile -File scripts\publish-mission-log.ps1 -CheckLeaks` and types the passphrase at its hidden prompt. The script hands the passphrase only to the node publisher (`npm run publish:mission-log`); it never goes into a file, argument, log, session variable or prompt. A passphrase that does not decrypt the current archive aborts with nothing written, unless `-RotatePassphrase` is passed to change it on purpose (passkey-linked browsers must then be linked again). `-CheckLeaks` scans `src/`, `public/` and `dist/` for entry text and reports only paths and entry ids.
-4. Run the protected tests, build, `export:ppt-data`, and `check:site`.
+3. The owner runs `powershell -NoProfile -File scripts\publish-mission-log.ps1 -CheckLeaks` and types the passphrase at its hidden prompt. The script hands the passphrase only to the node publisher (`npm run publish:mission-log`); it never goes into a file, argument, log, session variable or prompt. A passphrase that does not decrypt the current archive aborts with nothing written, unless `-RotatePassphrase` is passed to change it on purpose (passkey-linked browsers must then be linked again). It also refuses, with nothing written, an entry whose `bodyHtml` has an off-site image or media, an inline event handler or a `javascript:` URL, which the site's Content Security Policy would block. `-CheckLeaks` scans `src/`, `public/` and `dist/` for entry text and reports only paths and entry ids.
+4. Run `npm run check:all`: every unit test (the protected Mission Log tests included), then build, `export:ppt-data` and `check:site`.
 5. Commit the encrypted payload and public image derivatives, never the private JSON or passphrase.
 6. Delete temporary drafts, review notes and scratch files that hold entry text.
 
 ## Fan-Out Mapping
 
-- `id`, `number`, `sol`, `label` and `date` (or `isoDate`) generate the Mission Index card.
+- `id`, `number`, `sol`, `label`, `date` (or `isoDate`) and `stage` generate the Mission Index card.
 - `label`, `date` and `bodyHtml` (figures, captions and alt text included) generate the Mission Log card.
 - `latestNote`, `questionNote` and `nextNote` (falling back to `stageNote` or `stage`, `question` and `nextStep`) generate Recorded / Still open / Next step.
 - `stage`, `question`, `questionNote`, `latestNote` and `nextStep` feed the Evidence Atlas opened from that entry.
@@ -76,29 +76,31 @@ Keep `questionShort` stable at the project level unless the project scope change
 
 ### Project Facts
 
-There is no project data file. The title, research question, target material, methods and Analytical Pathway are hand-written copies; update every copy that carries the changed fact:
+`src/data/project.mjs` holds the project facts: `questionShort`, the canonical question, the display and formal titles, period, laboratories and advisers, target material and phase, the three sub-questions, the methods summary (derived from the pathway statuses), the Orgueil vs returned samples comparison and the seven Analytical Pathway steps, each with its purpose, what it can answer, what it cannot establish and a status. Edit the fact there; it fans out to:
 
-- `src/legacy/index-main.html`: home Current Focus (summary, full title, current question, target material, methods, broader context)
-- `src/legacy/research-main.html` and `src/legacy/research-methods.html`: Research page question, research record and Analytical Pathway
-- `src/legacy/research-log-main.html`: Research Log project summary (title, full title, question, methods)
-- `src/legacy/research-graduation-hero.html`, `research-graduation-project-info.html` and `research-graduation-after-log.html`: archive lead and method pills, project context, and the graduation copy of the Analytical Pathway
-- `src/legacy/cv-main.html`: Research experience entry
-- `src/components/EvidenceAtlasData.astro`: public Evidence Atlas question, material and methods
-- page meta descriptions in `src/pages/*.astro`; the Interface 2046 HUD labels in `public/assets/js/research-coordinates.js`; the atlas text in `public/assets/js/mineral-interactions.js` and the field-guide focus sentence in `src/scripts/planetary-explorer.js`
+- `src/components/CurrentFocus.astro`: home Current Focus
+- `src/pages/research.astro` with `src/components/AnalyticalPathway.astro` (full variant): research question, sub-questions, Analytical Pathway and comparison card
+- `src/pages/research-log.astro`: the Research Log front door (title, facts, compact pathway)
+- `src/pages/research-graduation.astro`: protected project context and compact pathway
+- `src/components/EvidenceAtlasData.astro`: the public research atlas data read by `public/assets/js/mineral-interactions.js`
+- `scripts/export-ppt-data.mjs`: the formal title in `dist/ppt-data.json`
+
+Pathway statuses (`In progress`, `Next`, `Planned`, `Interpretation`, dated by `statusAsOf`) are set by the owner; all seven were owner-confirmed for October 2026. Never mark a step `Completed` without the owner's confirmation: `scripts/project-facts.test.mjs` and `check:site` fail on any other status, and the test pins each step's status, so a change is a deliberate edit to both `project.mjs` and the test.
+
+Still hand-written: the Research experience entry in `src/legacy/cv-main.html`, page meta descriptions in `src/pages/*.astro`, the Interface 2046 HUD labels in `public/assets/js/research-coordinates.js` and the field-guide focus sentence in `src/scripts/planetary-explorer.js`.
 
 ## Image Data
 
-Keep Mission Log image paths local:
+Mission Log figures live inside `bodyHtml`, with local paths:
 
-```json
-{
-  "thumbSrc": "assets/img/IMAGE.jpg",
-  "fullSrc": "assets/img/IMAGE.jpg",
-  "mobileFullSrc": "assets/img/IMAGE.jpg",
-  "alt": "Visual description for accessibility",
-  "caption": "Fig. 1 - Archive caption."
-}
+```html
+<figure>
+  <img class="mission-thumb-img" src="assets/img/mission-log/grad-log-YYYYMMDD-NN.jpg" data-full-src="assets/img/mission-log/grad-log-YYYYMMDD-NN.jpg" alt="Visual description for accessibility">
+  <figcaption>Fig. 1 - Archive caption.</figcaption>
+</figure>
 ```
+
+The publisher points `src` at the 720w WebP thumbnail in `assets/img/thumbs/mission-log/` (generate it with `npm run images:derive -- mission-log`); the desktop viewer opens `data-full-src`.
 
 Image rule: new Mission Log images publish display derivatives under `public/assets/img/mission-log/`, at most 2400 px on the long edge and 1.5 MB, with metadata (EXIF/XMP) stripped. Back up the instrument original first to `C:\Users\tsuku\Desktop\Grad Research\Orgueil Grad Data\事前準備` as `orgueil-mission-log-YYYYMMDD-figNN.jpg`. Replace an existing public image only with the owner's approval. `npm run audit:images` (and `check:site` in CI) fails on any Mission Log image over these limits; all 90 met them on 2026-10-24.
 

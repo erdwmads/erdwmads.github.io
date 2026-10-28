@@ -213,6 +213,8 @@ try {
   await failed.waitForFunction(()=>document.querySelector('.planetary').dataset.renderState==='error');
   assert.ok(await failed.locator('[data-fallback]').isVisible());
   await failed.locator('.planetary [data-material="ryugu"]').click();
+  // The reference image follows the selected body; allow the update a moment rather than reading it in the same tick.
+  await failed.waitForFunction(()=>/ryugu-jaxa/.test(document.querySelector('[data-fallback]').getAttribute('src')||''),null,{timeout:3000}).catch(()=>{});
   assert.match(await failed.locator('[data-fallback]').getAttribute('src'),/ryugu-jaxa/);
   await failed.locator('.planetary [data-view="minerals"]').click();
   assert.ok(await failed.locator('[data-mineral-diagram]').isVisible());

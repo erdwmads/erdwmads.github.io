@@ -98,7 +98,9 @@ test('the header controller is inlined right after the header and runs once per 
   assert.match(shell, /import siteHeaderSource from "\.\.\/\.\.\/public\/assets\/js\/site-header\.js\?raw";/);
   assert.match(shell, /<\/header>\s*<script is:inline data-site-header set:html=\{siteHeaderSource\}><\/script>\s*<main\b/);
   const navigation = read('../public/assets/js/legacy-navigation.js');
-  assert.ok(navigation.includes('if (script.hasAttribute("data-site-header") || script.hasAttribute("data-arrival-gate")) return;'), 'soft navigation must not re-run the header controller or the entrance opener');
+  // Soft navigation re-runs only data-page-script scripts; the inline header controller never carries the attribute.
+  assert.ok(navigation.includes(`nextDoc.querySelectorAll('body script[data-page-script], body script[type="module"][src]')`),'soft navigation must not re-run the header controller or the entrance opener');
+  assert.doesNotMatch(shell, /data-site-header[^>]*data-page-script|data-page-script[^>]*data-site-header/);
   assert.equal(navigation.includes('assets/js/site-header.js'), false, 'site-header.js is no longer a soft-navigation script');
   assert.equal(read('../src/data/site.ts').includes('assets/js/site-header.js'), false, 'site-header.js must not also load as an external script');
 });

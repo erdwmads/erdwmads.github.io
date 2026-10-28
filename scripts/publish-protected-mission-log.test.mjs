@@ -138,6 +138,44 @@ for (const [name, entry, error] of [
   });
 }
 
+// The unlocked entries run under the site's Content Security Policy; markup it would block is refused by kind and entry id.
+const blockedMarkup = "synthetic-fixture-marker";
+for (const [name, field, html, error] of [
+  ["off-site images", "bodyHtml", `<figure><img src="https://images.example.org/${blockedMarkup}.jpg" alt="Synthetic"></figure>`, /log-001: bodyHtml has an external request/],
+  ["off-site media in the Japanese body", "bodyHtmlJa", `<video poster="//media.example.org/${blockedMarkup}.jpg"></video>`, /log-001: bodyHtmlJa has an external request/],
+  ["inline event handlers", "bodyHtml", `<img src="assets/img/mission-log/grad-log-20260701-09.jpg" alt="Synthetic" onerror="window.${blockedMarkup}=1">`, /log-001: bodyHtml has an inline event handler/],
+  ["javascript: URLs", "bodyHtmlJa", `<p><a href="javascript:void('${blockedMarkup}')">Synthetic</a></p>`, /log-001: bodyHtmlJa has a javascript: URL/]
+]) {
+  test(`rejects ${name} that the Content Security Policy would block`, () => {
+    withTempOutput((output) => {
+      const entry = validEntry({ [field]: html });
+      const result = runPublisher([entry], output);
+
+      assert.notEqual(result.status, 0);
+      assert.match(result.stderr, error);
+      assert.match(result.stderr, /Nothing was written/);
+      assert.equal(result.stderr.includes(blockedMarkup), false, "the blocked markup was printed");
+      assert.equal(fs.existsSync(output), false);
+      assertQuiet(result, [entry]);
+    });
+  });
+}
+
+test("publishes entries with relative figures, data images and plain links to other sites", () => {
+  withTempOutput((output) => {
+    const figure = '<figure><img class="mission-thumb-img" src="assets/img/mission-log/grad-log-20260701-09.jpg" data-full-src="assets/img/mission-log/grad-log-20260701-09.jpg" alt="Synthetic"></figure>';
+    const entries = [validEntry({
+      bodyHtml: `${figure}<p>Synthetic note with a <a href="https://doi.org/10.0000/synthetic">reference</a> and <img src="data:image/png;base64,AAAA" alt="">.</p>`,
+      bodyHtmlJa: `<p><a href="research-log.html#log-001">Synthetic</a> <a href="https://example.org/paper" target="_blank" rel="noopener">link</a></p>`
+    })];
+    const result = runPublisher(entries, output);
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(decryptEntries(output).length, 1);
+    assertQuiet(result, entries);
+  });
+});
+
 test("rejects duplicate IDs before writing output", () => {
   withTempOutput((output) => {
     const result = runPublisher([validEntry(), validEntry({ number: 2 })], output);

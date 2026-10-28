@@ -26,7 +26,9 @@ try{
   await page.goto(base+'/contact.html',{waitUntil:'networkidle'});
   await page.addStyleTag({content:'main { min-height:300vh!important; }'});
   async function check(width,expected,label){
-   await page.setViewportSize({width,height:900});await page.waitForTimeout(200);
+   await page.setViewportSize({width,height:900});
+   // Wait for the resize to settle instead of a fixed pause, which a busy machine can outrun (3 s cap, then report the state).
+   await page.waitForFunction(expected=>{const state={layers:document.querySelectorAll('.ambient-space-layer').length,rails:document.querySelectorAll('.ui2046-layer').length,progress:document.querySelectorAll('.ui2046-progress').length,intervals:window.ambientIntervalCount()};return Object.entries(expected).every(([key,value])=>state[key]===value);},expected,{timeout:3000}).catch(()=>{});
    const state=await page.evaluate(()=>({layers:document.querySelectorAll('.ambient-space-layer').length,rails:document.querySelectorAll('.ui2046-layer').length,progress:document.querySelectorAll('.ui2046-progress').length,intervals:window.ambientIntervalCount()}));
    for(const [key,value] of Object.entries(expected))if(state[key]!==value)failures.push(initialWidth+' '+label+' '+key+': expected '+value+', got '+state[key]);
   }
@@ -42,8 +44,10 @@ try{
   await check(1440,{layers:1,rails:1,progress:1,intervals:1},'FX on');
   const planet=page.locator('.ui2046-system-orbit .ui2046-planet').first();
   if(await planet.count()){
-   const position=await planet.getAttribute('style');await page.waitForTimeout(120);
-   if(position===await planet.getAttribute('style'))failures.push(initialWidth+' restored orbit is frozen');
+   // The orbit moves by a compositor animation on its track, so compare where the planet is drawn.
+   const position=()=>planet.evaluate(node=>{const box=node.getBoundingClientRect();return box.x+','+box.y;});
+   const start=await position();await page.waitForTimeout(120);
+   if(start===await position())failures.push(initialWidth+' restored orbit is frozen');
   }else failures.push(initialWidth+' restored orbital system is absent');
   await page.evaluate(()=>scrollTo(0,document.documentElement.scrollHeight));await page.waitForTimeout(100);
   const progress=await page.locator('.ui2046-progress span').count()?await page.locator('.ui2046-progress span').evaluate(el=>Number(el.style.getPropertyValue('--scroll-progress'))):0;

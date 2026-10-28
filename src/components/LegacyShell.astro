@@ -1,12 +1,13 @@
 ---
-import { brand, footerItems, navItems, orcid, personSchema, researchLogGate, siteMetadata } from "../data/site";
+import { brand, footerItems, homeStructuredData, navItems, orcid, researchLogGate, siteMetadata } from "../data/site";
 import CosmicArrival from './CosmicArrival.astro';
 import ContinueReading from './ContinueReading.astro';
 import { stylesheetBundle } from "../lib/stylesheet-bundle";
+import { contentSecurityPolicy, inlineScripts } from "../lib/inline-scripts";
 // Inlined after the header so the compact mobile navigation is ready before first paint.
 import siteHeaderSource from "../../public/assets/js/site-header.js?raw";
-import '../scripts/origins-study/style.css';
-import '../scripts/sample-missions/style.css';
+// The Origins study, sample-mission and arrival styles are appended to the one stylesheet bundle
+// (componentStylesheets in src/data/site.ts), so pages make a single stylesheet request.
 
 interface Props {
   title: string;
@@ -23,11 +24,19 @@ interface Props {
 
 const { title, description, current, pageClass, mainClass = "main", path, scriptHtml, noindex = false } = Astro.props;
 const canonicalPath = path || "index.html";
-const canonicalUrl = new URL(canonicalPath, `${siteMetadata.url}/`).toString();
+// Home is canonical at the site root (https://erdwmads.github.io/), matching the sitemap and structured data.
+const canonicalUrl = new URL(canonicalPath.replace(/(^|\/)index\.html$/, "$1"), `${siteMetadata.url}/`).toString();
 const imageUrl = new URL(siteMetadata.image, `${siteMetadata.url}/`).toString();
 // The only source of ui-page-* classes: soft navigation copies them from the fetched page's body.
 const bodyClass = ["site-refined", `ui-page-${current}`, pageClass && pageClass !== current && `ui-page-${pageClass}`].filter(Boolean).join(" ");
 const { version: stylesheetVersion } = await stylesheetBundle();
+// A quiet divider separates the research pages from the personal ones (navItems order).
+const navLinks = navItems.map((item, index) => ({ ...item, groupStart: index > 0 && navItems[index - 1].group !== item.group }));
+// "Long-term question: …" keeps its label as text, styled apart so it is not read as the thesis question.
+const footerNotes = footerItems.slice(1).map((item) => {
+  const split = item.indexOf(": ");
+  return split > 0 ? { label: item.slice(0, split + 1), text: item.slice(split + 2) } : { label: "", text: item };
+});
 ---
 
 <!doctype html>
@@ -35,6 +44,8 @@ const { version: stylesheetVersion } = await stylesheetBundle();
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  {/* Before any script: a meta policy governs only what follows it. Inline scripts are allowed by hash (src/lib/inline-scripts.ts). */}
+  <meta http-equiv="Content-Security-Policy" content={contentSecurityPolicy}>
   <title>{title}</title>
   <meta name="description" content={description}>
   <meta name="author" content={siteMetadata.author}>
@@ -55,30 +66,8 @@ const { version: stylesheetVersion } = await stylesheetBundle();
   <meta name="twitter:title" content={title}>
   <meta name="twitter:description" content={description}>
   <meta name="twitter:image" content={imageUrl}>
-  {current === "home" && <script type="application/ld+json" is:inline set:html={JSON.stringify(personSchema)} />}
-  <script is:inline>
-    (function () {
-      try {
-        var savedTheme = localStorage.getItem("mads-theme");
-        if (savedTheme === "light") {
-          document.documentElement.setAttribute("data-theme", "light");
-          document.documentElement.removeAttribute("data-theme-space");
-          document.documentElement.classList.remove("theme-preloaded-space");
-          document.documentElement.style.backgroundColor = "#edf3f7";
-        } else {
-          document.documentElement.setAttribute("data-theme", "space");
-          document.documentElement.setAttribute("data-theme-space", "");
-          document.documentElement.classList.add("theme-preloaded-space");
-          document.documentElement.style.backgroundColor = "#040910";
-        }
-      } catch (error) {
-        document.documentElement.setAttribute("data-theme", "space");
-        document.documentElement.setAttribute("data-theme-space", "");
-        document.documentElement.classList.add("theme-preloaded-space");
-        document.documentElement.style.backgroundColor = "#040910";
-      }
-    })();
-  </script>
+  {current === "home" && <script type="application/ld+json" is:inline set:html={JSON.stringify(homeStructuredData)} />}
+  <script is:inline set:html={inlineScripts.themePreload}></script>
   <style is:inline>
     html { background: #040910; color-scheme: dark; }
     html[data-theme="light"]:not([data-theme-space]) {
@@ -99,12 +88,12 @@ const { version: stylesheetVersion } = await stylesheetBundle();
   <link rel="preload" href="assets/fonts/montserrat-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href={`assets/css/site.css?v=${stylesheetVersion}`}>
     <script>
-      import '../scripts/planetary-explorer.js';
-      import '../scripts/origins-study/loader.js';
-      import '../scripts/sample-missions/loader.js';
+      // Small enhancers that shape the first paint (the sticky research guide, the photograph layout) and the
+      // scroll offset of a soft navigation to a #section stay in this module, so they run as early as before.
       import '../scripts/research-guide.js';
-      import '../scripts/image-inspector.js';
       import '../scripts/photo-layout.js';
+      // The planetary explorer, Origins, sample missions and image inspector load only on pages that contain them.
+      import '../scripts/feature-loader.js';
     </script>
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="assets/img/favicon-32x32.png" sizes="32x32">
@@ -117,6 +106,7 @@ const { version: stylesheetVersion } = await stylesheetBundle();
     <a class="brand" href={brand.homeHref}>
       <strong>{brand.name}</strong>
       <span set:html={brand.tagline} />
+      <span class="visually-hidden">, home</span>
     </a>
     <button
       class="nav-toggle"
@@ -131,7 +121,7 @@ const { version: stylesheetVersion } = await stylesheetBundle();
     <div class="header-actions" id="mobile-navigation" data-mobile-nav>
       <nav class="nav" aria-label="Main navigation">
         <div class="nav__links">
-          {navItems.map((item) => <a href={item.href} aria-current={current === item.key ? "page" : undefined}>{item.label}</a>)}
+          {navLinks.map((item) => <Fragment>{item.groupStart && <span class="nav__divider" aria-hidden="true"></span>}<a href={item.href} aria-current={current === item.key ? "page" : undefined}>{item.label}</a></Fragment>)}
         </div>
       </nav>
       <a class="nav-log-gate" href={researchLogGate.href} aria-current={current === researchLogGate.key ? "page" : undefined}>
@@ -153,7 +143,9 @@ const { version: stylesheetVersion } = await stylesheetBundle();
 <footer class="site-footer">
   <div class="footer-inner">
     <span class="footer-identity">{footerItems[0]} <a class="orcid-link orcid-link--compact" href={orcid.url} target="_blank" rel="me noopener noreferrer"><img src={orcid.icon} width="16" height="16" alt="ORCID iD"><span>{orcid.id}</span><span class="orcid-new-tab"> (opens in a new tab)</span></a></span>
-    {footerItems.slice(1).map((item) => <span>{item}</span>)}
+    {footerNotes.map((note) => <span class="footer-question">{note.label && <span class="footer-question__label">{note.label}</span>} {note.text}</span>)}
+    {/* Phones only (home-shell.css): the fixed Replay button would cover the reading column there. entry.js shows it when a replay is available. */}
+    <button class="footer-replay" type="button" data-arrival-replay hidden>Replay entrance</button>
     <a href="#main-content">Back to top ↑</a>
   </div>
 </footer>

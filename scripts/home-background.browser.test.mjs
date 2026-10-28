@@ -23,7 +23,7 @@ try {
   const moved=await page.waitForFunction(before=>getComputedStyle(document.querySelector('.ambient-pebble')).transform!==before,before,{timeout:3000}).then(()=>true,()=>false);
   assert.ok(moved,'The restored pebbles actually move');
   await page.evaluate(()=>window.backgroundBefore=document.querySelector('.ambient-space-layer'));
-  await page.locator('.nav a[href="index.html"]').click();await page.waitForURL('**/index.html');
+  await page.locator('.site-header .brand').click();await page.waitForURL('**/index.html');
   assert.equal(await page.evaluate(()=>window.backgroundBefore===document.querySelector('.ambient-space-layer')),true,'Navigation keeps the same background layer');
   await page.locator('.hero').waitFor();
   assert.equal(await page.locator('h1').innerText(),'I. Mads Lieu');

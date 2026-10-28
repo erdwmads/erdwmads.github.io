@@ -1,0 +1,37 @@
+---
+// The Analytical Pathway, rendered from src/data/project.mjs.
+// variant "full" (Research): purpose plus an expandable "can answer / cannot establish" per step.
+// variant "compact" (Research Log, graduation page): titles and status chips only.
+// Statuses are the owner's; the chip carries the status as text, never colour alone.
+import { pathway, statusAsOf } from '../data/project.mjs';
+
+interface Props {
+  variant?: 'full' | 'compact';
+}
+
+const { variant = 'full' } = Astro.props;
+const full = variant === 'full';
+const statusSlug = (status: string) => status.toLowerCase().replace(/\s+/g, '-');
+---
+<p class="pathway-status-note" data-pathway-status-note>Status as of {statusAsOf} · not a checklist of completed results</p>
+<ol class:list={['research-workflow', 'analytical-pathway', `analytical-pathway--${variant}`]} data-analytical-pathway={variant}>
+  {pathway.map((step, index) => (
+    <li class="pathway-item" data-step={step.id} data-status={statusSlug(step.status)}>
+      <div class="pathway-item-head">
+        <span class="research-step-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+        <span class="pathway-chip" data-status={statusSlug(step.status)}><span class="visually-hidden">Status: </span>{step.status}</span>
+      </div>
+      <h3>{step.title}</h3>
+      {full && <p class="pathway-purpose">{step.purpose}</p>}
+      {full && (
+        <details class="pathway-detail">
+          <summary><span>What it can answer, and what it cannot establish</span></summary>
+          <dl>
+            <div><dt>What it can answer</dt><dd>{step.canAnswer}</dd></div>
+            <div><dt>What it cannot establish</dt><dd>{step.cannotEstablish}</dd></div>
+          </dl>
+        </details>
+      )}
+    </li>
+  ))}
+</ol>

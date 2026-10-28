@@ -26,12 +26,12 @@ Codex must:
 - Convert the material into one coherent Mission Log entry, or split it into multiple entries if the process clearly contains separate phases.
 - Update `C:\Users\tsuku\Desktop\Grad Research\Orgueil Grad Data\Website Archive\mission-log.private.json`.
 - Keep the page rendered through `src/components/MissionLogShell.astro` and the lazy Mission Log scripts.
-- Keep latest-first Mission Log order and chronological Mission Index order.
+- Keep the Mission Log opening on the latest record and the Mission Index in chronological order.
 - Back up every new original image to `C:\Users\tsuku\Desktop\Grad Research\Orgueil Grad Data\事前準備`, then publish only its display derivative (image rule in `docs/content-workflow.md`).
 - Verify image filenames exist under `public/assets/img/mission-log/`.
 - Use `assets/img/mission-log/...` paths for Mission Log images.
-- Have the owner generate the encrypted archive with `scripts/publish-mission-log.ps1 -CheckLeaks`, which prompts for the passphrase; a mistyped passphrase aborts instead of re-keying the archive.
-- Run the protected tests, build, PPT export, and site check before committing website changes.
+- Have the owner generate the encrypted archive with `scripts/publish-mission-log.ps1 -CheckLeaks`, which prompts for the passphrase; a mistyped passphrase aborts instead of re-keying the archive, and an entry the site's Content Security Policy would block (off-site images or media, inline event handlers, `javascript:` URLs) aborts it too.
+- Run `npm run check:all` before committing website changes.
 - Never commit the private JSON or passphrase.
 - Delete temporary drafts that hold entry text.
 
@@ -42,22 +42,20 @@ Send bibliographic material in any form: DOI, title, copied citation, summary, o
 Useful material:
 
 ```text
+DOI:
 Title:
 Authors/year:
 Why it is relevant:
 Topic/category:
 Tags:
 Paper Shelf filters, if known:
-Priority or reading status:
 ```
 
 Codex must:
 
-- Add or update entries in `src/data/papers.ts`.
-- Keep tags short enough for mobile.
-- Add `filters` for every paper using existing Paper Shelf filter IDs: `dolomite`, `ci-orgueil`, `ryugu-bennu`, `methods`, `chronology`.
-- Keep `tags` as reader-facing labels and `filters` as button-matching categories.
-- Run `npm run check`.
+- Add or update entries in `src/data/papers.ts` under the Paper Shelf Rule in `docs/codex-update-contract.md`: a stable `id`, `primaryFilter` and `filters` from the existing IDs (`dolomite`, `ci-orgueil`, `ryugu-bennu`, `methods`, `chronology`), structured `authors`, citation fields checked against Crossref, `summary` and `relevance`.
+- Keep `tags` short reader-facing labels that fit on mobile.
+- Run `npm run check:all`.
 
 ## Replace Or Add Images
 
@@ -77,7 +75,7 @@ Codex must:
 
 - Keep Photography originals in `public/assets/img/` unless destructive replacement is explicitly approved.
 - Mission Log images are display derivatives under the image rule in `docs/content-workflow.md`; their originals live in `事前準備`, and an existing public image is replaced only with the owner's approval.
-- Regenerate thumbnails and Photography srcset tiers with `npm run images:derive` when source images change.
+- Regenerate the Photography thumbnails and srcset tiers and the Mission Log WebP thumbnails with `npm run images:derive` when source images change (`-- photography` or `-- mission-log` for one group).
 - Keep Mission Log images under `public/assets/img/mission-log/`.
 - Keep `loading="lazy"` and `decoding="async"` for Mission Log images.
 - Run `npm run audit:images` after any image change; it fails on a Mission Log image over the display limits.

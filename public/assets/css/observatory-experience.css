@@ -6,7 +6,6 @@ html[data-theme] body#academic-site .header-actions .nav {
   background: var(--obs-glass) !important;
   box-shadow: inset 0 1px rgba(225, 241, 255, .1), 0 3px 8px rgba(0, 0, 0, .12) !important;
 }
-html[data-theme] body#academic-site .nav a { border-radius: 12px !important; }
 html[data-theme] body#academic-site .header-actions > :is(.nav-log-gate, .theme-toggle) { border-radius: 14px !important; }
 html[data-theme] body#academic-site main :is(.button, .paper-filter) { border-radius: 12px !important; }
 html[data-theme] body#academic-site main :is(.pill, .paper-status, .status-badge, .project-tags span) { border-radius: 999px !important; }
@@ -26,26 +25,6 @@ html[data-theme] body#academic-site.ui-page-home .affiliation-emblem {
 }
 
 /* Prism lip and a lightly glazed face; no moving blur or translucent backdrop. */
-html[data-theme] {
-  --obs-control: linear-gradient(135deg, #2a353e, #202a32 58%, #242e35);
-  --obs-control-primary: linear-gradient(135deg, #344b59, #223641 58%, #29383f);
-  --obs-control-secondary: linear-gradient(135deg, #2d333b, #20262e 58%, #252c32);
-  --obs-control-active: linear-gradient(180deg, #314954, #263c48);
-  --obs-control-border: #52636e;
-  --obs-control-shadow: inset 0 1px rgba(228, 244, 252, .17), inset 0 0 0 3px rgba(7, 15, 23, .15), 0 3px 8px rgba(0, 0, 0, .18);
-  --obs-control-hover-shadow: inset 0 1px rgba(233, 247, 255, .23), inset 0 0 0 3px rgba(7, 15, 23, .1), 0 4px 10px rgba(0, 0, 0, .2);
-  --obs-control-pressed-shadow: inset 0 2px 5px rgba(0, 0, 0, .3), inset 0 0 0 3px rgba(7, 15, 23, .12);
-}
-html[data-theme="light"] {
-  --obs-control: linear-gradient(135deg, #fff, #edf3f6 58%, #f6f8fa);
-  --obs-control-primary: linear-gradient(135deg, #f9fdff, #dcebf2 58%, #e8f0f3);
-  --obs-control-secondary: linear-gradient(135deg, #fff, #f0f3f5 58%, #f8fafb);
-  --obs-control-active: linear-gradient(180deg, #edf5f8, #dfeaf0);
-  --obs-control-border: #afc3ce;
-  --obs-control-shadow: inset 0 1px #fff, inset 0 0 0 3px rgba(255, 255, 255, .38), 0 2px 5px rgba(36, 65, 82, .09);
-  --obs-control-hover-shadow: inset 0 1px #fff, inset 0 0 0 3px rgba(255, 255, 255, .48), 0 3px 8px rgba(36, 65, 82, .12);
-  --obs-control-pressed-shadow: inset 0 2px 4px rgba(36, 65, 82, .15), inset 0 0 0 3px rgba(255, 255, 255, .2);
-}
 html[data-theme] body#academic-site main :is(.button, .paper-filter),
 html[data-theme] body#academic-site .header-actions > :is(.nav-log-gate, .theme-toggle) {
   --obs-control-face: var(--obs-control);
@@ -59,18 +38,7 @@ html[data-theme] body#academic-site .header-actions > :is(.nav-log-gate, .theme-
   -webkit-backdrop-filter: none !important;
   transition: border-color 180ms ease-out, box-shadow 140ms ease-out, color 140ms ease-out !important;
 }
-html[data-theme] body#academic-site main .button:not(.secondary):not(.atlas-launch) {
-  --obs-control-face: var(--obs-control-primary);
-  --obs-control-shadow: inset 0 1px rgba(228, 244, 252, .2), inset 0 0 0 3px rgba(7, 15, 23, .12), 0 3px 8px rgba(0, 0, 0, .16), 0 0 12px color-mix(in srgb, var(--obs-cyan) 12%, transparent);
-}
-html[data-theme="light"] body#academic-site main .button:not(.secondary):not(.atlas-launch) {
-  --obs-control-shadow: inset 0 1px #fff, inset 0 0 0 3px rgba(255, 255, 255, .38), 0 2px 5px rgba(36, 65, 82, .09), 0 0 10px rgba(55, 128, 168, .1);
-}
-html[data-theme] body#academic-site main .button.secondary { --obs-control-face: var(--obs-control-secondary); background: var(--obs-control-face) !important; }
-html[data-theme] body#academic-site .header-actions > .nav-log-gate { border-color: var(--obs-accent) !important; }
 html[data-theme] body#academic-site .nav-log-gate__signal { box-shadow: 0 0 7px var(--obs-gold-glow) !important; }
-html[data-theme] body#academic-site .nav a { text-shadow: none !important; }
-html[data-theme] body#academic-site .nav a[aria-current="page"],
 html[data-theme] body#academic-site main .paper-filter[aria-pressed="true"] {
   background: var(--obs-control-active) !important;
   box-shadow: inset 0 1px rgba(212, 234, 248, .1) !important;
@@ -88,7 +56,6 @@ html[data-theme] body#academic-site main :is(.pill, .paper-status, .status-badge
   html[data-theme] body#academic-site .header-actions > :is(.nav-log-gate, .theme-toggle):hover:not(:disabled):not([aria-disabled="true"]) {
     border-color: var(--obs-control-hover-border, var(--obs-accent)) !important;
   }
-  html[data-theme] body#academic-site .nav a:hover { background: var(--obs-control-active) !important; box-shadow: none !important; }
   html[data-theme] body#academic-site :is(a.paper-card, a.pathway-step):hover {
     border-color: color-mix(in srgb, var(--obs-accent) 45%, var(--obs-edge)) !important;
     box-shadow: inset 0 1px rgba(225, 239, 245, .22), 0 4px 12px rgba(0, 0, 0, .12), 0 0 10px color-mix(in srgb, var(--obs-cyan) 9%, transparent) !important;
@@ -120,33 +87,6 @@ html[data-theme] body#academic-site :is(:disabled, [aria-disabled="true"]) > .ob
 }
 
 /* A single moving navigation marker; the text layout never moves with it. */
-html[data-theme] body#academic-site .nav a {
-  position: relative;
-  isolation: isolate;
-  transition: color 180ms ease-out !important;
-}
-html[data-theme] body#academic-site .nav a:is([aria-current="page"], :hover, :focus-visible) {
-  background: transparent !important;
-  box-shadow: none !important;
-}
-html[data-theme] body#academic-site .nav a::before {
-  content: "";
-  display: block !important;
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  background: var(--obs-control-active);
-  box-shadow: inset 0 1px rgba(212, 234, 248, .1);
-  opacity: 0;
-  transition: opacity 180ms ease-out;
-  pointer-events: none;
-}
-html[data-theme] body#academic-site .nav a:is([aria-current="page"], :focus-visible)::before { opacity: 1; }
-@media (hover: hover) {
-  html[data-theme] body#academic-site .nav a:hover::before { opacity: 1; }
-}
-html[data-theme] body#academic-site .obs-nav-ready a::after { display: none !important; }
 html[data-theme] body#academic-site .obs-nav-beam {
   position: absolute;
   top: 0;
@@ -191,6 +131,11 @@ html[data-theme] body#academic-site .is-route-active .ui2046-planet {
   box-shadow: 0 0 8px var(--obs-cyan), 0 0 20px var(--obs-glow) !important;
 }
 html[data-theme] body#academic-site .is-route-active .ui2046-planet-label { opacity: 1 !important; color: var(--obs-cyan) !important; }
+/* Orbit tracks fill the orbit box; interface-2046.js moves each one with a compositor-only transform animation,
+   so the planet and its label sit at the track origin instead of being repositioned with left/top. */
+.ui2046-orbit-track { position: absolute; inset: 0; pointer-events: none; }
+.ui2046-orbit-track > .ui2046-planet { --left: 0%; --top: 0%; }
+.ui2046-orbit-track > .ui2046-planet-label { --label-left: 0%; --label-top: 0%; }
 html[data-theme] body#academic-site[data-orbit-route="research-log"] .ui2046-solar-system::after {
   content: "";
   position: absolute;
@@ -203,15 +148,6 @@ html[data-theme] body#academic-site[data-orbit-route="research-log"] .ui2046-sol
   border-radius: 50%;
   box-shadow: 0 0 14px var(--obs-gold-glow);
   pointer-events: none;
-}
-html[data-theme="space"][data-fx-intensity="immersive"] {
-  --obs-glow: rgba(133, 213, 255, .48);
-  --obs-gold-glow: rgba(248, 209, 134, .32);
-  --obs-edge: rgba(189, 228, 255, .46);
-}
-html[data-theme="light"][data-fx-intensity="immersive"] {
-  --obs-glow: rgba(55, 138, 185, .23);
-  --obs-gold-glow: rgba(162, 124, 47, .22);
 }
 html[data-fx-intensity="immersive"] body#academic-site .ui2046-solar-system { opacity: .9 !important; }
 html[data-fx-intensity="immersive"] body#academic-site .ui2046-system-orbit.is-route-active { opacity: 1 !important; }
@@ -338,13 +274,29 @@ html[data-theme] body#academic-site #mission-index .compact-jump-card.is-active:
 html[data-theme] body#academic-site .mission-jump-stage { display: block; margin-top: 10px; font-size: 12px; line-height: 1.45; color: var(--obs-muted); }
 html[data-theme] body#academic-site .mission-jump-log { font-size: 13px !important; }
 html[data-theme] body#academic-site .mission-jump-meta { font-size: 10px !important; white-space: normal; }
-html[data-theme] body#academic-site .obs-present-launch { display: inline-flex !important; align-items: center; gap: 10px; }
+html[data-theme] body#academic-site .obs-present-launch { display: inline-flex !important; gap: 10px; }
 html[data-theme] body#academic-site .obs-photo-tools { display: flex; justify-content: flex-end; margin-bottom: 16px; }
-html[data-theme] body#academic-site .photo-wall { columns: 3; column-gap: 16px; }
+/* Justified rows: each tile grows by its aspect ratio (--photo-ratio) from a basis of ratio x row height,
+   so the photographs in a row share one height and the row fills the wall. Without container queries the
+   rows break greedily at the target height and the filler keeps an incomplete last row from stretching. */
+html[data-theme] body#academic-site .photo-wall {
+  --photo-gap: 16px;
+  --photo-target-h: clamp(150px, calc((min(100vw, 1280px) - 80px) * .215), 260px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--photo-gap);
+}
+html[data-theme] body#academic-site .photo-wall::after {
+  content: "";
+  flex: 1000000 1 0px;
+  margin-left: calc(-1 * var(--photo-gap));
+}
 html[data-theme] body#academic-site .photo-tile {
   display: block !important;
-  break-inside: avoid;
-  margin: 0 0 16px !important;
+  flex: var(--photo-grow, var(--photo-ratio, 1.5)) 1 calc(var(--photo-ratio, 1.5) * var(--photo-row-h, var(--photo-target-h)));
+  min-width: 0;
+  margin: 0 !important;
   padding: 0;
   border: 0;
   border-radius: 4px !important;
@@ -353,7 +305,6 @@ html[data-theme] body#academic-site .photo-tile {
   overflow: hidden;
   cursor: zoom-in;
 }
-html[data-theme] body#academic-site .photo-tile--wide { column-span: all; }
 html[data-theme] body#academic-site .photo-tile img {
   display: block;
   width: 100%;
@@ -371,8 +322,38 @@ html[data-theme] body#academic-site .photo-tile:is(:hover, :focus-visible) {
   box-shadow: 0 0 18px var(--obs-glow) !important;
 }
 @media (max-width: 760px) {
-  html[data-theme] body#academic-site .photo-wall { columns: 2; column-gap: 10px; }
-  html[data-theme] body#academic-site .photo-tile { margin-bottom: 10px !important; }
+  html[data-theme] body#academic-site .photo-wall { --photo-gap: 10px; --photo-target-h: clamp(120px, calc((100vw - 40px) * .26), 200px); }
+}
+@media (max-width: 560px) {
+  html[data-theme] body#academic-site .photo-wall { --photo-target-h: calc((100vw - 40px) * .36); }
+}
+/* Row breaks chosen at build time for three wall widths (WALL_BANDS in src/lib/photo-rows.js: up to 520px,
+   up to 720px and wider, with rows 36%, 26% and 21.5% of the wall). Each tile carries the ratio sum
+   (--photo-sum-*) and gap count (--photo-gaps-*) of its row, so the row height is exact at any wall width;
+   1px is left for rounding and flex-grow closes it. --photo-grow-*: 0 holds an open last row at the target. */
+@supports (width: 1cqw) {
+  html[data-theme] body#academic-site .photo-wall { container: photo-wall / inline-size; }
+  html[data-theme] body#academic-site .photo-wall::after { display: none; }
+  html[data-theme] body#academic-site .photo-tile {
+    --photo-target-h: 21.5cqw;
+    --photo-grow: var(--photo-grow-wide);
+    --photo-row-h: calc((100cqw - 1px - var(--photo-gaps-wide) * var(--photo-gap)) / var(--photo-sum-wide));
+  }
+  @container photo-wall (max-width: 720px) {
+    html[data-theme] body#academic-site .photo-tile {
+      --photo-target-h: 26cqw;
+      --photo-grow: var(--photo-grow-medium);
+      --photo-row-h: calc((100cqw - 1px - var(--photo-gaps-medium) * var(--photo-gap)) / var(--photo-sum-medium));
+    }
+  }
+  /* Phones: one or two photographs per row. */
+  @container photo-wall (max-width: 520px) {
+    html[data-theme] body#academic-site .photo-tile {
+      --photo-target-h: 36cqw;
+      --photo-grow: var(--photo-grow-narrow);
+      --photo-row-h: calc((100cqw - 1px - var(--photo-gaps-narrow) * var(--photo-gap)) / var(--photo-sum-narrow));
+    }
+  }
 }
 html[data-theme] body#academic-site .research-note-body > .obs-present-launch { float: right; margin: 0 0 12px 16px !important; }
 html[data-theme] body#academic-site .research-note-body > :is(h2, h3) { clear: both; }
@@ -476,7 +457,6 @@ html.obs-presenting { overflow: hidden !important; }
   html[data-theme] body#academic-site .research-coordinates { display: none !important; }
   html[data-theme] body#academic-site .site-footer { padding-bottom: calc(76px + env(safe-area-inset-bottom)) !important; }
   html[data-theme] body#academic-site .header-actions .nav { border: 0 !important; background: transparent !important; border-radius: 0 !important; box-shadow: none !important; }
-  html[data-theme] body#academic-site .nav a { border-radius: 10px !important; }
   html[data-theme] body#academic-site .header-actions > :is(.nav-log-gate, .theme-toggle) { border-radius: 12px !important; }
   html[data-theme] body#academic-site .obs-presentation-surface { padding: 62px 12px max(16px, env(safe-area-inset-bottom)); }
   html[data-theme] body#academic-site .obs-presentation figure { padding-bottom: 54px; box-sizing: border-box; gap: 12px; }
@@ -489,5 +469,4 @@ html.obs-presenting { overflow: hidden !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   html[data-theme] body#academic-site .obs-nav-beam { transition: none; }
-  html[data-theme] body#academic-site .nav a::before { transition-duration: 100ms; }
 }

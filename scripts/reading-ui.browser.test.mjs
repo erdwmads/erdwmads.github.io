@@ -12,22 +12,24 @@ try {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto(`${base}/index.html`, { waitUntil: 'networkidle' });
-  const settings = page.locator('.obs-fx-settings');
-  assert.ok(await settings.isVisible(), 'Mobile must have an accessible FX entry');
-  assert.equal(await page.locator('.obs-fx-dock > button:visible').count(), 1);
-  const bounds = await settings.boundingBox();
-  assert.ok(bounds.width >= 44 && bounds.height >= 44, 'Touch target must be at least 44px');
-  await settings.click();
+  // Phones: no fixed dock over the reading column. Visual effects sits in the navigation sheet after the theme toggle.
+  const menu = page.locator('[data-nav-toggle]');
+  const sheetPanel = page.locator('[data-mobile-nav] > .theme-toggle + .obs-fx-panel');
+  assert.equal(await page.locator('.obs-fx-dock').isVisible(), false, 'Phones have no fixed display-settings dock');
+  assert.equal(await sheetPanel.count(), 1, 'Visual effects joins the navigation sheet after the theme toggle');
+  await menu.click();
+  assert.ok(await sheetPanel.isVisible(), 'Mobile must have an accessible Visual effects entry');
+  for (const label of await sheetPanel.locator('label').all()) assert.ok((await label.boundingBox()).height >= 44, 'Touch target must be at least 44px');
   assert.equal(await page.locator('.ambient-fx-toggle').isVisible(), false, 'Do not expose a particle toggle that mobile protection disables');
   assert.equal(await page.locator('.ambient-space-layer').count(), 0);
+  await page.getByLabel('Standard', { exact: true }).check();
+  assert.equal(await page.locator('html').getAttribute('data-fx-intensity'), 'standard');
   await page.getByLabel('Immersive', { exact: true }).check();
   assert.equal(await page.locator('html').getAttribute('data-fx-intensity'), 'immersive');
+  assert.equal(await menu.getAttribute('aria-expanded'), 'true', 'Choosing an effect keeps the sheet open');
   await page.keyboard.press('Escape');
-  assert.equal(await settings.getAttribute('aria-expanded'), 'false');
-  assert.ok(await settings.evaluate(el => el === document.activeElement));
-  await settings.click();
-  await page.locator('main h1').click();
-  assert.equal(await settings.getAttribute('aria-expanded'), 'false');
+  assert.equal(await menu.getAttribute('aria-expanded'), 'false');
+  assert.ok(await menu.evaluate(el => el === document.activeElement), 'Escape returns focus to the menu button');
   for (const theme of ['space', 'light']) {
     await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
     for (const width of [320, 390, 760]) {
@@ -36,8 +38,8 @@ try {
       const paint = await page.locator('main').evaluate(el => ({ background: getComputedStyle(el).backgroundImage, filter: getComputedStyle(el).backdropFilter }));
       assert.match(paint.background, /linear-gradient/, 'Reading surface must be present');
       assert.equal(paint.filter, 'none', 'No live backdrop blur on the reading surface');
-      await settings.click();
-      const panel = await page.locator('.obs-fx-panel').boundingBox();
+      await menu.click();
+      const panel = await sheetPanel.boundingBox();
       assert.ok(panel.x >= 0 && panel.x + panel.width <= width && panel.y >= 0);
       await page.keyboard.press('Escape');
     }
@@ -46,11 +48,16 @@ try {
   await desktop.goto(`${base}/index.html`, { waitUntil: 'networkidle' });
   assert.equal(await desktop.locator('.obs-fx-dock > button:visible').count(),1);
   assert.equal(await desktop.locator('.ambient-fx-toggle').isVisible(),false);
-  await desktop.setViewportSize({ width: 390, height: 844 });
-  assert.equal(await desktop.locator('.obs-fx-dock > button:visible').count(), 1);
   await desktop.locator('.obs-fx-settings').click();
+  await desktop.setViewportSize({ width: 390, height: 844 });
+  // The panel moves on the media-query change event; wait for it instead of reading the DOM in the same tick.
+  await desktop.waitForFunction(() => document.querySelector('.obs-fx-panel')?.parentElement?.matches('[data-mobile-nav]'), null, { timeout: 3000 }).catch(() => {});
+  assert.equal(await desktop.locator('.obs-fx-dock > button:visible').count(), 0, 'Narrowing to a phone removes the fixed dock');
+  assert.equal(await desktop.locator('[data-mobile-nav] > .obs-fx-panel').count(), 1, 'and moves the panel into the navigation sheet');
   await desktop.setViewportSize({ width: 1440, height: 1000 });
+  await desktop.waitForFunction(() => document.querySelector('.obs-fx-panel')?.parentElement?.matches('.obs-fx-dock'), null, { timeout: 3000 }).catch(() => {});
   assert.equal(await desktop.locator('.obs-fx-dock > button:visible').count(),1);
+  assert.equal(await desktop.locator('.obs-fx-dock > .obs-fx-panel').count(), 1, 'Widening returns the panel to the dock');
   assert.equal(await desktop.locator('.ambient-fx-toggle').isVisible(),false);
   assert.equal(await desktop.locator('.obs-fx-settings').getAttribute('aria-expanded'), 'false');
   assert.equal(await desktop.locator('.ambient-fx-toggle').count(), 1);

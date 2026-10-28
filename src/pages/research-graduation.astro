@@ -2,17 +2,16 @@
 import LegacyShell from "../components/LegacyShell.astro";
 import MissionLogShell from "../components/MissionLogShell.astro";
 import EvidenceAtlasData from "../components/EvidenceAtlasData.astro";
+import AnalyticalPathway from "../components/AnalyticalPathway.astro";
 import { getPageScripts } from "../data/site";
-import afterLogHtml from "../legacy/research-graduation-after-log.html?raw";
-import heroHtml from "../legacy/research-graduation-hero.html?raw";
-import projectInfoHtml from "../legacy/research-graduation-project-info.html?raw";
+import { formalTitle, projectContext, laboratories, period } from "../data/project.mjs";
 
 const scriptHtml = getPageScripts("research-graduation");
 ---
 
 <LegacyShell
   title="Graduation Research | I. Mads Lieu"
-  description="Password-protected graduation research Mission Log for the Orgueil CI1 study of Ca–Mg carbonates reported as dolomite."
+  description="Password-protected Mission Log for the Orgueil CI1 study of Ca–Mg carbonates reported as dolomite."
   current="research-log"
   pageClass="research-graduation"
   mainClass="main research-graduation-page"
@@ -20,7 +19,12 @@ const scriptHtml = getPageScripts("research-graduation");
   scriptHtml={scriptHtml}
   noindex
 >
-  <Fragment set:html={heroHtml} />
+  <section class="research-archive-hero">
+    <p class="eyebrow">Research Log · Protected archive</p>
+    <h1>Orgueil CI1 research archive</h1>
+    <p class="lead">Mission Log of sample preparation, microscopy and microanalysis for the study of Ca–Mg carbonates reported as dolomite in the Orgueil CI1 chondrite.</p>
+    <div class="button-row"><a class="button secondary" href="research-log.html">Research Log overview</a></div>
+  </section>
   <EvidenceAtlasData />
 
   <section
@@ -76,8 +80,20 @@ const scriptHtml = getPageScripts("research-graduation");
   </section>
 
   <div data-research-lock-content hidden>
-    <Fragment set:html={projectInfoHtml} />
+    <section class="section two-col research-project-context">
+      <h2 class="section-label">Project context</h2>
+      <div class="card">
+        <p class="research-formal-title">{formalTitle}</p>
+        {projectContext.map((paragraph) => <p>{paragraph}</p>)}
+        <p class="research-project-context__labs">{period} · {laboratories.map((lab) => `${lab.name}, ${lab.institution} (adviser: ${lab.adviser})`).join('; ')}</p>
+      </div>
+    </section>
     <MissionLogShell />
-    <Fragment set:html={afterLogHtml} />
+    <section class="section analytical-pathway-section" aria-labelledby="graduation-pathway-title">
+      <p class="eyebrow">Analytical Pathway</p>
+      <h2 id="graduation-pathway-title">From observation to interpretation</h2>
+      <AnalyticalPathway variant="compact" />
+      <p class="research-log-section-note">What each step can answer and cannot establish: <a href="research.html#research-methods-title">the full Analytical Pathway on Research →</a></p>
+    </section>
   </div>
 </LegacyShell>

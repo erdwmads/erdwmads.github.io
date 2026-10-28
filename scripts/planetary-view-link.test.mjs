@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { encodeObservation, decodeObservation } from '../src/scripts/planetary-view-link.js';
+import { encodeObservation, decodeObservation, legacyOriginsDestination } from '../src/scripts/planetary-view-link.js';
 
 const base = 'https://example.com/project/index.html?password=secret#private';
 const camera = { position: [1.123456789, -2, 3], target: [0, 0, 0], up: [0, 1, 0], zoom: 1.23456789 };
@@ -55,6 +55,22 @@ test('rejects invalid state types and invalid supplied public fields', () => {
   for (const [key, values] of Object.entries(invalid)) {
     for (const value of values) assert.throws(() => encodeObservation({ [key]: value }, base), TypeError, `${key}: ${String(value)}`);
   }
+});
+
+// Old shared Origins links still decode (legacyOriginsDestination forwards them), so their 0..1 bounds must hold.
+test('Origins progression and cutaway round-trip inside 0..1 and are rejected outside it', () => {
+  const state = { view: 'origins', material: 'orgueil', originProgress: 0.625, originCutaway: 0.55 };
+  assert.deepEqual(roundtrip(state), state);
+  for (const field of ['originProgress', 'originCutaway']) {
+    for (const value of [0, 1]) assert.deepEqual(roundtrip({ view: 'origins', [field]: value }), { view: 'origins', [field]: value });
+    for (const value of ['-0.1', '1.1', '2', 'Infinity']) {
+      assert.equal(decodeObservation(`#observe=1&view=origins&${field}=${value}`), null, `${field}=${value}`);
+    }
+    for (const value of [-0.1, 1.1, NaN, Infinity, '']) {
+      assert.throws(() => encodeObservation({ view: 'origins', [field]: value }, 'https://example.org/'), TypeError, `${field}: ${String(value)}`);
+    }
+  }
+  assert.equal(legacyOriginsDestination('#observe=1&view=origins&originProgress=2'), null);
 });
 
 test('public URL uses sibling ryugu-bennu.html without query, old hash or credentials', () => {

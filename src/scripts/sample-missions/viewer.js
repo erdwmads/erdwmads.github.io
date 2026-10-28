@@ -15,7 +15,7 @@ export function createViewer(host,{signal,onTick,onReady,onError}){
  const lifetime=new AbortController(),combined=AbortSignal.any([signal,lifetime.signal]);
  const renderer=new T.WebGLRenderer({antialias:true,alpha:false,logarithmicDepthBuffer:true});
  renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=.92;
- renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;host.prepend(renderer.domElement);
+ renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFShadowMap;host.prepend(renderer.domElement);
  const scene=new T.Scene();scene.background=new T.Color('#050d15');
  const studio=new RoomEnvironment(),pmrem=new T.PMREMGenerator(renderer),environment=pmrem.fromScene(studio,.07);studio.dispose();pmrem.dispose();
  scene.environment=environment.texture;scene.environmentIntensity=.28;

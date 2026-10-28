@@ -11,7 +11,7 @@ Everything here runs with Node 24 or later (`.nvmrc`) from the repository root. 
 | `npm run test:unit` | `run-unit-tests.mjs` | every Node unit test (see Unit tests below); none needs `dist/` or a browser |
 | `npm run build` | Astro | generated pages and the stylesheet bundle |
 | `npm run export:ppt-data` | `export-ppt-data.mjs` | public data for slides (`dist/ppt-data.json`) |
-| `npm run check:site` | `check-site.mjs` | generated pages, assets, SEO, stylesheet bundle, protected archive boundary, Mission Log display-image limits, the Sample Cabinet redirect stub, and the deploy workflow itself |
+| `npm run check:site` | `check-site.mjs` | generated pages, assets, SEO, stylesheet bundle, protected archive boundary, Mission Log display-image limits, the Sample Cabinet redirect stub, the deploy workflow itself, orphaned files (`orphan-files.mjs`: every `src/legacy/*.html` imported by a page or component, every `public/assets/js/*.js` loaded by `src/data/site.ts`, a component or a built page, every `src/scripts/` file reachable from a page or component, or listed in `componentStylesheets`, unless it is a test or test helper), content-hash `?v=` versions on every public script, and the Content Security Policy (one identical CSP meta per page, before the first script, listing every executable inline script's hash; no inline event handlers, `javascript:` URLs, off-origin `src`/`href` in scripts, stylesheets, images, frames or media, or off-origin CSS `url()`) |
 
 ## Before publishing (local)
 
@@ -28,13 +28,14 @@ Everything here runs with Node 24 or later (`.nvmrc`) from the repository root. 
 
 | Script | Purpose |
 |---|---|
-| `publish-protected-mission-log.mjs` | encrypts the private Mission Log JSON into `public/assets/data/mission-log.enc.json` (`npm run publish:mission-log`); refuses to write unless the passphrase decrypts the current archive (`--rotate-passphrase` changes it on purpose), decrypts the new file before replacing the old one, and `--check-leaks` scans `src/`, `public/` and `dist/` for entry text, reporting only paths and entry ids |
+| `publish-protected-mission-log.mjs` | encrypts the private Mission Log JSON into `public/assets/data/mission-log.enc.json` (`npm run publish:mission-log`); refuses to write unless the passphrase decrypts the current archive (`--rotate-passphrase` changes it on purpose), refuses entries whose `bodyHtml` the site's Content Security Policy would block (off-site images or media, inline event handlers, `javascript:` URLs; same scanner as `check-site`), decrypts the new file before replacing the old one, and `--check-leaks` scans `src/`, `public/` and `dist/` for entry text, reporting only paths and entry ids |
 | `publish-mission-log.ps1` | the owner's one-time passphrase handoff: prompts with `Read-Host -AsSecureString` and passes the passphrase only to the node publisher (`-CheckLeaks`, `-RotatePassphrase`, `-Node`) |
-| `audit-css.mjs` | stylesheet size report; `--write` refreshes the baseline, `--check` enforces it |
-| `prune-dead-css.mjs` | reports CSS rules whose selectors can never match; `--write` removes them. Build first and pass the private Mission Log JSON with `--extra` |
+| `audit-css.mjs` | stylesheet size report for the public stylesheets and the component stylesheets in `src/` (`componentStylesheets`); `--write` refreshes the baseline, `--check` enforces it |
+| `prune-dead-css.mjs` | reports CSS rules in `style.css` (or the file named by `--css`) whose selectors can never match; `--write` removes them. Build first. Classes such as `.mission-data-table` appear only inside the encrypted Mission Log, so without `--extra` the report lists rules that have no reference outside the encrypted Mission Log, and `--write` refuses to run unless the unlocked entries come in with `--extra` (an owner-provided or synthetic file) or `--no-private-content` accepts removing those rules. `--strict` (`--min-affix 12` by default) stops short prefix/suffix tokens such as `is-` or `-card` from protecting whole class families and lists the candidates for review; it never writes |
+| `orphan-files.mjs` | the orphaned-file rules `check-site.mjs` enforces (unimported legacy fragments, unloaded public scripts, `src/scripts/` modules no page reaches) |
 | `audit-images.mjs` | image inventory, derivative counts and Mission Log display limits |
-| `generate-image-derivatives.mjs` | Photography 480w thumbnails and 640w/960w srcset tiers (1600w for the panorama), Mission Log WebP thumbnails (`npm run images:derive`; pass `photography` or `mission-log` to regenerate one group) |
-| `generate-site-backgrounds.mjs` | WebP backgrounds (grayscale 1600w Bennu), portrait and the 1200×630 social card (`npm run images:backgrounds`) |
+| `generate-image-derivatives.mjs` | Photography 480w thumbnails and 640w/960w srcset tiers (1600w for the panorama), Mission Log WebP thumbnails (`npm run images:derive`; `-- photography` or `-- mission-log` regenerates one group) |
+| `generate-site-backgrounds.mjs` | WebP backgrounds (grayscale 1600w Bennu), portrait (640w and 960w), CV hero (800w and 1200w), the Bennu reference image for the planetary explorer fallback, and the 1200×630 social card with the name and topic (`npm run images:backgrounds`; `-- --og-cover` redraws only the card) |
 | `shape-model-glb.mjs` | lossless OBJ → GLB re-encoding of measured shape models |
 | `spacecraft-model-simplify.mjs` | reproducible display simplification of NASA's OSIRIS-REx GLB (reads the unmodified NASA file from git history or a path; see `SPACECRAFT-CREDITS.md`) |
 | `draco-sequential-encoder.mjs` | minimal Draco mesh encoder used by the simplifier; output is checked with the site's own decoder |
@@ -49,7 +50,7 @@ Everything here runs with Node 24 or later (`.nvmrc`) from the repository root. 
 | `fetch-planetary-timeline.mjs` | daily ephemeris timelines for the planetary field guide |
 | `fetch-mission-journey.mjs` | Hayabusa2 and OSIRIS-REx heliocentric journey vectors (`journey.json` and packed `journey.packed.json`) |
 | `fetch-mission-ephemeris.mjs` | mission ephemerides (needs Python with `spiceypy`; `ephemeris.json` and packed `ephemeris.packed.json`) |
-| `generate-origins-volume.mjs`, `generate-fine-settling.mjs`, `generate-remnant-packing.mjs`, `build-origins-section.mjs` | conceptual Origins geometry (illustrative, not a reconstruction) |
+| `generate-fine-settling.mjs`, `generate-remnant-packing.mjs` | conceptual Origins geometry for `origins-study.html` (illustrative, not a reconstruction) |
 | `nasa-geometry-fixture.mjs` | decodes the NASA spacecraft model for geometry tests |
 
 ## Unit tests
@@ -57,11 +58,12 @@ Everything here runs with Node 24 or later (`.nvmrc`) from the repository root. 
 `npm run test:unit` runs all of them with `node --test`; they need no browser. `npm run test:mission-publisher`, `test:research-lock`, `test:mission-index`, `test:mission-lightbox` (purge on lock, phone guard, inert background, Tab containment) and `test:mobile-layout` run subsets. By area:
 
 - Mission Log and unlock: `publish-protected-mission-log`, `research-lock`, `research-passkey`, `mission-index`, `mission-lightbox`, `mission-layout`
-- Site shell and pages: `mobile-layout`, `site-header`, `paper-shelf`, `photography-loading`, `viewer-keyboard-boundaries`
+- Site shell and pages: `mobile-layout`, `site-header`, `home-shell`, `feature-loader` (per-page loading of the heavier features), `paper-shelf`, `photography-loading`, `viewer-keyboard-boundaries`, `orphan-files` (the orphaned-file rules of `check-site`), `project-facts` (project facts and Analytical Pathway statuses in `src/data/project.mjs`), `src/lib/csp.test.mjs` (the policy and its page scanner) and `src/lib/photo-rows.test.mjs` (photo wall row breaks)
 - Planetary field guide: `planetary-*`, `asteroid-scale`, `shape-model-glb`
 - Sample-return missions: `sample-*`, `physical-models`, `mission-data-pack`, `spacecraft-model-simplify`, `draco-sequential-encoder`, and `src/scripts/sample-missions/*.test.mjs`
 - Origins: `origins-*`, `arrival-timeline`, and `src/scripts/origins-study/*.test.mjs`
 - Image inspector: `src/scripts/image-inspector.test.mjs`
+- Evidence status lines on Ryugu & Bennu and Origins: `evidence-status`
 
 ## Browser regression tests
 
@@ -74,20 +76,24 @@ node scripts/run-browser-tests.mjs planetary       # only names containing "plan
 node scripts/run-browser-tests.mjs --report out.json --timeout 300
 ```
 
-The runner serves `dist/` on a free local port and passes it as `SITE_TEST_URL`. It needs Playwright (`PLAYWRIGHT_MODULE`, or an installed `playwright` package) and a Chromium-family browser (`EDGE_EXECUTABLE`, or Microsoft Edge in its standard Windows location).
+The runner serves `dist/` on a free local port and passes it as `SITE_TEST_URL`. It needs Playwright (`PLAYWRIGHT_MODULE`, or an installed `playwright` package) and a Chromium-family browser (`EDGE_EXECUTABLE`, else Microsoft Edge in its standard Windows location, else Playwright's Chromium).
 
 | Area | Tests |
 |---|---|
-| Home arrival and display settings | `arrival`, `arrival-focus`, `arrival-performance`, `ambient-resize`, `home-background`, `home-focus`, `fullscreen-paint`, `prism-controls`, `theme-geometry`, `typography` |
+| Home arrival and display settings | `arrival`, `arrival-focus`, `arrival-performance`, `ambient-resize`, `orbital-motion`, `home-background`, `home-focus`, `fullscreen-paint`, `prism-controls`, `theme-geometry`, `typography` |
 | Header, navigation and soft navigation | `site-header`, `soft-nav-page-class`, `navigation-beam`, `navigation-intent`, `navigation-lifecycle`, `site-control-clearance`, `page-alignment`, `interaction-stability` |
-| Research page | `research-reading`, `research-flow-visual`, `research-workflow`, `mineral-interactions`, `reading-ui`, `reading-tools` |
+| Research page | `research-reading`, `research-flow-visual`, `research-workflow`, `research-hub`, `mineral-interactions`, `reading-ui`, `reading-tools` |
 | Ryugu & Bennu: sample-return missions | `sample-missions*`, `mission-*`, `physical-missions`, `earth-*`, `flight-frames`, `readable-motion`, `sample-camera`, `observation-workspaces` |
 | Ryugu & Bennu: planetary field guide | `planetary-*`, `research-navigation`, `research-review` |
 | Ryugu & Bennu: published microscopy | `research-scale`, `research-scale-mobile`, `experimental-folio`, `experimental-folio-access` |
 | Origins | `origins-*`, `porous-continuum` |
+| Evidence status lines, caveat size and prose floor (Ryugu & Bennu, Origins) | `evidence-status` |
+| Paper Shelf | `paper-shelf` |
 | Photography, CV, Contact | `photo-flight`, `photo-wall`, `portrait-framing`, `progress-polish` |
 | Protected Research Log | `research-passkey`, `research-passkey-virtual` (virtual authenticator: API flow only, not a real Windows Hello check) |
-| Whole site | `site-audit`, `site-refinement`, `whole-site-content`, `observatory` |
+| Whole site | `site-audit`, `site-refinement`, `whole-site-content`, `observatory`, `style-snapshot` |
+
+`style-snapshot` compares computed styles (about two dozen properties of about 45 shell and component selectors on six pages, both themes at 1440, 900 and 390 px; FX off, reduced motion, fixed clock) with `docs/style-snapshot.json` and prints each changed property. Run it after every CSS refactor (`node scripts/run-browser-tests.mjs style-snapshot`); one that should look the same must pass unchanged. Record a new baseline only after reviewing the printed diff of an intended visual change: rebuild, then run it with `STYLE_SNAPSHOT_WRITE=1` through the runner (or `node scripts/style-snapshot.browser.test.mjs --write` against a served `dist/` given as `SITE_TEST_URL`), and commit the baseline with the CSS change. The baseline belongs to one browser engine; regenerate it rather than hand-edit it.
 
 `interaction-stability` takes over three minutes on its own; run the full suite with `--timeout 600`.
 
@@ -108,4 +114,4 @@ The first full run of this suite (2026-09-25) passed 50 of 84 tests. The other 3
 | `.page-outline` became `[data-research-guide]` navigators on Research and Ryugu & Bennu; Contact now scrolls at 1100px; the framing check squares the stage's rounded corners and hides the sticky guide; the stability and audit routes include `ryugu-bennu` and `origins-study` | `site-refinement`, `site-audit`, `planetary-explorer`, `interaction-stability` |
 | Waits for the reduced-motion change event, or up to 3 s for a slow background pebble to move, instead of sampling once (failed intermittently) | `planetary-exploration`, `home-background` |
 
-That run also found two real cascade conflicts, fixed on 2026-09-28: hovering a control switched it back to the older prism gradient, cyan edge and 3px inset lip (`prism-controls`), and hovering a CV, Paper Shelf or timeline record added a drop shadow and recoloured its edge (`progress-polish`). Older hover rules outranked the quiet and editorial resting rules. The hover rules in `observatory-experience.css`, `site-refinement.css` and `planetary-explorer.css` no longer repaint the resting material or add shadows, and `quiet-observatory.css` keeps unselected Paper Shelf filters on their face (`observatory.css` would paint the old metal). Only the edge answers the pointer, plus the quiet highlight on buttons. Secondary buttons still rest on the prism gradient because `main .button.secondary` (1,3,3) outranks the quiet resting rule (1,3,2); that is what separates them from primary buttons, which have no `.primary` class.
+That run also found two real cascade conflicts, fixed on 2026-09-28: hovering a control switched it back to the older prism gradient, cyan edge and 3px inset lip (`prism-controls`), and hovering a CV, Paper Shelf or timeline record added a drop shadow and recoloured its edge (`progress-polish`). Older hover rules outranked the quiet and editorial resting rules. The hover rules in `observatory-experience.css`, `site-refinement.css` and `planetary-explorer.css` no longer repaint the resting material or add shadows, and `quiet-observatory.css` keeps unselected Paper Shelf filters on their face (`observatory.css` would paint the old metal). Only the edge answers the pointer, plus the quiet highlight on buttons. Secondary buttons still rest on the prism gradient because `main .button.secondary` (1,3,3, now in `components.css`) outranks the quiet resting rule (1,3,2); that is what separates them from primary buttons, which have no `.primary` class.

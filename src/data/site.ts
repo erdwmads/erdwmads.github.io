@@ -1,3 +1,5 @@
+import { contentVersion } from "../lib/script-version";
+
 export const brand = {
   name: "I. Mads Lieu",
   tagline: "Astromineralogy &bull; Planetology &bull; Meteoritics",
@@ -53,15 +55,44 @@ export const personSchema = {
   knowsAbout: ["Astromineralogy", "Planetology", "Meteoritics", "Carbonaceous chondrites", "Orgueil CI1 chondrite"]
 } as const;
 
+export const homeTitle = "Astromineralogy Research Archive | I. Mads Lieu";
+
+// Home structured data: the site (WebSite) and the home page as a ProfilePage whose main entity is the Person above.
+const { "@context": _personContext, ...personNode } = personSchema;
+export const homeStructuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${siteMetadata.url}/#website`,
+      url: `${siteMetadata.url}/`,
+      name: siteMetadata.title,
+      description: siteMetadata.description,
+      inLanguage: "en",
+      author: { "@id": `${siteMetadata.url}/#person` }
+    },
+    {
+      "@type": "ProfilePage",
+      "@id": `${siteMetadata.url}/#profile`,
+      url: `${siteMetadata.url}/`,
+      name: homeTitle,
+      inLanguage: "en",
+      isPartOf: { "@id": `${siteMetadata.url}/#website` },
+      mainEntity: { "@id": `${siteMetadata.url}/#person`, ...personNode }
+    }
+  ]
+} as const;
+
+// No Home entry: the brand links home. Research pages come first, then personal pages; LegacyShell
+// draws a quiet divider where the group changes.
 export const navItems = [
-  { href: "index.html", label: "Home", key: "home" },
-  { href: "research.html", label: "Research", key: "research" },
-  { href: "ryugu-bennu.html", label: "Ryugu & Bennu", key: "ryugu-bennu" },
-  { href: "origins-study.html", label: "Origins", key: "origins" },
-  { href: "paper-shelf.html", label: "Paper Shelf", key: "paper-shelf" },
-  { href: "cv.html", label: "CV", key: "cv" },
-  { href: "photography.html", label: "Photography", key: "photography" },
-  { href: "contact.html", label: "Contact", key: "contact" }
+  { href: "research.html", label: "Research", key: "research", group: "research" },
+  { href: "ryugu-bennu.html", label: "Ryugu & Bennu", key: "ryugu-bennu", group: "research" },
+  { href: "origins-study.html", label: "Origins", key: "origins", group: "research" },
+  { href: "paper-shelf.html", label: "Paper Shelf", key: "paper-shelf", group: "research" },
+  { href: "cv.html", label: "CV", key: "cv", group: "personal" },
+  { href: "photography.html", label: "Photography", key: "photography", group: "personal" },
+  { href: "contact.html", label: "Contact", key: "contact", group: "personal" }
 ] as const;
 
 export const researchLogGate = {
@@ -102,61 +133,90 @@ export const stylesheets = [
   "research-reading.css",
   "experimental-folio.css",
   "image-inspector.css",
-  "quiet-observatory.css"
+  "quiet-observatory.css",
+  "components.css",
+  "research-hub.css",
+  "evidence-status.css",
+  "paper-shelf.css",
+  "home-shell.css"
 ] as const;
 
-export const footerItems = ["© 2026 I. Mads Lieu", "What was responsible for making diverse planets in the Solar System?"] as const;
+// Component stylesheets that live next to their code in src/ (paths from the project root). The bundle appends
+// them after `stylesheets`, at the end of the cascade and in this order, so pages still make one stylesheet
+// request. No component imports CSS: Astro would emit it as a second render-blocking sheet.
+export const componentStylesheets = [
+  "src/styles/arrival.css",
+  "src/scripts/origins-study/style.css",
+  "src/scripts/sample-missions/style.css"
+] as const;
 
+// The second item is the overarching, long-term question, labelled so it is not read as the thesis question.
+export const footerItems = ["© 2026 I. Mads Lieu", "Long-term question: What was responsible for making diverse planets in the Solar System?"] as const;
+
+// Classic scripts in public/assets/js/. Each URL carries a content hash computed at build time
+// (src/lib/script-version.ts), so there is no hand-written ?v= string to bump.
+//
+// Page lifecycle: shell scripts load once per document and keep running across soft navigation
+// (legacy-navigation.js). Page scripts are rendered with data-page-script; soft navigation runs those,
+// and only those, again when it opens their page. Inline shell scripts (theme preload, the header
+// controller, the entrance opener, JSON-LD) never carry the attribute, so they never run twice.
 type ScriptSpec = {
-  src: string;
+  file: string;
   defer?: boolean;
 };
 
-const commonScripts: ScriptSpec[] = [
-  { src: "assets/js/theme.js?v=20261024-toggle-name", defer: true },
-  { src: "assets/js/ambient-space.js?v=20261024-toggle-name", defer: true },
-  { src: "assets/js/research-coordinates.js?v=20261024-comparison-hud", defer: true }
+// Shell scripts, in load order around the page scripts. power-manager.js runs first and is not deferred.
+const powerManagerScript: ScriptSpec = { file: "power-manager.js" };
+
+const shellScriptsBeforePage: ScriptSpec[] = [
+  { file: "theme.js", defer: true },
+  { file: "ambient-space.js", defer: true },
+  { file: "research-coordinates.js", defer: true }
 ];
 
-const interfaceScript: ScriptSpec = { src: "assets/js/interface-2046.js?v=20261024-page-class", defer: true };
-const powerManagerScript: ScriptSpec = { src: "assets/js/power-manager.js?v=20260914-viewport" };
-const legacyNavigationScript: ScriptSpec = { src: "assets/js/legacy-navigation.js?v=20261024-page-class", defer: true };
+const interfaceScript: ScriptSpec = { file: "interface-2046.js", defer: true };
+
+const shellScriptsAfterPage: ScriptSpec[] = [
+  { file: "observatory-interactions.js", defer: true },
+  { file: "mineral-interactions.js", defer: true }
+];
+
+// legacy-navigation.js runs last, after any inline HTML a page adds.
+const navigationScript: ScriptSpec = { file: "legacy-navigation.js", defer: true };
 
 const pageScripts: Record<string, ScriptSpec[]> = {
-  contact: [...commonScripts, { src: "assets/js/contact.js?v=20260929-identity", defer: true }, interfaceScript],
-  cv: [...commonScripts, { src: "assets/js/cv.js?v=20260929-identity", defer: true }, interfaceScript],
-  home: [...commonScripts, interfaceScript],
-  "paper-shelf": [...commonScripts, { src: "assets/js/paper-shelf.js?v=20260913-reviewed", defer: true }, interfaceScript],
-  photography: [...commonScripts, interfaceScript],
-  research: [...commonScripts, interfaceScript],
-  "ryugu-bennu": [...commonScripts, interfaceScript],
-  origins: [...commonScripts, interfaceScript],
-  "research-log": [...commonScripts, interfaceScript],
+  contact: [{ file: "contact.js", defer: true }],
+  cv: [{ file: "cv.js", defer: true }],
+  "paper-shelf": [{ file: "paper-shelf.js", defer: true }],
   // Password-gated public page; keep it out of sitemap contentPages.
   "research-graduation": [
-    ...commonScripts,
-    { src: "assets/js/research-passkey.js?v=20260930-name", defer: true },
-    { src: "assets/js/research-lock.js?v=20261024-unlock-focus", defer: true },
-    { src: "assets/js/mission-index.js?v=20260910-layout", defer: true },
-    { src: "assets/js/mission-lightbox.js?v=20261024-phone-guard", defer: true },
-    { src: "assets/js/mission-status-sync.js", defer: true },
-    interfaceScript
+    { file: "research-passkey.js", defer: true },
+    { file: "research-lock.js", defer: true },
+    { file: "mission-index.js", defer: true },
+    { file: "mission-lightbox.js", defer: true }
   ]
 };
 
-function renderScript(spec: ScriptSpec) {
+function renderScript(spec: ScriptSpec, pageScoped = false) {
+  const src = `assets/js/${spec.file}`;
   const defer = spec.defer ? " defer" : "";
-  return `<script src="${spec.src}"${defer}></script>`;
+  const scope = pageScoped ? " data-page-script" : "";
+  return `<script src="${src}?v=${contentVersion(src)}"${defer}${scope}></script>`;
 }
 
-export function getPageScripts(pageKey: keyof typeof pageScripts | string, inlineHtml = "") {
-  const scripts = pageScripts[pageKey] || pageScripts.home;
+// inlineHtml is raw page HTML placed before legacy-navigation.js; mark any inline <script> in it with
+// data-page-script if soft navigation should run it again.
+export function getPageScripts(pageKey: string, inlineHtml = "") {
+  const scripts = pageScripts[pageKey] || [];
   return [
     renderScript(powerManagerScript),
-    scripts.map(renderScript).join("\n"),
-    renderScript({ src: "assets/js/observatory-interactions.js?v=20260914-viewport", defer: true }),
-    renderScript({ src: "assets/js/mineral-interactions.js?v=20261024-calibrated", defer: true }),
+    [
+      ...shellScriptsBeforePage.map((spec) => renderScript(spec)),
+      ...scripts.map((spec) => renderScript(spec, true)),
+      renderScript(interfaceScript)
+    ].join("\n"),
+    ...shellScriptsAfterPage.map((spec) => renderScript(spec)),
     inlineHtml,
-    renderScript(legacyNavigationScript)
+    renderScript(navigationScript)
   ].filter(Boolean).join("\n\n");
 }

@@ -1,0 +1,175 @@
+/* home-shell.css: Home composition (Explore list, compact timeline, phone hero) and the phone placement of the
+   shell's floating controls. Loads last among the public stylesheets (src/data/site.ts; only the folded component stylesheets follow). Header layout stays in shell-evolution.css. */
+
+/* ---- Phone hero: a smaller portrait and side-by-side buttons bring Current Focus within about 1.2 screens ---- */
+@media (max-width: 480px) {
+  html[data-theme] body#academic-site.ui-page-home .hero .button-row {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    flex-direction: row !important;
+  }
+  html[data-theme] body#academic-site.ui-page-home .hero > .hero-card {
+    grid-template-columns: 148px minmax(0, 1fr) !important;
+    align-items: center !important;
+    margin-top: 6px !important;
+  }
+}
+
+/* ---- Explore: a compact list of destinations ---- */
+html[data-theme] body#academic-site main.main .home-explore-title { margin: 0 0 14px !important; }
+html[data-theme] body#academic-site main.main .home-explore-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--obs-line);
+}
+html[data-theme] body#academic-site main.main .home-explore-list li {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 4px 28px;
+  align-items: baseline;
+  margin: 0;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--obs-line);
+}
+/* The timeline section below draws its own top rule. */
+html[data-theme] body#academic-site main.main .home-explore-list li:last-child { border-bottom: 0; }
+html[data-theme] body#academic-site main.main .home-explore-list a {
+  justify-self: start;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+html[data-theme] body#academic-site main.main .home-explore-list p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--obs-muted);
+}
+
+/* ---- Academic timeline: compact rows, the full record stays in the CV ---- */
+html[data-theme] body#academic-site main.main .home-timeline-head { min-width: 0; }
+html[data-theme] body#academic-site main.main .home-timeline-head .section-label { margin: 0 !important; }
+html[data-theme] body#academic-site main.main .home-timeline-more { margin: 8px 0 0; }
+html[data-theme] body#academic-site main.main .home-timeline-more a { font-size: 13px !important; }
+html[data-theme] body#academic-site main.main .home-timeline .mini-timeline-item {
+  display: grid !important;
+  grid-template-columns: 76px minmax(0, 1fr) !important;
+  gap: 0 20px !important;
+  align-items: baseline !important;
+  padding: 10px 0 !important;
+}
+html[data-theme] body#academic-site main.main .home-timeline .mini-timeline-item:first-child { padding-top: 0 !important; }
+html[data-theme] body#academic-site main.main .home-timeline .mini-timeline-item p {
+  margin: 0 !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+}
+/* At 900 px and below the two-column section stacks (style.css), so the label and the CV link share one line. */
+@media (max-width: 900px) {
+  html[data-theme] body#academic-site main.main .home-timeline-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  html[data-theme] body#academic-site main.main .home-timeline-more { display: flex; margin: 0; white-space: nowrap; }
+}
+
+@media (max-width: 760px) {
+  html[data-theme] body#academic-site main.main .home-explore-list li {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding: 4px 0 10px;
+  }
+  /* !important beats the legacy inline-link rule in style.css (display and min-height). */
+  html[data-theme] body#academic-site main.main .home-explore-list a {
+    display: inline-flex !important;
+    align-items: center;
+    min-height: 44px !important;
+  }
+  html[data-theme] body#academic-site main.main .home-explore-list p { font-size: 13px; line-height: 1.55; }
+
+  html[data-theme] body#academic-site main.main .home-timeline-head { margin-bottom: 4px; }
+  html[data-theme] body#academic-site main.main .home-timeline-more a { display: inline-flex !important; align-items: center; min-height: 44px !important; }
+  html[data-theme] body#academic-site main.main .home-timeline .mini-timeline-item {
+    grid-template-columns: 62px minmax(0, 1fr) !important;
+    gap: 0 12px !important;
+    padding: 8px 0 !important;
+  }
+  html[data-theme] body#academic-site main.main .home-timeline .mini-timeline-item p { font-size: 13px !important; line-height: 1.5 !important; }
+}
+
+/* ---- Footer: the long-term question carries a label so it is not read as the thesis question ---- */
+html[data-theme] body#academic-site .site-footer .footer-question__label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--obs-accent);
+}
+
+/* ---- Phones (760 px and below): no fixed controls over the reading column ---- */
+/* Replay entrance moves to the footer (entry.js shows it when a replay is available); wider windows keep the fixed button. */
+html[data-theme] body#academic-site .site-footer .footer-replay { display: none; }
+@media (max-width: 760px) {
+  html[data-theme] body#academic-site #arrival-replay { display: none !important; }
+  /* A text control like Back to top; !important beats the shared phone button chrome (shell-evolution.css stable-mobile-controls). */
+  html[data-theme] body#academic-site .site-footer .footer-replay:not([hidden]) {
+    display: inline-flex;
+    align-items: center;
+    width: auto !important;
+    min-height: 44px;
+    margin: 0;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+    color: var(--obs-link);
+    font: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  html[data-theme] body#academic-site .site-footer .footer-replay:focus-visible { outline: 2px solid var(--obs-cyan); outline-offset: 3px; }
+
+  /* Visual effects: the dock's panel joins the navigation sheet (observatory-interactions.js); the dock itself goes. */
+  html[data-nav-ready][data-theme] body#academic-site .obs-fx-dock { display: none !important; }
+  html[data-theme] body#academic-site .header-actions > .obs-fx-panel {
+    position: static;
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 18px;
+    width: auto;
+    max-height: none;
+    margin: 2px 0 0;
+    padding: 6px 2px 0;
+    border: 0;
+    border-top: 1px solid var(--obs-line);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+  }
+  html[data-theme] body#academic-site .header-actions > .obs-fx-panel[hidden] { display: none; }
+  html[data-theme] body#academic-site .header-actions > .obs-fx-panel legend {
+    float: left;
+    margin: 0 4px 0 0;
+    padding: 0;
+    background: none;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--obs-muted);
+  }
+  html[data-theme] body#academic-site .header-actions > .obs-fx-panel label { min-height: 44px; padding: 0; font-size: 13px; }
+
+  /* With the dock gone, the footer no longer reserves room for it. */
+  html[data-nav-ready][data-theme] body#academic-site .site-footer { padding-bottom: env(safe-area-inset-bottom) !important; }
+  html[data-nav-ready][data-theme] body#academic-site .site-footer .footer-inner { padding-bottom: 20px !important; }
+}

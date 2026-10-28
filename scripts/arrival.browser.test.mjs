@@ -37,7 +37,8 @@ try{
   assert.equal(await page.locator('main').evaluate(el=>el.inert),false);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   await page.screenshot({path:`.codex_tmp/arrival-home-${width}.png`});
-  await page.locator('#arrival-replay').click();
+  // Phones replay from the footer; the fixed button would cover the reading column there.
+  await page.locator(width<=760?'.footer-replay':'#arrival-replay').click();
   await page.locator('#arrival-skip').click();
   assert.equal(await page.locator('#cosmic-arrival').evaluate(el=>el.open),false);
   await page.reload();
@@ -65,7 +66,7 @@ try{
    await page.locator('.nav a[href="cv.html"]').click();
    await page.waitForURL('**/cv.html');
    assert.equal(await page.locator('#arrival-replay').isVisible(),false,'Replay is home-only');
-   await page.locator('.nav a[href="index.html"]').click();
+   await page.locator('.site-header .brand').click();
    await page.waitForURL('**/index.html');
   }
   assert.deepEqual(errors,[]);

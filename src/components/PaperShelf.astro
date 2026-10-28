@@ -1,29 +1,24 @@
 ---
-import { papers } from "../data/papers";
+import { papers, paperAuthorLabel, paperCategories, paperGroups, paperHref, paperIssue, paperReference } from "../data/papers";
 
-const filters = [
-  { label: "All", id: "" },
-  { label: "Dolomite", id: "dolomite" },
-  { label: "CI / Orgueil", id: "ci-orgueil" },
-  { label: "Ryugu / Bennu", id: "ryugu-bennu" },
-  { label: "Methods", id: "methods" },
-  { label: "Chronology", id: "chronology" }
-];
+const filters = [{ label: "All", id: "" }, ...paperCategories];
+const groups = paperGroups();
+const countLabel = (count: number) => `${count} ${count === 1 ? "paper" : "papers"}`;
 ---
 
 <section>
   <p class="eyebrow">Paper Shelf</p>
   <h1>Paper Shelf</h1>
   <p class="lead">
-    A curated reading shelf for papers related to my graduation research: dolomite, carbonates,
-    CI chondrites, Orgueil, Ryugu, Bennu, aqueous alteration, and analytical mineralogy.
+    A curated reading shelf for my graduation research on the Orgueil CI1 chondrite, grouped by main topic and listed by year.
   </p>
+  <p class="paper-shelf-note">Summaries report each paper’s published work. The notes on why a paper matters for my project are my reading of it, not my results.</p>
 </section>
 
 <section class="section paper-shelf-tools" aria-label="Paper Shelf filters">
   <div class="paper-shelf-search">
     <label for="paper-search">Search</label>
-    <input id="paper-search" type="search" placeholder="Search title, author, tag..." data-paper-search>
+    <input id="paper-search" type="search" placeholder="Search title, author, journal, tag..." data-paper-search>
   </div>
   <div class="paper-filter-row" data-paper-filters>
     {filters.map((filter, index) => (
@@ -39,42 +34,50 @@ const filters = [
   </div>
 </section>
 
-<div class="paper-results"><p data-paper-count role="status" aria-live="polite">{papers.length} papers</p><button class="button secondary" type="button" data-paper-reset hidden>Clear filters</button></div>
+<div class="paper-results"><p data-paper-count role="status" aria-live="polite">{countLabel(papers.length)}</p><button class="button secondary" type="button" data-paper-reset hidden>Clear filters</button></div>
 <p data-paper-empty hidden>No papers match this search. Try a broader term or clear the filters.</p>
 <section class="section paper-shelf" aria-label="Reading list">
-  {papers.map((paper, index) => (
-    <article
-      id={`paper-${index + 1}`}
-      class="paper-card"
-      data-paper-card
-      data-paper-text={`${paper.status} ${paper.title} ${paper.authors} ${paper.summary} ${paper.tags.join(" ")}`.toLowerCase()}
-      data-paper-filters={paper.filters.join(" ")}
-    >
-      <div class="paper-status">{paper.status}</div>
-      <div class="paper-card-body">
-        <h2><a href={paper.url} target="_blank" rel="noopener">{paper.title}</a></h2>
-        <p class="muted">{paper.authors}</p>
-        <p>{paper.summary}</p>
-        <div class="paper-reference-actions">
-          <a class="paper-source" href={paper.url} target="_blank" rel="noopener" aria-label={`Read paper: ${paper.title} (opens in a new tab)`}>Read paper <span aria-hidden="true">↗</span></a>
-          <button
-            class="button secondary"
-            type="button"
-            data-paper-copy
-            data-paper-reference={`${paper.authors}. ${paper.title}. ${paper.url}`}
-            aria-label={`Copy reference: ${paper.title}`}
-          >Copy reference</button>
-        </div>
-        <p class="muted paper-reference-status" data-paper-copy-status role="status" aria-live="polite" aria-atomic="true"></p>
-        <div class="paper-reference-fallback" data-paper-copy-fallback hidden>
-          <label for={`paper-reference-${index + 1}`}>Reference — author, title, and DOI link</label>
-          <textarea id={`paper-reference-${index + 1}`} data-paper-reference-text readonly rows="4"></textarea>
-        </div>
-        <div class="project-tags">
-          {paper.tags.map((tag) => <span>{tag}</span>)}
-        </div>
-      </div>
-    </article>
+  {groups.map((group) => (
+    <section class="paper-group" data-paper-group={group.id} aria-labelledby={`paper-group-${group.id}`}>
+      <h2 class="paper-group-title" id={`paper-group-${group.id}`}>
+        <span>{group.label}</span>
+        <span class="paper-group-count" data-paper-group-count data-paper-group-total={group.papers.length}>{countLabel(group.papers.length)}</span>
+      </h2>
+      {group.papers.map((paper) => (
+        <article
+          id={paper.id}
+          class="paper-card"
+          data-paper-card
+          data-paper-text={`${paper.title} ${paper.authors.map((author) => author.family).join(" ")} ${paperAuthorLabel(paper)} ${paper.year} ${paper.journal} ${paper.summary} ${paper.relevance} ${paper.tags.join(" ")}`.toLowerCase()}
+          data-paper-filters={paper.filters.join(" ")}
+        >
+          {paper.legacyAnchor && <span id={paper.legacyAnchor} class="paper-anchor-alias" aria-hidden="true"></span>}
+          <div class="paper-card-body">
+            <h3 class="paper-title"><a href={paperHref(paper)} target="_blank" rel="noopener">{paper.title}<span class="visually-hidden"> (opens in a new tab)</span></a></h3>
+            <p class="paper-citation"><time class="paper-year" datetime={String(paper.year)}>{paper.year}</time> <span class="paper-citation-sep" aria-hidden="true">·</span> {paperAuthorLabel(paper)} <span aria-hidden="true">·</span> <span class="paper-journal">{paper.journal}</span>{paperIssue(paper) ? ` ${paperIssue(paper)}` : ""}</p>
+            <p class="paper-summary">{paper.summary}</p>
+            <p class="paper-relevance"><span class="paper-relevance-label">Why it matters<span class="paper-relevance-scope"> for my project</span></span> {paper.relevance}</p>
+            <div class="paper-card-foot">
+              <div class="project-tags">
+                {paper.tags.map((tag) => <span>{tag}</span>)}
+              </div>
+              <button
+                class="button secondary paper-copy"
+                type="button"
+                data-paper-copy
+                data-paper-reference={paperReference(paper)}
+                aria-label={`Copy reference: ${paper.title}`}
+              ><svg class="paper-copy-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><rect x="8" y="8" width="12" height="13" rx="2"></rect><path d="M16 8V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h2"></path></svg><span class="paper-copy-text">Copy reference</span></button>
+            </div>
+            <p class="muted paper-reference-status" data-paper-copy-status role="status" aria-live="polite" aria-atomic="true"></p>
+            <div class="paper-reference-fallback" data-paper-copy-fallback hidden>
+              <label for={`paper-reference-${paper.id}`}>Reference — authors, year, title, journal and DOI link</label>
+              <textarea id={`paper-reference-${paper.id}`} data-paper-reference-text readonly rows="4"></textarea>
+            </div>
+          </div>
+        </article>
+      ))}
+    </section>
   ))}
 </section>
 

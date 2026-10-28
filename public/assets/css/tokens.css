@@ -1,21 +1,82 @@
-/* Current theme tokens shared by the evolved shell and research surfaces. */
+/* Theme tokens. --evo-*: the evolved shell and Research Log surfaces. */
 html:not([data-theme="space"]):not([data-theme-space]) {
-  --evo-surface: #edf3f6;
-  --evo-surface-strong: #f8fafb;
   --evo-ink: #10243a;
   --evo-muted: #5f7080;
   --evo-line: rgba(16, 36, 58, .18);
   --evo-gold: #a88232;
-  --evo-mineral: #7d5c58;
 }
 
 html[data-theme="space"],
 html[data-theme-space] {
-  --evo-surface: #07111d;
-  --evo-surface-strong: #0b1827;
   --evo-ink: #edf7ff;
   --evo-muted: #aab9c8;
   --evo-line: rgba(151, 184, 210, .22);
   --evo-gold: #d6b568;
-  --evo-mineral: #c69a91;
+}
+
+/* --obs-*: the shared observatory language (moved from observatory.css) and the prism controls (moved from
+   observatory-experience.css). Space values on every themed page, Light overrides, and the stronger glow of the
+   immersive Visual effects setting. */
+html[data-theme] {
+  --obs-text: #eaf0f3;
+  --obs-muted: #b0bdc5;
+  --obs-surface: #101a20;
+  --obs-surface-hover: #19272f;
+  --obs-line: #324047;
+  --obs-accent: #d8be7b;
+  --obs-link: #9bcddd;
+  --obs-highlight: #233a3e;
+  --obs-paper: #0b1218;
+  --obs-reading: rgba(11, 18, 24, .88);
+  --obs-cyan: #a8dcff;
+  --obs-glow: rgba(132, 208, 255, .32);
+  --obs-gold-glow: rgba(244, 211, 140, .24);
+  --obs-edge: rgba(196, 227, 249, .32);
+  --obs-glass: linear-gradient(135deg, rgba(155, 210, 247, .13), transparent 52%), linear-gradient(180deg, #202b35, #0e1821);
+  --obs-metal: linear-gradient(135deg, #344858, #1c3547 58%, #263c48);
+  --obs-control: linear-gradient(135deg, #2a353e, #202a32 58%, #242e35);
+  --obs-control-primary: linear-gradient(135deg, #344b59, #223641 58%, #29383f);
+  --obs-control-secondary: linear-gradient(135deg, #2d333b, #20262e 58%, #252c32);
+  --obs-control-active: linear-gradient(180deg, #314954, #263c48);
+  --obs-control-border: #52636e;
+  --obs-control-shadow: inset 0 1px rgba(228, 244, 252, .17), inset 0 0 0 3px rgba(7, 15, 23, .15), 0 3px 8px rgba(0, 0, 0, .18);
+  --obs-control-hover-shadow: inset 0 1px rgba(233, 247, 255, .23), inset 0 0 0 3px rgba(7, 15, 23, .1), 0 4px 10px rgba(0, 0, 0, .2);
+  --obs-control-pressed-shadow: inset 0 2px 5px rgba(0, 0, 0, .3), inset 0 0 0 3px rgba(7, 15, 23, .12);
+}
+
+html[data-theme="light"] {
+  --obs-text: #1c3038;
+  --obs-muted: #4e626b;
+  --obs-surface: #f5f8f9;
+  --obs-surface-hover: #e5eef0;
+  --obs-line: #c6d3d8;
+  --obs-accent: #856320;
+  --obs-link: #215d75;
+  --obs-highlight: #e3edea;
+  --obs-paper: #edf3f6;
+  --obs-reading: rgba(237, 243, 246, .94);
+  --obs-cyan: #286183;
+  --obs-glow: rgba(46, 125, 177, .17);
+  --obs-gold-glow: rgba(159, 123, 51, .15);
+  --obs-edge: rgba(121, 158, 183, .42);
+  --obs-glass: linear-gradient(135deg, #fff, #f0f5f8 62%, #e8eff2);
+  --obs-metal: linear-gradient(135deg, #fff, #dbeaf1 58%, #e4e9e5);
+  --obs-control: linear-gradient(135deg, #fff, #edf3f6 58%, #f6f8fa);
+  --obs-control-primary: linear-gradient(135deg, #f9fdff, #dcebf2 58%, #e8f0f3);
+  --obs-control-secondary: linear-gradient(135deg, #fff, #f0f3f5 58%, #f8fafb);
+  --obs-control-active: linear-gradient(180deg, #edf5f8, #dfeaf0);
+  --obs-control-border: #afc3ce;
+  --obs-control-shadow: inset 0 1px #fff, inset 0 0 0 3px rgba(255, 255, 255, .38), 0 2px 5px rgba(36, 65, 82, .09);
+  --obs-control-hover-shadow: inset 0 1px #fff, inset 0 0 0 3px rgba(255, 255, 255, .48), 0 3px 8px rgba(36, 65, 82, .12);
+  --obs-control-pressed-shadow: inset 0 2px 4px rgba(36, 65, 82, .15), inset 0 0 0 3px rgba(255, 255, 255, .2);
+}
+
+html[data-theme="space"][data-fx-intensity="immersive"] {
+  --obs-glow: rgba(133, 213, 255, .48);
+  --obs-gold-glow: rgba(248, 209, 134, .32);
+  --obs-edge: rgba(189, 228, 255, .46);
+}
+html[data-theme="light"][data-fx-intensity="immersive"] {
+  --obs-glow: rgba(55, 138, 185, .23);
+  --obs-gold-glow: rgba(162, 124, 47, .22);
 }

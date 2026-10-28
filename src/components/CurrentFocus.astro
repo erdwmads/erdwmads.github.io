@@ -1,0 +1,32 @@
+---
+// Home "Current focus" section, rendered from src/data/project.mjs. No props.
+// Keeps the classes the Home styles target: current-focus-section, focus-card, focus-list,
+// research-title-detail and focus-next.
+import { questionShort, question, formalTitle, focusSummary, targetMaterial, methodsSummary, broaderContext } from '../data/project.mjs';
+
+const rows: [string, string][] = [
+  ['Current question', question],
+  ['Target material', targetMaterial],
+  ['Methods', methodsSummary],
+  ['Broader context', broaderContext]
+];
+---
+<section class="section current-focus-section" aria-labelledby="current-focus-title">
+  <div class="focus-card">
+    <div>
+      <p class="eyebrow">Current focus</p>
+      <h2 id="current-focus-title">{questionShort}</h2>
+      <p>{focusSummary}</p>
+      <details class="research-title-detail"><summary>Full research title</summary><p>{formalTitle}</p></details>
+      <p class="focus-next"><a href="research.html#research-focus-title">Read the Orgueil research overview →</a></p>
+    </div>
+    <div class="focus-list">
+      {rows.map(([label, value]) => (
+        <div>
+          <span>{label}</span>
+          <strong>{value}</strong>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

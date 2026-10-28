@@ -11,8 +11,9 @@ const destinations={
   contact:{href:'contact.html',label:'Contact',detail:'Continue the conversation'},
   'research-log':{href:'research-log.html',label:'Research Log',detail:'Follow the work as it develops'}
 };
+// No Home entry: Home's own Explore list already routes onward, so the block would repeat it there.
 const routes:Record<string,(keyof typeof destinations)[]>={
-  home:['research','origins'],research:['ryugu-bennu','paper-shelf'],'ryugu-bennu':['origins','research'],origins:['research','paper-shelf'],
+  research:['ryugu-bennu','paper-shelf'],'ryugu-bennu':['origins','research'],origins:['research','paper-shelf'],
   'paper-shelf':['research','research-log'],photography:['research','contact'],cv:['research','contact'],
   contact:['cv','photography'],'research-log':['research','paper-shelf']
 };

@@ -39,12 +39,6 @@
     display: contents !important;
   }
 
-  html:not([data-nav-ready]) body#academic-site .header-actions .nav a {
-    min-height: 44px !important;
-    white-space: normal !important;
-    padding: 10px 8px !important;
-  }
-
   html:not([data-nav-ready]) body#academic-site .header-actions > :is(.nav-log-gate, .theme-toggle) {
     grid-column: auto !important;
   }

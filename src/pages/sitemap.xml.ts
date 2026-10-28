@@ -1,16 +1,15 @@
 import { contentPages, siteMetadata } from "../data/site";
 
+// No lastmod or changefreq: a build-date stamp on every URL says nothing about when a page changed.
+// Home is listed at the site root, matching its canonical URL.
 export function GET() {
-  const now = new Date().toISOString().slice(0, 10);
   const urls = contentPages.map((page) => {
-    const loc = new URL(page.href, `${siteMetadata.url}/`).toString();
+    const loc = new URL(page.href === "index.html" ? "" : page.href, `${siteMetadata.url}/`).toString();
     const priority = page.href === "index.html" ? "1.0" : "0.7";
 
     return [
       "  <url>",
       `    <loc>${loc}</loc>`,
-      `    <lastmod>${now}</lastmod>`,
-      "    <changefreq>weekly</changefreq>",
       `    <priority>${priority}</priority>`,
       "  </url>"
     ].join("\n");

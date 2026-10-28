@@ -4,7 +4,7 @@ html[data-theme] body#academic-site .origins-study {
   color:var(--obs-text);
   .study-intro { display:flex; align-items:center; justify-content:space-between; gap:24px; margin-bottom:32px; }
   .study-intro .lead { max-width:740px; margin-bottom:0; }
-  .study-intro .button { flex-shrink:0; display:inline-flex; align-items:center; gap:10px; }
+  .study-intro .button { flex-shrink:0; gap:10px; }
   .study-panel { padding:18px; border:1px solid var(--obs-line); border-radius:24px; background:color-mix(in srgb,var(--obs-paper) 86%,var(--obs-surface)); box-shadow:0 20px 60px #00000018; }
   .observatory { display:grid; grid-template-columns:minmax(260px,30%) minmax(0,1fr); grid-template-rows:minmax(420px,52svh) auto auto; grid-template-areas:'copy scene' 'copy tools' 'transport transport'; gap:16px; }
   .chapter-copy,.scene-frame,.scene-controls,.transport { min-width:0; border:1px solid var(--obs-line); border-radius:16px; background:var(--obs-surface); }
@@ -201,4 +201,40 @@ html[data-theme] body#academic-site .origins-study :is(.scene-hint,#explore,#ret
  html[data-theme] body#academic-site .origins-study {
   .transport input { height:44px; }
  }
+}
+/* readable-caveats-origins (2026-10): the project context, scene note and caption carry the calibrated wording, so
+   they read as text rather than fine print. Prose keeps a 12px floor; numerals and short labels may stay at 10-11px.
+   quiet-observatory.css styles this page through body.site-refined, so these rules use the same prefix; observatory.css
+   mutes every main paragraph with !important, so body-text colour needs it too. */
+html[data-theme] body#academic-site.site-refined .origins-study {
+  .study-intro .evidence-status { margin:18px 0 0; }
+  .study-project-context { max-width:72ch; margin-top:14px; font-size:15px; line-height:1.7; color:var(--obs-text)!important; }
+  .scene-note strong { font-size:12px; line-height:1.6; letter-spacing:.03em; }
+  .scene-note p { font-size:13px; line-height:1.7; }
+  .chapters small { font-size:12px; }
+  .reaction-sequence small { font-size:12px; }
+  #material-note { font-size:12px; }
+  .study-caption p { font-size:13px; }
+  .mineral-budget p { max-width:78ch; font-size:14px; color:var(--obs-text)!important; }
+  .mineral-budget .evidence-status { margin:16px 0 4px; }
+  .locator-title { font-size:10px; }
+  .locator-copy small { font-size:11px; }
+}
+@media(max-width:760px) {
+ html[data-theme] body#academic-site.site-refined .origins-study {
+  .study-project-context { font-size:14px; }
+  .chapters strong { font-size:12px; }
+  .scene-note p { font-size:13px; }
+  .locator-copy small { font-size:10px; }
+ }
+}
+@media(max-width:600px) {
+ html[data-theme] body#academic-site.site-refined .origins-study .fragment-guide { font-size:10px; }
+}
+/* Touch screens replace the hint text with ::after (the element itself is set to font-size:0). */
+@media not (pointer:coarse) {
+ html[data-theme] body#academic-site.site-refined .origins-study .scene-hint { font-size:12px; }
+}
+@media(pointer:coarse) {
+ html[data-theme] body#academic-site.site-refined .origins-study .scene-hint::after { font-size:12px; }
 }

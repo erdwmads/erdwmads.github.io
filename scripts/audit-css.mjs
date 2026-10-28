@@ -4,15 +4,22 @@ import path from "node:path";
 const root = path.resolve(import.meta.dirname, "..");
 const cssDir = path.join(root, "public", "assets", "css");
 const baselinePath = path.join(root, "docs", "css-baseline.json");
-const files = fs.readdirSync(cssDir).filter((name) => name.endsWith(".css")).sort();
+// The public stylesheets, then the component stylesheets from src/ that the bundle appends after them
+// (componentStylesheets in src/data/site.ts, reported by their path from the project root).
+const siteData = fs.readFileSync(path.join(root, "src", "data", "site.ts"), "utf8");
+const componentFiles = [...(siteData.match(/export const componentStylesheets = \[([\s\S]*?)\]/)?.[1] || "").matchAll(/"([^"]+\.css)"/g)].map((match) => match[1]);
+const files = [
+  ...fs.readdirSync(cssDir).filter((name) => name.endsWith(".css")).sort().map((name) => ({ name, file: path.join(cssDir, name) })),
+  ...componentFiles.map((name) => ({ name, file: path.join(root, name) }))
+];
 const mode = process.argv.includes("--write") ? "write" : process.argv.includes("--check") ? "check" : "report";
 
 // style.css is legacy compatibility CSS: it may shrink, never grow.
 const frozenFiles = new Set(["style.css"]);
 
-const report = files.map((name) => {
+const report = files.map(({ name, file }) => {
   // Normalise line endings so the byte count does not depend on the checkout.
-  const source = fs.readFileSync(path.join(cssDir, name), "utf8").replace(/\r\n/g, "\n");
+  const source = fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n");
   const selectors = [...source.matchAll(/(^|\})\s*([^@{}][^{}]+)\{/gm)]
     .map((match) => match[2].trim())
     .filter(Boolean);

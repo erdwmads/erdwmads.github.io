@@ -73,7 +73,9 @@ try {
  await page.setViewportSize({width:390,height:844});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
  await page.locator('#reaction-sequence button').nth(1).click();assert.equal(await page.evaluate(()=>study.state.progress),.27);
  await page.locator('.observatory').screenshot({path:fileURLToPath(new URL('origins-mobile.png',evidence))});
- for(const route of ['index','research','origins-study','paper-shelf','cv','photography','contact','research-log']) {
+ // Home has its own Explore list, so it carries no Continue exploring block.
+ await page.goto(base+'/index.html');assert.equal(await page.locator('.continue-reading').count(),0,'Home does not repeat its Explore list');
+ for(const route of ['research','origins-study','paper-shelf','cv','photography','contact','research-log']) {
   await page.goto(base+'/'+route+'.html');const links=page.locator('.continue-reading a');assert.equal(await links.count(),2);
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),route+' no mobile overflow');
   for(const link of await links.all()) {

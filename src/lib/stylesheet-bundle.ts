@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { createRequire } from "node:module";
-import { stylesheets } from "../data/site";
+import { componentStylesheets, stylesheets } from "../data/site";
 
 type Bundle = { css: string; version: string };
 
@@ -20,8 +20,13 @@ async function loadEsbuild() {
 
 async function build(): Promise<Bundle> {
   const cssDir = path.join(process.cwd(), "public", "assets", "css");
-  const source = stylesheets
-    .map((file) => `/*! ${file} */\n${fs.readFileSync(path.join(cssDir, file), "utf8")}\n`)
+  // The public stylesheets in cascade order, then the component stylesheets from src/ at the end of the cascade.
+  const files = [
+    ...stylesheets.map((file) => ({ label: file, file: path.join(cssDir, file) })),
+    ...componentStylesheets.map((file) => ({ label: file, file: path.join(process.cwd(), file) }))
+  ];
+  const source = files
+    .map(({ label, file }) => `/*! ${label} */\n${fs.readFileSync(file, "utf8")}\n`)
     .join("");
   const esbuild = await loadEsbuild();
   // Whitespace and comments only: selectors, declarations and rule order stay exactly as written.

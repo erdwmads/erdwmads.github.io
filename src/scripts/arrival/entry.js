@@ -11,11 +11,15 @@ if(gate){
  // Matches the inline fallback in CosmicArrival.astro: a slow load skips the entrance rather than holding the page.
  const PREPARE_CAP=3000;
  let scene,frame,timer,serial=0,active=false,chapter=-1,replayed=false;
+ // The fixed Replay button serves wider windows; on phones a footer button ([data-arrival-replay]) takes its place
+ // (home-shell.css), so no fixed control covers the reading column. Focus returns to whichever one started the replay.
+ const replays=[replay,...document.querySelectorAll('[data-arrival-replay]')];
+ let replaySource=replay;
  const isHome=()=>document.body.classList.contains('ui-page-home');
  // Reduced motion and Save-Data both skip the entrance and hide Replay, as FX off does.
  const quiet=()=>reduced.matches||Boolean(navigator.connection?.saveData);
  const allowed=()=>{try{return !quiet()&&localStorage.getItem('madsAmbientFxEnabled')!=='0';}catch{return !quiet();}};
- const syncReplay=()=>{replay.hidden=active||!isHome()||!allowed();};
+ const syncReplay=()=>{const hidden=active||!isHome()||!allowed();for(const button of replays)button.hidden=hidden;};
  for(const [name,icon] of [['next',ArrowRight],['replay',RotateCcw]])document.querySelector(`[data-arrival-icon="${name}"]`).append(createElement(icon,{'aria-hidden':'true'}));
  function finish(restarting){
   // The inline Skip handler may already have closed the dialog, so an active run also counts as shown.
@@ -25,7 +29,7 @@ if(gate){
   root.classList.remove('cosmic-arrival-active');syncReplay();
   // The skip link follows the dialog, so after the first close the next Tab reaches it; after a replay, focus returns to Replay.
   const focused=document.activeElement;
-  if(shown&&restarting!==true&&replayed&&!replay.hidden&&(!focused||focused===document.body||gate.contains(focused)))replay.focus({preventScroll:true});
+  if(shown&&restarting!==true&&replayed&&!replaySource.hidden&&replaySource.getClientRects().length&&(!focused||focused===document.body||gate.contains(focused)))replaySource.focus({preventScroll:true});
   if(restarting!==true)replayed=false;
   try{sessionStorage.setItem('mads-cosmic-arrival-v1','done');}catch{}
  }
@@ -42,7 +46,7 @@ if(gate){
   // The first run counts from when the inline script opened the dialog, so the whole wait stays within the cap.
   const opened=gate.open&&window.cosmicArrivalOpened||performance.now();
   if(!allowed()||!isHome()){finish();return;}
-  finish(true);replayed=Boolean(event);const run=++serial;active=true;replay.hidden=true;chapter=-1;
+  finish(true);replayed=Boolean(event);if(replays.includes(event?.currentTarget))replaySource=event.currentTarget;const run=++serial;active=true;for(const button of replays)button.hidden=true;chapter=-1;
   gate.showModal();root.classList.add('cosmic-arrival-active');gate.dataset.state='preparing';gate.dataset.progress='0';
   // Prime the underlying homepage compositor before the final single-overlay fade.
   gate.style.opacity='.999';signature.style.opacity='0';name.style.opacity='0';track.style.transform='scaleX(0)';
@@ -61,7 +65,7 @@ if(gate){
   function tick(time){if(run!==serial)return;start??=time;const p=Math.min(1,(time-start)/duration);draw(p);if(p===1)finish();else frame=requestAnimationFrame(tick);}
   frame=requestAnimationFrame(tick);
  }
- skip.addEventListener('click',finish);replay.addEventListener('click',play);
+ skip.addEventListener('click',finish);for(const button of replays)button.addEventListener('click',play);
  gate.addEventListener('cancel',event=>{event.preventDefault();finish();});
  document.addEventListener('visibilitychange',()=>{if(document.hidden&&active)finish();});
  window.addEventListener('pagehide',()=>{if(active)finish();});

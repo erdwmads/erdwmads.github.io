@@ -21,7 +21,9 @@ test('arrival clock has exact endpoints, stays monotonic, and eases both ends', 
 });
 
 test('inline fallback and module share a short preparing cap and the same Save-Data skip', () => {
-  const inline = String(source('src/components/CosmicArrival.astro'));
+  // The inline opener is rendered from its own file so the Content Security Policy can hash it (src/lib/inline-scripts.ts).
+  assert.match(String(source('src/components/CosmicArrival.astro')), /<script is:inline data-arrival-gate set:html=\{inlineScripts\.arrivalGate\}><\/script>/);
+  const inline = String(source('src/scripts/inline/arrival-gate.js'));
   const entry = String(source('src/scripts/arrival/entry.js'));
   const inlineCap = Number(inline.match(/cosmicArrivalFallback=setTimeout\(.*?,(\d+)\);/)?.[1]);
   const moduleCap = Number(entry.match(/PREPARE_CAP=(\d+)/)?.[1]);

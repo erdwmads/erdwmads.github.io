@@ -1,11 +1,17 @@
 ---
 import LegacyShell from "../components/LegacyShell.astro";
-import { getPageScripts } from "../data/site";
-import mainHtml from "../legacy/index-main.html?raw";
+import CurrentFocus from "../components/CurrentFocus.astro";
+import { getPageScripts, homeTitle } from "../data/site";
+// Hero: name, pronunciation, affiliations and portrait.
+import heroHtml from "../legacy/index-main.html?raw";
+// Explore list and the compact academic timeline.
+import exploreHtml from "../legacy/index-explore.html?raw";
 
 const scriptHtml = getPageScripts("home");
 ---
 
-<LegacyShell title='Home | I. Mads Lieu' description='I. Mads Lieu studies astromineralogy and planetology at Waseda University: Ca–Mg carbonates reported as dolomite in the Orgueil CI1 chondrite, aqueous alteration, and primitive Solar System materials.' current='home' mainClass='main' path="index.html" scriptHtml={scriptHtml}>
-  <Fragment set:html={mainHtml} />
+<LegacyShell title={homeTitle} description='Astromineralogy archive of I. Mads Lieu, Waseda University: Ca–Mg carbonates reported as dolomite in the Orgueil CI1 chondrite and aqueous alteration.' current='home' mainClass='main' path="index.html" scriptHtml={scriptHtml}>
+  <Fragment set:html={heroHtml} />
+  <CurrentFocus />
+  <Fragment set:html={exploreHtml} />
 </LegacyShell>

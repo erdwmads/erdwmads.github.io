@@ -9,10 +9,14 @@ html[data-theme] body#academic-site.ui-page-home .hero .button { border-radius:1
 html[data-theme] body#academic-site .obs-photo-tools { display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px; }
 .photo-layout-switch { display:flex;gap:3px;border:1px solid var(--obs-line);border-radius:5px;padding:3px;background:var(--obs-surface); }
 .photo-layout-switch[hidden] { display:none; }
+/* With scripting on, the photograph controls are revealed as soon as the page scripts run (photo-layout.js, observatory-interactions.js).
+   Keeping their space meanwhile stops the photo wall from shifting down; !important beats the shared [hidden] rules. */
+@media (scripting: enabled) { html[data-theme] body#academic-site .obs-photo-tools > :is(.photo-layout-switch, .obs-present-launch)[hidden] { display:flex!important;visibility:hidden; } }
 html[data-theme] body#academic-site .photo-layout-switch button { min-height:44px;padding:10px 16px;border:0!important;border-radius:3px!important;background:transparent!important;color:var(--obs-text)!important;font:inherit;font-size:12px!important;box-shadow:none!important;cursor:pointer; }
 html[data-theme] body#academic-site .photo-layout-switch button[aria-pressed=true] { background:var(--obs-highlight)!important;color:var(--obs-accent)!important; }
 .photo-index-label { display:none; }
 html[data-theme] body#academic-site [data-photo-layout=contact] .photo-wall { display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:22px 16px!important; }
+html[data-theme] body#academic-site [data-photo-layout=contact] .photo-wall::after { display:none; }
 html[data-theme] body#academic-site [data-photo-layout=contact] a.photo-tile { display:flex!important;flex-direction:column;grid-column:auto!important;aspect-ratio:auto!important;overflow:visible!important;background:transparent!important;box-shadow:none!important;border:0!important;border-radius:0!important;min-width:0!important; }
 html[data-theme] body#academic-site [data-photo-layout=contact] a.photo-tile img { position:static!important;width:100%!important;height:160px!important;aspect-ratio:auto!important;object-fit:contain!important;border-radius:0!important;transform:none!important;filter:none!important;background:var(--obs-surface); }
 html[data-theme] body#academic-site [data-photo-layout=contact] .photo-index-label { display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;padding-top:10px;align-items:start;font-size:10px;line-height:1.6;color:var(--obs-muted);text-decoration:none; }

@@ -185,7 +185,6 @@ body#academic-site .mission-progress > div:first-child { padding-left: 0; border
 body#academic-site .mission-progress > div:last-child { padding-right: 0; }
 body#academic-site .mission-progress dt { margin: 0 0 8px; font-size: 12px; font-weight: 600; color: var(--obs-accent); }
 body#academic-site .mission-progress dd { margin: 0; font-size: 13px; line-height: 1.7; color: var(--obs-text); overflow-wrap: anywhere; }
-body#academic-site .mission-compare-toggle { min-width: 172px; margin-bottom: 4px; }
 body#academic-site .mission-original-record { margin-top: 28px; }
 
 @media (hover: hover) and (pointer: fine) and (min-width: 761px) {
@@ -232,7 +231,7 @@ html[data-theme] body#academic-site .mission-record-header { display: flex; flex
 html[data-theme] body#academic-site .mission-record-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
 html[data-theme] body#academic-site .mission-record-meta time { font-size: 13px; color: var(--obs-muted); font-variant-numeric: tabular-nums; }
 html[data-theme] body#academic-site .mission-record-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; max-width: 100%; }
-html[data-theme] body#academic-site .mission-record-actions > .button { margin: 0 !important; float: none !important; min-width: 0 !important; min-height: 44px; font-size: 13px !important; }
+html[data-theme] body#academic-site .mission-record-actions > .button { margin: 0 !important; float: none !important; min-width: 0 !important; font-size: 13px !important; }
 html[data-theme] body#academic-site .mission-record-header ~ .mission-original-record > .mission-entry-kicker { display: none !important; }
 html[data-theme] body#academic-site .mission-photo-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)) !important; align-items: start; }
 html[data-theme] body#academic-site .mission-photo-grid figure { min-width: 0; height: auto !important; max-height: none !important; aspect-ratio: auto !important; }
@@ -240,7 +239,7 @@ html[data-theme] body#academic-site .mission-photo-grid figcaption { display: bl
 html[data-theme] body#academic-site .mission-photo-grid figcaption > strong:first-child { display: block; margin-bottom: 6px; color: var(--obs-text); line-height: 1.5; }
 @media (max-width: 600px) {
   html[data-theme] body#academic-site .mission-record-actions { width: 100%; }
-  html[data-theme] body#academic-site .mission-record-actions > .button { flex: 1 1 150px; justify-content: center; }
+  html[data-theme] body#academic-site .mission-record-actions > .button { flex: 1 1 150px; }
 }
 @media (max-width: 360px) {
   html[data-theme] body#academic-site .research-graduation-page > section:first-child h1 { font-size: 20px !important; line-height: 1.2 !important; }
@@ -253,7 +252,7 @@ body#academic-site .research-passkey-controls { margin-top: 24px; padding: 20px 
 body#academic-site .research-passkey-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 body#academic-site .research-passkey-actions:has([data-passkey-unlock][hidden]) { display: none; }
 body#academic-site .research-lock-form .research-passkey-actions { display: flex; }
-body#academic-site .research-passkey-actions .button { margin: 0; min-height: 46px; }
+body#academic-site .research-passkey-actions .button { margin: 0; }
 body#academic-site .research-passkey-status { font-size: 13px; line-height: 1.65; margin: 12px 0 0; }
 body#academic-site .research-passkey-forget { min-height: 44px; padding: 8px; border: 0; border-radius: 6px; color: var(--obs-muted); background: transparent; box-shadow: none; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
 body#academic-site .research-passkey-help { margin-top: 22px; border-top: 1px solid var(--obs-line); padding-top: 16px; font-size: 13px; line-height: 1.65; }
@@ -261,10 +260,9 @@ body#academic-site .research-passkey-help summary { cursor: pointer; color: var(
 body#academic-site .research-passkey-help p { font-size: 13px; line-height: 1.7; margin-top: 12px; }
 body#academic-site .research-unlocked-session { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 0; margin: 12px 0 24px; border-block: 1px solid var(--obs-line); }
 body#academic-site .research-unlocked-session p { margin: 0; color: var(--obs-muted); font-size: 14px; flex: 1 1 260px; }
-body#academic-site .research-unlocked-session .button { margin: 0; min-height: 46px; }
+body#academic-site .research-unlocked-session .button { margin: 0; }
 body#academic-site [data-passkey-controls][hidden],
 body#academic-site [data-passkey-setup][hidden],
-body#academic-site [data-passkey-unlock][hidden],
 body#academic-site [data-passkey-forget][hidden],
 body#academic-site [data-research-lock-session][hidden] { display: none !important; }
 @media (max-width: 560px) {

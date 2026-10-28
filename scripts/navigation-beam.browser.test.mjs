@@ -25,8 +25,12 @@ try {
   for (const theme of ['space', 'light']) {
     await page.goto(`${base}/index.html`);
     await page.evaluate(theme => localStorage.setItem('mads-theme', theme), theme);
-    for (const route of ['research', 'cv']) {
-      await page.goto(`${base}/index.html`, { waitUntil: 'networkidle' });
+    // Home has no navigation entry (the brand links home), so no marker shows there.
+    await page.reload({ waitUntil: 'networkidle' });
+    assert.ok(await page.evaluate(() => document.querySelector('.obs-nav-beam').hidden && !document.querySelector('.nav a[aria-current]')), `${theme}: Home shows no navigation marker`);
+    // Glide from Research to a page reached through an in-page link, so the pointer never previews the target.
+    for (const route of ['ryugu-bennu', 'paper-shelf']) {
+      await page.goto(`${base}/research.html`, { waitUntil: 'networkidle' });
       await page.waitForTimeout(1500);
       assert.ok(await page.evaluate(() => window.beamFrames.every(frame => Math.abs(frame.y - frame.expected) < 3)), `${theme}: initial marker travelled vertically`);
       await page.evaluate(() => {
@@ -44,7 +48,7 @@ try {
         }
         requestAnimationFrame(sample);
       });
-      await page.locator(`main .button[href="${route}.html"]`).click();
+      await page.locator(`main .continue-reading a[href="${route}.html"]`).click();
       await page.waitForURL(`**/${route}.html`);
       await page.waitForTimeout(800);
       assert.equal(await page.locator('html').getAttribute('data-theme'), theme);
@@ -59,7 +63,7 @@ try {
       assert.ok(frames.some(frame => Math.abs(frame.x - startX) > 2 && Math.abs(frame.x - endX) > 2), `${theme}/${route}: marker jumped instead of gliding`);
       assert.ok(frames.some(frame => frame.active === `${route}.html` && frame.opacity > 0 && frame.opacity < 1), `${theme}/${route}: selected background did not crossfade`);
       await page.goBack();
-      await page.waitForFunction(() => document.querySelector('.nav a[aria-current="page"]')?.getAttribute('href') === 'index.html');
+      await page.waitForFunction(() => document.querySelector('.nav a[aria-current="page"]')?.getAttribute('href') === 'research.html');
       await page.goForward();
       await page.waitForFunction(route => document.querySelector('.nav a[aria-current="page"]')?.getAttribute('href') === `${route}.html`, route);
       await page.waitForTimeout(400);
@@ -67,7 +71,7 @@ try {
     }
     const glide = await page.evaluate(async () => {
       const beam = document.querySelector('.obs-nav-beam');
-      const target = document.querySelector('.nav a[href="research.html"]');
+      const target = document.querySelector('.nav a[href="contact.html"]');
       const start = beam.getBoundingClientRect().x;
       target.dispatchEvent(new PointerEvent('pointerover', { bubbles: true }));
       const samples = [];
@@ -124,7 +128,7 @@ try {
     }
     await smallContext.close();
   }
-  console.log('Navigation beam: retained header, Research/CV glide, background crossfade, history, responsive placement and reduced motion pass.');
+  console.log('Navigation beam: no marker on Home, retained header, Research to Ryugu & Bennu / Paper Shelf glide, background crossfade, history, responsive placement and reduced motion pass.');
 } finally {
   await browser.close();
 }

@@ -82,7 +82,10 @@ function enter() {
   guide.setAttribute('data-ready', '');
   document.documentElement.setAttribute('data-research-reading', '');
   toggle.hidden = false;
-  update();
+  // The offset and the current section are read in the next frame, so entering does not force a layout before
+  // first paint. With a #section, soft navigation scrolls to it right after this, so its scroll margin is set now.
+  if (location.hash) update();
+  else schedule();
   document.fonts.ready.then(schedule);
   leave = () => {
     disposed = true;

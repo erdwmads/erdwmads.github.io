@@ -3,6 +3,7 @@ import path from "node:path";
 import { createCipheriv, createDecipheriv, pbkdf2Sync, randomBytes } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
+import { pageRequestProblems } from "../src/lib/csp.mjs";
 
 // Messages never include the passphrase, entry text or parser snippets of the private source.
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -49,6 +50,8 @@ if (!Array.isArray(entries) || !entries.length) {
 }
 
 const isNonEmptyString = (value) => typeof value === "string" && value.trim().length > 0;
+const siteOrigin = "https://erdwmads.github.io";
+const policyProblemNames = { external: "an external request", "inline-handler": "an inline event handler", "javascript-url": "a javascript: URL" };
 const ids = new Set();
 for (const [index, entry] of entries.entries()) {
   const prefix = `Mission Log entry ${index + 1}:`;
@@ -73,6 +76,17 @@ for (const [index, entry] of entries.entries()) {
   }
   if (!isNonEmptyString(entry.bodyHtml)) {
     throw new Error(`${prefix} bodyHtml must be a non-empty string`);
+  }
+  // The unlocked entries are inserted under the site's Content Security Policy (src/lib/csp.mjs), which blocks
+  // off-site images and media, inline event handlers and javascript: URLs without a visible error. Plain links
+  // (<a href>) and relative asset paths are fine. The message names the entry id and the problem kind, never the markup.
+  for (const field of ["bodyHtml", "bodyHtmlJa"]) {
+    if (typeof entry[field] !== "string") continue;
+    const kinds = new Set(pageRequestProblems(entry[field], siteOrigin).map((problem) => problem.kind));
+    if (kinds.size) {
+      const described = [...kinds].map((kind) => policyProblemNames[kind] || "a blocked request").join(", ");
+      throw new Error(`Mission Log entry ${entry.id}: ${field} has ${described}, which the site's Content Security Policy blocks. Serve images and media from this site and use plain links for other sites. Nothing was written.`);
+    }
   }
 }
 

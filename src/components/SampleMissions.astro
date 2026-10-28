@@ -1,12 +1,14 @@
 ---
 import {missions} from '../scripts/sample-missions/data.js';
 import {missionStory} from '../scripts/sample-missions/story.js';
+import EvidenceStatus from './EvidenceStatus.astro';
 const first=missions.hayabusa2,stage=first.stages[0];
 ---
 <section class="sample-missions" data-sample-missions aria-labelledby="missions-title">
   <header class="mission-heading">
     <p class="eyebrow">Sample-return missions</p>
     <h2 id="missions-title">How asteroid samples reach Earth</h2>
+    <EvidenceStatus kind="model">Illustrative reconstruction from published mission records: solar-system paths use heliocentric navigation vectors with enlarged bodies and spacecraft; launch and return paths interpolate published events, and local sampling scenes are illustrative.</EvidenceStatus>
     <p>Two journeys, one question: what can returned material tell us about an asteroid? Follow the flight and sampling, then compare the mineral record with Orgueil.</p>
   </header>
   <div class="mission-selector" role="tablist" aria-label="Sample-return mission">
@@ -24,8 +26,11 @@ const first=missions.hayabusa2,stage=first.stages[0];
         </section>)}
       </div>)}
     </details>
-    <div class="mission-chapters" data-mission-chapters role="group" aria-label="Mission chapters">
-      {first.stages.map((s,i)=><button type="button" data-mission-stage={i} aria-current={i===0?'step':undefined}><span>{String(i+1).padStart(2,'0')}</span>{s.label}</button>)}
+    <div class="mission-chapter-rail">
+      <div class="mission-chapters" data-mission-chapters data-overflow="end" role="group" aria-label="Mission chapters">
+        {first.stages.map((s,i)=><button type="button" data-mission-stage={i} aria-current={i===0?'step':undefined}><span>{String(i+1).padStart(2,'0')}</span>{s.label}</button>)}
+      </div>
+      <span class="mission-chapter-position" data-mission-chapter-position aria-hidden="true">01 / {String(first.stages.length).padStart(2,'0')}</span>
     </div>
     <header class="mission-stage-heading">
       <div><span class="mission-stage-number" data-mission-number>01 / {String(first.stages.length).padStart(2,'0')}</span><time data-mission-date>{stage.date}</time></div>

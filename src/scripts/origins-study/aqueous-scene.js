@@ -2,7 +2,7 @@ import * as T from 'three';
 import {MeshBVH,acceleratedRaycast} from 'three-mesh-bvh';
 import {rng,rockMaterial,clastGeometry,stoneGeometry} from './materials.js';
 import {createPorousMedium,localAlteration,insideSection} from './porous-medium.js';
-import {createMineralMap} from './mineral-map.js';
+import {createMineralMap,modalReference} from './mineral-map.js';
 import {sectionRadius,sectionHeight} from './breccia-fabric.js';
 
 function sectionGeometry(){
@@ -20,10 +20,28 @@ function sectionGeometry(){
  for(let i=0;i<steps;i++)indices.push(back,base+(i+1)*2+1,base+i*2+1);
  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(positions,3));g.setIndex(indices);g.computeVertexNormals();return g;
 }
-export function alteration(){
+// The phase atlas is deterministic but takes about 0.7 s of CPU, so the study computes it in a worker
+// while the earlier chapters build. The worker runs the same createMineralMap(), so the bytes are
+// identical; without worker support, or if the worker fails, it is computed here as before.
+export function prepareMineralAtlas(signal){
+ if(typeof Worker!=='function')return Promise.resolve(createMineralMap());
+ return new Promise(resolve=>{
+  let worker,done=false;
+  const finish=read=>{if(done)return;done=true;signal?.removeEventListener('abort',abort);worker?.terminate();resolve(read());};
+  const abort=()=>finish(()=>null),local=()=>finish(createMineralMap);
+  if(signal?.aborted)return abort();
+  try{worker=new Worker(new URL('./mineral-map.worker.js',import.meta.url),{type:'module',name:'origins-mineral-map'});}catch{return local();}
+  signal?.addEventListener('abort',abort,{once:true});
+  worker.onmessage=({data})=>finish(()=>({...data,reference:modalReference}));
+  worker.onerror=event=>{event.preventDefault();local();};
+  worker.onmessageerror=local;
+  worker.postMessage(null);
+ });
+}
+export function alteration(atlas=createMineralMap()){
  const group=new T.Group(),medium=createPorousMedium(),random=rng(7102),o=new T.Object3D(),color=new T.Color();
  group.name='granular-water-rock-study';group.userData.medium=medium;
- const atlas=createMineralMap();group.userData.modalAtlas=atlas;
+ group.userData.modalAtlas=atlas;
  const mineralTexture=new T.DataTexture(atlas.rgba,atlas.width,atlas.height,T.RGBAFormat);
  mineralTexture.minFilter=mineralTexture.magFilter=T.NearestFilter;mineralTexture.needsUpdate=true;
  const matrixMaterial=rockMaterial(0x353d3c),matrix=new T.Mesh(sectionGeometry(),matrixMaterial);

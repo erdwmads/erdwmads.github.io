@@ -6,7 +6,7 @@ import { samplePhotos } from './planetary-samples.js';
 import { unpackTimeline } from './planetary-timeline.js';
 
 const materials = {
-  bennu: { name: 'Bennu', mission: 'OSIRIS-REx', size: 'About 490 m', source: 'https://svs.gsfc.nasa.gov/5069', photo: '/assets/img/research-scale/bennu-whole.png', shape: 'A small, top-shaped asteroid with an equatorial bulge and a rough, boulder-rich surface.', mineral: 'Returned Bennu material records water-rock interaction. Published analyses describe hydrated silicates, carbonates and other phases; the same-looking grain need not be the same mineral.', citation: 'https://doi.org/10.1111/maps.14227' },
+  bennu: { name: 'Bennu', mission: 'OSIRIS-REx', size: 'About 490 m', source: 'https://svs.gsfc.nasa.gov/5069', photo: '/assets/img/research-scale/bennu-whole.webp', photoFallback: '/assets/img/research-scale/bennu-whole.png', shape: 'A small, top-shaped asteroid with an equatorial bulge and a rough, boulder-rich surface.', mineral: 'Returned Bennu material records water-rock interaction. Published analyses describe hydrated silicates, carbonates and other phases; the same-looking grain need not be the same mineral.', citation: 'https://doi.org/10.1111/maps.14227' },
   ryugu: { name: 'Ryugu', mission: 'Hayabusa2', size: 'About 900 m', source: 'https://data.darts.isas.jaxa.jp/pub/hayabusa2/paper/Watanabe_2019/', photo: '/assets/img/research-scale/ryugu-jaxa.jpg', shape: 'A top-shaped asteroid with a prominent equatorial ridge. Its irregular relief comes from the published shape mesh, not a procedurally generated rock.', mineral: 'Ryugu samples have a CI-like chemical composition and preserve aqueous alteration. Comparing their minerals with Orgueil tests similarities without assuming an identical geological history.', citation: 'https://www.isas.jaxa.jp/en/topics/003094.html' },
   orgueil: { name: 'CI / Orgueil', mission: 'Meteorite specimen', size: 'Specimen, not an asteroid', source: 'https://naturalhistory.si.edu/object/nmnhmineralsciences_1017941', photo: '/assets/img/research-scale/orgueil-smithsonian.jpg', shape: 'No measured three-dimensional scan of this Orgueil specimen is supplied. Open Samples to view the Smithsonian reference photograph.', mineral: 'The research focus is Ca–Mg carbonate reported as dolomite in Orgueil: its chemistry, crystal structure and relationship to the surrounding matrix. Mineral textures can constrain alteration processes when supported by analysis.', citation: 'https://www.mnhn.fr/fr/meteorite-d-orgueil' }
 };
@@ -44,6 +44,29 @@ function init() {
     el('stage').toggleAttribute('data-touch-active',enabled);viewer?.setTouch(enabled);
   }
   matchMedia('(pointer: coarse)').addEventListener('change',()=>touchMode(false),{signal});
+  // Phones (760px and below): the scene comes first. The orbital time controls move under it, and the date, speed
+  // and view selects sit behind a "View settings" disclosure there. Wider screens keep them above the scene.
+  // Moving the nodes (not only restyling them) keeps the focus order equal to the visual order.
+  const compact = matchMedia('(max-width: 760px)');
+  function placeControls() {
+    const time = el('time-controls'), settings = el('view-settings'), body = el('view-settings-body');
+    const date = el('date').closest('label'), speed = el('speed'), now = root.querySelector('[data-action="now"]'), active = document.activeElement;
+    if (compact.matches) {
+      root.querySelector('.planetary-measure').after(time);
+      body.append(date, speed, now, el('orbit-tools'));
+      settings.hidden = false;
+      // Focus cannot return to a control inside a closed disclosure, so open it when it now holds the focus.
+      if (active && body.contains(active)) settings.open = true;
+    } else {
+      root.querySelector('.planetary-toolbar').prepend(el('orbit-tools'));
+      root.querySelector('.planetary-sharing').after(time);
+      root.querySelector('[data-action="play"]').after(date, speed, now);
+      settings.hidden = true;
+    }
+    if (active && root.contains(active) && document.activeElement !== active) active.focus({preventScroll:true});
+  }
+  placeControls();
+  compact.addEventListener('change',placeControls,{signal});
   function shareUI() {el('share').disabled=rendering || restoring || (needsRenderer(state) && (!viewer || root.dataset.renderState==='error'));}
   function clearShare() {shareVersion++;el('share-link').hidden=true;el('share-status').textContent='';}
   function interrupt() {restoreVersion++;pendingObservation=null;restoring=false;shareUI();clearShare();}
@@ -359,6 +382,8 @@ function init() {
   root.addEventListener('input', event => { if (event.target.matches('[data-timeline]')) {interrupt();setDay(Number(event.target.value)/24);} }, {signal});
   el('stage').addEventListener('pointerdown',()=>interrupt(),{signal});
   el('stage').addEventListener('wheel',()=>interrupt(),{signal,passive:true});
+  // A WebP reference image falls back to its original where WebP cannot be decoded, and keeps the original from then on.
+  el('fallback').addEventListener('error',()=>{const material=materials[state.material],original=material.photoFallback;if(original&&el('fallback').getAttribute('src')!==original){material.photo=original;el('fallback').src=original;}},{signal});
   el('sample-image').addEventListener('error',()=>{el('sample-image').hidden=true;el('sample-error').hidden=false;},{signal});
   el('sample-image').addEventListener('load',()=>{el('sample-image').hidden=false;el('sample-error').hidden=true;},{signal});
   root.addEventListener('focusin', event => {

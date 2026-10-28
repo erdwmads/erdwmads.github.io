@@ -23,16 +23,32 @@ try {
       await page.evaluate(() => document.fonts.ready);
       if (width <= 760) await page.locator('[data-nav-toggle]').click();
       const links = await clearTargets(page.locator('.nav a'));
-      assert.equal(links.length, 8, 'Home, Research, Ryugu & Bennu, Origins, Paper Shelf, CV, Photography, Contact');
+      // No Home entry (the brand links home): the research group, a divider, then the personal group.
+      assert.equal(links.length, 7, 'Research, Ryugu & Bennu, Origins, Paper Shelf | CV, Photography, Contact');
+      assert.equal(await page.locator('.nav .nav__divider + a').getAttribute('href'), 'cv.html', 'the divider opens the personal group');
+      // The accessible name keeps all of the visible text (label in name) and then names the destination.
+      assert.equal(await page.locator('.brand').getAttribute('aria-label'), null, 'the brand has no aria-label');
+      const brandName = page.getByRole('link', { name: /^I\. Mads Lieu\s*Astromineralogy • Planetology • Meteoritics\s*,\s*home$/ });
+      assert.equal(await brandName.count(), 1, 'the brand names its destination');
+      assert.equal(await brandName.evaluate(link => link.classList.contains('brand')), true, 'the named link is the brand');
       assert(links.every(link => link.clear), `${width} ${theme}: obscured navigation ${JSON.stringify(links)}`);
       if (width > 760) assert(Math.max(...links.map(link => link.top)) - Math.min(...links.map(link => link.top)) < 1, `${width}: navigation labels unexpectedly wrap`);
       const actions = await clearTargets(page.locator('.nav-log-gate, .theme-toggle'));
       assert(actions.every(action => action.clear), `${width} ${theme}: obscured header action`);
+      if (width > 760) {
+        // 761-1179 px: brand, Research Log and theme share the first row and the links the second, so two rows at most.
+        const header = await page.evaluate(() => ({ height: document.querySelector('.site-header').getBoundingClientRect().height, small: getComputedStyle(document.querySelector('.nav-log-gate__copy small')).display }));
+        assert(header.height <= 124, `${width}: header ${header.height}px tall`);
+        assert.equal(header.small === 'none', width < 1180, `${width}: the gate is one line only below 1180 px`);
+      }
       if (width <= 760) await page.locator('[data-nav-toggle]').click();
       await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
-      const footer = await clearTargets(page.locator('.site-footer a, .obs-fx-settings'));
+      const footer = await clearTargets(page.locator(width <= 760 ? '.site-footer a' : '.site-footer a, .obs-fx-settings'));
       assert(footer.every(action => action.clear), `${width} ${theme}: footer action obscured ${JSON.stringify(footer)}`);
+      // Phones have no fixed settings control at all: Visual effects lives in the navigation sheet.
+      if (width <= 760) assert.equal(await page.locator('.obs-fx-dock').isVisible(), false, `${width}: no fixed dock on phones`);
       // Every footer link (the ORCID iD and Back to top) must stay clear of the fixed settings control.
+      if (width > 760) {
       const overlap = await page.evaluate(() => {
         const b = document.querySelector('.obs-fx-settings').getBoundingClientRect();
         return [...document.querySelectorAll('.site-footer a')].some((link) => {
@@ -41,9 +57,11 @@ try {
         });
       });
       assert.equal(overlap, false, `${width} ${theme}: footer and settings overlap`);
+      }
       await page.goto(`${base}/paper-shelf.html`, { waitUntil: 'networkidle' });
-      const targets = await page.locator('.paper-source').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().height));
-      assert.equal(targets.length, 11);
+      // Each paper's title is its single source link; it and the copy control keep 44px targets.
+      const targets = await page.locator('[data-paper-card] :is(.paper-title a, [data-paper-copy])').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().height));
+      assert.equal(targets.length, 22);
       assert(targets.every(height => height >= 44), `${width}: source target heights ${targets}`);
       await page.locator('[data-paper-search]').fill('qzxnomatch');
       assert(await page.locator('[data-paper-empty]').isVisible());

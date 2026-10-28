@@ -2,12 +2,10 @@
 html[data-theme] body#academic-site.site-refined {
   .site-header .brand strong, main :is(h1,h2,h3) { text-shadow:none!important; }
   .site-header .nav { border-radius:6px!important;box-shadow:none!important;background:color-mix(in srgb,var(--obs-paper) 92%,transparent)!important;border:1px solid var(--obs-line)!important; }
-  .site-header .nav__links a { border-radius:3px!important;box-shadow:none!important;text-shadow:none!important; }
   :is(.button,.theme-toggle,.nav-log-gate,.sample-missions button,.planetary button,.paper-filter) { box-shadow:none!important;text-shadow:none!important;border-radius:6px!important; }
   :is(.button,.theme-toggle,.nav-log-gate) { background:var(--obs-surface)!important;border-color:var(--obs-line)!important; }
   :is(.button,.theme-toggle,.nav-log-gate):hover { border-color:var(--obs-accent)!important;background:var(--obs-highlight)!important; }
   .button.primary { background:var(--obs-highlight)!important; }
-  .button::before,.button::after { box-shadow:none!important; }
   :is(.mission-player,.planetary-stage) { border-radius:8px!important;box-shadow:none!important; }
   .mission-player :is(.mission-chapters,.mission-transport) { background:var(--obs-surface)!important; }
   .origins-study {

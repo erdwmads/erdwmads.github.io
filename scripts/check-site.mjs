@@ -2,6 +2,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
+import { findOrphanedFiles } from "./orphan-files.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const distDir = path.join(root, "dist");
@@ -388,9 +389,28 @@ if (!/<body\b[^>]*class="[^"]*\bui-page-research-log\b[^"]*\bui-page-research-gr
 if (legacyNavigationSource.includes("pageClassMap") || /pageClassMap|ui-page-\$\{/.test(fs.readFileSync(path.join(assetsDir, "js", "interface-2046.js"), "utf8"))) {
   fail("legacy-navigation.js / interface-2046.js: ui-page-* classes must come only from the server-rendered body");
 }
-// The entrance dialog persists across soft navigation; re-running its inline opener would reopen it over another page.
-if (!legacyNavigationSource.includes('script.hasAttribute("data-arrival-gate")') || !readDistPage("index.html").includes("<script data-arrival-gate>")) {
-  fail("legacy-navigation.js: soft navigation must not re-run the entrance opener (data-arrival-gate)");
+// Soft navigation re-runs only scripts marked data-page-script (src/data/site.ts). The entrance dialog and the header
+// persist with the shell; re-running the entrance opener would reopen the dialog over another page.
+if (!legacyNavigationSource.includes(`querySelectorAll('body script[data-page-script], body script[type="module"][src]')`) || legacyNavigationSource.includes("commonScripts") || !readDistPage("index.html").includes("<script data-arrival-gate>")) {
+  fail("legacy-navigation.js: soft navigation must re-run only data-page-script scripts, never the entrance opener (data-arrival-gate)");
+}
+{
+  // Every public/assets/js URL carries its content hash, and exactly the scripts that some page lacks are page-scoped.
+  const scriptTags = new Map(pages.map((page) => [page, (readDistPage(page) || "").match(/<script\b[^>]*>/g) || []]));
+  const filesOn = (tags) => new Set(tags.map((tag) => tag.match(/\bsrc="assets\/js\/([^"?]+)/)?.[1]).filter(Boolean));
+  const shellFiles = [...scriptTags.values()].map(filesOn).reduce((shared, files) => new Set([...shared].filter((file) => files.has(file))));
+  for (const [page, tags] of scriptTags) {
+    for (const tag of tags) {
+      if (/data-(?:site-header|arrival-gate)/.test(tag) && tag.includes("data-page-script")) fail(`${page}: shell inline scripts must not carry data-page-script`);
+      const match = tag.match(/\bsrc="assets\/js\/([^"?]+)(?:\?v=([^"]*))?"/);
+      if (!match) continue;
+      const [, file, version] = match;
+      const hash = createHash("sha256").update(fs.readFileSync(path.join(assetsDir, "js", file))).digest("hex").slice(0, 10);
+      if (version !== hash) fail(`${page}: assets/js/${file} must carry its content hash ?v=${hash}, not ${version ? `?v=${version}` : "no version"}`);
+      if (shellFiles.has(file) === tag.includes("data-page-script")) fail(`${page}: assets/js/${file} ${shellFiles.has(file) ? "loads on every page and must not" : "is page-scoped and must"} carry data-page-script`);
+    }
+  }
+  if (!shellFiles.has("legacy-navigation.js") || !shellFiles.has("interface-2046.js")) fail("pages: the shell scripts must load on every page");
 }
 // The header controller runs as a classic script right after </header>, so the compact phone header is ready before first paint.
 for (const page of pages) {
@@ -404,8 +424,14 @@ if (!legacyNavigationSource.includes('document.querySelectorAll(".nav a, .nav-lo
 }
 
 const paperShelf = readDistPage("paper-shelf.html");
-if ((paperShelf.match(/class="paper-card"/g) || []).length !== 11) {
-  fail("paper-shelf.html: expected 11 paper cards");
+// The card count, ids and old #paper-N aliases come from src/data/papers.ts (a JSON literal).
+const paperRecords = JSON.parse(fs.readFileSync(path.join(root, "src", "data", "papers.ts"), "utf8").match(/export const papers = ([\s\S]*?) as const;/)?.[1] || "[]");
+if (!paperRecords.length || (paperShelf.match(/class="paper-card"/g) || []).length !== paperRecords.length) {
+  fail(`paper-shelf.html: expected ${paperRecords.length} paper cards from src/data/papers.ts`);
+}
+for (const paper of paperRecords) {
+  if (!paperShelf.includes(`id="${paper.id}" class="paper-card"`)) fail(`paper-shelf.html: missing card anchor #${paper.id}`);
+  if (paper.legacyAnchor && !paperShelf.includes(`id="${paper.legacyAnchor}"`)) fail(`paper-shelf.html: missing old anchor #${paper.legacyAnchor} for ${paper.id}`);
 }
 if (!paperShelf.includes("data-paper-search") || !paperShelf.includes("assets/js/paper-shelf.js")) {
   fail("paper-shelf.html: missing filter controls or script");
@@ -463,6 +489,34 @@ if (researchLog.includes("<h2>Graduation Research</h2>")) {
 if (!/<a\b(?=[^>]*href="research-graduation\.html")[^>]*>\s*Open protected archive\s*<\/a>/i.test(researchLog)) {
   fail("research-log.html: dashboard must link to the protected archive");
 }
+// Project facts render from src/data/project.mjs; scripts/project-facts.test.mjs checks the data itself.
+const projectFacts = await import("../src/data/project.mjs");
+for (const [file, html, variant] of [["research.html", readDistPage("research.html"), "full"], ["research-log.html", researchLog, "compact"], ["research-graduation.html", readDistPage("research-graduation.html"), "compact"]]) {
+  if (file === "research.html") {
+    // The page also carries the question in the hidden atlas JSON, so check the visible heading itself.
+    const escapedQuestion = projectFacts.question.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    if (!new RegExp(`<h2 id="research-focus-title">\\s*${escapedQuestion}\\s*</h2>`).test(html)) fail("research.html: h2#research-focus-title must state the canonical research question from project.mjs");
+    const atlasJson = html.match(/<template data-public-atlas-data>([\s\S]*?)<\/template>/)?.[1] ?? "";
+    let atlasQuestion;
+    try {
+      atlasQuestion = JSON.parse(atlasJson.replace(/&(quot|amp|lt|gt|#39|#x27);/g, (_, name) => ({ quot: '"', amp: "&", lt: "<", gt: ">", "#39": "'", "#x27": "'" })[name])).question;
+    } catch {
+      atlasQuestion = undefined;
+    }
+    if (atlasQuestion !== projectFacts.question) fail("research.html: the research atlas data must carry the canonical research question from project.mjs");
+  } else if (file !== "research-graduation.html" && !html.includes(projectFacts.question)) fail(`${file}: missing the canonical research question from project.mjs`);
+  const chips = [...html.matchAll(/<span class="pathway-chip"[^>]*>([\s\S]*?)<\/span>\s*<\/div>/g)].map((match) => match[1].replace(/<[^>]+>/g, "").replace(/^Status: /, ""));
+  if (!html.includes(`data-analytical-pathway="${variant}"`) || chips.length !== projectFacts.pathway.length) fail(`${file}: the Analytical Pathway (${variant}) must render every step with a status chip`);
+  if (chips.some((chip) => !projectFacts.pathwayStatuses.includes(chip))) fail(`${file}: unknown or completed Analytical Pathway status (${chips.join(", ")})`);
+}
+// The public front door describes the archive without exposing any of its metadata.
+if (/\bSOL\s*\d|Mission Log \d{2,}|\bLOG\s*\d{3}\b/i.test(researchLog)) {
+  fail("research-log.html: must not expose Mission Log entry numbers or SOL values");
+}
+// Entry dates (YYYY-MM-DD or the Mission Index's YYYY/MM/DD); the public period "2026/04 – present" has no day.
+if (/\b20\d\d[-/]\d\d[-/]\d\d\b/.test(researchLog)) {
+  fail("research-log.html: must not expose Mission Log entry dates");
+}
 
 const shellSource = fs.readFileSync(path.join(root, "src", "components", "LegacyShell.astro"), "utf8");
 if (!shellSource.includes("data-nav-toggle") || !shellSource.includes("data-mobile-nav")) {
@@ -480,22 +534,35 @@ for (const name of publicStylesheets) {
 if (!/<link\s+rel="stylesheet"\s+href=\{`assets\/css\/site\.css\?v=\$\{stylesheetVersion\}`\}>/.test(shellSource)) {
   fail("LegacyShell: pages must link the generated stylesheet bundle");
 }
+// Component stylesheets in src/ are appended to the bundle after the public ones (componentStylesheets in site.ts).
+// A CSS import in a component would make Astro emit a second render-blocking /_astro/*.css sheet.
+const componentStylesheetOrder = [...(siteDataSource.match(/export const componentStylesheets = \[([\s\S]*?)\]/)?.[1] || "").matchAll(/"([^"]+\.css)"/g)].map((match) => match[1]);
+for (const name of componentStylesheetOrder) {
+  if (!fs.existsSync(path.join(root, name))) fail(`site.ts: component stylesheet ${name} does not exist`);
+}
+for (const file of collectFiles(path.join(root, "src")).filter((name) => /\.(astro|[cm]?[jt]s)$/.test(name))) {
+  if (/^\s*import\s+["'][^"']+\.css["']/m.test(fs.readFileSync(file, "utf8"))) {
+    fail(`${path.relative(root, file).replace(/\\/g, "/")}: imports a stylesheet; add it to componentStylesheets in src/data/site.ts so pages keep one stylesheet request`);
+  }
+}
 const stylesheetBundlePath = path.join(distDir, "assets", "css", "site.css");
 if (!fs.existsSync(stylesheetBundlePath)) {
   fail("Missing generated stylesheet bundle: assets/css/site.css");
 } else {
   const bundle = fs.readFileSync(stylesheetBundlePath, "utf8");
   let lastIndex = -1;
-  for (const name of stylesheetOrder) {
+  for (const name of [...stylesheetOrder, ...componentStylesheetOrder]) {
     const index = bundle.indexOf(`/*! ${name} */`);
     if (index <= lastIndex) fail(`assets/css/site.css: ${name} is missing or out of cascade order`);
     lastIndex = index;
   }
 }
-for (const file of ["index.html", "research.html", "contact.html"]) {
-  const links = readDistPage(file).match(/<link\b[^>]*rel="stylesheet"[^>]*href="assets\/css\/[^"]+"/g) || [];
+const astroStylesheets = fs.existsSync(path.join(distDir, "_astro")) ? fs.readdirSync(path.join(distDir, "_astro")).filter((name) => name.endsWith(".css")) : [];
+if (astroStylesheets.length) fail(`_astro: ${astroStylesheets.join(", ")} is a second stylesheet; fold it into the bundle (componentStylesheets in src/data/site.ts)`);
+for (const file of fs.readdirSync(distDir).filter((name) => name.endsWith(".html") && name !== "sample-cabinet.html")) {
+  const links = readDistPage(file).match(/<link\b[^>]*rel="stylesheet"[^>]*>/g) || [];
   if (links.length !== 1 || !/href="assets\/css\/site\.css\?v=[0-9a-f]{10}"/.test(links[0])) {
-    fail(`${file}: expected exactly one versioned link to assets/css/site.css`);
+    fail(`${file}: expected exactly one stylesheet link, the versioned assets/css/site.css (found ${links.length})`);
   }
 }
 // The retired Sample Cabinet URL is a shell-less noindex redirect to Research, with no dolomite wording.
@@ -573,11 +640,17 @@ for (const file of ["index.html", "cv.html", "contact.html"]) {
 }
 const homeSchema = (readDistPage("index.html").match(/<script type="application\/ld\+json">([^<]+)<\/script>/) || [])[1];
 try {
-  const person = JSON.parse(homeSchema);
-  const names = [person.name, person.givenName, person.familyName, JSON.stringify(person.alternateName)];
-  const expectedNames = [expectedDisplayName, "Ioong Mads", "Lieu", JSON.stringify([expectedFullName, formerName])];
-  if (names.join("\n") !== expectedNames.join("\n") || !person.sameAs?.includes(orcidUrl) || JSON.stringify(person).includes("@gmail")) {
+  // Home publishes a WebSite node and a ProfilePage whose mainEntity is the Person.
+  const graph = JSON.parse(homeSchema)["@graph"] || [];
+  const profile = graph.find((node) => node["@type"] === "ProfilePage");
+  const person = profile?.mainEntity || {};
+  const names = [person["@type"], person.name, person.givenName, person.familyName, JSON.stringify(person.alternateName)];
+  const expectedNames = ["Person", expectedDisplayName, "Ioong Mads", "Lieu", JSON.stringify([expectedFullName, formerName])];
+  if (names.join("\n") !== expectedNames.join("\n") || !person.sameAs?.includes(orcidUrl) || JSON.stringify(graph).includes("@gmail")) {
     fail("index.html: Person structured data must carry the name, given and family names, alternate names and ORCID iD, without the email");
+  }
+  if (profile.url !== "https://erdwmads.github.io/" || !graph.some((node) => node["@type"] === "WebSite" && node.url === profile.url)) {
+    fail("index.html: structured data must describe the WebSite and the ProfilePage at the site root");
   }
 } catch {
   fail("index.html: missing or unreadable Person structured data");
@@ -663,6 +736,13 @@ if (fs.existsSync(sitemapPath)) {
   if (sitemap.includes("sample-cabinet.html")) {
     fail("sitemap.xml: retired hidden Sample Cabinet page must not be indexed");
   }
+  // Home is listed at the root, like its canonical URL; build-date lastmod stamps are not published.
+  if (!sitemap.includes("<loc>https://erdwmads.github.io/</loc>") || sitemap.includes("index.html") || /<lastmod>|<changefreq>/.test(sitemap)) {
+    fail("sitemap.xml: list Home at the site root, without build-date lastmod or changefreq");
+  }
+}
+if (!readDistPage("index.html").includes('<link rel="canonical" href="https://erdwmads.github.io/">')) {
+  fail("index.html: the Home canonical URL must be the site root");
 }
 
 const legacyNavigation = fs.readFileSync(path.join(assetsDir, "js", "legacy-navigation.js"), "utf8");
@@ -743,9 +823,6 @@ const corruptedCssContent = styleCss
 if (corruptedCssContent.length > 0) {
   fail(`style.css: ${corruptedCssContent.length} rendered content declarations contain mojibake`);
 }
-if (!styleCss.includes('content: "\\2039" !important;') || !styleCss.includes('content: "\\203A" !important;')) {
-  fail("style.css: photography controls must use encoding-safe previous/next arrows");
-}
 if (!styleCss.includes("mads-soft-nav-active")) {
   fail("style.css: missing soft navigation stability styles");
 }
@@ -783,11 +860,17 @@ if (!uiRegressionGuards.startsWith("/* ui-regression-guards */")) {
   if (!/\.mission-lightbox__caption\s*\{[\s\S]*?min-width:\s*0\s*!important[\s\S]*?\}/.test(uiRegressionGuards)) {
     fail("style.css: Mission Log caption must be allowed to wrap inside the viewport");
   }
-  if (!/\.nav-log-gate\s*\{[\s\S]*?position:\s*relative\s*!important[\s\S]*?\}/.test(uiRegressionGuards)) {
-    fail("style.css: Research Log navigation gate must contain its decorative layers");
+}
+// The Research Log gate is written once in its block at the end of shell-evolution.css.
+const navLogGateBlock = shellEvolution.slice(shellEvolution.lastIndexOf("/* Research Log gate"));
+if (!navLogGateBlock.startsWith("/* Research Log gate")) {
+  fail("shell-evolution.css: missing the Research Log gate block");
+} else {
+  if (!/body#academic-site \.nav-log-gate\s*\{[^}]*position:\s*relative\s*!important[^}]*\}/.test(navLogGateBlock)) {
+    fail("shell-evolution.css: Research Log navigation gate must contain its decorative layers");
   }
-  if (!/\.nav-log-gate::before,\s*\.nav-log-gate::after\s*\{[\s\S]*?pointer-events:\s*none\s*!important[\s\S]*?\}/.test(uiRegressionGuards)) {
-    fail("style.css: Research Log decorative layers must not intercept navigation clicks");
+  if (!/body#academic-site \.nav-log-gate::before,\s*html\[data-theme\] body#academic-site \.nav-log-gate::after\s*\{[^}]*pointer-events:\s*none\s*!important[^}]*\}/.test(navLogGateBlock)) {
+    fail("shell-evolution.css: Research Log decorative layers must not intercept navigation clicks");
   }
 }
 const finalLightboxBlock = styleCss.slice(styleCss.lastIndexOf("/* mission-lightbox-stable-viewport */"));
@@ -889,6 +972,73 @@ if (lowPowerBlock.includes("max-width") || lowPowerBlock.includes("pointer: coar
 }
 if (!powerManager.includes("const MOBILE_MEDIA")) {
   fail("power-manager.js: missing separate mobile media state");
+}
+
+// Orphaned files (scripts/orphan-files.mjs): delete retired fragments, scripts and modules instead of keeping them.
+const orphans = findOrphanedFiles(root, { distDir });
+for (const file of orphans.legacy) fail(`${file}: legacy fragment is not imported by any page or component`);
+for (const file of orphans.publicScripts) fail(`${file}: not loaded by src/data/site.ts, a component or any built page`);
+for (const { file, testOnly } of orphans.srcScripts) {
+  fail(`${file}: not reachable from any page or component${testOnly ? " (only tests import it; retire it with its tests)" : ""}`);
+}
+
+// Content Security Policy (src/lib/csp.mjs, rendered by LegacyShell.astro and the Sample Cabinet stub) and the
+// external-request guard, over every generated page. Soft navigation keeps the meta policy of the first page it
+// loads and runs the next page's data-page-script inline scripts again (research.html's forwarder), so all pages
+// carry one policy that lists every inline script's hash.
+const csp = await import("../src/lib/csp.mjs");
+const siteOrigin = "https://erdwmads.github.io";
+const htmlPages = fs.readdirSync(distDir).filter((name) => name.endsWith(".html")).sort();
+const pagePolicies = new Map();
+const inlineScriptHashes = new Map();
+for (const file of htmlPages) {
+  const html = readDistPage(file);
+  const metas = csp.policyMetas(html);
+  if (metas.length !== 1) {
+    fail(`${file}: expected one Content-Security-Policy meta tag, found ${metas.length}`);
+  } else {
+    const headEnd = html.search(/<\/head\s*>/i);
+    const firstScript = html.search(/<script\b/i);
+    if (headEnd < 0 || metas[0].index > headEnd || (firstScript >= 0 && metas[0].index > firstScript)) {
+      fail(`${file}: the Content-Security-Policy meta must be in <head> before the first script (a meta policy only governs what follows it)`);
+    }
+    pagePolicies.set(file, metas[0].content);
+  }
+  for (const { tag, hash } of csp.executableInlineScripts(html)) {
+    if (!inlineScriptHashes.has(hash)) inlineScriptHashes.set(hash, `${file} ${tag}`);
+  }
+  for (const problem of csp.pageRequestProblems(html, siteOrigin)) {
+    if (problem.kind === "external") fail(`${file}: external request ${problem.url.slice(0, 80)} in ${problem.tag}; serve it from this site`);
+    else if (problem.kind === "inline-handler") fail(`${file}: inline event handler in ${problem.tag.slice(0, 80)} (the policy blocks it; use a script file)`);
+    else fail(`${file}: javascript: URL in ${problem.tag.slice(0, 80)} (the policy blocks it)`);
+  }
+}
+for (const file of collectFiles(distDir).filter((name) => name.endsWith(".css"))) {
+  for (const url of csp.externalCssUrls(fs.readFileSync(file, "utf8"), siteOrigin)) fail(`${path.relative(distDir, file).replace(/\\/g, "/")}: external CSS url(${url.slice(0, 80)}); serve it from this site`);
+}
+if (new Set(pagePolicies.values()).size > 1) {
+  fail(`Content-Security-Policy differs between pages (${[...pagePolicies.keys()].join(", ")}); every page must render the one policy from src/lib/inline-scripts.ts`);
+}
+// Each distinct policy is checked once, labelled with the pages that carry it.
+const policyPages = new Map();
+for (const [file, policy] of pagePolicies) policyPages.set(policy, [...(policyPages.get(policy) || []), file]);
+for (const [policy, files] of policyPages) {
+  const file = files.length === htmlPages.length ? "every page" : files.join(", ");
+  const directives = csp.parsePolicy(policy);
+  const expected = new Map(csp.policyDirectives.map(([name, ...sources]) => [name, sources]));
+  for (const name of directives.keys()) if (!expected.has(name)) fail(`${file}: unexpected CSP directive ${name}`);
+  for (const [name, sources] of expected) {
+    const actual = directives.get(name) || [];
+    const extra = actual.filter((source) => !sources.includes(source) && !(name === "script-src" && /^'sha256-[A-Za-z0-9+/]{43}='$/.test(source)));
+    if (sources.some((source) => !actual.includes(source)) || extra.length) fail(`${file}: CSP ${name} must be "${sources.join(" ")}"${name === "script-src" ? " plus inline-script hashes" : ""}, found "${actual.join(" ")}"`);
+  }
+  const scriptSources = directives.get("script-src") || [];
+  for (const [hash, where] of inlineScriptHashes) {
+    if (!scriptSources.includes(hash)) fail(`${file}: CSP script-src does not allow the inline script ${where.slice(0, 100)} (${hash}); render it from src/lib/inline-scripts.ts`);
+  }
+  for (const hash of scriptSources.filter((source) => source.startsWith("'sha256-") && !inlineScriptHashes.has(source))) {
+    fail(`${file}: CSP script-src lists ${hash}, which matches no inline script on the site; remove it from src/lib/inline-scripts.ts`);
+  }
 }
 
 if (failures.length) {

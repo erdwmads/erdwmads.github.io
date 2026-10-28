@@ -1,10 +1,12 @@
 ---
 import ResearchQuestions from './ResearchQuestions.astro';
+import EvidenceStatus from './EvidenceStatus.astro';
 ---
 <section class="planetary" data-planetary-explorer aria-labelledby="planetary-title">
   <header class="planetary-heading">
     <p class="eyebrow">Planetary field guide</p>
     <h2 id="planetary-title">Compare materials and observations</h2>
+    <EvidenceStatus kind="model">Orbits follow interpolated JPL Horizons daily ephemerides; bodies are enlarged independently, not to scale, and present orbits are not formation locations.</EvidenceStatus>
     <p>Choose a material, then compare its orbital context, external shape, sample photographs and illustrative mineral forms.</p>
   </header>
   <ResearchQuestions />
@@ -49,6 +51,11 @@ import ResearchQuestions from './ResearchQuestions.astro';
       <button type="button" data-action="now" title="Track current UTC time at 1× speed" aria-label="Track current UTC time at 1× speed"><span data-icon="now"></span></button>
       <input data-timeline type="range" min="0" max="52584" step="1" value="0" aria-label="Orbital timeline in hours" />
       <p data-clock-status role="status">Loading ephemeris...</p>
+      <!-- Phones: planetary-explorer.js moves this fieldset under the scene and the date, speed and view selects in here. -->
+      <details class="planetary-view-settings" data-view-settings hidden>
+        <summary>View settings</summary>
+        <div class="planetary-view-settings-body" data-view-settings-body></div>
+      </details>
     </fieldset>
     <div class="planetary-layout">
       <div class="planetary-visual">

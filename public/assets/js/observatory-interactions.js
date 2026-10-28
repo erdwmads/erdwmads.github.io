@@ -137,15 +137,30 @@
     panel.querySelector('legend').after(fx);
     const coordinates = document.querySelector('.research-coordinates');
     if (coordinates) panel.appendChild(coordinates);
-    const closeSettings = () => { panel.hidden = true; settings.setAttribute('aria-expanded', 'false'); };
     const compactDock = matchMedia('(max-width: 760px)');
-    const resetSettings = () => {
-      const restoreFocus = panel.contains(document.activeElement);
-      closeSettings();
-      if (restoreFocus) settings.focus({ preventScroll: true });
+    const sheet = document.querySelector('[data-mobile-nav]');
+    const docked = () => panel.parentElement === dock;
+    // Open and close apply only to the floating dock; in the navigation sheet the panel is always shown.
+    const closeSettings = () => {
+      if (!docked()) return;
+      panel.hidden = true;
+      settings.setAttribute('aria-expanded', 'false');
     };
-    compactDock.addEventListener('change', resetSettings);
-    dock.querySelector(`input[value="${intensity}"]`).checked = true;
+    // Phones (760 px and below): the panel joins the navigation sheet after the theme toggle and the fixed
+    // dock is hidden (home-shell.css), so no floating control covers the reading column. Wider windows keep the dock,
+    // and so does a page whose header controller failed (no data-nav-ready), where the sheet cannot be closed.
+    const placePanel = () => {
+      const restoreFocus = panel.contains(document.activeElement);
+      const inSheet = Boolean(compactDock.matches && sheet && root.hasAttribute('data-nav-ready'));
+      settings.setAttribute('aria-expanded', 'false');
+      if (inSheet && panel.parentElement !== sheet) sheet.appendChild(panel);
+      if (!inSheet && !docked()) dock.appendChild(panel);
+      panel.hidden = !inSheet;
+      if (restoreFocus) (inSheet ? document.querySelector('[data-nav-toggle]') : settings)?.focus({ preventScroll: true });
+    };
+    compactDock.addEventListener('change', placePanel);
+    placePanel();
+    panel.querySelector(`input[value="${intensity}"]`).checked = true;
     settings.addEventListener('click', () => {
       panel.hidden = !panel.hidden;
       settings.setAttribute('aria-expanded', String(!panel.hidden));
@@ -159,7 +174,7 @@
     window.addEventListener('pagehide', closeSettings);
     window.addEventListener('mads:soft-nav-start', closeSettings);
     document.addEventListener('keydown', event => {
-      if (event.key === 'Escape' && !panel.hidden) { closeSettings(); settings.focus(); }
+      if (event.key === 'Escape' && docked() && !panel.hidden) { closeSettings(); settings.focus(); }
     });
   }
 

@@ -120,6 +120,15 @@ test('photograph srcsets list generated WebP tiers by width and end with the ori
   assert.deepEqual([...photographs].filter(photo => photo.wide).map(photo => photo.number), [11]);
 });
 
+test('each tile carries its row properties for the justified rows and sizes never starts with auto', () => {
+  const gallery = fs.readFileSync(new URL('../src/components/PhotographyGallery.astro', import.meta.url), 'utf8');
+  assert.ok(gallery.includes('const tileStyles = rowProperties(photographs.map((photo) => photo.ratio));'));
+  assert.ok(gallery.includes('style={tileStyles[index]}'));
+  // Chromium reads "auto" on an eager image as 100vw, which fetched the original JPEG for the first row.
+  assert.ok(gallery.includes('sizes={sizesFor(photo.ratio)}'));
+  assert.doesNotMatch(gallery.slice(gallery.indexOf('const sizesFor'), gallery.indexOf('].join')), /auto/);
+});
+
 test('the crossed-out camera is announced and Camera is a section heading', () => {
   const gallery = fs.readFileSync(new URL('../src/components/PhotographyGallery.astro', import.meta.url), 'utf8');
   const struck = '<s class="del">Hasselblad X2D</s><span class="visually-hidden"> (crossed out)</span>';

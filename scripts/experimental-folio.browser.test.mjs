@@ -8,7 +8,7 @@ try {
  const page=await browser.newPage({viewport:{width:1440,height:1000},reducedMotion:'reduce'});page.setDefaultTimeout(12000);
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto(base+'/index.html');await page.evaluate(()=>document.fonts.ready);
- assert.equal(await page.locator('h1').innerText(),'I. Mads Lieu');assert.equal(await page.locator('.home-card-grid .card').count(),4);
+ assert.equal(await page.locator('h1').innerText(),'I. Mads Lieu');assert.deepEqual(await page.locator('.home-explore-list a').evaluateAll(links=>links.map(a=>a.getAttribute('href'))),['ryugu-bennu.html','origins-study.html','research-log.html','paper-shelf.html','photography.html'],'Explore is a compact list that includes Ryugu & Bennu');
  assert.equal(await page.locator('.hero-card .avatar img').evaluate(e=>e.complete&&e.naturalWidth>0),true);
  await page.screenshot({path:path.join(os.tmpdir(),'folio100-home-desktop.png')});
 for(const theme of ['space','light']) {
@@ -61,6 +61,8 @@ await page.locator('.obs-present-close').click();await page.waitForFunction(()=>
 await page.locator('.nav a[href="cv.html"]').click();await page.waitForURL('**/cv.html');await page.locator('.nav a[href="photography.html"]').click();await page.waitForURL('**/photography.html');
  await page.waitForFunction(()=>document.querySelector('[data-photo-experience]')?.dataset.photoLayout==='contact');
  await page.locator('[data-photo-layout="gallery"]').click();assert.equal(await page.locator('.photo-index-label:visible').count(),0);
+ // Back in the gallery after soft navigation, the justified rows end at the right edge of the wall.
+ assert.ok(await page.evaluate(()=>{const wall=document.querySelector('.photo-wall').getBoundingClientRect();const last=[...document.querySelectorAll('.photo-tile')].at(-1).getBoundingClientRect();return Math.abs(last.right-wall.right)<1;}),'Gallery rows not justified after soft navigation');
  const nojs=await browser.newPage({javaScriptEnabled:false,viewport:{width:390,height:844}});await nojs.goto(base+'/ryugu-bennu.html');
  assert.equal(await nojs.locator('[data-inspector-controls]').isVisible(),false);assert.equal(await nojs.locator('[data-inspector-image]').count(),1);
  await nojs.goto(base+'/photography.html');assert.equal(await nojs.locator('[data-photo-layout-controls]').isVisible(),false);assert.equal(await nojs.locator('a[data-photo-index]').count(),photos);

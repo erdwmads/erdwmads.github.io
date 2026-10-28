@@ -1,0 +1,169 @@
+/* Research hub: the project facts rendered from src/data/project.mjs.
+   Owns the Analytical Pathway component (.analytical-pathway, status chips, step details), the Research
+   sub-questions and the Orgueil vs returned samples card, the Research Log front door sections and the
+   graduation page's project context line. The step grid itself (.research-workflow) stays in
+   research-reading.css; this file only extends it. Loads after the older public stylesheets; same prefix as the later files. */
+
+/* Status line: one sentence, never a progress bar. */
+html[data-theme] body#academic-site .pathway-status-note {
+  display: inline-flex; align-items: center; margin: 22px 0 0; padding: 5px 12px;
+  border: 1px solid var(--obs-line); border-radius: 999px;
+  color: var(--obs-muted); font-size: 12px; line-height: 1.6; font-weight: 500;
+}
+html[data-theme] body#academic-site .pathway-status-note + .research-workflow { margin-top: 14px; }
+
+/* Steps: number and status chip share the first line; the details toggle sits at the foot of each card. */
+html[data-theme] body#academic-site .research-workflow.analytical-pathway > li { display: flex; flex-direction: column; min-width: 0; }
+html[data-theme] body#academic-site .analytical-pathway .pathway-item-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 0 10px; min-width: 0;
+}
+html[data-theme] body#academic-site .analytical-pathway .research-step-number { margin: 0; }
+
+/* Status chips: the status is always written out; colour, border style and the marker shape only repeat it. */
+html[data-theme] body#academic-site .pathway-chip {
+  display: inline-flex; align-items: center; gap: 6px; flex: none; padding: 1px 9px 1px 8px;
+  border: 1px solid var(--obs-line); border-radius: 999px; background: transparent;
+  color: var(--obs-muted); font-size: 11px; font-weight: 600; line-height: 1.7; letter-spacing: 0; white-space: nowrap;
+}
+html[data-theme] body#academic-site .pathway-chip::before {
+  content: ""; flex: none; width: 7px; height: 7px; box-sizing: border-box; border: 1.5px solid currentColor; border-radius: 50%;
+}
+html[data-theme] body#academic-site .pathway-chip[data-status="in-progress"] {
+  color: var(--obs-accent); border-color: color-mix(in srgb, var(--obs-accent) 55%, transparent);
+  background: color-mix(in srgb, var(--obs-accent) 12%, transparent);
+}
+html[data-theme] body#academic-site .pathway-chip[data-status="in-progress"]::before { background: currentColor; }
+html[data-theme] body#academic-site .pathway-chip[data-status="next"] {
+  color: var(--obs-link); border-color: color-mix(in srgb, var(--obs-link) 55%, transparent);
+}
+html[data-theme] body#academic-site .pathway-chip[data-status="next"]::before { background: linear-gradient(90deg, currentColor 50%, transparent 50%); }
+html[data-theme] body#academic-site .pathway-chip[data-status="planned"] { border-style: dashed; }
+html[data-theme] body#academic-site .pathway-chip[data-status="interpretation"] { border-style: dotted; font-style: italic; }
+html[data-theme] body#academic-site .pathway-chip[data-status="interpretation"]::before { border-radius: 1px; transform: rotate(45deg) scale(.85); }
+
+/* Full variant: purpose, then "can answer / cannot establish" behind a native disclosure. */
+html[data-theme] body#academic-site .analytical-pathway .pathway-detail { margin-top: auto; padding-top: 14px; }
+html[data-theme] body#academic-site .analytical-pathway .pathway-detail summary {
+  display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px 0 0; list-style: none; cursor: pointer;
+  border-top: 1px solid var(--obs-line); color: var(--obs-link); font-size: 12px; font-weight: 600; line-height: 1.5;
+}
+html[data-theme] body#academic-site .analytical-pathway .pathway-detail summary::-webkit-details-marker { display: none; }
+html[data-theme] body#academic-site .analytical-pathway .pathway-detail summary::before {
+  content: ""; flex: none; width: 7px; height: 7px; margin: 0 2px 3px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg); transition: transform .18s ease;
+}
+html[data-theme] body#academic-site .analytical-pathway .pathway-detail[open] summary::before { transform: translateY(-2px) rotate(45deg); margin-bottom: 0; }
+html[data-theme] body#academic-site .analytical-pathway .pathway-detail summary:hover span { text-decoration: underline; text-underline-offset: 3px; }
+html[data-theme] body#academic-site .analytical-pathway .pathway-detail summary:focus-visible { outline: 2px solid var(--obs-accent); outline-offset: 3px; border-radius: 4px; }
+html[data-theme] body#academic-site .analytical-pathway .pathway-detail dl { display: grid; gap: 12px; margin: 8px 0 0; }
+html[data-theme] body#academic-site .analytical-pathway .pathway-detail dt {
+  margin: 0 0 3px; color: var(--obs-accent); font-size: 11px; font-weight: 700; line-height: 1.6; letter-spacing: .06em; text-transform: uppercase;
+}
+html[data-theme] body#academic-site .analytical-pathway .pathway-detail dd { margin: 0; color: var(--obs-text); font-size: 13px; line-height: 1.75; }
+/* A lone last step spans the row; keep its lines readable. */
+html[data-theme] body#academic-site .analytical-pathway > li:last-child :is(.pathway-purpose, .pathway-detail dl) { max-width: 82ch; }
+
+/* Compact variant (Research Log, graduation page): one row of seven at desktop, titles and chips only. */
+html[data-theme] body#academic-site .research-workflow.analytical-pathway--compact > li { padding: 16px 14px 18px; }
+/* main h3 carries a sitewide !important size; the compact titles and the smaller hub headings must beat it. */
+html[data-theme] body#academic-site .analytical-pathway--compact h3 { margin: 0; font-size: 15px !important; line-height: 1.4 !important; }
+@media (min-width: 761px) {
+  html[data-theme] body#academic-site .research-workflow.analytical-pathway--compact { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+  html[data-theme] body#academic-site .research-workflow.analytical-pathway--compact > li:last-child:nth-child(3n+1) { grid-column: auto; }
+  html[data-theme] body#academic-site .analytical-pathway--compact .pathway-item-head { flex-direction: column; align-items: flex-start; gap: 8px; }
+}
+@media (min-width: 761px) and (max-width: 1180px) {
+  html[data-theme] body#academic-site .research-workflow.analytical-pathway--compact { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  /* Four and three: the last step takes the empty fourth cell so no bare grid line shows. */
+  html[data-theme] body#academic-site .research-workflow.analytical-pathway--compact > li:last-child:nth-child(4n+3) { grid-column: span 2; }
+  html[data-theme] body#academic-site .analytical-pathway--compact .pathway-item-head { flex-direction: row; align-items: center; justify-content: space-between; }
+}
+
+/* Research: sub-questions directly under the question. */
+html[data-theme] body#academic-site .research-subquestions {
+  max-width: 65ch; margin: 22px 0 0; padding: 0; list-style: none; counter-reset: research-subquestion; border-top: 1px solid var(--obs-line);
+}
+html[data-theme] body#academic-site .research-subquestions li {
+  position: relative; margin: 0; padding: 14px 0 14px 40px; border-bottom: 1px solid var(--obs-line); counter-increment: research-subquestion;
+}
+html[data-theme] body#academic-site .research-subquestions li::before {
+  content: "Q" counter(research-subquestion); position: absolute; left: 0; top: 16px;
+  color: var(--obs-accent); font-size: 11px; font-weight: 700; letter-spacing: .06em; font-variant-numeric: tabular-nums;
+}
+html[data-theme] body#academic-site .research-subquestions h3 { margin: 0 0 4px; font-size: 16px !important; line-height: 1.45 !important; text-shadow: none; }
+html[data-theme] body#academic-site .research-subquestions p { margin: 0; color: var(--obs-muted); font-size: 13px; line-height: 1.75; }
+
+/* Research: Orgueil vs returned samples. */
+html[data-theme] body#academic-site .comparison-card {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; margin: 28px 0 18px;
+  border: 1px solid var(--obs-line); border-radius: 16px; overflow: hidden; background: var(--obs-line);
+}
+html[data-theme] body#academic-site .comparison-column { min-width: 0; padding: 24px 26px; background: var(--obs-surface); }
+html[data-theme] body#academic-site .comparison-label {
+  margin: 0 0 8px; color: var(--obs-accent); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+}
+html[data-theme] body#academic-site .comparison-column h3 { margin: 0 0 14px; font-size: 19px !important; line-height: 1.4 !important; text-shadow: none; }
+html[data-theme] body#academic-site .comparison-column dl { margin: 0; }
+html[data-theme] body#academic-site .comparison-column dl > div { padding: 12px 0; border-top: 1px solid var(--obs-line); }
+html[data-theme] body#academic-site .comparison-column dl > div:last-child { padding-bottom: 0; }
+html[data-theme] body#academic-site .comparison-column dt { margin: 0 0 4px; color: var(--obs-muted); font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+html[data-theme] body#academic-site .comparison-column dd { margin: 0; color: var(--obs-text); font-size: 14px; line-height: 1.75; }
+
+/* Research Log: the public front door below the project dashboard. */
+html[data-theme] body#academic-site .research-dashboard__lab { display: block; }
+html[data-theme] body#academic-site .research-dashboard__lab + .research-dashboard__lab { margin-top: 8px; }
+html[data-theme] body#academic-site .research-dashboard__lab small { display: block; color: var(--obs-muted); font-size: 13px; }
+html[data-theme] body#academic-site :is(.research-log-pathway, .research-log-archive) {
+  width: min(1180px, 100%); margin: 0 auto; padding: clamp(36px, 5vw, 64px) 0;
+}
+/* Continue Reading draws the closing rule; only the pathway needs a divider. */
+html[data-theme] body#academic-site .research-log-pathway { border-bottom: 1px solid var(--obs-line); }
+html[data-theme] body#academic-site .research-log-section-heading { max-width: 800px; }
+html[data-theme] body#academic-site .research-log-section-heading h2 { margin: 10px 0 0; }
+html[data-theme] body#academic-site .research-log-section-heading > p:not(.eyebrow) { margin: 14px 0 0; max-width: 70ch; color: var(--obs-muted); font-size: 15px; line-height: 1.75; }
+html[data-theme] body#academic-site .research-log-section-note { margin: 0; font-size: 13px; line-height: 1.8; }
+html[data-theme] body#academic-site .research-log-archive__parts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 36px; margin: 28px 0 0; }
+html[data-theme] body#academic-site .research-log-archive__parts > div { min-width: 0; padding: 18px 0 20px; border-top: 1px solid var(--obs-line); }
+html[data-theme] body#academic-site .research-log-archive__parts dt {
+  margin: 0 0 8px; color: var(--obs-accent); font-size: 12px; font-weight: 800; letter-spacing: 0; text-transform: uppercase;
+}
+html[data-theme] body#academic-site .research-log-archive__parts dd { margin: 0; color: var(--obs-text); font-size: 15px; line-height: 1.65; }
+html[data-theme] body#academic-site .research-log-archive__access {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; margin-top: 24px; padding: 22px 26px;
+  border: 1px solid var(--obs-line); border-radius: 16px; background: var(--obs-surface);
+}
+html[data-theme] body#academic-site .research-log-archive__access p { margin: 0; max-width: 62ch; color: var(--obs-muted); font-size: 14px; line-height: 1.7; }
+
+/* Graduation page: trimmed hero and project context line. */
+html[data-theme] body#academic-site .research-archive-hero .button-row { margin-top: 22px; }
+html[data-theme] body#academic-site .research-project-context__labs { color: var(--obs-muted); font-size: 13px; line-height: 1.75; }
+html[data-theme] body#academic-site .analytical-pathway-section .research-log-section-note { margin-top: 4px; }
+
+@media (max-width: 760px) {
+  html[data-theme] body#academic-site :is(.pathway-chip, .pathway-status-note, .analytical-pathway .pathway-detail dt, .comparison-label, .comparison-column dt, .research-subquestions li::before) { font-size: 12px; }
+  html[data-theme] body#academic-site .pathway-status-note { border-radius: 12px; }
+  html[data-theme] body#academic-site .comparison-card { grid-template-columns: minmax(0, 1fr); }
+  html[data-theme] body#academic-site .comparison-column { padding: 18px; }
+  html[data-theme] body#academic-site .research-log-archive__parts { grid-template-columns: minmax(0, 1fr); }
+  html[data-theme] body#academic-site .research-log-archive__access { padding: 18px; }
+  html[data-theme] body#academic-site .research-log-archive__access .button { width: 100%; }
+}
+/* Phones: one column; a step reads as number, title and status on one line. */
+@media (max-width: 440px) {
+  html[data-theme] body#academic-site .research-workflow.analytical-pathway > li { display: flex; }
+  html[data-theme] body#academic-site .analytical-pathway .research-step-number { grid-row: auto; margin: 0; }
+  html[data-theme] body#academic-site .research-workflow.analytical-pathway--compact > li {
+    display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 14px 16px;
+  }
+  html[data-theme] body#academic-site .analytical-pathway--compact .pathway-item-head { display: contents; }
+  html[data-theme] body#academic-site .analytical-pathway--compact .research-step-number { grid-column: 1; grid-row: 1; }
+  html[data-theme] body#academic-site .analytical-pathway--compact .pathway-chip { grid-column: 3; grid-row: 1; }
+  html[data-theme] body#academic-site .analytical-pathway--compact h3 { grid-column: 2; grid-row: 1; }
+  html[data-theme] body#academic-site .research-subquestions li { padding-left: 34px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme] body#academic-site .analytical-pathway .pathway-detail summary::before { transition: none; }
+}
+@media print {
+  html[data-theme] body#academic-site .analytical-pathway .pathway-detail > summary { display: none; }
+}

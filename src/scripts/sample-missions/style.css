@@ -208,3 +208,32 @@ html[data-theme] body#academic-site .mission-story [aria-current=step]{border-co
  html[data-theme] body#academic-site .sample-missions details.mission-story>summary{min-height:44px;}
  html[data-theme] body#academic-site .sample-missions details.mission-sources>summary{min-height:44px;padding-block:11px;}
 }
+
+/* readable-caveats-missions (2026-10): the model-fidelity footnote reads as body text, not fine print (observatory.css
+   mutes every main paragraph with !important), and short
+   explanatory lines keep a 12px floor; numerals and one-word labels may stay at 10-11px. */
+html[data-theme] body#academic-site .sample-missions .mission-footnote p{max-width:72ch;font-size:14px;line-height:1.65;color:var(--obs-text)!important;}
+html[data-theme] body#academic-site .sample-missions :is(.mission-view-hint,.mission-flight-cue span,.mission-story summary small,.mission-orbit-details,.mission-location small){font-size:12px;}
+@media(max-width:760px){
+ html[data-theme] body#academic-site .sample-missions .mission-viewport .mission-view-hint{font-size:12px;text-shadow:0 1px 3px #000;}
+ html[data-theme] body#academic-site .sample-missions .mission-flight-cue span{font-size:12px;}
+}
+/* The chapter strip scrolls sideways: fade the edge that has more chapters beyond it (loader.js sets
+   data-overflow) and show the position as text beside it. Touch keeps both axes (vertical swipes scroll the page). */
+.mission-chapter-rail{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;border-bottom:1px solid var(--obs-line);background:var(--obs-surface);}
+html[data-theme] body#academic-site .mission-chapter-rail .mission-chapters{border-bottom:0;}
+.mission-chapters[data-overflow~=end]{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 48px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 48px),transparent);}
+.mission-chapters[data-overflow~=start]{-webkit-mask-image:linear-gradient(to left,#000 calc(100% - 48px),transparent);mask-image:linear-gradient(to left,#000 calc(100% - 48px),transparent);}
+.mission-chapters[data-overflow~=start][data-overflow~=end]{-webkit-mask-image:linear-gradient(to right,transparent,#000 48px,#000 calc(100% - 48px),transparent);mask-image:linear-gradient(to right,transparent,#000 48px,#000 calc(100% - 48px),transparent);}
+/* Focus scrolling (loader.js scrolls a keyboard-focused chapter to the nearest edge) keeps the chapter, its focus
+   ring and current-step underline clear of the 48px fades. */
+.mission-chapters{scroll-padding-inline:48px;}
+.mission-chapter-position{padding:0 16px 0 6px;font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--obs-muted);white-space:nowrap;}
+@media(max-width:760px){.mission-chapter-position{padding-right:12px;}}
+/* Evidence status under the section title: quiet-observatory.css sets the heading as a two-column grid above 960px,
+   so keep the status in the title column and let the introduction take the other column. */
+@media(min-width:961px){
+ html[data-theme] body#academic-site.site-refined .mission-heading>h2{grid-column:1;grid-row:2;}
+ html[data-theme] body#academic-site.site-refined .mission-heading>.evidence-status{grid-column:1;grid-row:3;margin:16px 0 0;}
+ html[data-theme] body#academic-site.site-refined .mission-heading>p:last-child{grid-column:2;grid-row:2 / span 2;align-self:end;}
+}

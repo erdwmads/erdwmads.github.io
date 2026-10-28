@@ -8,7 +8,8 @@ const browser = await chromium.launch({ headless: true, ...(process.env.EDGE_EXE
 const base = process.env.SITE_TEST_URL || process.env.TEST_BASE_URL || 'http://127.0.0.1:4322';
 // Each page is reached from the one before it; the protected archive through Research Log's own link.
 const route = [
-  { page: 'index.html', classes: ['ui-page-home'], current: 'index.html' },
+  // No header link marks Home: the brand links there, and the navigation has no Home entry.
+  { page: 'index.html', classes: ['ui-page-home'], current: null, link: '.site-header .brand' },
   { page: 'research.html', classes: ['ui-page-research'], current: 'research.html' },
   { page: 'ryugu-bennu.html', classes: ['ui-page-ryugu-bennu'], current: 'ryugu-bennu.html' },
   { page: 'origins-study.html', classes: ['ui-page-origins'], current: 'origins-study.html' },
@@ -38,7 +39,7 @@ try {
     await page.goto(`${base}/${name}`, { waitUntil: 'load' });
     direct[name] = await pageState(page);
     assert.deepEqual(direct[name].classes, classes, `${name}: direct load must expose exactly the server-rendered page classes`);
-    assert.deepEqual(direct[name].current.filter(([, value]) => value), [[current, 'page']], `${name}: one header link marks the current page`);
+    assert.deepEqual(direct[name].current.filter(([, value]) => value), current ? [[current, 'page']] : [], `${name}: one header link marks the current page`);
     await page.close();
   }
   assert.ok(direct['research-graduation.html'].missionIndex, 'research-graduation.html: Mission Index markup is present');

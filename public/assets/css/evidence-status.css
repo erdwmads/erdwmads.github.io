@@ -1,0 +1,62 @@
+/* Evidence status line (src/components/EvidenceStatus.astro): a visible tag that says what kind of evidence a
+   scene or figure shows, then one sentence. The tag text carries the meaning; the marker shape and the accent
+   repeat it for sighted readers and are never the only cue. Body text keeps normal contrast in both themes.
+   The container selector outranks section rules such as "main .research-scale p" that set paragraph size with
+   !important, so the line keeps one size wherever it is placed. */
+html[data-theme] body#academic-site main p.evidence-status[data-evidence-status] {
+  --evidence-accent: var(--obs-accent);
+  max-width: 78ch;
+  margin: 14px 0 20px;
+  padding: 2px 0 2px 14px;
+  border-left: 2px solid var(--evidence-accent);
+  color: var(--obs-text) !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  font-weight: 400;
+  letter-spacing: 0 !important;
+  text-align: left;
+}
+/* Models and plans take the cool accent; measurements, literature and interpretation the warm one. */
+html[data-theme] body#academic-site main p.evidence-status:is([data-evidence-status="model"], [data-evidence-status="planned"]) { --evidence-accent: var(--obs-cyan); }
+html[data-theme] body#academic-site .evidence-status__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 10px 0 0;
+  padding: 1px 8px 1px 7px;
+  border: 1px solid color-mix(in srgb, var(--evidence-accent) 55%, var(--obs-line));
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--evidence-accent) 9%, transparent);
+  color: var(--obs-text);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.6;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  vertical-align: 1px;
+}
+/* Marker shapes: filled square, measured; open square, literature; dashed square, illustrative model;
+   ring, planned; diamond, interpretation. */
+html[data-theme] body#academic-site .evidence-status__tag::before {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  box-sizing: border-box;
+  border: 1.5px solid var(--evidence-accent);
+}
+html[data-theme] body#academic-site [data-evidence-status="measured"] .evidence-status__tag::before { background: var(--evidence-accent); }
+html[data-theme] body#academic-site [data-evidence-status="model"] .evidence-status__tag::before { width: 8px; height: 8px; border-style: dashed; }
+html[data-theme] body#academic-site [data-evidence-status="planned"] .evidence-status__tag::before { border-radius: 50%; }
+html[data-theme] body#academic-site [data-evidence-status="interpretation"] .evidence-status__tag::before { transform: rotate(45deg); }
+html[data-theme] body#academic-site .evidence-status__text { color: var(--obs-text); }
+html[data-theme] body#academic-site .evidence-status__text a { color: var(--obs-link); text-underline-offset: 3px; }
+@media (max-width: 760px) {
+  html[data-theme] body#academic-site main p.evidence-status[data-evidence-status] { margin: 12px 0 18px; padding-left: 12px; font-size: 14px !important; }
+  html[data-theme] body#academic-site .evidence-status__tag { margin-right: 8px; }
+}
+@media print {
+  html[data-theme] body#academic-site main p.evidence-status[data-evidence-status] { border-left-color: #000; color: #000 !important; }
+  html[data-theme] body#academic-site .evidence-status__tag { border-color: #000; background: none; color: #000; }
+}

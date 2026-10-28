@@ -38,8 +38,27 @@ function enter(){
   root.querySelectorAll('[data-mission-progress], [data-mission-action]').forEach(c=>{if(!['retry','previous','next'].includes(c.dataset.missionAction))c.disabled=value;});
   action('previous').disabled=stage===0;action('next').disabled=stage===missions[mission].stages.length-1;
  }
- function chapterUI(){
-  const m=missions[mission],s=m.stages[stage];el('number').textContent=String(stage+1).padStart(2,'0')+' / '+String(m.stages.length).padStart(2,'0');
+ // The chapter strip scrolls sideways: fade whichever edge has more chapters beyond it, and show the position.
+ function stripUI(){
+  const strip=el('chapters'),max=strip.scrollWidth-strip.clientWidth,edges=[];
+  if(strip.scrollLeft>2)edges.push('start');if(strip.scrollLeft<max-2)edges.push('end');
+  const overflow=edges.join(' ');if(strip.dataset.overflow!==overflow)strip.dataset.overflow=overflow;
+ }
+ el('chapters').addEventListener('scroll',stripUI,{signal,passive:true});
+ // Chromium does not scroll a partly visible element on keyboard focus, so bring a focused chapter inside the
+ // strip's scroll-padding (style.css), clear of the edge fades. Pointer focus is left to chapterUI's centring.
+ el('chapters').addEventListener('focusin',e=>{const b=e.target.closest?.('button');if(b?.matches(':focus-visible'))b.scrollIntoView({block:'nearest',inline:'nearest',behavior:reduced.matches?'instant':'smooth'});},{signal});
+ const stripObserver=new ResizeObserver(stripUI);stripObserver.observe(el('chapters'));signal.addEventListener('abort',()=>stripObserver.disconnect(),{once:true});
+ // Scroll the current chapter to the middle of the strip. On entry this waits for the first frame, so
+ // initialising the page does not force a layout during module evaluation; a later change cancels it.
+ let centerFrame=0;
+ function centerChapter(defer){
+  cancelAnimationFrame(centerFrame);centerFrame=0;
+  if(defer){centerFrame=requestAnimationFrame(()=>{centerFrame=0;if(!disposed)centerChapter();});return;}
+  const activeChapter=el('chapters').querySelector('[aria-current=step]');if(activeChapter){const strip=el('chapters'),r=activeChapter.getBoundingClientRect(),sr=strip.getBoundingClientRect();strip.scrollTo({left:strip.scrollLeft+r.left-sr.left-(sr.width-r.width)/2,behavior:reduced.matches?'instant':'smooth'});}stripUI();
+ }
+ function chapterUI(deferCentering){
+  const m=missions[mission],s=m.stages[stage],position=String(stage+1).padStart(2,'0')+' / '+String(m.stages.length).padStart(2,'0');el('number').textContent=position;el('chapter-position').textContent=position;
   el('date').textContent=s.date;el('title').textContent=s.title;el('description').textContent=s.description;el('detail').textContent=s.detail;el('source').textContent=s.sourceLabel;el('source').href=s.source;
   const scales={launch:'Launch · physical vehicle scale',cruise:'Solar cruise · bodies not to scale',flyby:'Earth-centered flyby · source trajectory',outbound:'Onward transfer · bodies not to scale',rendezvous:'Asteroid vicinity',sample:'Local surface · illustrative terrain',impact:'SCI experiment · illustrative terrain',stow:'Spacecraft mechanism',depart:'Asteroid departure',return:'Capsule release · physical vehicle scale',landing:'Entry and landing · physical vehicle scale'};
   const purposes={launch:'From the launch site to Earth escape.',cruise:'First solar leg: leave Earth, then return for gravity assist.',flyby:'The same encounter in two reference frames — Earth bends the path; its motion changes the solar speed.',outbound:'Second solar leg: leave the Earth encounter and catch '+m.target+'.',rendezvous:'Arrival and station-keeping near '+m.target+'. The range is measured from its centre.',sample:mission==='hayabusa2'?(s.id==='touchdown-2'?'Collect subsurface material ejected north of the SCI crater.':'Touch the surface with the full sampler horn, collect grains, then back away.'):'Descend to Nightingale, collect with nitrogen through TAGSAM, then back away.',impact:'Create fresh ejecta for the second touchdown, 20 m north of the crater.',stow:'Retain the sampling head in the return capsule, then withdraw the arm.',depart:'Increase distance from '+m.target+' and begin the journey back to Earth.',return:'Two paths: the capsule continues toward Earth; the spacecraft diverts to miss it.',landing:'Enter the atmosphere, deploy the parachute, then touch down in the recovery region.'};el('purpose').textContent=purposes[s.kind];
@@ -48,7 +67,7 @@ function enter(){
   el('physical').hidden=!isProximity(s.kind);el('context').hidden=!hasEarthContext(s.kind);if(hasEarthContext(s.kind)){const site=locationFor(mission,s.kind);el('location').textContent=site.label;el('location').href=site.source;el('location-note').textContent=site.type==='Recovery region'?'Regional locator · not an exact touchdown pin':'Launch-site locator';}
   updateStory(root,m,stage);
   el('chapters').querySelectorAll('[data-mission-stage]').forEach(b=>{if(Number(b.dataset.missionStage)===stage)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current');});
-  const activeChapter=el('chapters').querySelector('[aria-current=step]');if(activeChapter){const strip=el('chapters'),r=activeChapter.getBoundingClientRect(),sr=strip.getBoundingClientRect();strip.scrollTo({left:strip.scrollLeft+r.left-sr.left-(sr.width-r.width)/2,behavior:reduced.matches?'instant':'smooth'});}
+  centerChapter(deferCentering);
   action('previous').disabled=stage===0;action('next').disabled=stage===m.stages.length-1;
   el('samples').href='#observe=1&view=sample&material='+m.targetId;
  }
@@ -142,7 +161,7 @@ function enter(){
  document.addEventListener('visibilitychange',()=>{if(document.hidden)remember();viewer?.visible(visible&&!document.hidden);},{signal});
  reduced.addEventListener('change',()=>{if(reduced.matches){playing=false;viewer?.play(false);controlsUI();}},{signal});
  const api={choose,select,setProgress,get state(){return viewer?.state||{mission,stage,progress,playing,ready:false};}};window.sampleMissions=api;
- missionUI(mission);touchMode(false);busy(true);chapterUI();controlsUI();
+ missionUI(mission);touchMode(false);busy(true);chapterUI(true);controlsUI();
  if(linked&&history.state?.madsScrollY===undefined)requestAnimationFrame(()=>{if(!disposed){root.scrollIntoView({block:'start',behavior:'instant'});start();}});
  leave=()=>{shareVersion++;remember();disposed=true;document.documentElement.removeAttribute('data-mission-in-view');abort.abort();observer.disconnect();displayObserver.disconnect();viewer?.dispose();root.querySelector('.mission-copy').getAnimations().forEach(a=>a.cancel());delete root.dataset.initialized;if(window.sampleMissions===api)delete window.sampleMissions;};
 }

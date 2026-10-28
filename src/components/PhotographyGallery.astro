@@ -1,12 +1,32 @@
 ---
 import { photographs } from "../data/photography";
+import { rowProperties } from "../lib/photo-rows.js";
 
-// Rendered slot widths (observatory-experience.css): two columns with a 10px gap inside 20px gutters
-// up to 760px, then three columns with 16px gaps inside 40px gutters in a 1280px main. Panoramas span the wall.
-const sizes = {
-  tile: "(max-width: 760px) calc((100vw - 50px) / 2), (max-width: 1280px) calc((100vw - 112px) / 3), 390px",
-  wide: "(max-width: 760px) calc(100vw - 40px), (max-width: 1280px) calc(100vw - 80px), 1200px"
-};
+// Justified rows (observatory-experience.css): each tile grows by its aspect ratio from a basis of ratio x
+// row height. The row breaks are chosen here, at build time, for three wall widths (src/lib/photo-rows.js),
+// and each tile carries its row's ratio sum and gap count, so every row fills the wall in plain CSS.
+const tileStyles = rowProperties(photographs.map((photo) => photo.ratio));
+
+// Wall and target row height by viewport: up to 560px the wall is 100vw - 40px with rows about 0.36 of
+// it and at most two photographs per row; up to 760px rows are about 0.26 of the same wall; from 761 to
+// 800px the wall is 100vw - 80px (at most 720px, so still the medium band) with rows about 0.26 of it; up
+// to 1280px rows are about 0.215 of that wall; wider, the wall is 1200px with 258px rows.
+// A tile is about ratio x row height wide. Each sizes entry is ratio x the target row height x an allowance
+// for rows that stretch to fill: 1.17 on phones, 1.08 up to 760px and 1.05 above, set from the rows
+// measured with the current 21 photographs (phone rows reach 1.36x, as only two photographs share a row).
+// Edge then never picks a soft tier at 3x on phones, 1x desktops mostly stay on 480w thumbnails and 2x
+// desktops stop short of the original JPEG.
+// There is no "auto": Chromium reads it as 100vw on the eager first row (which fetched the original JPEGs),
+// and the list keeps the choice the same in every browser.
+const share = (gutters: number, fraction: number) =>
+  fraction >= 1 ? `calc(100vw - ${gutters}px)` : `calc((100vw - ${gutters}px) * ${fraction.toFixed(3)})`;
+const sizesFor = (ratio: number) => [
+  `(max-width: 560px) ${share(40, ratio * 0.42)}`,
+  `(max-width: 760px) ${share(40, ratio * 0.28)}`,
+  `(max-width: 800px) ${share(80, ratio * 0.28)}`,
+  `(max-width: 1280px) ${share(80, ratio * 0.225)}`,
+  `${Math.min(1200, Math.round(ratio * 270))}px`
+].join(", ");
 ---
 
 <section>
@@ -25,13 +45,14 @@ const sizes = {
       <a
         class:list={["photo-tile", { "photo-tile--wide": photo.wide }]}
         href={photo.full}
+        style={tileStyles[index]}
         data-photo-index={index}
         aria-label={`Open photograph ${photo.number}: ${photo.alt}`}
       >
         <img
           src={photo.thumb}
           srcset={photo.srcset}
-          sizes={photo.wide ? sizes.wide : sizes.tile}
+          sizes={sizesFor(photo.ratio)}
           data-full-src={photo.full}
           width={photo.width}
           height={photo.height}

@@ -16,17 +16,6 @@
     "contact.html"
   ]);
 
-  const commonScripts = new Set([
-    "assets/js/power-manager.js",
-    "assets/js/theme.js",
-    "assets/js/ambient-space.js",
-    "assets/js/research-coordinates.js",
-    "assets/js/interface-2046.js",
-    "assets/js/observatory-interactions.js",
-    "assets/js/mineral-interactions.js",
-    "assets/js/legacy-navigation.js"
-  ]);
-
   let softNavToken = 0;
   history.scrollRestoration="manual";
   // Save the scroll position once scrolling settles (not every frame: Safari throttles history.replaceState).
@@ -140,12 +129,17 @@
     document.body.classList.add(...nextClasses);
   }
 
-  function runPageScripts(nextDoc) {
-    const scripts = Array.from(nextDoc.querySelectorAll("body script"));
+  // Lifecycle contract: the shell (header, entrance dialog, shared scripts, theme preload) stays in place and
+  // runs once per document. Only scripts the fetched page marks data-page-script (src/data/site.ts) run again,
+  // so the header controller and the entrance opener can never re-run over another page. A bundled module
+  // (Astro cannot mark it) loads only if this document does not have it yet, and then listens for the
+  // mads:soft-nav-* events itself. The list is taken before the swap, because swapping moves the fetched <main>
+  // (and a marked script inside it, such as research.html's forwarder) out of nextDoc.
+  function pageScripts(nextDoc) {
+    return Array.from(nextDoc.querySelectorAll('body script[data-page-script], body script[type="module"][src]'));
+  }
+  function runPageScripts(scripts) {
     scripts.forEach((script) => {
-      // The header and the entrance dialog persist across soft navigation, so their inline scripts run once per load;
-      // re-running the entrance opener would reopen the dialog over another page.
-      if (script.hasAttribute("data-site-header") || script.hasAttribute("data-arrival-gate")) return;
       const src = script.getAttribute("src");
       const fresh = document.createElement("script");
       if (script.type === "module") {
@@ -153,8 +147,6 @@
         if (src && Array.from(document.scripts).some(item => item.type === "module" && item.src === new URL(src, window.location.href).href)) return;
       }
       if (src) {
-        const normalizedSrc = src.split(/[?#]/, 1)[0];
-        if (commonScripts.has(normalizedSrc)) return;
         fresh.src = src;
         if (script.defer) fresh.defer = true;
       } else {
@@ -169,6 +161,18 @@
         fresh.remove();
       }
     });
+  }
+
+  // The shell module and stylesheets in a page's <head>, as absolute URLs. Every page shares them and their names
+  // carry content hashes, so a fetched page that names one this document lacks comes from a deploy made after this
+  // tab loaded: the lazy chunks this document's shell would import are gone from the server.
+  function shellAssets(doc, base) {
+    return Array.from(doc.head ? doc.head.querySelectorAll('script[type="module"][src], link[rel~="stylesheet"][href]') : [])
+      .map(element => new URL(element.getAttribute(element.tagName === "LINK" ? "href" : "src"), base).href);
+  }
+  function fromNewerDeploy(nextDoc, url) {
+    const loaded = new Set(shellAssets(document, document.baseURI));
+    return shellAssets(nextDoc, url).some(href => !loaded.has(href));
   }
 
   async function navigate(url, pushState, restoreY) {
@@ -192,6 +196,13 @@
         window.location.href = url;
         return;
       }
+      // After a deploy, load the page in full instead of swapping <main> into a shell that is out of date. A Back or
+      // Forward step has already moved to url, so that case reloads.
+      if (fromNewerDeploy(nextDoc, url)) {
+        if (pushState) window.location.href = url;
+        else window.location.reload();
+        return;
+      }
 
       await fadeContent(currentMain, 0, 140);
       if (token !== softNavToken) return;
@@ -206,6 +217,7 @@
       }
 
       dispatchSoftNavEvent("mads:soft-nav-before-swap", { url, pageName });
+      const scripts = pageScripts(nextDoc);
       nextMain.style.opacity = "0";
       currentMain.replaceWith(nextMain);
       renderedDocument = documentKey(url);
@@ -215,7 +227,7 @@
       if (pushState) {
         history.pushState({ madsSoftNav: true }, "", url);
       }
-      runPageScripts(nextDoc);
+      runPageScripts(scripts);
       dispatchSoftNavEvent("mads:soft-nav-content", { url, pageName });
       restorePosition(url, restoreY);
       const heading=nextMain.querySelector('h1')||nextMain;heading.setAttribute('tabindex','-1');heading.focus({preventScroll:true});

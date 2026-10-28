@@ -114,9 +114,9 @@
     const period = earthSeconds * Math.sqrt(o.years);
     return `
       <span class="ui2046-system-orbit ${o.cls}" style="--w:${o.w}%;--h:${o.h}%;--alpha:${o.alpha};">
-        <span class="ui2046-planet" data-angle="${o.angle}" data-period="${period.toFixed(3)}" data-index="${index}"
-          style="--size:${o.size}px;--color:${o.color};"></span>
-        <span class="ui2046-planet-label is-${o.labelMode}" data-label-index="${index}">${o.label}</span>
+        <span class="ui2046-orbit-track"><span class="ui2046-planet" data-angle="${o.angle}" data-period="${period.toFixed(3)}" data-index="${index}"
+          style="--size:${o.size}px;--color:${o.color};"></span></span>
+        <span class="ui2046-orbit-track"><span class="ui2046-planet-label is-${o.labelMode}" data-label-index="${index}">${o.label}</span></span>
       </span>
     `;
   }).join('');
@@ -207,28 +207,41 @@
     !root.classList.contains('ambient-fx-disabled') && !isMobileInterfaceView()
   );
 
+  // Each planet and its label ride an .ui2046-orbit-track that fills the orbit box, so translate(x%, y%)
+  // on the track is the same point as left/top x%/y% of the orbit (x = a cos θ, y = b sin θ). One Web
+  // Animation per track turns it through the orbit on the compositor: no per-frame style, layout or paint.
+  // The phase is a function of page time, as with the former per-frame loop: θ = angle − t · 360° / period.
+  let orbitMotion = [];
+  let orbitSystem = null;
+  let orbitFrames = null;
+  const ORBIT_STEPS = 360;
+
+  const orbitPoint = (angle) => {
+    const rad = angle * Math.PI / 180;
+    return [50 + Math.cos(rad) * 50, 50 + Math.sin(rad) * 50];
+  };
+  const planetTransform = (angle) => {
+    const [left, top] = orbitPoint(angle);
+    return `translate(${left.toFixed(3)}%, ${top.toFixed(3)}%)`;
+  };
+  // Labels sit 2.2% to the right of their planet and stay inside 5-95% of the orbit box.
+  const labelTransform = (angle) => {
+    const [left, top] = orbitPoint(angle);
+    const labelLeft = Math.max(5, Math.min(95, left + 2.2));
+    const labelTop = Math.max(5, Math.min(95, top));
+    return `translate(${labelLeft.toFixed(3)}%, ${labelTop.toFixed(3)}%)`;
+  };
+  // One turn from θ = 0 to −360° (the former direction = -1), sampled every degree.
+  const turnKeyframes = (transformAt) => Array.from({ length: ORBIT_STEPS + 1 }, (_, step) => ({
+    transform: transformAt(-360 * step / ORBIT_STEPS)
+  }));
+
+  // Static placement: the reduced-motion pose, and the pose before an animation exists.
   const placePlanets = (timeMs = 0) => {
-    planets.forEach((planet) => {
-      const index = planet.dataset.index;
-      const baseAngle = Number(planet.dataset.angle || 0);
-      const period = Math.max(1, Number(planet.dataset.period || 18));
-      const direction = -1;
-      const angle = reduceMotion ? baseAngle : baseAngle + direction * (timeMs / 1000) * (360 / period);
-      const rad = angle * Math.PI / 180;
-      const left = 50 + Math.cos(rad) * 50;
-      const top = 50 + Math.sin(rad) * 50;
-
-      planet.style.setProperty('--left', `${left.toFixed(3)}%`);
-      planet.style.setProperty('--top', `${top.toFixed(3)}%`);
-
-      labels
-        .filter(label => label.dataset.labelIndex === index)
-        .forEach(label => {
-          const labelLeft = Math.max(5, Math.min(95, left + 2.2));
-          const labelTop = Math.max(5, Math.min(95, top));
-          label.style.setProperty('--label-left', `${labelLeft.toFixed(3)}%`);
-          label.style.setProperty('--label-top', `${labelTop.toFixed(3)}%`);
-        });
+    orbitMotion.forEach((motion) => {
+      const angle = reduceMotion ? motion.angle : motion.angle - (timeMs / 1000) * (360 / motion.period);
+      motion.planetTrack.style.transform = planetTransform(angle);
+      motion.labelTrack.style.transform = labelTransform(angle);
     });
   };
 
@@ -237,24 +250,36 @@
     return !isOrbitalFxEnabled() || document.hidden || state.hidden || state.idle || state.lowPower || document.body.classList.contains("mission-lightbox-open") || document.documentElement.classList.contains("mission-lightbox-open") || document.documentElement.classList.contains("mineral-atlas-open");
   };
 
-  let planetAnimationRunning = false;
-
-  const animatePlanets = (timeMs) => {
-    if (shouldPausePlanetMotion()) {
-      planetAnimationRunning = false;
-      return;
-    }
-
-    placePlanets(timeMs);
-    if (!reduceMotion) {
-      requestAnimationFrame(animatePlanets);
-    }
+  // Runs on every power, visibility, FX and soft-navigation change: pauses the orbits in place while
+  // the page is hidden, idle, low-power or behind the lightbox/atlas, and otherwise (re)starts them at
+  // the phase for the current page time.
+  const startPlanetAnimation = () => {
+    if (reduceMotion || !orbitMotion.length || typeof Element.prototype.animate !== 'function') return;
+    const paused = shouldPausePlanetMotion();
+    orbitMotion.forEach((motion) => {
+      if (!motion.animations.length) {
+        if (paused) return;
+        if (!orbitFrames) orbitFrames = { planet: turnKeyframes(planetTransform), label: turnKeyframes(labelTransform) };
+        const timing = { duration: motion.period * 1000, iterations: Infinity };
+        motion.animations = [
+          motion.planetTrack.animate(orbitFrames.planet, timing),
+          motion.labelTrack.animate(orbitFrames.label, timing)
+        ];
+      }
+      motion.animations.forEach((animation) => {
+        if (paused) {
+          if (animation.playState === 'running') animation.pause();
+        } else {
+          animation.startTime = (motion.angle / 360 - 1) * motion.period * 1000;
+        }
+      });
+    });
   };
 
-  const startPlanetAnimation = () => {
-    if (reduceMotion || planetAnimationRunning || shouldPausePlanetMotion()) return;
-    planetAnimationRunning = true;
-    requestAnimationFrame(animatePlanets);
+  const stopOrbitMotion = () => {
+    orbitMotion.forEach((motion) => motion.animations.forEach((animation) => animation.cancel()));
+    orbitMotion = [];
+    orbitSystem = null;
   };
 
   const syncOrbitalSystem = () => {
@@ -264,7 +289,7 @@
       existingSystem?.remove();
       planets = [];
       labels = [];
-      planetAnimationRunning = false;
+      stopOrbitMotion();
       return;
     }
 
@@ -272,13 +297,26 @@
       layer.insertAdjacentHTML('afterbegin', orbitalSystemMarkup);
     }
 
-    planets = Array.from(layer.querySelectorAll('.ui2046-system-orbit .ui2046-planet'));
-    labels = Array.from(layer.querySelectorAll('.ui2046-planet-label'));
-    placePlanets(0);
+    const system = layer.querySelector('.ui2046-solar-system');
+    if (system !== orbitSystem) {
+      stopOrbitMotion();
+      orbitSystem = system;
+      planets = Array.from(layer.querySelectorAll('.ui2046-system-orbit .ui2046-planet'));
+      labels = Array.from(layer.querySelectorAll('.ui2046-planet-label'));
+      orbitMotion = planets.map((planet) => ({
+        angle: Number(planet.dataset.angle || 0),
+        period: Math.max(1, Number(planet.dataset.period || 18)),
+        planetTrack: planet.parentElement,
+        labelTrack: labels.find((label) => label.dataset.labelIndex === planet.dataset.index).parentElement,
+        animations: []
+      }));
+      placePlanets(0);
+    }
     startPlanetAnimation();
   };
 
-  updateProgress();
+  // The bar starts empty (scaleX(var(--scroll-progress, 0))); measure the page in the next frame instead of forcing a layout here.
+  requestAnimationFrame(updateProgress);
   syncOrbitalSystem();
   restoreInterfaceLayers = () => {
     if (!layer.isConnected) body.appendChild(layer);
@@ -313,132 +351,4 @@
 
   window.addEventListener('load', updateProgress, { once: true });
   setTimeout(updateProgress, 250);
-})();
-
-
-/* Astromaterials Archive Entry Gate
-   Plays once per browser session. */
-(() => {
-  if (document.querySelector('#cosmic-arrival')) return;
-  const KEY = 'mads-entry-gate-v1';
-  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  const hasPlayed = () => {
-    try {
-      return sessionStorage.getItem(KEY) === 'done';
-    } catch (error) {
-      return false;
-    }
-  };
-
-  const markPlayed = () => {
-    try {
-      sessionStorage.setItem(KEY, 'done');
-    } catch (error) {
-      // Ignore private-mode storage failures.
-    }
-  };
-
-  const init = () => {
-    const body = document.body;
-    if (!body || body.dataset.entryGate === 'ready') return;
-
-    if (reduceMotion || hasPlayed()) {
-      markPlayed();
-      return;
-    }
-
-    body.dataset.entryGate = 'ready';
-    body.classList.add('entry-gate-active');
-
-    const gate = document.createElement('div');
-    gate.className = 'entry-gate';
-    gate.setAttribute('aria-hidden', 'true');
-    gate.innerHTML = `
-      <div class="entry-gate__constellation" aria-hidden="true">
-        <span style="--x:12%;--y:18%;--d:.1s"></span>
-        <span style="--x:26%;--y:72%;--d:.35s"></span>
-        <span style="--x:70%;--y:20%;--d:.55s"></span>
-        <span style="--x:84%;--y:66%;--d:.25s"></span>
-      </div>
-      <div class="entry-gate__frame">
-        <div class="entry-gate__corner is-tl"></div>
-        <div class="entry-gate__corner is-br"></div>
-        <div class="entry-gate__orbit" aria-hidden="true">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-        <div class="entry-gate__panel">
-          <div class="entry-gate__topline">
-            <p class="entry-gate__kicker">Astromaterials Research Archive</p>
-            <p class="entry-gate__code">CI-ORGUEIL / 2046</p>
-          </div>
-          <h2 class="entry-gate__name">
-            <span>I. Mads</span>
-            <span>Lieu</span>
-          </h2>
-          <p class="entry-gate__archive">Astromineralogy / primitive Solar System materials</p>
-          <div class="entry-gate__meta">
-            <span>CI Chondrite</span>
-            <span>Orgueil</span>
-            <span>Dolomite</span>
-            <span>SEM · EPMA · TEM</span>
-          </div>
-          <div class="entry-gate__sequence" aria-hidden="true">
-            <span>MINERAL RECORD</span>
-            <span>AQUEOUS ALTERATION</span>
-            <span>PRIMITIVE MATERIAL</span>
-          </div>
-          <div class="entry-gate__line"></div>
-          <div class="entry-gate__footer">
-            <p class="entry-gate__mode">Entering Interface 2046</p>
-            <p class="entry-gate__status">Archive online</p>
-          </div>
-        </div>
-      </div>
-    `;
-
-    body.appendChild(gate);
-
-    requestAnimationFrame(() => {
-      gate.classList.add('is-visible');
-    });
-
-    let isExiting = false;
-    const exit = ({ instant = false } = {}) => {
-      if (isExiting) return;
-      isExiting = true;
-      gate.classList.add('is-exiting');
-      markPlayed();
-
-      const removeGate = () => {
-        gate.remove();
-        body.classList.remove('entry-gate-active');
-      };
-
-      if (instant) {
-        removeGate();
-        return;
-      }
-
-      window.setTimeout(removeGate, 520);
-    };
-
-    gate.addEventListener('click', () => exit({ instant: true }), { once: true });
-    window.setTimeout(() => exit(), 1800);
-    window.setTimeout(() => {
-      if (document.body?.contains(gate)) {
-        gate.remove();
-        body.classList.remove('entry-gate-active');
-        markPlayed();
-      }
-    }, 3400);
-  };
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init, { once: true });
-  } else {
-    init();
-  }
 })();

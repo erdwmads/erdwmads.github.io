@@ -202,6 +202,11 @@
           limitation.append(element('strong', '', 'Limitations: '), item.limitation);
           row.append(answer, limitation);
         }
+        if (item.status) {
+          const status = element('p', 'atlas-status');
+          status.append(element('strong', '', 'Status: '), item.status);
+          row.append(status);
+        }
         if (item.href) {
           const link = element('a', '', item.linkLabel || 'Open source');
           link.href = item.href;
@@ -241,24 +246,18 @@
     detail.id = 'atlas-workflow-detail';
     detail.setAttribute('role', 'tabpanel');
     detail.removeAttribute('aria-label');
+    // Project facts (question, sub-questions, methods and their statuses) come from src/data/project.mjs
+    // through EvidenceAtlasData.astro; this quick view only arranges them.
+    const methods = (data.methods || []).map(method => ({ ...method, status: method.status && data.statusAsOf ? `${method.status} (as of ${data.statusAsOf})` : method.status }));
     groups = [
-      { id: 'material', label: 'Material', summary: 'Orgueil CI1 meteorite', kind: '01 / Material', title: 'Orgueil CI1', text: 'A meteorite record of water-rock interaction. This project studies Ca\u2013Mg carbonates reported as dolomite and their relationship to the surrounding clay-rich material.', items: [
-        { title: 'From specimen to mineral', text: 'The photograph shows the meteorite, not an identified dolomite grain. Mineral identity requires chemical and structural evidence.' }
+      { id: 'material', label: 'Material', summary: 'Orgueil CI1 meteorite', kind: '01 / Material', title: 'Orgueil CI1', text: data.materialSummary, items: [
+        { title: 'From specimen to mineral', text: 'A meteorite specimen, or a bright grain in an electron image, does not identify dolomite. Mineral identity requires chemical and structural evidence.' }
       ] },
-      { id: 'question', label: 'Question', summary: 'How did dolomite form?', kind: '02 / Question', title: 'How did dolomite form in Orgueil?', text: data.question, items: [
-        { title: 'Where did the crystals grow?', text: 'Do the carbonate grains touch clay minerals, fill spaces, or replace earlier material? Textures help test these possibilities.' },
-        { title: 'What can the crystals tell us about water?', text: 'Does their crystal structure confirm dolomite, and can their chemical composition and structure constrain the conditions of water-rock interaction on the parent body?' },
-        { title: 'Did clay surfaces influence growth?', text: 'Do mineral contacts preserve evidence of a relationship between clay surfaces and carbonate growth? A nearby grain alone does not establish how it formed.' }
-      ] },
-      { id: 'methods', label: 'Methods', summary: 'SEM / EPMA / XRD / FIB\u2013TEM', kind: '03 / Methods', title: 'Connect texture, chemistry and structure', text: 'Each method addresses a different part of the question. This analytical pathway is not a claim that every measurement has been completed.', items: [
-        { title: 'SEM / Scanning electron microscopy', answer: 'Where are the grains, what shapes do they have, and how do they meet the surrounding material? Electron images reveal textures; EDS can screen elemental composition.', limitation: 'Brightness alone cannot identify dolomite. EDS signals can mix adjacent phases and do not establish crystal structure.', href: 'https://serc.carleton.edu/research_education/geochemsheets/techniques/SEM.html', linkLabel: 'SEM method reference' },
-        { title: 'EPMA / Electron probe microanalysis', answer: 'How much Ca, Mg, Fe and other measured elements are present, and how does composition vary across a grain?', limitation: 'Small grains or inclusions can yield mixed analyses. Quantitative chemistry needs standards and corrections; chemistry alone does not establish atomic ordering.', href: 'https://www.dal.ca/sites/electron-microprobe-lab/analysis/drg4.html', linkLabel: 'EPMA method reference' },
-        { title: 'XRD / X-ray diffraction', answer: 'Which crystal structure is present? Single-grain diffraction can test lattice parameters and atomic ordering.', limitation: 'A suitable crystalline grain and usable diffraction are required; here the grain is planned to be prepared by focused ion beam (FIB). Mixed phases or weak diffraction complicate interpretation, and diffraction does not by itself explain a growth history.', href: 'https://serc.carleton.edu/research_education/geochemsheets/techniques/SXD.html', linkLabel: 'XRD method reference' },
-        { title: 'TEM / Transmission electron microscopy', answer: 'What happens at the nanometre-scale contact between minerals? Imaging and electron diffraction can examine local structure and orientation.', limitation: 'An electron-transparent specimen requires preparation; FIB sections from regions selected and oriented by EBSD are planned. The observed region is very small, so it must be related back to the wider texture.', href: 'https://www.nlr.gov/materials-science/transmission-electron-microscopy', linkLabel: 'TEM method reference' }
-      ] },
+      { id: 'question', label: 'Question', summary: 'How did dolomite form?', kind: '02 / Question', title: 'How did dolomite form in Orgueil?', text: data.question, items: data.subQuestions || [] },
+      { id: 'methods', label: 'Methods', summary: data.methodsShort || 'SEM / EPMA / XRD / TEM', kind: '03 / Methods', title: 'Connect texture, chemistry and structure', text: 'Each method addresses a different part of the question. This analytical pathway is not a claim that every measurement has been completed.', items: methods },
       { id: 'evidence', label: 'Evidence', summary: 'Public reading / locked records', kind: '04 / Evidence', title: 'What is public, and what is protected?', text: 'Public references provide research context, not this project\'s experimental results.', items: [
         { title: 'Public references', text: 'Published studies from the Paper Shelf. These are project background, not entry-specific citations or proof of a result in this project.' },
-        { title: 'Locked experiments', text: 'Experimental images, measurements and interpretations remain in the password-protected Mission Log. They are not loaded into this public atlas.', href: 'research-graduation.html', linkLabel: 'Open protected archive' },
+        { title: 'Locked experiments', text: 'Experimental records, measurements and interpretations are presented in the password-protected Mission Log. They are not loaded into this public atlas.', href: 'research-graduation.html', linkLabel: 'Open protected archive' },
         ...papers
       ] }
     ];

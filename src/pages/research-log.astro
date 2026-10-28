@@ -1,11 +1,86 @@
 ---
 import LegacyShell from "../components/LegacyShell.astro";
+import AnalyticalPathway from "../components/AnalyticalPathway.astro";
 import { getPageScripts } from "../data/site";
-import mainHtml from "../legacy/research-log-main.html?raw";
+import { displayTitle, formalTitle, question, targetMaterial, targetPhase, methodsSummary, laboratories, period, projectStatus } from "../data/project.mjs";
 
 const scriptHtml = getPageScripts("research-log");
+// What the protected archive holds, described in general terms only. Nothing here may come from
+// the archive itself: no entry counts, dates, SOL numbers, stages or titles.
+const archiveParts: [string, string][] = [
+  ["Mission Log", "Dated entries, each with a SOL number: what was done, what was observed or limited, and what happens next, closed by a short Recorded / Still open / Next step summary."],
+  ["Mission Index", "A navigator across the entries, for jumping to a record by its number and date."],
+  ["Figures", "Images from sample preparation and microscopy, with numbered captions."],
+  ["Evidence atlas", "For each entry, its figures, tables, current stage and next step, beside the public background reading."]
+];
 ---
 
-<LegacyShell title='Research Log | I. Mads Lieu' description='Public overview of the graduation research project Dolomite in Orgueil CI1, with a protected chronological laboratory archive.' current='research-log' mainClass='main research-log-main' path="research-log.html" scriptHtml={scriptHtml}>
-  <Fragment set:html={mainHtml} />
+<LegacyShell title='Research Log | I. Mads Lieu' description='Research Log for Dolomite in Orgueil CI1: the question, the Analytical Pathway and what the protected Mission Log archive holds.' current='research-log' mainClass='main research-log-main' path="research-log.html" scriptHtml={scriptHtml}>
+  <section class="research-dashboard" aria-labelledby="current-project-title">
+    <p class="eyebrow">Research Log · Graduation research</p>
+    <div class="research-dashboard__status">
+      <span class="status-badge">{projectStatus}</span>
+      <span>{period}</span>
+    </div>
+
+    <h1 id="current-project-title">{displayTitle}</h1>
+    <p class="research-dashboard__full-title">{formalTitle}</p>
+    <p class="research-dashboard__summary">
+      Public overview of my undergraduate graduation research. The question and the Analytical Pathway are on this page; the dated laboratory records are in the protected Mission Log archive.
+    </p>
+
+    <dl class="research-dashboard__facts">
+      <div>
+        <dt>Research question</dt>
+        <dd>{question}</dd>
+      </div>
+      <div>
+        <dt>Material</dt>
+        <dd>{targetMaterial} · {targetPhase}</dd>
+      </div>
+      <div>
+        <dt>Methods</dt>
+        <dd>{methodsSummary}</dd>
+      </div>
+      <div>
+        <dt>Laboratories</dt>
+        <dd>
+          {laboratories.map((lab) => (
+            <span class="research-dashboard__lab">{lab.name}, {lab.institution} <small>Adviser: {lab.adviser}</small></span>
+          ))}
+        </dd>
+      </div>
+    </dl>
+
+    <div class="research-dashboard__actions">
+      <a class="button" href="research-graduation.html">Open protected archive</a>
+      <a class="button secondary" href="research.html">Research overview</a>
+    </div>
+  </section>
+
+  <section class="research-log-pathway" aria-labelledby="research-log-pathway-title">
+    <header class="research-log-section-heading">
+      <p class="eyebrow">Analytical Pathway</p>
+      <h2 id="research-log-pathway-title">From observation to interpretation</h2>
+    </header>
+    <AnalyticalPathway variant="compact" />
+    <p class="research-log-section-note">What each step can answer and cannot establish: <a href="research.html#research-methods-title">the full Analytical Pathway on Research →</a></p>
+  </section>
+
+  <section class="research-log-archive" aria-labelledby="research-log-archive-title">
+    <header class="research-log-section-heading">
+      <p class="eyebrow">Protected archive</p>
+      <h2 id="research-log-archive-title">What the Mission Log archive holds</h2>
+      <p>The laboratory record of this project is kept as an encrypted archive. It opens in the browser with the archive password or a linked passkey, and locks again when you leave the page.</p>
+    </header>
+    <dl class="research-log-archive__parts">
+      {archiveParts.map(([term, text]) => (
+        <div><dt>{term}</dt><dd>{text}</dd></div>
+      ))}
+    </dl>
+    <div class="research-log-archive__access">
+      <p>Entries are working records of unpublished research; their observations and interpretations are provisional.</p>
+      <a class="button" href="research-graduation.html">Open protected archive</a>
+    </div>
+  </section>
 </LegacyShell>

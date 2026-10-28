@@ -1,10 +1,31 @@
 [
   {
+    "file": "components.css",
+    "bytes": 1743,
+    "lines": 30,
+    "repeatedSelectors": 0,
+    "important": 5
+  },
+  {
+    "file": "evidence-status.css",
+    "bytes": 3368,
+    "lines": 63,
+    "repeatedSelectors": 2,
+    "important": 7
+  },
+  {
     "file": "experimental-folio.css",
-    "bytes": 3659,
-    "lines": 24,
+    "bytes": 4208,
+    "lines": 28,
     "repeatedSelectors": 1,
-    "important": 44
+    "important": 46
+  },
+  {
+    "file": "home-shell.css",
+    "bytes": 7425,
+    "lines": 176,
+    "repeatedSelectors": 8,
+    "important": 39
   },
   {
     "file": "image-inspector.css",
@@ -15,100 +36,135 @@
   },
   {
     "file": "mineral-interactions.css",
-    "bytes": 10782,
+    "bytes": 10739,
     "lines": 183,
     "repeatedSelectors": 14,
     "important": 11
   },
   {
     "file": "observatory-experience.css",
-    "bytes": 25326,
-    "lines": 494,
-    "repeatedSelectors": 21,
-    "important": 136
+    "bytes": 23929,
+    "lines": 473,
+    "repeatedSelectors": 19,
+    "important": 123
   },
   {
     "file": "observatory.css",
-    "bytes": 30280,
-    "lines": 503,
-    "repeatedSelectors": 41,
-    "important": 444
+    "bytes": 27272,
+    "lines": 424,
+    "repeatedSelectors": 39,
+    "important": 416
+  },
+  {
+    "file": "paper-shelf.css",
+    "bytes": 9782,
+    "lines": 142,
+    "repeatedSelectors": 12,
+    "important": 29
   },
   {
     "file": "planetary-explorer.css",
-    "bytes": 23065,
-    "lines": 236,
-    "repeatedSelectors": 30,
-    "important": 80
+    "bytes": 20717,
+    "lines": 209,
+    "repeatedSelectors": 25,
+    "important": 79
   },
   {
     "file": "quiet-observatory.css",
-    "bytes": 18740,
-    "lines": 236,
+    "bytes": 18561,
+    "lines": 234,
     "repeatedSelectors": 39,
-    "important": 53
+    "important": 49
+  },
+  {
+    "file": "research-hub.css",
+    "bytes": 14157,
+    "lines": 170,
+    "repeatedSelectors": 8,
+    "important": 7
   },
   {
     "file": "research-log-evolution.css",
-    "bytes": 13555,
-    "lines": 279,
+    "bytes": 14137,
+    "lines": 293,
     "repeatedSelectors": 11,
-    "important": 46
+    "important": 48
   },
   {
     "file": "research-reading.css",
-    "bytes": 9851,
-    "lines": 113,
-    "repeatedSelectors": 13,
+    "bytes": 10182,
+    "lines": 116,
+    "repeatedSelectors": 14,
     "important": 22
   },
   {
     "file": "research-scale.css",
-    "bytes": 3611,
-    "lines": 82,
+    "bytes": 4152,
+    "lines": 87,
     "repeatedSelectors": 5,
-    "important": 10
+    "important": 14
   },
   {
     "file": "review-refinement.css",
-    "bytes": 7024,
-    "lines": 137,
+    "bytes": 6843,
+    "lines": 131,
     "repeatedSelectors": 1,
-    "important": 80
+    "important": 77
   },
   {
     "file": "shell-evolution.css",
-    "bytes": 21976,
-    "lines": 708,
-    "repeatedSelectors": 11,
-    "important": 301
+    "bytes": 29436,
+    "lines": 901,
+    "repeatedSelectors": 21,
+    "important": 375
   },
   {
     "file": "site-refinement.css",
-    "bytes": 21668,
-    "lines": 313,
+    "bytes": 22728,
+    "lines": 326,
     "repeatedSelectors": 20,
-    "important": 192
+    "important": 205
   },
   {
     "file": "style.css",
-    "bytes": 478268,
-    "lines": 16075,
-    "repeatedSelectors": 235,
-    "important": 4016
+    "bytes": 403028,
+    "lines": 13223,
+    "repeatedSelectors": 180,
+    "important": 3155
   },
   {
     "file": "tokens.css",
-    "bytes": 576,
-    "lines": 22,
+    "bytes": 3600,
+    "lines": 83,
     "repeatedSelectors": 0,
     "important": 0
   },
   {
     "file": "typography.css",
-    "bytes": 3076,
-    "lines": 64,
+    "bytes": 2825,
+    "lines": 56,
     "repeatedSelectors": 0,
-    "important": 14
+    "important": 12
+  },
+  {
+    "file": "src/styles/arrival.css",
+    "bytes": 4494,
+    "lines": 52,
+    "repeatedSelectors": 8,
+    "important": 5
+  },
+  {
+    "file": "src/scripts/origins-study/style.css",
+    "bytes": 18406,
+    "lines": 241,
+    "repeatedSelectors": 41,
+    "important": 13
+  },
+  {
+    "file": "src/scripts/sample-missions/style.css",
+    "bytes": 26593,
+    "lines": 240,
+    "repeatedSelectors": 38,
+    "important": 56
   }
 ]

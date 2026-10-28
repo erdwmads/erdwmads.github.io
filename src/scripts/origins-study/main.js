@@ -9,6 +9,7 @@ import {SSAOPass} from 'three/addons/postprocessing/SSAOPass.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
 import {nebula,accretion,alteration,inheritance} from './scenes.js';
+import {prepareMineralAtlas} from './aqueous-scene.js';
 
 export function mountStudy(root,reader){
   const abort=new AbortController();
@@ -47,7 +48,7 @@ export function mountStudy(root,reader){
   });
   const ambient=new T.HemisphereLight(0x9eb3bf,0x282623,.6);world.add(ambient);
   const key=new T.DirectionalLight(0xfff1df,2.7);key.position.set(-3,5,4);world.add(key);
-  renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFShadowMap;
   key.castShadow=true;key.shadow.mapSize.setScalar(viewport.clientWidth>760?2048:1024);key.shadow.camera.left=-6;key.shadow.camera.right=6;key.shadow.camera.top=6;key.shadow.camera.bottom=-6;key.shadow.camera.near=.5;key.shadow.camera.far=30;key.shadow.normalBias=.025;key.shadow.bias=-.0001;
   const rim=new T.DirectionalLight(0x9abfcd,2.1);rim.position.set(4,2,-3);world.add(rim);
   const fill=new T.DirectionalLight(0xbcc3d1,.3);fill.position.set(-3,-1,5);world.add(fill);
@@ -145,7 +146,9 @@ export function mountStudy(root,reader){
   // Build once per visit; a superseded visit stops between chapters.
   async function initialize(){
   try{
-    for(const build of[nebula,accretion,alteration,inheritance]){await new Promise(resolve=>requestAnimationFrame(resolve));if(disposed)return;const s=build();s.group.traverse(node=>{if(node.isMesh&&node.material?.isMeshStandardMaterial&&!node.material.transparent){node.castShadow=node.material.side!==T.BackSide;node.receiveShadow=node.material.side!==T.BackSide;}});scenes.push(s);world.add(s.group);s.group.visible=false;}
+    // The chapter 03 phase atlas is computed off the main thread while chapters 01-02 build.
+    const atlas=prepareMineralAtlas(abort.signal);
+    for(const build of[nebula,accretion,alteration,inheritance]){await new Promise(resolve=>requestAnimationFrame(resolve));if(disposed)return;const input=build===alteration?await atlas:undefined;if(disposed)return;const s=build(input);s.group.traverse(node=>{if(node.isMesh&&node.material?.isMeshStandardMaterial&&!node.material.transparent){node.castShadow=node.material.side!==T.BackSide;node.receiveShadow=node.material.side!==T.BackSide;}});scenes.push(s);world.add(s.group);s.group.visible=false;}
     resize();scenes.forEach(s=>s.group.visible=true);compiling=true;try{await renderer.compileAsync(world,camera);}finally{compiling=false;if(disposed)releaseResources();}if(disposed)return;
     paintLocator();
     const initial=reader.state;showStage(initial.stage,initial.progress);setPhase(initial.phase||false);setPlaying(initial.paused?false:playing);$('#loading').hidden=true;

@@ -13,6 +13,8 @@ const researchCss = readCss("research-log-evolution.css");
 const legacyCss = readCss("style.css");
 const homeHtml = fs.readFileSync(path.join(root, "src", "legacy", "index-main.html"), "utf8");
 const legacyShell = fs.readFileSync(path.join(root, "src", "components", "LegacyShell.astro"), "utf8");
+// The theme preload is rendered from its own file so the Content Security Policy can hash it (src/lib/inline-scripts.ts).
+const themePreload = fs.readFileSync(path.join(root, "src", "scripts", "inline", "theme-preload.js"), "utf8");
 const siteSource = fs.readFileSync(path.join(root, "src", "data", "site.ts"), "utf8");
 const ambientScript = fs.readFileSync(path.join(root, "public", "assets", "js", "ambient-space.js"), "utf8");
 const themeScript = fs.readFileSync(path.join(root, "public", "assets", "js", "theme.js"), "utf8");
@@ -54,14 +56,21 @@ test("mobile header is a flat visual boundary instead of a decorated card", () =
     flatHeader,
     /html\.mobile-nav-open body \.header-actions \.nav\s*\{[^}]*border-radius:\s*0\s*!important[^}]*background:\s*transparent\s*!important[^}]*box-shadow:\s*none\s*!important/is
   );
+  // The current link is flat in the open menu too. Its styles live in the navigation link block at the end of the
+  // file; the inset underline once declared here never rendered (an id-specific box-shadow: none always won).
+  const navLinks = shellCss.slice(shellCss.lastIndexOf("/* Header navigation links"));
   assert.match(
-    flatHeader,
-    /html\.mobile-nav-open body \.header-actions \.nav a\[aria-current="page"\]\s*\{[^}]*background:\s*transparent\s*!important[^}]*box-shadow:\s*inset 0 -2px/is
+    navLinks,
+    /\.site-header \.nav a:is\(\[aria-current="page"\], :hover, :focus-visible\)\s*\{[^}]*background:\s*transparent\s*!important[^}]*box-shadow:\s*none\s*!important/is
   );
-  assert.match(
-    flatHeader,
-    /html\.mobile-nav-open body \.header-actions > \.nav-log-gate,[\s\S]*?html\.mobile-nav-open body \.header-actions > \.theme-toggle\s*\{[^}]*grid-column:\s*auto\s*!important/is
-  );
+  // The Research Log gate and the theme toggle take their open-menu placement from their own blocks at the end of
+  // the file.
+  for (const [block, control] of [["/* Research Log gate", "nav-log-gate"], ["/* Theme toggle", "theme-toggle"]]) {
+    assert.match(
+      shellCss.slice(shellCss.lastIndexOf(block)),
+      new RegExp(`\\.mobile-nav-open body#academic-site \\.header-actions > \\.${control}\\s*\\{[^}]*grid-column:\\s*auto\\s*!important`, "is")
+    );
+  }
 });
 
 test("compact phones keep readable two-column navigation and wider phones may use three columns", () => {
@@ -189,16 +198,20 @@ test("small mobile controls avoid compositor-heavy motion that produces white st
 
 test("first visit starts in Space Mode while preserving an explicit saved choice", () => {
   assert.match(legacyShell, /<html lang="en" data-theme="space" data-theme-space>/);
-  assert.match(legacyShell, /if \(savedTheme === "light"\)/);
-  assert.match(legacyShell, /catch \(error\)\s*\{[\s\S]*?setAttribute\("data-theme", "space"\)/);
+  assert.match(legacyShell, /<script is:inline set:html=\{inlineScripts\.themePreload\}><\/script>\s*<style is:inline>/);
+  assert.match(themePreload, /if \(savedTheme === "light"\)/);
+  assert.match(themePreload, /catch \(error\)\s*\{[\s\S]*?setAttribute\("data-theme", "space"\)/);
   assert.match(themeScript, /function initialTheme\(\)[\s\S]*?if \(saved === "space" \|\| saved === "light"\) return saved;[\s\S]*?return "space";/);
 });
 
-test("soft navigation does not reload versioned common scripts", () => {
-  assert.ok(legacyNavigationScript.includes('const normalizedSrc = src.split(/[?#]/, 1)[0];'));
-  assert.ok(legacyNavigationScript.includes("if (commonScripts.has(normalizedSrc)) return;"));
-  assert.match(siteSource, /assets\/js\/legacy-navigation\.js\?v=\d{8}-[a-z-]+/);
-  assert.ok(legacyNavigationScript.includes('"assets/js/observatory-interactions.js"'));
+test("soft navigation re-runs only page scripts, and script versions are content hashes", () => {
+  // Page scripts re-run; a bundled module loads once per document (Astro cannot mark it data-page-script).
+  assert.ok(legacyNavigationScript.includes(`nextDoc.querySelectorAll('body script[data-page-script], body script[type="module"][src]')`));
+  assert.equal(legacyNavigationScript.includes("commonScripts"), false, "legacy-navigation.js must not keep its own copy of the shell script list");
+  assert.match(siteSource, /const scope = pageScoped \? " data-page-script" : "";/);
+  assert.match(siteSource, /\?v=\$\{contentVersion\(src\)\}/);
+  assert.doesNotMatch(siteSource, /\?v=\d{8}/, "no hand-written ?v= dates remain in site.ts");
+  assert.match(siteSource, /const shellScriptsAfterPage: ScriptSpec\[\] = \[[\s\S]*?"observatory-interactions\.js"/);
 });
 
 test("Edge keeps the ambient particle layer mounted across visibility changes", () => {
@@ -236,5 +249,9 @@ test("ambient particles keep continuous positions at animation boundaries", () =
   );
   assert.match(legacyShell, /<link\s+rel="stylesheet"\s+href=\{`assets\/css\/site\.css\?v=\$\{stylesheetVersion\}`\}>/);
   assert.match(siteSource, /export const stylesheets = \[\s*"style\.css",/);
-  assert.match(siteSource, /src:\s*"assets\/js\/ambient-space\.js(?:\?[^"]+)?"/);
+  // One stylesheet request: component CSS is appended to the bundle (componentStylesheets), never imported.
+  assert.doesNotMatch(legacyShell, /^\s*import\s+["'][^"']+\.css["']/m);
+  assert.match(siteSource, /export const componentStylesheets = \[\s*"src\/styles\/arrival\.css",\s*"src\/scripts\/origins-study\/style\.css",\s*"src\/scripts\/sample-missions\/style\.css"\s*\] as const;/);
+  // The script registry names files in public/assets/js; the ?v= content hash is added at build time.
+  assert.match(siteSource, /const shellScriptsBeforePage: ScriptSpec\[\] = \[[^\]]*\{ file: "ambient-space\.js", defer: true \}/);
 });

@@ -16,8 +16,7 @@ html:not([data-theme="space"]):not([data-theme-space]) body .site-header::before
 }
 
 html:not([data-theme="space"]):not([data-theme-space]) body .brand,
-html:not([data-theme="space"]):not([data-theme-space]) body .brand strong,
-html:not([data-theme="space"]):not([data-theme-space]) body .nav a {
+html:not([data-theme="space"]):not([data-theme-space]) body .brand strong {
   color: var(--evo-ink) !important;
 }
 
@@ -31,12 +30,6 @@ html:not([data-theme="space"]):not([data-theme-space]) body .site-footer {
 html:not([data-theme="space"]):not([data-theme-space]) body .header-actions .nav {
   border-color: var(--evo-line) !important;
   background: rgba(248, 250, 251, .88) !important;
-}
-
-html:not([data-theme="space"]):not([data-theme-space]) body .theme-toggle {
-  color: var(--evo-ink) !important;
-  border-color: var(--evo-line) !important;
-  background: rgba(248, 250, 251, .90) !important;
 }
 
 html:not([data-theme="space"]):not([data-theme-space]) body :is(a, button, input):focus-visible {
@@ -184,27 +177,6 @@ html:not([data-theme="space"]):not([data-theme-space]) body :is(a, button, input
     display: contents !important;
   }
 
-  html.mobile-nav-open body .header-actions .nav a {
-    width: 100% !important;
-    min-width: 0 !important;
-    min-height: 42px !important;
-    padding: 10px 8px !important;
-    font-size: 12px !important;
-    line-height: 1.2 !important;
-    white-space: normal !important;
-    overflow-wrap: normal !important;
-    word-break: normal !important;
-    text-align: center !important;
-  }
-
-  html.mobile-nav-open body .header-actions > .nav-log-gate,
-  html.mobile-nav-open body .header-actions > .theme-toggle {
-    width: 100% !important;
-    min-width: 0 !important;
-    min-height: 44px !important;
-    border-radius: 7px !important;
-  }
-
   html.mobile-nav-open body .nav-log-gate__copy {
     min-width: 0 !important;
   }
@@ -329,79 +301,9 @@ html:not([data-theme="space"]):not([data-theme-space]) body :is(a, button, input
   }
 
   html.mobile-nav-open body .header-actions .nav::before,
-  html.mobile-nav-open body .header-actions .nav::after,
-  html.mobile-nav-open body .header-actions .nav a::before,
-  html.mobile-nav-open body .header-actions .nav a::after {
+  html.mobile-nav-open body .header-actions .nav::after {
     content: none !important;
     display: none !important;
-  }
-
-  html.mobile-nav-open body .header-actions .nav a {
-    min-height: 40px !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    text-shadow: none !important;
-    transform: none !important;
-  }
-
-  html.mobile-nav-open body .header-actions .nav a:hover {
-    background: transparent !important;
-    box-shadow: none !important;
-  }
-
-  html.mobile-nav-open body .header-actions .nav a[aria-current="page"] {
-    background: transparent !important;
-    box-shadow: inset 0 -2px rgba(106, 141, 169, .82) !important;
-  }
-
-  html:not([data-theme="space"]):not([data-theme-space]).mobile-nav-open body .header-actions .nav a[aria-current="page"] {
-    color: #10243a !important;
-    background: transparent !important;
-    box-shadow: inset 0 -2px #6a8da9 !important;
-  }
-
-  html[data-theme="space"].mobile-nav-open body .header-actions .nav a[aria-current="page"],
-  html[data-theme-space].mobile-nav-open body .header-actions .nav a[aria-current="page"] {
-    color: #edf7ff !important;
-    background: transparent !important;
-    box-shadow: inset 0 -2px #d6b568 !important;
-  }
-
-  html.mobile-nav-open body .header-actions > .nav-log-gate,
-  html.mobile-nav-open body .header-actions > .theme-toggle {
-    grid-column: auto !important;
-    min-height: 40px !important;
-    padding: 6px 10px !important;
-    border-radius: 4px !important;
-    box-shadow: none !important;
-    text-shadow: none !important;
-    transform: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-
-  html.mobile-nav-open body .header-actions > .nav-log-gate::before,
-  html.mobile-nav-open body .header-actions > .nav-log-gate::after {
-    content: none !important;
-    display: none !important;
-  }
-
-  html:not([data-theme="space"]):not([data-theme-space]).mobile-nav-open body .header-actions > .nav-log-gate,
-  html:not([data-theme="space"]):not([data-theme-space]).mobile-nav-open body .header-actions > .theme-toggle {
-    color: #10243a !important;
-    border-color: rgba(16, 36, 58, .18) !important;
-    background: rgba(248, 250, 251, .72) !important;
-  }
-
-  html[data-theme="space"].mobile-nav-open body .header-actions > .nav-log-gate,
-  html[data-theme="space"].mobile-nav-open body .header-actions > .theme-toggle,
-  html[data-theme-space].mobile-nav-open body .header-actions > .nav-log-gate,
-  html[data-theme-space].mobile-nav-open body .header-actions > .theme-toggle {
-    color: #edf7ff !important;
-    border-color: rgba(151, 184, 210, .20) !important;
-    background: rgba(151, 184, 210, .05) !important;
   }
 
   body .nav-toggle:focus-visible {
@@ -428,11 +330,6 @@ html:not([data-theme="space"]):not([data-theme-space]) body :is(a, button, input
   html.mobile-nav-open body .header-actions .nav {
     grid-column: 1 / -1 !important;
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  }
-
-  html.mobile-nav-open body .header-actions > .nav-log-gate,
-  html.mobile-nav-open body .header-actions > .theme-toggle {
-    grid-column: auto !important;
   }
 }
 
@@ -515,9 +412,6 @@ html:not([data-theme="space"]):not([data-theme-space]) body :is(a, button, input
   body.ui-page-home .hero .button-row .button {
     width: 100% !important;
     min-width: 0 !important;
-    min-height: 42px !important;
-    padding: 7px 10px !important;
-    border-radius: 6px !important;
   }
 
   body.ui-page-home .hero > .hero-card {
@@ -704,4 +598,303 @@ html.is-edge-browser .ambient-space-layer {
   html[data-theme] body#academic-site .site-header .brand span { font-size: 12px !important; line-height: 1.45 !important; }
   html[data-theme] body#academic-site .site-header .nav-log-gate__copy small { font-size: 12px !important; letter-spacing: .03em !important; }
   html[data-theme] body#academic-site .site-footer .footer-inner a { display: inline-flex !important; align-items: center; min-height: 44px; }
+}
+
+/* nav-group-divider: a hairline between the research pages and the personal pages (LegacyShell.astro). */
+html[data-theme] body#academic-site .site-header .nav__divider {
+  flex: 0 0 1px;
+  align-self: center;
+  width: 1px;
+  height: 18px;
+  margin: 0 6px;
+  background: var(--obs-line);
+}
+@media (max-width: 760px) {
+  html[data-theme] body#academic-site .site-header .nav__divider { grid-column: 1 / -1; width: auto; height: 1px; margin: 2px 0; }
+}
+
+/* tablet-two-row-header (761-1179 px): brand, Research Log and theme on the first row, navigation on the second,
+   so the header needs at most two rows (about 120 px). The gate is one line there: signal dot and "Research Log".
+   The extra .site-header class outranks observatory.css and site-refinement.css, which load later. */
+@media (min-width: 761px) and (max-width: 1179px) {
+  html[data-theme] body#academic-site .site-header .header-inner {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto auto !important;
+    grid-template-areas: "brand gate theme" "nav nav nav" !important;
+    align-items: center !important;
+    gap: 6px 12px !important;
+    min-height: 0 !important;
+    padding: 12px 32px 10px !important;
+  }
+  html[data-theme] body#academic-site .site-header .header-inner > .header-actions { display: contents !important; }
+  html[data-theme] body#academic-site .site-header .header-inner > .brand { grid-area: brand; min-width: 0 !important; max-width: none !important; }
+  html[data-theme] body#academic-site .site-header .brand span { margin-top: 4px !important; }
+  html[data-theme] body#academic-site .site-header .header-actions > .nav { grid-area: nav; justify-self: start !important; width: auto !important; max-width: 100%; margin: 0 !important; }
+  html[data-theme] body#academic-site .site-header .nav-log-gate__copy small { display: none !important; }
+}
+
+/* Header navigation links (.nav__links a, the current-page link, ::before and ::after)
+   Written once: the declarations that decide this component, moved here from the older layers with their
+   selectors, media conditions and cascade order; the declarations they overrode were removed. */
+html[data-theme] body#academic-site .nav a {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  margin: 0 !important;
+  position: relative !important;
+  height: 34px !important;
+  min-height: 34px !important;
+  line-height: 1 !important;
+  text-align: left !important;
+  text-decoration: none !important;
+  min-width: 0 !important;
+  padding: 12px 10px !important;
+  font-size: 12px !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--obs-muted) !important;
+  box-shadow: none !important;
+  isolation: isolate;
+  transition: color 180ms ease-out !important;
+}
+html[data-theme] body#academic-site .nav a::after {
+  content: "" !important;
+  position: absolute !important;
+  border-radius: 999px !important;
+  opacity: 0 !important;
+  inset: auto 10px 4px !important;
+  width: auto !important;
+  height: 2px !important;
+  border: 0;
+  background: linear-gradient(90deg, var(--obs-cyan), var(--obs-accent)) !important;
+  box-shadow: 0 0 8px var(--obs-glow) !important;
+  transform: scaleX(0) !important;
+  transform-origin: left;
+  transition: transform 180ms ease !important;
+}
+html[data-theme] body#academic-site .nav a:hover {
+  transform: translateY(-1px) !important;
+}
+html[data-theme] body#academic-site .nav a:hover::after,
+html[data-theme] body#academic-site .nav a[aria-current="page"]::after {
+  opacity: 1 !important;
+}
+@media (max-width: 760px) {
+  html[data-theme] body#academic-site .nav a {
+    height: 38px !important;
+    justify-content: flex-start !important;
+    min-height: 44px !important;
+    font-size: 13px !important;
+  }
+}
+html[data-theme] body#academic-site .header-actions .nav a {
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+}
+@media (min-width: 761px) and (max-width: 1040px) {
+  html[data-theme] body#academic-site .header-actions .nav a {
+    width: auto !important;
+    text-align: center !important;
+  }
+}
+@media (max-width: 760px) {
+  html[data-theme] body#academic-site .header-actions .nav a {
+    width: 100% !important;
+    transform: none !important;
+    text-align: center !important;
+  }
+  html[data-theme].mobile-nav-open body#academic-site .header-actions .nav a {
+    line-height: 1.2 !important;
+    white-space: normal !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+  }
+  html[data-theme].mobile-nav-open body#academic-site .header-actions .nav a::before,
+  html[data-theme].mobile-nav-open body#academic-site .header-actions .nav a::after {
+    content: none !important;
+  }
+}
+html[data-theme] body#academic-site .nav a[aria-current="page"] {
+  color: var(--obs-text) !important;
+}
+html[data-theme] body#academic-site .nav a:is([aria-current="page"], :hover, :focus-visible)::after {
+  transform: scaleX(1) !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme] body#academic-site .nav a::after {
+    transition: none !important;
+  }
+}
+html[data-theme] body#academic-site .site-header .nav a {
+  text-shadow: none !important;
+}
+html[data-theme] body#academic-site .site-header .nav a:is([aria-current="page"], :hover, :focus-visible) {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+html[data-theme] body#academic-site .nav a::before {
+  content: "";
+  display: block !important;
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--obs-control-active);
+  box-shadow: inset 0 1px rgba(212, 234, 248, .1);
+  opacity: 0;
+  transition: opacity 180ms ease-out;
+  pointer-events: none;
+}
+html[data-theme] body#academic-site .nav a:is([aria-current="page"], :focus-visible)::before {
+  opacity: 1;
+}
+@media (hover: hover) {
+  html[data-theme] body#academic-site .nav a:hover::before {
+    opacity: 1;
+  }
+}
+html[data-theme] body#academic-site .obs-nav-ready a::after {
+  display: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme] body#academic-site .nav a::before {
+    transition-duration: 100ms;
+  }
+}
+@media (max-width: 760px) {
+  html[data-theme]:not([data-nav-ready]) body#academic-site .header-actions .nav a {
+    white-space: normal !important;
+    padding: 10px 8px !important;
+  }
+}
+html[data-theme] body#academic-site.site-refined .site-header .nav__links a {
+  border-radius: 3px !important;
+}
+
+/* Theme toggle (.theme-toggle in the header actions). Its control face, shared with the Research Log gate,
+   stays in the prism-control rules of observatory-experience.css.
+   Written once: the declarations that decide this component, moved here from the older layers with their
+   selectors, media conditions and cascade order; the declarations they overrode were removed. */
+html[data-theme] body#academic-site .theme-toggle {
+  font: inherit;
+  user-select: none;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  margin: 0 !important;
+  -webkit-appearance: none !important;
+  cursor: pointer !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+}
+html[data-theme] body#academic-site .header-actions > .theme-toggle {
+  align-self: center !important;
+  margin-left: 0 !important;
+  padding-inline: clamp(14px, 1vw, 20px) !important;
+}
+@media (min-width: 761px) and (max-width: 1040px) {
+  html[data-theme] body#academic-site .header-actions > .theme-toggle {
+    padding-inline: 10px !important;
+  }
+}
+@media (max-width: 760px) {
+  html[data-theme] body#academic-site .header-actions > .theme-toggle {
+    max-width: 100% !important;
+    grid-column: 1 / -1 !important;
+  }
+  html[data-theme].mobile-nav-open body#academic-site .header-actions > .theme-toggle {
+    grid-column: auto !important;
+  }
+}
+@media (min-width: 761px) and (max-width: 1179px) {
+  html[data-theme] body#academic-site .site-header .header-actions > .theme-toggle {
+    grid-area: theme;
+  }
+}
+@media (min-width: 761px) {
+  html[data-theme] body#academic-site .site-header .header-actions > .theme-toggle {
+    width: 112px !important;
+    min-width: 112px !important;
+  }
+}
+
+/* Research Log gate (.nav-log-gate in the header actions, ::before and ::after). Its control face, shared with
+   the theme toggle, stays in the prism-control rules of observatory-experience.css.
+   Written once: the declarations that decide this component, moved here from the older layers with their
+   selectors, media conditions and cascade order; the declarations they overrode were removed. */
+html[data-theme] body#academic-site .nav-log-gate {
+  isolation: isolate !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 9px !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+.nav-log-gate::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 1px !important;
+  z-index: -1 !important;
+  border-radius: inherit !important;
+  background: linear-gradient(100deg, transparent 0%, rgba(255, 236, 183, .28) 48%, transparent 100%) !important;
+  opacity: 0 !important;
+  transform: translateX(-105%) !important;
+  transition: opacity .18s ease, transform .58s ease !important;
+}
+html[data-theme] body#academic-site .nav-log-gate::after {
+  left: 18px !important;
+  right: 18px !important;
+  bottom: 4px !important;
+  background: linear-gradient(90deg, rgba(214,181,104,0), rgba(214,181,104,.95), rgba(139,199,255,.72), rgba(214,181,104,0)) !important;
+}
+html[data-theme] body#academic-site .nav-log-gate:hover::before,
+html[data-theme] body#academic-site .nav-log-gate:focus-visible::before {
+  opacity: 1 !important;
+  transform: translateX(105%) !important;
+}
+html[data-theme] body#academic-site.mads-mobile-lite .nav-log-gate,
+html[data-theme] body#academic-site.mads-mobile-lite .nav-log-gate::before {
+  transition: none !important;
+  transform: none !important;
+  filter: none !important;
+}
+html[data-theme] body#academic-site .header-actions > .nav-log-gate {
+  align-self: center !important;
+  justify-content: flex-start !important;
+  margin-left: 4px !important;
+}
+@media (min-width: 761px) and (max-width: 1040px) {
+  html[data-theme] body#academic-site .header-actions > .nav-log-gate {
+    padding-inline: 10px !important;
+  }
+}
+@media (max-width: 760px) {
+  html[data-theme] body#academic-site .header-actions > .nav-log-gate {
+    max-width: 100% !important;
+    grid-column: 1 / -1 !important;
+    justify-content: center !important;
+  }
+}
+html[data-theme] body#academic-site .nav-log-gate::before,
+html[data-theme] body#academic-site .nav-log-gate::after {
+  pointer-events: none !important;
+}
+@media (max-width: 760px) {
+  html[data-theme].mobile-nav-open body#academic-site .header-actions > .nav-log-gate {
+    grid-column: auto !important;
+  }
+  html[data-theme].mobile-nav-open body#academic-site .header-actions > .nav-log-gate::before,
+  html[data-theme].mobile-nav-open body#academic-site .header-actions > .nav-log-gate::after {
+    content: none !important;
+    display: none !important;
+  }
+}
+@media (min-width: 761px) and (max-width: 1179px) {
+  html[data-theme] body#academic-site .site-header .header-actions > .nav-log-gate {
+    grid-area: gate;
+    min-width: 0 !important;
+    margin: 0 !important;
+  }
 }

@@ -30,7 +30,5 @@ window.addEventListener('mads:soft-nav-before-swap',leave);
 window.addEventListener('mads:soft-nav-end',enter);
 window.addEventListener('pagehide',leave);
 window.addEventListener('pageshow',enter);
-for(const event of ['pointerover','focusin'])document.addEventListener(event,e=>{
-  if(e.target.closest?.('.site-header a[href="origins-study.html"]'))load().catch(()=>{});
-});
+// src/scripts/feature-loader.js starts fetching main.js from the Origins header link on every page, before this loader is imported.
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',enter,{once:true});else enter();
