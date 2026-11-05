@@ -22,7 +22,7 @@
   width: min(1180px, 100%);
   margin: 0 auto;
   padding: clamp(36px, 6vw, 84px) 0 clamp(44px, 7vw, 92px);
-  border-bottom: 1px solid var(--evo-line, rgba(133, 163, 188, .24));
+  border-bottom: 1px solid var(--evo-line, rgba(146, 161, 177, .24));
 }
 
 .research-dashboard__status {
@@ -30,7 +30,7 @@
   align-items: center;
   gap: 14px;
   margin: 14px 0 18px;
-  color: var(--evo-muted, #9eb0c1);
+  color: var(--evo-muted, #a6aebc);
   font-size: 14px;
 }
 
@@ -44,7 +44,7 @@
 .research-dashboard__full-title {
   max-width: 980px;
   margin: 20px 0 0;
-  color: var(--evo-muted, #aab9c8);
+  color: var(--evo-muted, #afb8c6);
   font-size: 18px;
   line-height: 1.55;
 }
@@ -66,12 +66,12 @@
 .research-dashboard__facts > div {
   min-width: 0;
   padding: 18px 0 20px;
-  border-top: 1px solid var(--evo-line, rgba(133, 163, 188, .24));
+  border-top: 1px solid var(--evo-line, rgba(146, 161, 177, .24));
 }
 
 .research-dashboard__facts dt {
   margin-bottom: 8px;
-  color: var(--evo-gold, #d6b568);
+  color: var(--evo-gold, #ceb687);
   font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
@@ -94,7 +94,7 @@
 
 html:not([data-theme="space"]):not([data-theme-space]) body .research-log-main {
   color: var(--evo-ink) !important;
-  background: rgba(237, 243, 246, .82) !important;
+  background: rgba(247, 243, 235, .82) !important;
 }
 
 html:not([data-theme="space"]):not([data-theme-space]) body .research-log-main::before {

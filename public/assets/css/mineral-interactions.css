@@ -54,7 +54,7 @@ html[data-theme] body#academic-site .evidence-atlas {
   padding: 0;
   border: 1px solid var(--obs-edge);
   border-radius: 8px;
-  background: #0c171c;
+  background: #111726;
   color: var(--obs-text);
   box-sizing: border-box;
   overflow: hidden;
@@ -62,7 +62,7 @@ html[data-theme] body#academic-site .evidence-atlas {
   letter-spacing: 0;
 }
 html[data-theme="light"] body#academic-site .evidence-atlas { background: #f5f8f9; }
-.evidence-atlas::backdrop { background: #03090ebd; }
+.evidence-atlas::backdrop { background: #060b18bd; }
 .evidence-atlas[open] { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; }
 html[data-theme] body#academic-site .atlas-header {
   display: flex;
@@ -90,7 +90,7 @@ html[data-theme] body#academic-site .atlas-node {
   border-bottom: 1px solid var(--obs-edge);
   border-radius: 0;
   color: var(--obs-muted);
-  background: #0c171c;
+  background: #111726;
   cursor: pointer;
   display: flex;
   flex-direction: column;

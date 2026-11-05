@@ -128,7 +128,7 @@
   const orbitalSystemMarkup = `
     <div class="ui2046-solar-system">
       <span class="ui2046-kuiper-belt"></span>
-      <span class="ui2046-planet sun-marker" style="--left:50%;--top:50%;--size:6px;--color:rgba(255,217,154,.74);"></span>
+      <span class="ui2046-planet sun-marker" style="--left:50%;--top:50%;--size:6px;--color:rgba(243,220,179,.74);"></span>
       ${orbitMarkup}
       <span class="ui2046-system-label" style="--label-left:84%;--label-top:22%;">Kuiper Belt</span>
     </div>

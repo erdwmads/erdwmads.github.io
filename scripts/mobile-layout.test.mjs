@@ -42,11 +42,11 @@ test("mobile header is a flat visual boundary instead of a decorated card", () =
   assert.match(flatHeader, /body \.site-header::before\s*\{[^}]*display:\s*none\s*!important/is);
   assert.match(
     flatHeader,
-    /html:not\(\[data-theme="space"\]\):not\(\[data-theme-space\]\) body \.site-header\s*\{[^}]*background:\s*#edf3f6\s*!important/is
+    /html:not\(\[data-theme="space"\]\):not\(\[data-theme-space\]\) body \.site-header\s*\{[^}]*background:\s*#f7f3eb\s*!important/is
   );
   assert.match(
     flatHeader,
-    /html\[data-theme="space"\] body \.site-header,[\s\S]*?html\[data-theme-space\] body \.site-header\s*\{[^}]*background:\s*#07111d\s*!important/is
+    /html\[data-theme="space"\] body \.site-header,[\s\S]*?html\[data-theme-space\] body \.site-header\s*\{[^}]*background:\s*#0c1324\s*!important/is
   );
   assert.match(
     flatHeader,
@@ -107,7 +107,7 @@ test("light mode lowers mobile background interference behind body copy", () => 
   );
   assert.match(
     shellCss,
-    /html:not\(\[data-theme="space"\]\):not\(\[data-theme-space\]\) body :is\(\.lead, \.muted\)\s*\{[^}]*color:\s*#405367\s*!important/is
+    /html:not\(\[data-theme="space"\]\):not\(\[data-theme-space\]\) body :is\(\.lead, \.muted\)\s*\{[^}]*color:\s*#465264\s*!important/is
   );
 });
 

@@ -3,14 +3,14 @@ html[data-theme] body#academic-site main .research-scale__figure { display:block
 .inspector-topline { display:flex;justify-content:space-between;gap:12px;padding:14px 20px;border-bottom:1px solid var(--obs-line);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--obs-muted); }
 .inspector-topline span:first-child { color:var(--obs-accent); }
 .inspector-layout { display:grid;grid-template-columns:minmax(0,1fr) 210px; }
-.inspector-stage { position:relative;overflow:hidden;min-width:0;height:clamp(320px,40vw,600px);background:#050709;touch-action:pan-y; }
+.inspector-stage { position:relative;overflow:hidden;min-width:0;height:clamp(320px,40vw,600px);background:#070a11;touch-action:pan-y; }
 .inspector-stage img { display:block;width:100%;height:100%;object-fit:contain;border:0!important;border-radius:0!important;box-shadow:none!important;max-height:none!important;user-select:none;-webkit-user-drag:none; }
 [data-inspector-ready] .inspector-stage img { position:absolute;left:50%;top:50%;max-width:none!important;transform-origin:center;pointer-events:none; }
 [data-inspector-ready][data-zoomed=true] .inspector-stage { cursor:grab; }
 .inspector-stage[data-dragging] { cursor:grabbing!important; }
 .inspector-stage[data-moving] { touch-action:none; }
 .inspector-stage:focus-visible { outline:2px solid var(--obs-accent);outline-offset:-4px; }
-.inspector-stage-note { position:absolute;left:12px;bottom:12px;max-width:calc(100% - 24px);padding:7px 10px;background:#071117e6;color:#cad5da;font-size:10px;line-height:1.6;border-radius:3px;pointer-events:none; }
+.inspector-stage-note { position:absolute;left:12px;bottom:12px;max-width:calc(100% - 24px);padding:7px 10px;background:#0c1221e6;color:#d7d2c9;font-size:10px;line-height:1.6;border-radius:3px;pointer-events:none; }
 .inspector-controls { border-left:1px solid var(--obs-line);padding:22px 18px;align-self:stretch; }
 .inspector-controls[hidden],.inspector-stage-note[hidden] { display:none; }
 .inspector-zoom-label { display:block;font-size:10px;color:var(--obs-muted);text-transform:uppercase;letter-spacing:.06em; }

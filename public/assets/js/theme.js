@@ -24,7 +24,7 @@
     root.toggleAttribute("data-theme-space", useSpace);
     root.setAttribute("data-theme", useSpace ? "space" : "light");
     root.classList.toggle("theme-preloaded-space", useSpace);
-    root.style.backgroundColor = useSpace ? "#040910" : "#edf3f7";
+    root.style.backgroundColor = useSpace ? "#0f1625" : "#f7f3eb";
 
     if (document.body) {
       document.body.classList.toggle("space-mode", useSpace);

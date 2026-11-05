@@ -7,7 +7,7 @@ test('scientific thumbnails preserve the entire image rather than cropping spect
   assert.match(css,/\.mission-log-entry \.mission-photo-grid img\s*\{[^}]*object-fit:\s*contain\s*!important/s);
 });
 test('light-mode log tags use a legible dark accent',()=>{
-  assert.match(css,/html\[data-theme="light"\][^{]+\.mission-log-entry :is\(\.research-note-date, \.log-tags span\)\s*\{[^}]*color:\s*#70521c\s*!important/s);
+  assert.match(css,/html\[data-theme="light"\][^{]+\.mission-log-entry :is\(\.research-note-date, \.log-tags span\)\s*\{[^}]*color:\s*#6b542a\s*!important/s);
 });
 test('timeline is a labelled keyboard-scrollable region and does not pin an obsolete latest log',()=>{
   assert.match(shell,/data-mission-index-list role="region" aria-label="Experiment timeline" tabindex="0"/);

@@ -95,6 +95,8 @@ Avoid viewport-height floating placement for persistent controls. Use stable bot
 
 Light Mode is not just an inverted Space Mode. Some controls need a pale glass / champagne skin in Light Mode and a darker capsule in Space Mode.
 
+The palette is "Ink & Brass" (adopted 2026-11): Space is ink navy (ground `#0f1625`, surfaces `#171d2c` / `#202735`) with warm off-white text and a champagne accent (`#d2bb8f`); Light is warm ivory paper (`#f7f3eb`, surface `#fcfaf5`) with ink text and a brass accent (`#765725`). Links are steel blue in both (`#a6c1df` / `#355781`). Interactive borders (`--obs-control-border`: `#7a828f` Space, `#948b7e` Light) keep 3:1 on every ground, hover and selected surface. Each theme uses one accent, sparingly: eyebrows, the selected state, focus and the Research Log signal. Glows are low and warm. New colours go through the `--obs-*` / `--evo-*` tokens in `tokens.css`; the first-paint colours in `src/scripts/inline/theme-preload.js`, the inline style and both `theme-color` metas in `LegacyShell.astro` must equal the page grounds. Body text keeps at least 4.5:1 and interactive boundaries 3:1 in both themes.
+
 When changing a component, check both themes explicitly.
 
 ## Stylesheet Ownership

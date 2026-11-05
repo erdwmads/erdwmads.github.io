@@ -4,7 +4,7 @@ html[data-theme] body#academic-site .header-actions .nav {
   border: 1px solid var(--obs-edge) !important;
   border-radius: 20px !important;
   background: var(--obs-glass) !important;
-  box-shadow: inset 0 1px rgba(225, 241, 255, .1), 0 3px 8px rgba(0, 0, 0, .12) !important;
+  box-shadow: inset 0 1px rgba(243, 238, 229, .1), 0 3px 8px rgba(0, 0, 0, .12) !important;
 }
 html[data-theme] body#academic-site .header-actions > :is(.nav-log-gate, .theme-toggle) { border-radius: 14px !important; }
 html[data-theme] body#academic-site main :is(.button, .paper-filter) { border-radius: 12px !important; }
@@ -41,7 +41,7 @@ html[data-theme] body#academic-site .header-actions > :is(.nav-log-gate, .theme-
 html[data-theme] body#academic-site .nav-log-gate__signal { box-shadow: 0 0 7px var(--obs-gold-glow) !important; }
 html[data-theme] body#academic-site main .paper-filter[aria-pressed="true"] {
   background: var(--obs-control-active) !important;
-  box-shadow: inset 0 1px rgba(212, 234, 248, .1) !important;
+  box-shadow: inset 0 1px rgba(234, 230, 220, .1) !important;
 }
 html[data-theme] body#academic-site main .paper-filter[aria-pressed="true"] { --obs-control-face: var(--obs-control-active); --obs-control-hover-border: var(--obs-accent); border-color: var(--obs-accent) !important; }
 html[data-theme] body#academic-site main :is(.pill, .paper-status, .status-badge, .project-tags span) {
@@ -58,7 +58,7 @@ html[data-theme] body#academic-site main :is(.pill, .paper-status, .status-badge
   }
   html[data-theme] body#academic-site :is(a.paper-card, a.pathway-step):hover {
     border-color: color-mix(in srgb, var(--obs-accent) 45%, var(--obs-edge)) !important;
-    box-shadow: inset 0 1px rgba(225, 239, 245, .22), 0 4px 12px rgba(0, 0, 0, .12), 0 0 10px color-mix(in srgb, var(--obs-cyan) 9%, transparent) !important;
+    box-shadow: inset 0 1px rgba(241, 236, 226, .22), 0 4px 12px rgba(0, 0, 0, .12), 0 0 10px color-mix(in srgb, var(--obs-cyan) 9%, transparent) !important;
   }
 }
 /* A record is a reading surface, not a button. Its edge stays quiet under the pointer.
@@ -209,7 +209,7 @@ html[data-theme] body#academic-site .mission-log-entry .mission-photo-grid img {
   object-fit: contain !important;
 }
 html[data-theme="light"] body#academic-site .mission-log-entry :is(.research-note-date, .log-tags span) {
-  color: #70521c !important;
+  color: #6b542a !important;
 }
 
 /* The navigator is built only from the decrypted in-memory archive. */
@@ -370,14 +370,14 @@ html[data-theme] body#academic-site .obs-presentation {
   padding: 0;
   border: 0;
   border-radius: 0;
-  background: #05090c;
-  color: #eaf0f3;
+  background: #080c15;
+  color: #f2efe8;
   overflow: hidden;
   box-sizing: border-box;
 }
-html[data-theme="light"] body#academic-site .obs-presentation { background: #eef2f5; color: #1c3038; }
+html[data-theme="light"] body#academic-site .obs-presentation { background: #f4f1eb; color: #252d40; }
 html[data-theme] body#academic-site .obs-presentation:not([open]) { display: none; }
-html[data-theme] body#academic-site .obs-presentation::backdrop { background: #05090c; }
+html[data-theme] body#academic-site .obs-presentation::backdrop { background: #080c15; }
 html[data-theme] body#academic-site .obs-presentation-surface {
   position: relative;
   width: 100%;

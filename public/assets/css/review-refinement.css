@@ -89,12 +89,12 @@ body#academic-site .cv-print-action[hidden] { display: none !important; }
 @layer cv-print {
 @media print {
   @page { margin: 15mm; }
-  html:has(body.ui-page-cv), body#academic-site.ui-page-cv { color-scheme: light !important; background: white !important; color: #182129 !important; }
+  html:has(body.ui-page-cv), body#academic-site.ui-page-cv { color-scheme: light !important; background: white !important; color: #1a2131 !important; }
   body#academic-site.ui-page-cv > :not(main) { display: none !important; }
   body#academic-site.ui-page-cv::before, body#academic-site.ui-page-cv::after,
   body#academic-site.ui-page-cv main::before, body#academic-site.ui-page-cv main::after { display: none !important; }
   body#academic-site.ui-page-cv main { background: white !important; border: 0 !important; width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; opacity: 1 !important; }
-  body#academic-site.ui-page-cv main * { color: #182129 !important; text-shadow: none !important; box-shadow: none !important; background: transparent !important; animation: none !important; }
+  body#academic-site.ui-page-cv main * { color: #1a2131 !important; text-shadow: none !important; box-shadow: none !important; background: transparent !important; animation: none !important; }
   body#academic-site.ui-page-cv .cv-print-identity { display: block !important; font-size: 10pt; }
   body#academic-site.ui-page-cv .cv-print-action { display: none !important; }
   body#academic-site.ui-page-cv .cv-intro { display: grid !important; grid-template-columns: 1fr 38mm !important; gap: 7mm !important; align-items: start !important; }
@@ -106,15 +106,15 @@ body#academic-site .cv-print-action[hidden] { display: none !important; }
   body#academic-site.ui-page-cv :is(p,li,.cv-edu-date) { font-size: 10pt !important; line-height: 1.45 !important; }
   body#academic-site.ui-page-cv .section { display: block !important; margin-top: 7mm !important; padding-top: 4mm !important; }
   body#academic-site.ui-page-cv :is(.cv-education-cards,.grid) { display: block !important; }
-  body#academic-site.ui-page-cv :is(.cv-edu-card,.card) { break-inside: avoid; margin: 0 0 4mm !important; padding: 3mm !important; border: 1px solid #ccd2d7 !important; }
+  body#academic-site.ui-page-cv :is(.cv-edu-card,.card) { break-inside: avoid; margin: 0 0 4mm !important; padding: 3mm !important; border: 1px solid #d5d1c9 !important; }
 }
 
 }
 html[data-theme] body#academic-site .obs-present-launch[hidden], body#academic-site .obs-presentation-feedback[hidden] { display: none !important; }
 body#academic-site .obs-presentation-stage { position: relative; }
-body#academic-site .obs-presentation-feedback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; padding: 1.5rem; background: #0b151ef5; color: #e6edf2; text-align: center; z-index: 2; }
+body#academic-site .obs-presentation-feedback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; padding: 1.5rem; background: #0f1627f5; color: #f0ebe3; text-align: center; z-index: 2; }
 html[data-theme] body#academic-site .obs-presentation .obs-present-retry { width: auto !important; height: auto !important; min-height: 44px; border-radius: 8px !important; padding: 8px 14px !important; }
-body#academic-site .obs-presentation-feedback a { color: #b6dcf0; text-decoration: underline; }
+body#academic-site .obs-presentation-feedback a { color: #c8d7e9; text-decoration: underline; }
 
 /* Keep the fixed global settings entry clear of narrow mission toolbars. */
 @media (max-width: 760px) {
@@ -122,8 +122,8 @@ body#academic-site .obs-presentation-feedback a { color: #b6dcf0; text-decoratio
 }
 
 /* Loading and recovery remain legible even after a graphics context is gone. */
-html[data-theme] body#academic-site .origins-study .scene-load-state { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 28px; background: #0b151e; color: #e6edf2; }
-html[data-theme] body#academic-site .origins-study .scene-load-state #loading { position: static; inset: auto; margin: 0; max-width: 34ch; color: #e6edf2 !important; line-height: 1.6; text-align: center; }
+html[data-theme] body#academic-site .origins-study .scene-load-state { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 28px; background: #0f1627; color: #f0ebe3; }
+html[data-theme] body#academic-site .origins-study .scene-load-state #loading { position: static; inset: auto; margin: 0; max-width: 34ch; color: #f0ebe3 !important; line-height: 1.6; text-align: center; }
 html[data-theme] body#academic-site .origins-study .scene-load-state #retry-scene { position: static; inset: auto; transform: none; margin: 0; flex-shrink: 0; }
 html[data-theme] body#academic-site .origins-study[data-render-state="ready"] .scene-load-state { display: none; }
 html[data-theme] body#academic-site .origins-study[data-render-state="error"] #scene { visibility: hidden; }

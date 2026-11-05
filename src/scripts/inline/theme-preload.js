@@ -6,17 +6,17 @@
       document.documentElement.setAttribute("data-theme", "light");
       document.documentElement.removeAttribute("data-theme-space");
       document.documentElement.classList.remove("theme-preloaded-space");
-      document.documentElement.style.backgroundColor = "#edf3f7";
+      document.documentElement.style.backgroundColor = "#f7f3eb";
     } else {
       document.documentElement.setAttribute("data-theme", "space");
       document.documentElement.setAttribute("data-theme-space", "");
       document.documentElement.classList.add("theme-preloaded-space");
-      document.documentElement.style.backgroundColor = "#040910";
+      document.documentElement.style.backgroundColor = "#0f1625";
     }
   } catch (error) {
     document.documentElement.setAttribute("data-theme", "space");
     document.documentElement.setAttribute("data-theme-space", "");
     document.documentElement.classList.add("theme-preloaded-space");
-    document.documentElement.style.backgroundColor = "#040910";
+    document.documentElement.style.backgroundColor = "#0f1625";
   }
 })();

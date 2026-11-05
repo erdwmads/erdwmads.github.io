@@ -838,7 +838,7 @@ if (!styleCss.includes("mobile-lightweight-mode")) {
 if (!styleCss.includes("mission-lightbox-unified-theme") || !styleCss.includes("mission-lightbox-fullscreen-focus") || !styleCss.includes("mission-lightbox-minimal-image-viewer")) {
   fail("style.css: missing unified Mission Log lightbox theme styles");
 }
-if (!/mission-lightbox-rationalized-viewer[\s\S]*html:not\(\[data-theme="space"\]\):not\(\[data-theme-space\]\) body:not\(\.space-mode\) \.mission-lightbox[\s\S]*background: rgba\(226, 234, 241, \.94\) !important/.test(styleCss)) {
+if (!/mission-lightbox-rationalized-viewer[\s\S]*html:not\(\[data-theme="space"\]\):not\(\[data-theme-space\]\) body:not\(\.space-mode\) \.mission-lightbox[\s\S]*background: rgba\(237, 232, 223, \.94\) !important/.test(styleCss)) {
   fail("style.css: Mission Log image viewer must use a dedicated light image-viewer surface in light mode");
 }
 if (!styleCss.includes("mission-lightbox-stable-viewport")) {

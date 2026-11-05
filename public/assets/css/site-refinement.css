@@ -25,6 +25,7 @@ html[data-theme] body#academic-site .footer-inner a { color:var(--obs-link); fon
 html[data-theme] body#academic-site :is(summary,select,textarea,[tabindex="0"]):focus-visible {
   outline:2px solid var(--obs-accent); outline-offset:4px;
 }
+html[data-theme] body#academic-site ::selection { background:color-mix(in srgb,var(--obs-accent) 30%,transparent); color:var(--obs-text); }
 html[data-theme] body#academic-site main :is(h1,h2,h3,[id]) { scroll-margin-top:28px; }
 html[data-theme] body#academic-site main :is(h2,h3) { text-shadow:none!important; }
 html[data-theme] body#academic-site:not(.ui-page-home)::before { opacity:.16!important; }

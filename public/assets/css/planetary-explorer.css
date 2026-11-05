@@ -83,8 +83,8 @@ html[data-theme] body#academic-site .planetary-summary [data-mindat]:not([hidden
 html[data-theme] body#academic-site .planetary .planetary-touch { display: none; }
 .planetary-layout { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 28px; align-items: start; }
 .planetary-visual { min-width: 0; }
-.planetary-stage { height: 460px; position: relative; width: 100%; overflow: hidden; background: #091219; outline-offset: 3px; }
-html[data-theme="light"] .planetary-stage { background: #e8f0f4; }
+.planetary-stage { height: 460px; position: relative; width: 100%; overflow: hidden; background: #0d1322; outline-offset: 3px; }
+html[data-theme="light"] .planetary-stage { background: #f2eee6; }
 .planetary-stage canvas { display: block; width: 100%; height: 100%; }
 .planetary-labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 1; }
 .planetary-leaders { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; stroke: var(--obs-muted); stroke-width: 1; opacity: .6; }

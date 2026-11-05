@@ -34,7 +34,7 @@ try{
  await root.screenshot({path:process.env.TEMP+'/mission-cinema-mobile-dark.png'});
  await page.evaluate(()=>{document.documentElement.dataset.theme='light';document.documentElement.removeAttribute('data-theme-space');});
  await root.screenshot({path:process.env.TEMP+'/mission-cinema-mobile-light.png'});
- assert.equal(await root.locator('[data-mission-status]').evaluate(e=>getComputedStyle(e).color),'rgb(195, 208, 216)');
+ assert.equal(await root.locator('[data-mission-status]').evaluate(e=>getComputedStyle(e).color),'rgb(210, 205, 196)');
  assert.deepEqual(errors,[]);
  console.log('PASS cold chapter dissolves, rapid chapter selection, paused render idle, label bounds, uncluttered canvas and responsive final images');
 }finally{await browser.close();}

@@ -33,8 +33,8 @@ html[data-theme] body#academic-site.site-refined {
     .scene-note .region-label { display:none; }
     .scene-note strong { font-size:9px;letter-spacing:.05em; }
     .scene-note p { font-size:12px;line-height:1.7; }
-    .scene-frame { background:#080d10; }
-    .scene-frame-bar { background:#0c161c;border-bottom:1px solid #263239;letter-spacing:.045em; }
+    .scene-frame { background:#0b0f19; }
+    .scene-frame-bar { background:#111725;border-bottom:1px solid #293041;letter-spacing:.045em; }
     .scene-frame-bar i { box-shadow:none; }
     .scene-controls { padding:15px 20px;border-top:1px solid var(--obs-line); }
     .view-tools>.region-label { display:none; }
@@ -114,10 +114,10 @@ html[data-theme] body#academic-site.site-refined .paper-filter[aria-pressed=true
 .origins-study .mineral-budget summary{font-size:.85rem;cursor:pointer}
 @media(max-width:600px){.origins-study .mineral-budget{padding:20px 16px}.origins-study .mineral-budget-values{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 10px}.origins-study .mineral-budget-heading{align-items:start}}
 
-.origins-study .fragment-guide{position:absolute;inset:18px 18px auto;z-index:2;display:flex;justify-content:space-between;gap:16px;pointer-events:none;font-size:11px;letter-spacing:.02em;color:#c2ced1}
+.origins-study .fragment-guide{position:absolute;inset:18px 18px auto;z-index:2;display:flex;justify-content:space-between;gap:16px;pointer-events:none;font-size:11px;letter-spacing:.02em;color:#d0cbc2}
 .origins-study .fragment-guide[hidden]{display:none}
-.origins-study .fragment-guide span{padding:7px 10px;background:#091117d9;border-left:2px solid #b8c6ca;border-radius:2px}
-.origins-study .fragment-guide span:last-child{color:#c5a779;border-color:#c5a779}
+.origins-study .fragment-guide span{padding:7px 10px;background:#0d1320d9;border-left:2px solid #c7c3ba;border-radius:2px}
+.origins-study .fragment-guide span:last-child{color:#bbaa8b;border-color:#bbaa8b}
 @media(max-width:600px){.origins-study .fragment-guide{inset:12px 8px auto;font-size:9px;gap:8px}.origins-study .fragment-guide span{padding:5px 6px}}
 
 /* A shared observation workspace: the visual and its timeline stay together. */
@@ -132,13 +132,13 @@ html[data-theme] body#academic-site.site-refined {
  .mission-stage-heading h3 { font-size:24px;line-height:1.3;margin:8px 0 0; }
  .mission-stage-heading .mission-purpose { margin:8px 0 0;font-size:13px;max-width:80ch; }
  .mission-workspace { display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,29%);align-items:start;gap:0; }
- .mission-visual { min-width:0;background:#080d10; }
+ .mission-visual { min-width:0;background:#0b0f19; }
  .mission-viewport { min-height:420px;aspect-ratio:1.48; }
  .mission-scene-bar { padding:12px 18px;font-size:11px; }
  .mission-notebook { min-width:0;align-self:stretch;border:0;border-left:1px solid var(--obs-line);background:var(--obs-paper); }
  .mission-notebook>summary { display:none; }
  .mission-notebook-content { padding:22px 20px; }
- .mission-notebook { --vector-earth:#8cbedb;--vector-relative:#efd082;--vector-sun:#9ad4b0;color:var(--obs-text); }
+ .mission-notebook { --vector-earth:#a4b9d0;--vector-relative:#e9d0a0;--vector-sun:#9ad4b0;color:var(--obs-text); }
  .mission-notebook :is(.mission-frame,.mission-journey-info,.mission-range-chart,.mission-location strong) { color:var(--obs-text); }
  .mission-notebook :is(.mission-frame p,.mission-journey-info p) { color:var(--obs-muted)!important;font-size:13px!important;line-height:1.8!important; }
  .mission-notebook :is(.mission-location small,.mission-orbit-details,.mission-vector-triangle small,.mission-range-chart small) { color:var(--obs-muted); }
@@ -223,7 +223,7 @@ html[data-theme] body#academic-site.site-refined {
 }
 
 html[data-theme="light"] body#academic-site.site-refined .mission-notebook {
- --vector-earth:#216a92;--vector-relative:#916b14;--vector-sun:#247145;
+ --vector-earth:#45648f;--vector-relative:#8c6d30;--vector-sun:#247145;
 }
 @media(min-width:961px) {
  html[data-theme] body#academic-site.site-refined .mission-story summary small { display:inline;margin-left:22px;padding:0; }

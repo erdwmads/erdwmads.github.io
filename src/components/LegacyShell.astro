@@ -51,8 +51,8 @@ const footerNotes = footerItems.slice(1).map((item) => {
   <meta name="author" content={siteMetadata.author}>
   <link rel="canonical" href={canonicalUrl}>
   {noindex && <meta name="robots" content="noindex, nofollow">}
-  <meta name="theme-color" content="#040910" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#edf3f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1625" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f7f3eb" media="(prefers-color-scheme: light)">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content={siteMetadata.title}>
   <meta property="og:locale" content={siteMetadata.locale}>
@@ -69,20 +69,20 @@ const footerNotes = footerItems.slice(1).map((item) => {
   {current === "home" && <script type="application/ld+json" is:inline set:html={JSON.stringify(homeStructuredData)} />}
   <script is:inline set:html={inlineScripts.themePreload}></script>
   <style is:inline>
-    html { background: #040910; color-scheme: dark; }
+    html { background: #0f1625; color-scheme: dark; }
     html[data-theme="light"]:not([data-theme-space]) {
-      background: #edf3f7 !important;
+      background: #f7f3eb !important;
       color-scheme: light;
     }
     html[data-theme="space"],
     html[data-theme-space] {
-      background: #040910 !important;
+      background: #0f1625 !important;
       color-scheme: dark;
     }
     html[data-theme="space"] body,
     html[data-theme-space] body {
-      background-color: #040910 !important;
-      color: #edf7ff;
+      background-color: #0f1625 !important;
+      color: #eee9e0;
     }
   </style>
   <link rel="preload" href="assets/fonts/montserrat-latin.woff2" as="font" type="font/woff2" crossorigin>

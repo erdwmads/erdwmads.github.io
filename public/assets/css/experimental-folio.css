@@ -13,7 +13,7 @@ html[data-theme] body#academic-site .obs-photo-tools { display:flex;justify-cont
    Keeping their space meanwhile stops the photo wall from shifting down; !important beats the shared [hidden] rules. */
 @media (scripting: enabled) { html[data-theme] body#academic-site .obs-photo-tools > :is(.photo-layout-switch, .obs-present-launch)[hidden] { display:flex!important;visibility:hidden; } }
 html[data-theme] body#academic-site .photo-layout-switch button { min-height:44px;padding:10px 16px;border:0!important;border-radius:3px!important;background:transparent!important;color:var(--obs-text)!important;font:inherit;font-size:12px!important;box-shadow:none!important;cursor:pointer; }
-html[data-theme] body#academic-site .photo-layout-switch button[aria-pressed=true] { background:var(--obs-highlight)!important;color:var(--obs-accent)!important; }
+html[data-theme] body#academic-site .photo-layout-switch button[aria-pressed=true] { background:var(--obs-highlight)!important;color:var(--obs-text)!important;box-shadow:inset 0 -2px var(--obs-accent)!important; }
 .photo-index-label { display:none; }
 html[data-theme] body#academic-site [data-photo-layout=contact] .photo-wall { display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:22px 16px!important; }
 html[data-theme] body#academic-site [data-photo-layout=contact] .photo-wall::after { display:none; }

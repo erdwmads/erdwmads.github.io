@@ -17,10 +17,10 @@ html[data-theme] body#academic-site :is(h1, h2, h3, p, a, button, span, strong, 
 
 html[data-theme] body#academic-site main :is(p, li, dd, p *, li *, dd *) { text-shadow: none !important; }
 html[data-theme="space"] body#academic-site :is(.brand strong, main h1) {
-  text-shadow: 0 0 2px rgba(255, 255, 255, .35), 0 0 18px var(--obs-glow), 0 0 42px rgba(132, 208, 255, .12) !important;
+  text-shadow: 0 0 2px rgba(255, 255, 255, .35), 0 0 18px var(--obs-glow), 0 0 42px rgba(216,208,193,.066) !important;
 }
 html[data-theme="space"] body#academic-site :is(main h2, main h3, .nav a, .button, .theme-toggle) {
-  text-shadow: 0 0 12px rgba(178, 221, 250, .32) !important;
+  text-shadow: 0 0 12px rgba(221,214,198,.176) !important;
 }
 html[data-theme="light"] body#academic-site :is(h1, h2, h3, .brand strong, .nav a, .button, .theme-toggle) {
   text-shadow: 0 1px 0 #fff, 0 0 18px rgba(255, 255, 255, .7) !important;
@@ -31,7 +31,7 @@ html[data-theme] body#academic-site::before {
   filter: grayscale(1) !important;
 }
 
-html[data-theme="light"] body#academic-site::before { opacity: .08 !important; }
+html[data-theme="light"] body#academic-site::before { opacity: .08 !important; filter: grayscale(1) sepia(.35) !important; }
 html[data-theme] body#academic-site.ui-page-home::before { opacity: .4 !important; }
 html[data-theme="light"] body#academic-site.ui-page-home::before { opacity: .1 !important; }
 
@@ -46,7 +46,7 @@ html[data-theme] body#academic-site .site-header {
   border-radius: 0 !important;
   background: var(--obs-paper) !important;
   border-bottom: 1px solid var(--obs-edge) !important;
-  box-shadow: 0 1px 18px var(--obs-glow), inset 0 -1px rgba(185, 219, 240, .12) !important;
+  box-shadow: 0 1px 18px var(--obs-glow), inset 0 -1px rgba(201, 215, 232, .12) !important;
   backdrop-filter: none !important;
   overflow: hidden !important;
 }
@@ -128,7 +128,7 @@ html[data-theme] body#academic-site .header-actions > :is(.nav-log-gate, .theme-
   border-radius: 6px !important;
   background: var(--obs-metal) !important;
   color: var(--obs-text) !important;
-  box-shadow: inset 0 1px rgba(223, 241, 255, .24), 0 0 14px var(--obs-glow) !important;
+  box-shadow: inset 0 1px rgba(242, 238, 228, .24), 0 0 14px var(--obs-glow) !important;
   font-size: 12px !important;
   line-height: 1.2 !important;
   text-decoration: none !important;
@@ -164,7 +164,7 @@ html[data-theme] body#academic-site :is(.card, .callout, .paper-card, .cv-edu-ca
   border: 1px solid var(--obs-edge) !important;
   border-radius: 8px !important;
   background: var(--obs-glass) !important;
-  box-shadow: inset 0 1px rgba(209, 235, 252, .2), 0 10px 30px rgba(0, 0, 0, .1), 0 0 18px rgba(135, 204, 255, .055) !important;
+  box-shadow: inset 0 1px rgba(221, 232, 245, .2), 0 10px 30px rgba(0, 0, 0, .1), 0 0 18px rgba(216, 208, 193, .03) !important;
   backdrop-filter: none !important;
   transform: none !important;
 }
@@ -175,7 +175,7 @@ html[data-theme] body#academic-site main :is(.button, .paper-filter) {
   min-height: 44px !important;
   border: 1px solid var(--obs-line) !important;
   border-radius: 6px !important;
-  box-shadow: inset 0 1px rgba(223, 241, 255, .26), 0 0 16px var(--obs-glow) !important;
+  box-shadow: inset 0 1px rgba(242, 238, 228, .26), 0 0 16px var(--obs-glow) !important;
   backdrop-filter: none !important;
   background: var(--obs-metal) !important;
   color: var(--obs-text) !important;
@@ -191,7 +191,7 @@ html[data-theme] body#academic-site main :is(.pill, .project-tags span, .paper-s
   border-radius: 4px !important;
   border: 1px solid var(--obs-edge) !important;
   background: linear-gradient(115deg, var(--obs-gold-glow), transparent), var(--obs-glass) !important;
-  box-shadow: inset 0 1px rgba(245, 230, 195, .2), 0 0 12px var(--obs-gold-glow) !important;
+  box-shadow: inset 0 1px rgba(242, 230, 208, .2), 0 0 12px var(--obs-gold-glow) !important;
   color: var(--obs-text) !important;
   padding: 5px 9px !important;
   font-size: 11px !important;
@@ -201,10 +201,10 @@ html[data-theme] body#academic-site main :is(.pill, .project-tags span, .paper-s
 
 html[data-theme] body#academic-site :is(a, button, input):focus-visible { outline: 2px solid var(--obs-accent) !important; outline-offset: 4px !important; }
 @media (hover: hover) {
-  html[data-theme] body#academic-site :is(.nav a, .theme-toggle, .button, .paper-filter):hover { background: var(--obs-metal) !important; color: var(--obs-text) !important; border-color: var(--obs-accent) !important; box-shadow: inset 0 1px rgba(223, 241, 255, .3), 0 0 22px var(--obs-glow), 0 0 10px var(--obs-gold-glow) !important; }
+  html[data-theme] body#academic-site :is(.nav a, .theme-toggle, .button, .paper-filter):hover { background: var(--obs-metal) !important; color: var(--obs-text) !important; border-color: var(--obs-accent) !important; box-shadow: inset 0 1px rgba(242, 238, 228, .3), 0 0 22px var(--obs-glow), 0 0 10px var(--obs-gold-glow) !important; }
   html[data-theme] body#academic-site :is(.card, .paper-card, .cv-edu-card, .pathway-step, .mission-log-entry):hover {
     border-color: var(--obs-accent) !important;
-    box-shadow: inset 0 1px rgba(245, 224, 181, .35), 0 0 28px var(--obs-gold-glow), 0 0 12px var(--obs-glow) !important;
+    box-shadow: inset 0 1px rgba(239, 225, 197, .35), 0 0 28px var(--obs-gold-glow), 0 0 12px var(--obs-glow) !important;
   }
 }
 
@@ -272,7 +272,7 @@ html[data-theme] body#academic-site .home-card-grid .card a { margin-top: auto; 
 
 /* Reading and records use the same quiet surfaces as the main site. */
 html[data-theme] body#academic-site .paper-shelf-tools { display: grid; grid-template-columns: 1fr; gap: 20px; }
-html[data-theme] body#academic-site .paper-shelf-search input { width: 100%; min-height: 48px; background: var(--obs-surface) !important; color: var(--obs-text) !important; border: 1px solid var(--obs-line) !important; border-radius: 6px !important; box-shadow: none !important; }
+html[data-theme] body#academic-site .paper-shelf-search input { width: 100%; min-height: 48px; background: var(--obs-surface) !important; color: var(--obs-text) !important; border: 1px solid var(--obs-control-border) !important; border-radius: 6px !important; box-shadow: none !important; }
 html[data-theme] body#academic-site .paper-filter-row { gap: 8px !important; }
 html[data-theme] body#academic-site .paper-filter { background: transparent !important; }
 html[data-theme] body#academic-site .paper-filter[aria-pressed="true"] { color: var(--obs-text) !important; border-color: var(--obs-accent) !important; background: var(--obs-highlight) !important; box-shadow: inset 0 -2px var(--obs-accent) !important; }
@@ -310,7 +310,7 @@ html[data-theme] body#academic-site .footer-inner { max-width: 1280px; min-heigh
 /* Light is painted into stable surfaces: no moving blur or reflective bands. */
 html[data-theme] body#academic-site .hero-card .avatar {
   border-color: var(--obs-edge) !important;
-  box-shadow: 0 0 22px var(--obs-glow), 0 0 3px rgba(220, 239, 255, .32) !important;
+  box-shadow: 0 0 22px var(--obs-glow), 0 0 3px rgba(240, 236, 226, .32) !important;
 }
 html[data-theme] body#academic-site :is(.eyebrow, .section-label) {
   text-shadow: 0 0 14px var(--obs-gold-glow) !important;
