@@ -1,0 +1,277 @@
+{
+  "generated": "2026-11-05T07:35:31.474Z",
+  "throttling": {
+    "cpuSlowdown": 4,
+    "latencyMs": 150,
+    "downloadBytesPerSecond": 200000,
+    "uploadBytesPerSecond": 93750
+  },
+  "runs": 3,
+  "theme": "default (Space)",
+  "results": [
+    {
+      "page": "index",
+      "width": 390,
+      "lcpMs": 1372,
+      "lcpElement": "p.muted",
+      "cls": 0,
+      "fontBytes": 37956,
+      "fonts": [
+        {
+          "file": "montserrat-latin.woff2",
+          "bytes": 37956
+        }
+      ],
+      "stylesheetBytes": 77848,
+      "transferBytes": 347405,
+      "runs": [
+        {
+          "lcpMs": 1264,
+          "cls": 0,
+          "fontBytes": 37956
+        },
+        {
+          "lcpMs": 1372,
+          "cls": 0,
+          "fontBytes": 37956
+        },
+        {
+          "lcpMs": 1384,
+          "cls": 0,
+          "fontBytes": 37956
+        }
+      ]
+    },
+    {
+      "page": "index",
+      "width": 1440,
+      "lcpMs": 2360,
+      "lcpElement": "header.site-header (Solar_System_true_color.webp)",
+      "cls": 0,
+      "fontBytes": 37956,
+      "fonts": [
+        {
+          "file": "montserrat-latin.woff2",
+          "bytes": 37956
+        }
+      ],
+      "stylesheetBytes": 77848,
+      "transferBytes": 382365,
+      "runs": [
+        {
+          "lcpMs": 2056,
+          "cls": 0,
+          "fontBytes": 37956
+        },
+        {
+          "lcpMs": 2360,
+          "cls": 0,
+          "fontBytes": 37956
+        },
+        {
+          "lcpMs": 2384,
+          "cls": 0,
+          "fontBytes": 37956
+        }
+      ]
+    },
+    {
+      "page": "research",
+      "width": 390,
+      "lcpMs": 1380,
+      "lcpElement": "p.lead",
+      "cls": 0,
+      "fontBytes": 37956,
+      "fonts": [
+        {
+          "file": "montserrat-latin.woff2",
+          "bytes": 37956
+        }
+      ],
+      "stylesheetBytes": 77848,
+      "transferBytes": 272824,
+      "runs": [
+        {
+          "lcpMs": 1352,
+          "cls": 0,
+          "fontBytes": 37956
+        },
+        {
+          "lcpMs": 1380,
+          "cls": 0,
+          "fontBytes": 37956
+        },
+        {
+          "lcpMs": 1388,
+          "cls": 0,
+          "fontBytes": 37956
+        }
+      ]
+    },
+    {
+      "page": "research",
+      "width": 1440,
+      "lcpMs": 1644,
+      "lcpElement": "header.site-header (Solar_System_true_color.webp)",
+      "cls": 0,
+      "fontBytes": 37956,
+      "fonts": [
+        {
+          "file": "montserrat-latin.woff2",
+          "bytes": 37956
+        }
+      ],
+      "stylesheetBytes": 77848,
+      "transferBytes": 307784,
+      "runs": [
+        {
+          "lcpMs": 1652,
+          "cls": 0,
+          "fontBytes": 37956
+        },
+        {
+          "lcpMs": 1640,
+          "cls": 0,
+          "fontBytes": 37956
+        },
+        {
+          "lcpMs": 1644,
+          "cls": 0,
+          "fontBytes": 37956
+        }
+      ]
+    },
+    {
+      "page": "paper-shelf",
+      "width": 390,
+      "lcpMs": 1340,
+      "lcpElement": "p.paper-shelf-note",
+      "cls": 0.0807,
+      "fontBytes": 37956,
+      "fonts": [
+        {
+          "file": "montserrat-latin.woff2",
+          "bytes": 37956
+        }
+      ],
+      "stylesheetBytes": 77848,
+      "transferBytes": 273709,
+      "runs": [
+        {
+          "lcpMs": 1340,
+          "cls": 0.0807,
+          "fontBytes": 37956
+        },
+        {
+          "lcpMs": 1384,
+          "cls": 0.0807,
+          "fontBytes": 37956
+        },
+        {
+          "lcpMs": 1304,
+          "cls": 0.0807,
+          "fontBytes": 37956
+        }
+      ]
+    },
+    {
+      "page": "paper-shelf",
+      "width": 1440,
+      "lcpMs": 1648,
+      "lcpElement": "header.site-header (Solar_System_true_color.webp)",
+      "cls": 0,
+      "fontBytes": 37956,
+      "fonts": [
+        {
+          "file": "montserrat-latin.woff2",
+          "bytes": 37956
+        }
+      ],
+      "stylesheetBytes": 77848,
+      "transferBytes": 308669,
+      "runs": [
+        {
+          "lcpMs": 1632,
+          "cls": 0,
+          "fontBytes": 37956
+        },
+        {
+          "lcpMs": 1648,
+          "cls": 0,
+          "fontBytes": 37956
+        },
+        {
+          "lcpMs": 1664,
+          "cls": 0,
+          "fontBytes": 37956
+        }
+      ]
+    },
+    {
+      "page": "origins-study",
+      "width": 390,
+      "lcpMs": 1460,
+      "lcpElement": "p.evidence-status",
+      "cls": 0.0002,
+      "fontBytes": 37956,
+      "fonts": [
+        {
+          "file": "montserrat-latin.woff2",
+          "bytes": 37956
+        }
+      ],
+      "stylesheetBytes": 77848,
+      "transferBytes": 554283,
+      "runs": [
+        {
+          "lcpMs": 1340,
+          "cls": 0.0002,
+          "fontBytes": 37956
+        },
+        {
+          "lcpMs": 1460,
+          "cls": 0.0002,
+          "fontBytes": 37956
+        },
+        {
+          "lcpMs": 1504,
+          "cls": 0.0002,
+          "fontBytes": 37956
+        }
+      ]
+    },
+    {
+      "page": "origins-study",
+      "width": 1440,
+      "lcpMs": 1696,
+      "lcpElement": "header.site-header (Solar_System_true_color.webp)",
+      "cls": 0.0001,
+      "fontBytes": 37956,
+      "fonts": [
+        {
+          "file": "montserrat-latin.woff2",
+          "bytes": 37956
+        }
+      ],
+      "stylesheetBytes": 77848,
+      "transferBytes": 589243,
+      "runs": [
+        {
+          "lcpMs": 1692,
+          "cls": 0.0001,
+          "fontBytes": 37956
+        },
+        {
+          "lcpMs": 1696,
+          "cls": 0.0001,
+          "fontBytes": 37956
+        },
+        {
+          "lcpMs": 1804,
+          "cls": 0.0001,
+          "fontBytes": 37956
+        }
+      ]
+    }
+  ]
+}

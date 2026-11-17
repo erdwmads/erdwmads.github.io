@@ -15,7 +15,7 @@ async function enter(recovery){
   const initial=recovery?.stage!==undefined?recovery:studyLocation(location.hash);
   const reader=createChapterReader(root,initial,signal);
   root.querySelector('#retry-scene').addEventListener('click',()=>{const saved={...(root.dataset.renderState==='ready'&&window.study?window.study.state:reader.state),paused:true};if(moduleFailed){const url=new URL(location.href);url.hash=new URLSearchParams({stage:saved.stage,progress:saved.progress}).toString();history.replaceState({...history.state,madsScrollY:scrollY},'',url.href);location.reload();return;}leave();enter(saved);},{signal});
-  root.querySelector('#loading').hidden=false;root.querySelector('#loading').textContent='Preparing the material study…';root.querySelector('#retry-scene').hidden=true;root.querySelector('#retry-scene').textContent='Retry scene';
+  root.querySelector('#loading').hidden=false;root.querySelector('#loading').textContent='Preparing the material study…';if(document.activeElement===root.querySelector('#retry-scene'))root.querySelector('#scene').focus({preventScroll:true});root.querySelector('#retry-scene').hidden=true;root.querySelector('#retry-scene').textContent='Retry scene';
   root.querySelectorAll('.observatory button:not(#retry-scene),.observatory input').forEach(control=>control.disabled=true);
   try{
     const {mountStudy}=await load();

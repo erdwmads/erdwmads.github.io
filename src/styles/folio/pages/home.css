@@ -1,0 +1,218 @@
+/* @owner WP3 · @budget 5KB · @important 0 · Home, scoped under .ui-page-home */
+.ui-page-home .home-title {
+  padding-top: var(--ed-space-8);
+}
+
+.ui-page-home .masthead {
+  display: contents;
+}
+
+.ui-page-home :is(.masthead > *, .home-portrait) {
+  align-self: start;
+  margin: 0;
+}
+
+.ui-page-home .masthead__meta > .person-name {
+  color: var(--obs-text);
+  font: var(--ed-h4) var(--type-serif);
+}
+
+.ui-page-home .home-question {
+  max-width: var(--measure-lead);
+  font: var(--ed-h3)/1.3 var(--type-serif);
+  text-wrap: balance;
+}
+
+.ui-page-home .home-question::before {
+  content: "";
+  display: block;
+  width: var(--ed-space-8);
+  margin-bottom: var(--ed-space-5);
+  border-top: 1px solid var(--obs-rule);
+}
+
+.ui-page-home .home-affiliation {
+  display: flex;
+  gap: var(--ed-space-3);
+  margin-top: var(--ed-space-4);
+  font-size: var(--ed-small);
+  text-wrap: balance;
+}
+
+.ui-page-home .affiliation-emblem {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  padding: 2px;
+  border: 0;
+  background: none;
+  touch-action: pan-y;
+}
+
+.ui-page-home :is(.home-keywords, .identity-links) {
+  color: var(--obs-muted);
+  font-size: var(--ed-small);
+}
+
+.ui-page-home .home-keywords strong {
+  color: var(--obs-text);
+}
+
+.ui-page-home .identity-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ed-space-2);
+  min-height: 44px;
+  overflow-wrap: anywhere;
+}
+
+.ui-page-home :is(.focus-summary, .research-title-detail p) {
+  font: var(--ed-h4)/1.55 var(--type-serif);
+}
+
+.ui-page-home .focus-list {
+  margin-top: var(--ed-space-6);
+  border-top: 2px solid var(--obs-rule);
+  color: var(--obs-text);
+}
+
+.ui-page-home .focus-list > div {
+  padding-block: var(--ed-space-3);
+  border-bottom: 1px solid var(--obs-hairline);
+}
+
+.ui-page-home :is(.focus-list dd, .focus-methods) {
+  margin: var(--ed-space-1) 0 0;
+  padding: 0;
+  font-size: 1rem;
+  list-style: none;
+}
+
+.ui-page-home .folio-section {
+  container-type: inline-size;
+  --hang: max(2.5rem, (100cqi + var(--grid-gap)) / var(--k, 99) - var(--ed-space-3));
+}
+
+.ui-page-home .pronunciation {
+  white-space: nowrap;
+}
+
+.ui-page-home .ledger {
+  border-top-color: var(--obs-hairline);
+}
+
+/* Explore rows read as the Onward rows do: ink titles with an arrow, underlined on hover or focus. */
+.ui-page-home .home-explore-list .ledger__title {
+  color: var(--obs-text);
+  text-decoration: none;
+}
+
+.ui-page-home .home-explore-list .ledger__title:is(:hover, :focus-visible) {
+  text-decoration: underline 1px;
+  text-underline-offset: .2em;
+}
+
+.ui-page-home .ledger > li {
+  grid-template-columns: var(--hang) minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: var(--ed-space-3);
+}
+
+.ui-page-home .ledger__key {
+  font: 1.25rem var(--type-serif);
+}
+
+.ui-page-home .home-timeline-list .ledger__title {
+  font-weight: 400;
+}
+
+@media (min-width: 761px) and (max-width: 1199px) {
+  .ui-page-home .home-title {
+    grid-template-columns: minmax(0, 1fr) 15rem;
+  }
+
+  .ui-page-home :is(.masthead > *, .home-question) {
+    grid-column: 1;
+  }
+
+  .ui-page-home .home-portrait {
+    grid-area: 1 / 2 / span 4;
+  }
+
+  .ui-page-home .folio-section {
+    --k: 8;
+  }
+
+  .ui-page-home .ledger {
+    max-width: calc(var(--measure-body) + var(--hang));
+  }
+}
+
+@media (min-width: 961px) and (max-width: 1199px) {
+  .ui-page-home .current-focus-section > * {
+    grid-column: span 5;
+  }
+}
+
+@media (min-width: 961px) {
+  .ui-page-home .focus-list {
+    grid-area: 2 / -4 / span 4 / -1;
+    margin-top: 0;
+  }
+}
+
+@media (min-width: 1200px) {
+  .ui-page-home .home-portrait {
+    grid-row: 1 / span 5;
+  }
+
+  .ui-page-home .home-keywords {
+    grid-column: notes;
+  }
+
+  .ui-page-home .home-actions {
+    grid-row: 7;
+  }
+
+  /* The ORCID line stands in the notes column under the keywords, level with the actions. */
+  .ui-page-home .identity-links {
+    grid-column: notes;
+    grid-row: 7;
+  }
+
+  .ui-page-home .folio-section {
+    --k: 6;
+  }
+
+  .ui-page-home .ledger {
+    grid-column: margin-start / text-end;
+  }
+}
+
+@media (max-width: 760px) {
+  .ui-page-home .home-title {
+    grid-template-columns: minmax(0, 1fr) min(7.5rem, 30vw);
+    padding-top: var(--ed-space-6);
+  }
+
+  .ui-page-home .masthead__meta {
+    grid-column: 1;
+  }
+
+  .ui-page-home .home-portrait {
+    grid-area: 3 / 2;
+  }
+
+  .ui-page-home .home-actions .button {
+    flex: 1 1 100%;
+  }
+
+  .ui-page-home .home-timeline-list > li {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ui-page-home .home-timeline-list .ledger__key {
+    font: var(--ed-small) var(--type-sans);
+  }
+}

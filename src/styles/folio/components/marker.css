@@ -1,0 +1,84 @@
+/* @owner WP1 · @budget 3KB · @important 0 · Calibration markers (status circles, evidence squares, model brackets) and chips */
+/* One grammar for status and evidence. A marker is 7 px, drawn in currentColor (so forced colours keep it) and
+   always followed by its text label; shape only repeats the words. Filled: in hand now. Open: established
+   elsewhere or queued. Dashed circle, dotted square: not yet done. Half-filled: inference. Corner brackets:
+   illustrative model. Brass marks only "In progress". No "Completed" style exists. The same shapes draw the tag marker of EvidenceStatus and
+   the status chip of the Analytical Pathway, which keep their markup. */
+.marker,
+.evidence-status__tag::before,
+.pathway-chip::before {
+  content: "";
+  display: inline-block;
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border: 1px solid currentColor;
+  background: transparent;
+}
+
+.marker[data-marker="status"],
+.pathway-chip::before {
+  border-radius: 50%;
+}
+
+.marker[data-value="in-progress"],
+.pathway-chip[data-status="in-progress"]::before {
+  color: var(--obs-accent);
+}
+
+.marker[data-value="in-progress"],
+.marker[data-value="measured"],
+.pathway-chip[data-status="in-progress"]::before,
+[data-evidence-status="measured"] > .evidence-status__tag::before {
+  background: currentColor;
+}
+
+.marker[data-value="planned"],
+.pathway-chip[data-status="planned"]::before {
+  border-style: dashed;
+}
+
+/* A dashed 7 px square shows only its corners and reads as the model's brackets, so a planned square is dotted. */
+.marker[data-marker="evidence"][data-value="planned"],
+[data-evidence-status="planned"] > .evidence-status__tag::before {
+  border-style: dotted;
+}
+
+.marker[data-value="interpretation"],
+.pathway-chip[data-status="interpretation"]::before,
+[data-evidence-status="interpretation"] > .evidence-status__tag::before {
+  background: linear-gradient(90deg, currentColor 50%, transparent 50%);
+}
+
+/* Illustrative model: four 1 px corner brackets instead of a frame, the mark the model plates repeat. */
+.marker[data-value="model"],
+[data-evidence-status="model"] > .evidence-status__tag::before {
+  --bracket: linear-gradient(currentColor, currentColor);
+  width: 8px;
+  height: 8px;
+  border: 0;
+  background:
+    var(--bracket) 0 0 / 3px 1px, var(--bracket) 0 0 / 1px 3px,
+    var(--bracket) 100% 0 / 3px 1px, var(--bracket) 100% 0 / 1px 3px,
+    var(--bracket) 0 100% / 3px 1px, var(--bracket) 0 100% / 1px 3px,
+    var(--bracket) 100% 100% / 3px 1px, var(--bracket) 100% 100% / 1px 3px;
+  background-repeat: no-repeat;
+}
+
+/* Chips: 22 px tall, a 1 px control border and no fill; the label is the meaning. */
+.chip,
+.pathway-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 22px;
+  padding: 0 var(--ed-space-2);
+  border: 1px solid var(--obs-control-border);
+  border-radius: var(--radius-record);
+  color: var(--obs-text);
+  font-size: var(--ed-label);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: .04em;
+  white-space: nowrap;
+}

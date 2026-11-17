@@ -16,7 +16,7 @@ try {
   await page.waitForFunction(() => document.querySelector('.planetary').dataset.renderState === 'ready' && document.querySelector('.planetary').dataset.day);
   assert.equal(Math.floor(Number(await root.getAttribute('data-day'))), today.day, 'today is pinned');
   for (const theme of ['space', 'light']) {
-    await page.evaluate(t => document.documentElement.dataset.theme = t, theme);
+    await page.evaluate(t=>{const r=document.documentElement;r.dataset.theme=t;r.toggleAttribute('data-theme-space',t!=='light');}, theme);
     for (const scope of ['inner', 'solar']) {
       await root.locator('[data-scope]').selectOption(scope);
       await root.locator('[data-action="reset"]').click();

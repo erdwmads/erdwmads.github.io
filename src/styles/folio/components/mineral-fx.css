@@ -1,0 +1,63 @@
+/* @owner WP2 · @budget 2KB · @important 0 · Mineral cleavage overlay and html[data-polarising] effects */
+/* Short effects that answer input (mineral-interactions.js; fine pointers with FX on). The cleavage is a hairline
+   brass fracture the script draws once, in 620 ms, from the current page's link down the page edge. Polarising: while
+   the reader turns the Home emblem, a ring takes the interference colour and fades at extinction, every 90 degrees,
+   as a grain does between crossed polars; the navigation marker follows it where there is one. Under keyboard focus
+   the ring moves inside the focus outline, which never fades. */
+.mineral-cleavage {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-float);
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.mineral-cleavage path {
+  fill: none;
+  stroke: var(--obs-accent);
+  stroke-width: 1;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+}
+
+[data-polarisation] {
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+[data-polarisation][aria-pressed="true"] {
+  cursor: grabbing;
+}
+
+:where(html[data-polarising]) [data-polarisation]:not(:focus-visible) {
+  outline: 2px solid color-mix(in srgb, var(--mineral-colour) calc(var(--mineral-extinction) * 100%), transparent);
+  outline-offset: 6px;
+}
+
+:where(html[data-polarising]) [data-polarisation]:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--mineral-colour) calc(var(--mineral-extinction) * 100%), transparent);
+}
+
+:where(html[data-polarising]) .obs-nav-beam {
+  border-top-color: var(--mineral-colour);
+  opacity: var(--mineral-extinction);
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .mineral-cleavage {
+    display: none;
+  }
+
+  [data-polarisation] {
+    cursor: default;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mineral-cleavage {
+    display: none;
+  }
+}

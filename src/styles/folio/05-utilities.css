@@ -1,0 +1,35 @@
+/* @owner WP1 · @budget 2KB · @important 10 · Utilities: visually hidden text, tabular figures, measure, space-reserving hidden controls */
+/* Text for assistive technology only. The aliases are class names scripts create (planetary explorer, sample
+   missions) or the ORCID link's "(opens in a new tab)". */
+.visually-hidden,
+.planetary-sr-only,
+.mission-sr-only,
+.orcid-new-tab {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+}
+
+.tabular {
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.measure {
+  max-width: var(--measure-body);
+}
+
+/* The one exception to [hidden]: a control that a script reveals later keeps its box (invisible) from the first
+   paint, so revealing it shifts nothing. Markup opts in with data-reserve-space; --reserve-display names the
+   display it will have. Without scripting the control stays hidden and reserves nothing. */
+@media (scripting: enabled) {
+  [hidden][data-reserve-space] {
+    display: var(--reserve-display, flex) !important;
+    visibility: hidden;
+  }
+}

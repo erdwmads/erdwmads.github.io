@@ -3,12 +3,12 @@ let leave=()=>{};
 function enter(){
  const root=document.querySelector('[data-image-inspector]');if(!root||root.dataset.initialized)return;leave();root.dataset.initialized='true';
  const abort=new AbortController(),{signal}=abort,stage=root.querySelector('[data-inspector-stage]'),image=root.querySelector('[data-inspector-image]'),controls=root.querySelector('[data-inspector-controls]'),slider=root.querySelector('[data-inspector-zoom]'),output=root.querySelector('[data-inspector-output]'),hint=root.querySelector('[data-inspector-hint]'),status=root.querySelector('[data-inspector-status]'),touch=root.querySelector('[data-inspector-touch]');
- let view={zoom:1,x:0,y:0},fitted={width:0,height:0},width=0,height=0,ready=false,disposed=false,drag;
+ let view={zoom:1,x:0,y:0},fitted={width:0,height:0},width=0,height=0,ready=false,disposed=false,printing=false,drag;
  const coarse=matchMedia('(pointer:coarse)');
  function cancelDrag(){const id=drag?.id;drag=undefined;stage.removeAttribute('data-dragging');if(id!==undefined&&stage.hasPointerCapture(id))stage.releasePointerCapture(id);}
  function moving(value){if(!value)cancelDrag();stage.toggleAttribute('data-moving',value);touch.setAttribute('aria-pressed',String(value));touch.textContent=value?'Done moving':'Move image';}
  function render(){
-  if(!ready||!width||!height)return;
+  if(!ready||printing||!width||!height)return;
   view=clampView(view,fitted,width,height);
   image.style.width=fitted.width+'px';image.style.height=fitted.height+'px';image.style.transform='translate(calc(-50% + '+view.x+'px),calc(-50% + '+view.y+'px)) scale('+view.zoom+')';
   slider.value=view.zoom;slider.setAttribute('aria-valuetext',view.zoom.toFixed(1)+' times display zoom');output.value=view.zoom.toFixed(1)+'×';
@@ -29,7 +29,8 @@ function enter(){
   try{await image.decode();}catch{if(!image.naturalWidth)return failed();}
   if(disposed||!image.naturalWidth)return;ready=true;root.setAttribute('data-inspector-ready','');controls.hidden=false;hint.hidden=false;resize();status.textContent='Original figure and scale bars retained. Enlarge an image region to examine it.';
  }
- function failed(){if(disposed)return;ready=false;root.removeAttribute('data-inspector-ready');controls.hidden=true;hint.hidden=true;status.textContent='The figure could not load. The original-image and publication links remain available below.';}
+ // A failed figure releases the reserved boxes, so the message sits directly under the stage.
+ function failed(){if(disposed)return;ready=false;root.removeAttribute('data-inspector-ready');for(const node of [controls,hint]){node.hidden=true;node.removeAttribute('data-reserve-space');}status.textContent='The figure could not load. The original-image and publication links remain available below.';}
  slider.addEventListener('input',()=>zoom(Number(slider.value)),{signal});
  slider.addEventListener('change',()=>{status.textContent='Display zoom '+view.zoom.toFixed(1)+'×. Image enlargement, not instrument magnification.';},{signal});
  root.addEventListener('click',event=>{const b=event.target.closest('[data-inspector-region]');if(b)region(b.dataset.inspectorRegion);},{signal});
@@ -53,6 +54,11 @@ function enter(){
  image.addEventListener('load',loaded,{signal});image.addEventListener('error',failed,{signal});
  const observer=new ResizeObserver(resize);observer.observe(stage);
  coarse.addEventListener('change',()=>{moving(false);render();},{signal});
+ // Print returns the image to static flow (no inline geometry, no ready state), so the whole figure and its scale
+ // bars print; the sheet's print block gives the stage the full column.
+ let screenStatus='';
+ window.addEventListener('beforeprint',()=>{if(!ready||printing)return;printing=true;image.removeAttribute('style');root.removeAttribute('data-inspector-ready');screenStatus=status.textContent;status.textContent='Published optical and SEM views · Original figure and scale bars retained.';},{signal});
+ window.addEventListener('afterprint',()=>{if(!printing)return;printing=false;root.setAttribute('data-inspector-ready','');status.textContent=screenStatus;resize();},{signal});
  if(image.complete){if(image.naturalWidth)loaded();else failed();}
  leave=()=>{disposed=true;cancelDrag();abort.abort();observer.disconnect();root.removeAttribute('data-initialized');};
 }

@@ -26,6 +26,15 @@ try{
   assert.equal(await page.locator('[data-research-scale], [data-material-tabs]').count(),0);
   assert.equal(await page.locator('.research-scale img').count(),1);
   assert.equal(await page.locator('script[src*="research-scale.js"]').count(),0);
+  // Print returns a framed figure to static flow, so the whole figure and its scale bars print; the view returns after.
+  await page.locator('[data-image-inspector]').scrollIntoViewIfNeeded();await page.waitForSelector('[data-image-inspector][data-inspector-ready]');
+  await page.locator('[data-inspector-region="sem-detail"]').click();
+  await page.evaluate(()=>dispatchEvent(new Event('beforeprint')));await page.emulateMedia({media:'print'});
+  const printed=await page.evaluate(()=>{const s=document.querySelector('[data-inspector-stage]').getBoundingClientRect(),i=document.querySelector('[data-inspector-image]').getBoundingClientRect();return {inside:i.left>=s.left-1&&i.top>=s.top-1&&i.right<=s.right+1&&i.bottom<=s.bottom+1,fill:i.width/s.width};});
+  assert(printed.inside&&printed.fill>.95,'the printed figure is whole: '+JSON.stringify(printed));
+  await page.emulateMedia({media:'screen'});await page.evaluate(()=>dispatchEvent(new Event('afterprint')));
+  assert.equal(await page.locator('[data-image-inspector]').getAttribute('data-zoomed'),'true');
+  await page.locator('[data-inspector-region="all"]').click();
   const root=page.locator('.planetary');await root.locator('[data-stage]').scrollIntoViewIfNeeded();
   await page.waitForFunction(()=>document.querySelector('.planetary').dataset.renderState==='ready');
   for(const material of ['bennu','ryugu','orgueil']){

@@ -1,0 +1,99 @@
+/* @owner WP1 · @budget 3KB · @important 0 · Buttons: primary, secondary, quiet action, icon button */
+/* At most one primary per view: ink on ivory in Light, ivory on ink in Space. Hover changes the fill only, with no
+   shadow, lift or change of size, so geometry never moves. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ed-space-2);
+  min-height: 44px;
+  padding: 0 1.25rem;
+  border: 1px solid var(--obs-primary-face);
+  border-radius: var(--radius-control);
+  background: var(--obs-primary-face);
+  color: var(--obs-primary-text);
+  font-family: var(--type-sans);
+  font-size: .9375rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--ed-dur-1) var(--ed-ease-out), border-color var(--ed-dur-1) var(--ed-ease-out);
+}
+
+.button:hover {
+  border-color: var(--obs-primary-hover);
+  background: var(--obs-primary-hover);
+}
+
+/* Secondary: transparent with a control border; hover fills it with the surface tone. */
+.button.secondary {
+  border-color: var(--obs-control-border);
+  background: transparent;
+  color: var(--obs-text);
+}
+
+.button.secondary:hover {
+  background: var(--obs-surface-hover);
+}
+
+/* An icon keeps its 18 px slot from the first paint, so a script that swaps a Lucide placeholder (<i data-lucide>)
+   for its SVG after load moves neither the label nor the button. */
+.button > :where(svg, i[data-lucide]) {
+  flex: none;
+  width: 18px;
+  height: 18px;
+}
+
+.button:disabled,
+.button[aria-disabled="true"] {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+/* Quiet action: text plus an arrow in the markup ("CV →"), with a 44 px target. */
+.quiet-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ed-space-1);
+  min-height: 44px;
+  color: var(--obs-text);
+  font-weight: 600;
+  text-decoration-color: transparent;
+}
+
+.quiet-link:hover {
+  text-decoration-color: currentColor;
+}
+
+/* Icon button: 44 x 44 px, an 18 px Lucide icon in currentColor, and an accessible name in the markup. */
+.icon-button {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--obs-control-border);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--obs-text);
+  cursor: pointer;
+  transition: background-color var(--ed-dur-1) var(--ed-ease-out);
+}
+
+.icon-button:hover {
+  background: var(--obs-surface-hover);
+}
+
+.icon-button svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.5;
+}
+
+.icon-button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}

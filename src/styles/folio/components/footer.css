@@ -1,0 +1,132 @@
+/* @owner WP2 · @budget 3.5KB · @important 0 · Site footer colophon rows and the Replay entrance button */
+/* The colophon, on a solid ground under a strong rule: the long-term question beneath its label in the serif italic;
+   the owner, ORCID iD and page actions on a hairline; then the imprint line. Phones stack the rows and keep Replay
+   entrance here, where it covers nothing. */
+.site-footer {
+  position: relative;
+  z-index: var(--z-content);
+  margin-block-start: var(--ed-space-8);
+  border-top: 1px solid var(--obs-rule);
+  background: var(--obs-paper);
+  color: var(--obs-muted);
+  font-size: var(--ed-caption);
+  line-height: 1.45;
+}
+
+/* Main's veil carries over the gap above and stops at the rule, which a positioned ::before would otherwise cover. */
+.site-footer::before {
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--ed-space-8) - 1px) 0 calc(100% + 1px);
+  background: var(--obs-reading);
+  pointer-events: none;
+}
+
+.footer-inner {
+  display: grid;
+  gap: var(--ed-space-5);
+  padding-block: var(--ed-space-7) var(--ed-space-6);
+}
+
+.footer-question {
+  display: grid;
+  gap: var(--ed-space-2);
+  max-width: var(--measure-lead);
+}
+
+.footer-question__label {
+  font-size: var(--ed-label);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.footer-question__text {
+  color: var(--obs-text);
+  font-family: var(--type-serif);
+  font-size: var(--ed-lead);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.4;
+  text-wrap: balance;
+}
+
+.footer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--ed-space-5);
+  padding-block-start: var(--ed-space-2);
+  border-top: 1px solid var(--obs-hairline);
+}
+
+.footer-identity {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--ed-space-3);
+  color: var(--obs-text);
+}
+
+.orcid-link--compact,
+.footer-top,
+.footer-replay {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ed-space-2);
+  min-height: 44px;
+}
+
+.orcid-link--compact {
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* Replay entrance (entry.js reveals it) serves phones only; wider windows have the fixed button. It comes after Back
+   to top in the row, so its arrival moves nothing. */
+.footer-replay {
+  order: 1;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--obs-link);
+  text-decoration: underline 1px color-mix(in srgb, currentColor 40%, transparent);
+  text-underline-offset: .18em;
+}
+
+.footer-replay:hover {
+  text-decoration-color: currentColor;
+}
+
+.footer-colophon {
+  font-size: var(--ed-label);
+  line-height: 1.7;
+  letter-spacing: .02em;
+}
+
+.footer-colophon > span {
+  white-space: nowrap;
+}
+
+.footer-colophon > span:first-child {
+  color: var(--obs-text);
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 761px) {
+  .footer-replay {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .footer-inner {
+    padding-block: var(--ed-space-6) var(--ed-space-5);
+  }
+
+  .footer-identity {
+    flex-basis: 100%;
+  }
+}

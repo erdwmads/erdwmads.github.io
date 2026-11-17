@@ -1,46 +1,59 @@
-// Computed-style snapshot: a whole-site safety net for CSS refactors (moving rules between owner files,
-// consolidating layers, pruning). It records about 24 layout, typography, colour, border and shadow properties
-// for about 45 shell and component selectors on 6 representative pages, in both themes at 1440, 900 and 390 px,
-// and compares them with docs/style-snapshot.json. A CSS change that should not change what readers see must
-// pass unchanged; a deliberate visual change is reviewed in the printed diff and then recorded with
-//   node scripts/style-snapshot.browser.test.mjs --write      (or STYLE_SNAPSHOT_WRITE=1)
-// Runs through scripts/run-browser-tests.mjs (SITE_TEST_URL or TEST_BASE_URL, PLAYWRIGHT_MODULE, EDGE_EXECUTABLE).
-// The capture is deterministic: FX off, reduced motion, a fixed clock, fonts loaded, the entrance skipped, no
-// pointer over the page and no scrolling. The baseline belongs to one browser engine (Edge/Chromium); text
-// metrics can differ slightly on another machine, so regenerate it rather than hand-edit it.
+// Computed-style snapshot: a whole-site safety net for CSS work. It records about 24 layout, typography, colour,
+// border and shadow properties for shell and component selectors, in both themes at 1440, 900 and 390 px, and
+// compares them with one baseline per area in docs/style-snapshot/<area>.json. The areas follow the Folio 2046 work
+// packages (spec §6.6): core (WP1), shell (WP2), research (WP3), features (WP4), collections (WP5), archive (WP6).
+// A CSS change that should not change what readers see must pass unchanged; a deliberate visual change is reviewed
+// in the printed diff and then recorded by the area's owner with
+//   node scripts/style-snapshot.browser.test.mjs --area <area> --write      (or STYLE_SNAPSHOT_AREA / _WRITE=1)
+// Without --area every area is checked. docs/style-snapshot/before-2026-11.json is the single-file baseline of the
+// site before the rebuild, kept read-only for reference.
+// Runs through scripts/run-browser-tests.mjs (SITE_TEST_URL or TEST_BASE_URL, PLAYWRIGHT_MODULE, EDGE_EXECUTABLE), or
+// on its own, when it serves dist/ itself. The capture is deterministic: FX off, reduced motion, a fixed clock, fonts
+// loaded, the entrance skipped, no pointer over the page and no scrolling. The baselines belong to one browser engine
+// (Edge/Chromium); text metrics can differ slightly on another machine, so regenerate them rather than hand-edit them.
 import fs from 'node:fs';
 import path from 'node:path';
-import { createRequire } from 'node:module';
-import { fileURLToPath } from 'node:url';
+import { launchBrowser } from './lib/browser.mjs';
+import { fixtureHtml } from './lib/guard.mjs';
+import { root } from './lib/site-paths.mjs';
+import { serveDist } from './lib/static-server.mjs';
 
-const require = createRequire(import.meta.url);
-const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const baselinePath = path.join(root, 'docs', 'style-snapshot.json');
-const base = (process.env.SITE_TEST_URL || process.env.TEST_BASE_URL || 'http://127.0.0.1:52523').replace(/\/$/, '');
-const write = process.argv.includes('--write') || process.env.STYLE_SNAPSHOT_WRITE === '1';
+const baselineDir = path.join(root, 'docs', 'style-snapshot');
+const args = process.argv.slice(2);
+const write = args.includes('--write') || process.env.STYLE_SNAPSHOT_WRITE === '1';
+const requested = [...args.flatMap((arg, index) => (args[index - 1] === '--area' ? arg.split(',') : [])), ...(process.env.STYLE_SNAPSHOT_AREA || '').split(',')].map(area => area.trim()).filter(Boolean);
 
-const pages = ['index.html', 'research.html', 'research-log.html', 'paper-shelf.html', 'photography.html', 'ryugu-bennu.html'];
+// The core area's page: not a file but the guard fixture rendered on its own (capture()).
+const fixturePage = 'primitives';
+// Per area: its owner, the pages it is recorded on, and the selectors. The first element matching each selector is
+// recorded; a selector that matches nothing on a page is skipped there. The core area (WP1) is defined here; every
+// other area lives in its owner's module, scripts/style-snapshot/<area>.mjs, exporting owner, pages and selectors
+// (a frozen interface, like the check-site and style-contract modules), so each package rewrites its own selector
+// list for the new primitives (spec §6.3) without editing this file.
+const areaModules = ['shell', 'research', 'features', 'collections', 'archive'];
+const areas = {
+  // WP1's primitives alone: the guard fixture (scripts/lib/guard.mjs) rendered as the only content of a page with the
+  // bundle and no page class, so no other package's styles reach it and later packages never change this baseline.
+  core: {
+    owner: 'WP1',
+    pages: [fixturePage],
+    selectors: ['html', 'body', '.site-skip-link', 'main', '.masthead', '.masthead .kicker', '.kicker__rule', '.masthead h1', '.masthead__lead', '.masthead__meta', '.folio-section', '.folio-section__number', '.folio-section h2', '.folio-section > p:not([class])', '.folio-section a:not([class])', '.button:not(.secondary):not([disabled])', '.button.secondary', '.button[disabled]', '.icon-button', '.quiet-link', '.chip', '.marker[data-value="in-progress"]', '.marker[data-value="model"]', '.evidence-status', '.evidence-status__tag', '.plate', '.plate__media', '.plate__caption', '.plate__label', '.plate__credit', 'hr', '.ledger', '.ledger li', '.ledger__key', '.data-table', '.data-table th', '.data-table td', 'details', 'summary', 'input[type="search"]']
+  }
+};
+for (const area of areaModules) {
+  const { owner, pages, selectors } = await import(`./style-snapshot/${area}.mjs`);
+  if (!owner || !Array.isArray(pages) || !Array.isArray(selectors)) throw new Error(`scripts/style-snapshot/${area}.mjs must export owner, pages and selectors`);
+  areas[area] = { owner, pages, selectors };
+}
+const unknown = requested.filter(area => !areas[area]);
+if (unknown.length) {
+  console.error(`Unknown area ${unknown.join(', ')}; use ${Object.keys(areas).join(', ')}`);
+  process.exit(1);
+}
+const selectedAreas = requested.length ? [...new Set(requested)] : Object.keys(areas);
+
 const themes = ['space', 'light'];
 const widths = [1440, 900, 390];
-// The first element matching each selector is recorded; a selector that matches nothing on a page is skipped there.
-const selectors = [
-  // Shell
-  'html', 'body', '.site-skip-link', '.site-header', '.header-inner', '.brand', '.nav', '.nav__links a', '.nav a[aria-current="page"]',
-  '.nav-log-gate', '.theme-toggle', '.nav-toggle', 'main', 'main h1', 'main h2', 'main h3', 'main .lead', 'main .eyebrow',
-  'main .button:not(.secondary)', 'main .button.secondary', '.continue-reading', '.site-footer', '.footer-inner', '.footer-question',
-  '.orcid-link',
-  // Home
-  '.hero-card', '.focus-card', '.pill', '.mini-timeline-item', '.affiliation-card',
-  // Research and Research Log
-  '.research-question', '.pathway-item', '.pathway-chip', '.comparison-card', '.research-dashboard', '.status-badge', '.research-log-archive',
-  // Paper Shelf
-  '.paper-filter', '.paper-group-title', '.paper-card', '.paper-copy',
-  // Photography
-  '.photo-wall', '.photo-tile',
-  // Ryugu & Bennu
-  '.research-guide', '.evidence-status', '.mission-workspace', '.planetary-toolbar', '.research-scale__figure'
-];
 // 'size' is the rounded border-box width x height; html and body record width only (their height is the page length).
 const properties = [
   'display', 'position', 'z-index', 'size', 'margin', 'padding', 'gap', 'grid-template-columns',
@@ -57,7 +70,7 @@ const defaults = {
 const comboKey = (theme, width) => `${theme}@${width}`;
 const combos = themes.flatMap(theme => widths.map(width => ({ theme, width, key: comboKey(theme, width) })));
 
-async function capture(browser, page, { theme, width }) {
+async function capture(browser, base, page, selectors, { theme, width }) {
   const mobile = width < 700;
   const context = await browser.newContext({ viewport: { width, height: mobile ? 844 : 1000 }, isMobile: mobile, hasTouch: mobile, reducedMotion: 'reduce', deviceScaleFactor: 1 });
   await context.clock.setFixedTime(new Date('2026-10-01T12:00:00Z'));
@@ -69,8 +82,14 @@ async function capture(browser, page, { theme, width }) {
     } catch {}
   }, theme);
   const tab = await context.newPage();
-  await tab.goto(`${base}/${page}`, { waitUntil: 'load' });
+  await tab.goto(`${base}/${page === fixturePage ? '404.html' : page}`, { waitUntil: 'load' });
   await tab.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+  if (page === fixturePage) {
+    await tab.evaluate(html => {
+      document.body.className = '';
+      document.body.innerHTML = `<a class="site-skip-link" href="#main-content">Skip to content</a><main id="main-content" class="page" tabindex="-1">${html}</main>`;
+    }, fixtureHtml);
+  }
   // Load every declared face up front: a face that starts loading only when its text is laid out would otherwise
   // swap in after document.fonts.ready and move the layout.
   await tab.evaluate(async () => { await Promise.all([...document.fonts].map(face => face.load().catch(() => {}))); await document.fonts.ready; });
@@ -116,7 +135,7 @@ async function capture(browser, page, { theme, width }) {
 
 // Baseline layout: per page and selector, the full values at the first combination (space@1440) and only the
 // properties that differ for every other combination.
-function compress(snapshot) {
+function compress(snapshot, { pages, selectors }) {
   const out = {};
   for (const page of pages) {
     out[page] = {};
@@ -159,7 +178,7 @@ function expand(stored) {
   return out;
 }
 
-function diff(expected, actual) {
+function diff(expected, actual, { pages, selectors }) {
   const lines = [];
   for (const page of pages) for (const { key } of combos) {
     const want = expected[page]?.[key] || {}, got = actual[page]?.[key] || {};
@@ -180,46 +199,65 @@ function diff(expected, actual) {
   return lines;
 }
 
-const browser = await chromium.launch({ headless: true, ...(process.env.EDGE_EXECUTABLE ? { executablePath: process.env.EDGE_EXECUTABLE } : {}) });
+// Each page is loaded once per theme and width, with the selectors of every selected area that records it.
+const plan = new Map();
+for (const area of selectedAreas) for (const page of areas[area].pages) plan.set(page, [...new Set([...(plan.get(page) || []), ...areas[area].selectors])]);
+
+const external = (process.env.SITE_TEST_URL || process.env.TEST_BASE_URL || '').replace(/\/$/, '');
+const server = external ? null : await serveDist();
+const base = external || server.url;
+const browser = await launchBrowser();
 const actual = {};
 try {
-  for (const page of pages) {
+  for (const [page, selectors] of plan) {
     actual[page] = {};
-    for (const combo of combos) actual[page][combo.key] = await capture(browser, page, combo);
+    for (const combo of combos) actual[page][combo.key] = await capture(browser, base, page, selectors, combo);
   }
 } finally {
   await browser.close();
+  await server?.close();
 }
 
-const stored = compress(actual);
-if (write) {
-  const document = {
-    about: 'Computed-style baseline for scripts/style-snapshot.browser.test.mjs. Per page and selector: full values at space@1440, then only the properties that differ at the other theme@width combinations; omitted properties have the default value listed in the test. Regenerate with: node scripts/style-snapshot.browser.test.mjs --write (against a fresh build).',
-    properties,
-    defaults,
-    pages: stored
-  };
-  // One line per page, selector and theme@width, so a reviewed change shows up as a short diff.
-  const text = JSON.stringify(document, null, 1).replace(/\{\n\s+([^{}[\]]*?)\n\s*\}/g, (_match, body) => `{${body.replace(/\n\s*/g, ' ')}}`);
-  fs.writeFileSync(baselinePath, `${text}\n`);
+const baselineFile = area => path.join(baselineDir, `${area}.json`);
+let failed = false;
+for (const area of selectedAreas) {
+  const spec = areas[area];
+  const stored = compress(actual, spec);
+  const relative = path.relative(root, baselineFile(area)).replace(/\\/g, '/');
   const count = Object.values(stored).reduce((sum, bySelector) => sum + Object.keys(bySelector).length, 0);
-  console.log(`Wrote ${path.relative(root, baselinePath)}: ${pages.length} pages x ${combos.length} theme/width combinations, ${count} page selectors`);
-  process.exit(0);
+  if (write) {
+    const document = {
+      about: `Computed-style baseline of the ${area} area (owner ${spec.owner}) for scripts/style-snapshot.browser.test.mjs. Per page and selector: full values at space@1440, then only the properties that differ at the other theme@width combinations; omitted properties have the default value listed in the test. Regenerate with: node scripts/style-snapshot.browser.test.mjs --area ${area} --write (against a fresh build).`,
+      area,
+      owner: spec.owner,
+      properties,
+      defaults,
+      pages: stored
+    };
+    // One line per page, selector and theme@width, so a reviewed change shows up as a short diff.
+    const text = JSON.stringify(document, null, 1).replace(/\{\n\s+([^{}[\]]*?)\n\s*\}/g, (_match, body) => `{${body.replace(/\n\s*/g, ' ')}}`);
+    fs.mkdirSync(baselineDir, { recursive: true });
+    fs.writeFileSync(baselineFile(area), `${text}\n`);
+    console.log(`Wrote ${relative}: ${spec.pages.length} pages x ${combos.length} theme/width combinations, ${count} page selectors`);
+    continue;
+  }
+  if (!fs.existsSync(baselineFile(area))) {
+    console.error(`No baseline at ${relative}; create it with --area ${area} --write`);
+    failed = true;
+    continue;
+  }
+  const baseline = JSON.parse(fs.readFileSync(baselineFile(area), 'utf8'));
+  const changes = [];
+  if (JSON.stringify(baseline.properties) !== JSON.stringify(properties)) changes.push(`property list changed: ${baseline.properties.join(', ')}  ->  ${properties.join(', ')}`);
+  changes.push(...diff(expand(baseline.pages), expand(stored), spec));
+  if (changes.length) {
+    console.error(`${area} (${spec.owner}): computed styles differ from ${relative} in ${changes.length} place(s):`);
+    for (const line of changes.slice(0, 250)) console.error(`  ${line}`);
+    if (changes.length > 250) console.error(`  ... and ${changes.length - 250} more`);
+    console.error(`If every change is intended, record it with: node scripts/style-snapshot.browser.test.mjs --area ${area} --write`);
+    failed = true;
+    continue;
+  }
+  console.log(`PASS ${area} (${spec.owner}) matches ${relative}: ${spec.pages.length} pages, ${combos.length} theme/width combinations, ${count} page selectors, ${properties.length} properties`);
 }
-if (!fs.existsSync(baselinePath)) {
-  console.error(`No baseline at ${path.relative(root, baselinePath)}; create it with --write`);
-  process.exit(1);
-}
-const baseline = JSON.parse(fs.readFileSync(baselinePath, 'utf8'));
-const changes = [];
-if (JSON.stringify(baseline.properties) !== JSON.stringify(properties)) changes.push(`property list changed: ${baseline.properties.join(', ')}  ->  ${properties.join(', ')}`);
-changes.push(...diff(expand(baseline.pages), expand(stored)));
-if (changes.length) {
-  console.error(`Computed styles differ from docs/style-snapshot.json in ${changes.length} place(s):`);
-  for (const line of changes.slice(0, 250)) console.error(`  ${line}`);
-  if (changes.length > 250) console.error(`  ... and ${changes.length - 250} more`);
-  console.error('If every change is intended, record it with: node scripts/style-snapshot.browser.test.mjs --write');
-  process.exit(1);
-}
-const checked = Object.values(stored).reduce((sum, bySelector) => sum + Object.keys(bySelector).length, 0);
-console.log(`PASS computed styles match docs/style-snapshot.json: ${pages.length} pages, ${combos.length} theme/width combinations, ${checked} page selectors, ${properties.length} properties`);
+process.exit(failed ? 1 : 0);

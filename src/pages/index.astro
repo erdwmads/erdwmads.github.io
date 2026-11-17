@@ -1,17 +1,68 @@
 ---
-import LegacyShell from "../components/LegacyShell.astro";
+import SiteShell from "../components/SiteShell.astro";
+import Masthead from "../components/Masthead.astro";
+import Figure from "../components/Figure.astro";
+import Section from "../components/Section.astro";
+import Ledger from "../components/Ledger.astro";
 import CurrentFocus from "../components/CurrentFocus.astro";
 import { getPageScripts, homeTitle } from "../data/site";
-// Hero: name, pronunciation, affiliations and portrait.
-import heroHtml from "../legacy/index-main.html?raw";
-// Explore list and the compact academic timeline.
-import exploreHtml from "../legacy/index-explore.html?raw";
+import { affiliations, interests, keywords, explore, timeline } from "../data/home";
+import { question } from "../data/project.mjs";
 
 const scriptHtml = getPageScripts("home");
 ---
 
-<LegacyShell title={homeTitle} description='Astromineralogy archive of I. Mads Lieu, Waseda University: Ca–Mg carbonates reported as dolomite in the Orgueil CI1 chondrite and aqueous alteration.' current='home' mainClass='main' path="index.html" scriptHtml={scriptHtml}>
-  <Fragment set:html={heroHtml} />
-  <CurrentFocus />
-  <Fragment set:html={exploreHtml} />
-</LegacyShell>
+<SiteShell title={homeTitle} description='Astromineralogy archive of I. Mads Lieu, Waseda University: Ca–Mg carbonates reported as dolomite in the Orgueil CI1 chondrite and aqueous alteration.' current='home' mainClass='main' path="index.html" scriptHtml={scriptHtml}>
+  <div class="page">
+    {/* The title page: the name and its pronunciation, the research question, the portrait, then the affiliations,
+        interests, keywords and the two ways onward. On desktop the portrait and the keywords stand in the notes
+        column. The question follows the masthead, so the reading order is the order on screen. */}
+    <div class="home-title folio">
+      <Masthead size="name" kicker="Personal academic website" title="I. Mads Lieu" id="home-name">
+        <Fragment slot="meta"><span class="person-name">Ioong Mads Lieu</span> <span class="pronunciation"><span class="pronunciation-label visually-hidden">Pronunciation: </span><span class="person-name">Ioong</span>: YOONG · <span class="person-name">Lieu</span>: LYEW</span></Fragment>
+      </Masthead>
+      <p class="home-question">{question}</p>
+      <Figure ratio="4:5" class="home-portrait in-notes">
+        <picture>
+          <source srcset="assets/img/profile-640.webp 640w, assets/img/profile.webp 960w" sizes="(max-width: 760px) 120px, (max-width: 1199px) 240px, 282px" type="image/webp">
+          <img src="assets/img/profile.jpg" alt="I. Mads Lieu" width="960" height="960" fetchpriority="high">
+        </picture>
+      </Figure>
+      <p class="home-affiliation">
+        <button class="affiliation-emblem" type="button" data-polarisation aria-label="Mineralogy Laboratory: polarisation" title="Polarisation: hold and drag, or use arrow keys with FX on">
+          <img src="assets/img/affiliation/mineralogy-laboratory-logo.png" width="40" height="40" alt="">
+        </button>
+        <span>{affiliations.map((line, index) => <Fragment>{index > 0 && <br />}{line}</Fragment>)}</span>
+      </p>
+      <p class="home-interests">{interests}</p>
+      <p class="home-keywords"><strong>Keywords:</strong> {keywords.map((word) => word.replaceAll(" ", "\u00a0").replaceAll("\u2013", "\u2013\u2060")).join("\u00a0· ")}</p>
+      <div class="home-actions cluster">
+        <a class="button" href="research.html">Research</a>
+        <a class="quiet-link" href="cv.html">CV <span aria-hidden="true">→</span></a>
+      </div>
+      <p class="identity-links">
+        <a class="orcid-link" href="https://orcid.org/0009-0007-3960-3959" target="_blank" rel="me noopener noreferrer"><img src="assets/img/orcid/ORCID-iD_icon-vector.svg" width="24" height="24" alt="ORCID iD"><span>https://orcid.org/0009-0007-3960-3959</span><span class="orcid-new-tab"> (opens in a new tab)</span></a>
+      </p>
+    </div>
+
+    <CurrentFocus />
+
+    <Section id="home-explore-title" kicker="Archive contents" title="Explore" class="home-explore">
+      {/* Ledger markup (src/components/Ledger.astro), written out so a detail can strike a word through. */}
+      <ol class="ledger home-explore-list">
+        {explore.map((item) => (
+          <li>
+            <span class="ledger__key tabular">{item.number}</span>
+            <a class="ledger__title" href={item.href}>{item.title} <span aria-hidden="true">→</span></a>
+            <span class="ledger__detail">{item.detail.map((part) => typeof part === "string" ? part : <Fragment><s>{part.struck}</s><span class="visually-hidden"> (crossed out)</span></Fragment>)}</span>
+          </li>
+        ))}
+      </ol>
+    </Section>
+
+    <Section id="home-timeline-title" kicker="Education" title="Academic timeline" class="home-timeline">
+      <Ledger items={timeline} class="home-timeline-list" />
+      <p class="home-timeline-more"><a class="quiet-link" href="cv.html">Full CV <span aria-hidden="true">→</span></a></p>
+    </Section>
+  </div>
+</SiteShell>

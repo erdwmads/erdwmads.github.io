@@ -1,0 +1,60 @@
+/* @owner WP2 · @budget 2KB · @important 0 · Onward links at the end of main (.continue-reading) */
+/* Ruled rows; the arrow ends on the text line, from 1200 px (100% + gap) / 3 short of the edge. */
+.continue-reading {
+  margin-block-start: var(--section-gap);
+}
+
+.continue-reading-label {
+  padding-block: var(--ed-space-3) var(--ed-space-4);
+  border-top: 1px solid var(--obs-rule);
+  color: var(--obs-muted);
+  font-size: var(--ed-label);
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.continue-reading a {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: var(--grid-gap);
+  padding: var(--ed-space-4) calc(100% - var(--measure-body)) var(--ed-space-4) 0;
+  border-top: 1px solid var(--obs-hairline);
+  color: var(--obs-text);
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+.continue-reading a:last-child {
+  border-bottom: 1px solid var(--obs-hairline);
+}
+
+.continue-reading-number {
+  font: 1.125rem/1.4 var(--type-serif);
+}
+
+.continue-reading strong {
+  display: block;
+  font-size: var(--ed-h4);
+}
+
+.continue-reading small,
+.continue-reading-number {
+  color: var(--obs-muted);
+}
+
+.continue-reading a:hover strong {
+  text-decoration: underline 1px;
+}
+
+@media (min-width: 1200px) {
+  .continue-reading a {
+    grid-template-columns: calc((100% - 7 * var(--grid-gap)) / 4 + var(--grid-gap)) minmax(0, 1fr) auto;
+    padding-right: calc((100% + var(--grid-gap)) / 3);
+  }
+
+  .continue-reading-number {
+    font-size: 1.25rem;
+  }
+}

@@ -5,18 +5,18 @@
 import themePreloadSource from "../scripts/inline/theme-preload.js?raw";
 import arrivalGateSource from "../scripts/inline/arrival-gate.js?raw";
 import researchForwardSource from "../scripts/inline/research-forward.js?raw";
-// LegacyShell.astro renders site-header.js from its own ?raw import; the hash covers the same text.
+// SiteShell.astro renders site-header.js from its own ?raw import; the hash covers the same text.
 import siteHeaderSource from "../../public/assets/js/site-header.js?raw";
 import { contentSecurityPolicy as buildPolicy, normalizeInlineScript } from "./csp.mjs";
 
 export const inlineScripts = {
-  // <head>, before the stylesheets (LegacyShell.astro)
+  // <head>, before the stylesheets (SiteShell.astro)
   themePreload: normalizeInlineScript(themePreloadSource),
   // after the entrance dialog on every page (CosmicArrival.astro)
   arrivalGate: normalizeInlineScript(arrivalGateSource),
   // research.html only: forwards links from before the September 2026 move (research.astro)
   researchForward: normalizeInlineScript(researchForwardSource),
-  // directly after </header> (LegacyShell.astro)
+  // directly after </header> (SiteShell.astro)
   siteHeader: normalizeInlineScript(siteHeaderSource)
 } as const;
 

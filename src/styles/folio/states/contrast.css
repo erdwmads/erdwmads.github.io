@@ -1,0 +1,34 @@
+/* @owner WP1 · @budget 1.5KB · @important 0 · Forced colours and higher contrast: markers, rules and focus stay visible */
+/* Forced colours: markers draw their fill with currentColor in a background, which the browser would drop, so they
+   keep their own painting in the system text colour. The value selectors match the weight of the brass "In
+   progress" rule in components/marker.css and come later, so no marker keeps a theme colour on the system
+   Canvas. Rules and borders already follow the system colours. */
+@media (forced-colors: active) {
+  .marker,
+  .marker[data-value],
+  .evidence-status__tag::before,
+  [data-evidence-status] > .evidence-status__tag::before,
+  .pathway-chip::before,
+  .pathway-chip[data-status]::before {
+    forced-color-adjust: none;
+    color: CanvasText;
+  }
+
+  :focus-visible {
+    outline-color: Highlight;
+  }
+
+  /* A transparent underline would be repainted, so only the pressed filter or layout keeps one. */
+  .paper-filter:not([aria-pressed="true"]),
+  .photo-layout-switch button:not([aria-pressed="true"]) {
+    text-decoration-line: none;
+  }
+}
+
+/* More contrast: decorative hairlines become 60% of the text colour, in both themes and on night plates. */
+@media (prefers-contrast: more) {
+  :root,
+  .on-night {
+    --obs-hairline: color-mix(in srgb, var(--obs-text) 60%, transparent);
+  }
+}

@@ -1,11 +1,17 @@
 ---
+import Masthead from "./Masthead.astro";
+import Section from "./Section.astro";
 import { photographs } from "../data/photography";
-import { rowProperties } from "../lib/photo-rows.js";
+import { rowProperties, wallGapProperties } from "../lib/photo-rows.js";
 
-// Justified rows (observatory-experience.css): each tile grows by its aspect ratio from a basis of ratio x
+// Justified rows (src/styles/folio/pages/photography.css): each tile grows by its aspect ratio from a basis of ratio x
 // row height. The row breaks are chosen here, at build time, for three wall widths (src/lib/photo-rows.js),
-// and each tile carries its row's ratio sum and gap count, so every row fills the wall in plain CSS.
+// and each tile carries its row's ratio sum and gap count, so every row fills the wall in plain CSS. The gaps of the
+// three bands are written on the wall from the same table, so the CSS never repeats them.
 const tileStyles = rowProperties(photographs.map((photo) => photo.ratio));
+const wallStyle = wallGapProperties();
+// The contact sheet numbers each photograph as a plate, "Pl. 07", like the presentation counter "07 / 21".
+const plate = (number: number) => `Pl. ${String(number).padStart(2, "0")}`;
 
 // Wall and target row height by viewport: up to 560px the wall is 100vw - 40px with rows about 0.36 of
 // it and at most two photographs per row; up to 760px rows are about 0.26 of the same wall; from 761 to
@@ -29,51 +35,48 @@ const sizesFor = (ratio: number) => [
 ].join(", ");
 ---
 
-<section>
-  <p class="eyebrow">Photography</p>
-  <h1>Photography</h1>
-  <p class="lead">
+<div class="page">
+  <Masthead kicker="Photography" title="Photography">
     I use <s class="del">Hasselblad X2D</s><span class="visually-hidden"> (crossed out)</span> Pentax 6x7 for film-inspired
     photographs, environmental portraits, and visual notes.
-  </p>
-</section>
+  </Masthead>
 
-<section class="section photo-experience" data-photo-experience aria-label="Photographs">
-  <div class="obs-photo-tools"><div class="photo-layout-switch" data-photo-layout-controls role="group" aria-label="Photograph layout" hidden><button type="button" data-photo-layout="gallery" aria-pressed="true">Gallery</button><button type="button" data-photo-layout="contact" aria-pressed="false">Contact sheet</button></div><button class="button secondary obs-present-launch" type="button" data-present-photos hidden>Present photographs</button></div>
-  <div class="photo-wall">
-    {photographs.map((photo, index) => (
-      <a
-        class:list={["photo-tile", { "photo-tile--wide": photo.wide }]}
-        href={photo.full}
-        style={tileStyles[index]}
-        data-photo-index={index}
-        aria-label={`Open photograph ${photo.number}: ${photo.alt}`}
-      >
-        <img
-          src={photo.thumb}
-          srcset={photo.srcset}
-          sizes={sizesFor(photo.ratio)}
-          data-full-src={photo.full}
-          width={photo.width}
-          height={photo.height}
-          alt={photo.alt}
-          loading={index < 3 ? "eager" : "lazy"}
-          decoding="async"
-          fetchpriority={index === 0 ? "high" : "auto"}
-        />
-        <span class="photo-index-label" aria-hidden="true"><b>{photo.number}</b><span>{photo.alt}</span></span>
-      </a>
-    ))}
-  </div>
-</section>
+  {/* The view switch and the Present button wait hidden for their scripts (photo-layout.js,
+      observatory-interactions.js) but keep their box meanwhile (data-reserve-space), so the wall never moves. */}
+  <section class="photo-experience" data-photo-experience aria-label="Photographs">
+    <div class="obs-photo-tools"><div class="photo-layout-switch" data-photo-layout-controls role="group" aria-label="Photograph layout" hidden data-reserve-space><button type="button" data-photo-layout="gallery" aria-pressed="true">Gallery</button><button type="button" data-photo-layout="contact" aria-pressed="false">Contact sheet</button></div><button class="button secondary obs-present-launch" type="button" data-present-photos hidden data-reserve-space>Present photographs</button></div>
+    <div class="photo-wall" style={wallStyle}>
+      {photographs.map((photo, index) => (
+        <a
+          class:list={["photo-tile", { "photo-tile--wide": photo.wide }]}
+          href={photo.full}
+          style={tileStyles[index]}
+          data-photo-index={index}
+          aria-label={`Open photograph ${photo.number}: ${photo.alt}`}
+        >
+          <img
+            src={photo.thumb}
+            srcset={photo.srcset}
+            sizes={sizesFor(photo.ratio)}
+            data-full-src={photo.full}
+            width={photo.width}
+            height={photo.height}
+            alt={photo.alt}
+            loading={index < 3 ? "eager" : "lazy"}
+            decoding="async"
+            fetchpriority={index === 0 ? "high" : "auto"}
+          />
+          <span class="photo-index-label" aria-hidden="true"><b>{plate(photo.number)}</b><span>{photo.alt}</span></span>
+        </a>
+      ))}
+    </div>
+  </section>
 
-<section class="section two-col">
-  <h2 class="section-label">Camera</h2>
-  <div class="card">
-    <h3>Current setup</h3>
+  <Section id="camera-title" title="Camera" class="photo-camera">
+    <h3><span class="kicker">Current setup</span></h3>
     <p>
       <s class="del">Hasselblad X2D</s><span class="visually-hidden"> (crossed out)</span> Pentax 6x7, SMC Pentax 67 90mm F2.8 Lens,
       and Samsung Galaxy series smartphones.
     </p>
-  </div>
-</section>
+  </Section>
+</div>

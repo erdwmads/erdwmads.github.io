@@ -22,15 +22,15 @@ export function mountStudy(root,reader){
   studyControls.forEach(control=>control.disabled=true);
   const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'high-performance'});
   renderer.info.autoReset=false;
-  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setClearColor(0x080d10);renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;renderer.localClippingEnabled=true;
-  const world=new T.Scene();world.background=new T.Color(0x080d10);
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setClearColor(0x1b202c);renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;renderer.localClippingEnabled=true;
+  const world=new T.Scene();world.background=new T.Color(0x1b202c);
   const environmentScene=new RoomEnvironment(),pmrem=new T.PMREMGenerator(renderer),environment=pmrem.fromScene(environmentScene,.08);world.environment=environment.texture;world.environmentIntensity=.22;environmentScene.dispose();pmrem.dispose();
   const camera=new T.PerspectiveCamera(42,1,.04,100);
   canvas.addEventListener('wheel',e=>{if(!e.ctrlKey&&!e.metaKey)e.stopImmediatePropagation();},{capture:true,passive:true,signal:abort.signal});
   const controls=new OrbitControls(camera,canvas);controls.enableDamping=true;controls.dampingFactor=.09;controls.enablePan=false;controls.minDistance=3;controls.maxDistance=45;controls.maxPolarAngle=Math.PI*.88;
   let manualCamera=false;controls.addEventListener('start',()=>manualCamera=true);
   const coarse=matchMedia('(pointer:coarse)');let exploring=false;
-  function setExploring(value){exploring=value;controls.enabled=!coarse.matches||value;canvas.style.touchAction=coarse.matches&&!value?'pan-y':'none';$('#explore').textContent=value?'Done':'Explore';$('#explore').setAttribute('aria-pressed',String(value));$('#explore').setAttribute('aria-label',value?'Return to page scrolling':'Enable model rotation and pinch zoom');viewport.toggleAttribute('data-exploring',value);}
+  function setExploring(value){exploring=value;controls.enabled=!coarse.matches||value;canvas.style.touchAction=coarse.matches&&!value?'pan-y':'none';$('#explore').textContent=value?'Done':'Explore';$('#explore').setAttribute('aria-pressed',String(value));$('#explore').setAttribute('aria-label',value?'Done: return to page scrolling':'Explore: enable model rotation and pinch zoom');viewport.toggleAttribute('data-exploring',value);}
   on($('#explore'),'click',()=>setExploring(!exploring));on(coarse,'change',()=>setExploring(false));setExploring(false);
   on(canvas,'keydown',e=>{
     if(disposed||contextLost||root.dataset.renderState!=='ready'||e.altKey||e.ctrlKey||e.metaKey)return;
@@ -91,9 +91,10 @@ export function mountStudy(root,reader){
   const scenes=[];
   lucide.createIcons();
   function icon(button,name){button.innerHTML=`<i data-lucide="${name}"></i>`;lucide.createIcons();}
+  // Portrait plates (the 4:5 phone plate) fit the model to the width, so the camera stands further back.
   function resetCamera(){
     const active=scenes[stage],aspect=viewport.clientWidth/viewport.clientHeight;
-    const pose=active.cameraAt?.(progress);camera.position.fromArray(pose?.position||active.camera).multiplyScalar(Math.max(1,.98/aspect));controls.target.fromArray(pose?.target||active.target);controls.update();
+    const pose=active.cameraAt?.(progress);camera.position.fromArray(pose?.position||active.camera).multiplyScalar(Math.max(1,(aspect<1?1.3:.98)/aspect));controls.target.fromArray(pose?.target||active.target);controls.update();
   }
   function resize(){
     const w=viewport.clientWidth,h=viewport.clientHeight;renderer.setSize(w,h,false);composer.setSize(w,h);camera.aspect=w/h;
@@ -157,7 +158,7 @@ export function mountStudy(root,reader){
     // Explore (touch-action:none) ends once the scene is mostly scrolled away, so a later swipe on it scrolls the page.
     intersectionObserver=new IntersectionObserver(entries=>{visible=entries.some(entry=>entry.isIntersecting);if(exploring&&entries.every(entry=>entry.intersectionRatio<.5))setExploring(false);root.dataset.inView=String(visible);last=performance.now();if(visible){dirty=true;requestFrame();}else{cancelAnimationFrame(frameId);frameId=0;}},{threshold:[0,.5]});intersectionObserver.observe(viewport);
     api={select:reader.select,setProgress(t){progress=t;setPlaying(false);sync();},setPhase,get state(){return{stage,progress,playing,phase,camera:camera.position.toArray(),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles};}};
-    window.study=api;reader.connect(showStage);root.dataset.renderState="ready";
+    window.study=api;reader.connect(showStage);root.dataset.renderState="ready";$('[data-scene-poster]')?.setAttribute('data-scene-poster','done');
     function frame(now){frameId=0;if(disposed||!visible||document.hidden||contextLost)return;const dt=Math.max(0,(now-last)/1000);last=now;if(document.hidden)return;
       if(playing){if(progress<1){progress=Math.min(1,progress+dt/[32,14,14,14][stage]);sync();}else{hold+=dt;if(hold>2)setPlaying(false);}}
       controls.update();if(dirty){renderer.info.reset();syncOcclusionCamera(ao,camera);composer.render();dirty=false;}if(playing)requestFrame();

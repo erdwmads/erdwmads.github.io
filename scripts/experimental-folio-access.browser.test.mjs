@@ -4,7 +4,7 @@ const browser=await chromium.launch({headless:true,executablePath:process.env.ED
 const base=process.env.SITE_TEST_URL||'http://127.0.0.1:52523';
 try{
  const p=await browser.newPage({viewport:{width:1440,height:950},reducedMotion:'reduce'});
- for(const route of ['index','research','origins-study','paper-shelf','cv','photography','contact','research-log']){
+ for(const route of ['index','research','ryugu-bennu','origins-study','paper-shelf','cv','photography','contact','research-log','research-graduation']){
   await p.goto(base+'/'+route+'.html');await p.evaluate(()=>document.fonts.ready);
   for(const width of [320,760,1440]){
    await p.setViewportSize({width,height:950});
@@ -36,5 +36,5 @@ try{
  await broken.waitForFunction(()=>document.querySelector('[data-inspector-status]')?.textContent.includes('could not load'));
  assert.equal(await broken.locator('[data-inspector-controls]').isVisible(),false);
  assert.ok(await broken.locator('.research-scale__credit a[href*="maps.14227"]').isVisible());
- console.log('Eight public routes: actual heading bounds at 320/760/1440 in both themes. Ordinary wheel, touch opt-in/out and failed-image fallback passed.');
+ console.log('Ten routes: actual heading bounds at 320/760/1440 in both themes. Ordinary wheel, touch opt-in/out and failed-image fallback passed.');
 }finally{await browser.close();}

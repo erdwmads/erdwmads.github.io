@@ -110,7 +110,7 @@ export function createViewer(host,{signal,onTick,onReady,onError}){
   const labels=world?.labels()||[],rect=host.getBoundingClientRect(),occupied=[];drawScale(rect);
   // Labels stay above the motion callout; on narrow screens it spans nearly the whole width.
   const cue=host.querySelector('[data-mission-flight-cue]'),cueRect=cue&&!cue.hidden?cue.getBoundingClientRect():null,bounds={width:rect.width,height:cueRect?.height?Math.min(rect.height,cueRect.top-rect.top+39):rect.height};
-  for(const overlay of host.querySelectorAll('[data-mission-inset],[data-mission-inset-target],[data-mission-scale],[data-mission-flight-cue],[data-mission-solar-context],[data-mission-legend]'))if(!overlay.hidden){const r=overlay.getBoundingClientRect();occupied.push({x:r.left-rect.left,y:r.top-rect.top,width:r.width,height:r.height});}
+  for(const overlay of host.querySelectorAll('[data-mission-inset],[data-mission-inset-target],[data-mission-scale],[data-mission-flight-cue],[data-mission-solar-context],[data-mission-site-map],[data-mission-legend]'))if(!overlay.hidden){const r=overlay.getBoundingClientRect();occupied.push({x:r.left-rect.left,y:r.top-rect.top,width:r.width,height:r.height});}
   labels.forEach((entry,i)=>{
    if(i>=4)return;
    const point=entry.point.clone().project(camera),label=labelElements[i],leader=leaderElements[i],kind=world.kind();

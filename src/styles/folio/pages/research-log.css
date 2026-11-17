@@ -1,0 +1,90 @@
+/* @owner WP3 · @budget 2KB · @important 0 · Public Research Log, scoped under .ui-page-research-log:not(.ui-page-research-graduation) */
+/* The accession record (.log-record) and the compact pathway; these block classes exist only on this page. */
+.log-record {
+  padding-top: var(--ed-space-8);
+}
+
+.log-record .masthead {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ed-space-3);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.log-record .masthead__lead {
+  font-style: italic;
+}
+
+.ui-page-research-log :is(.log-facts, .log-parts) {
+  margin: var(--ed-space-5) 0 0;
+  border-top: 1px solid var(--obs-rule);
+  color: var(--obs-text);
+}
+
+.ui-page-research-log .log-facts {
+  border-top-width: 2px;
+}
+
+.ui-page-research-log :is(.log-facts, .log-parts) > div {
+  padding-block: var(--ed-space-3);
+  border-bottom: 1px solid var(--obs-hairline);
+}
+
+.ui-page-research-log :is(.log-facts, .log-parts) dd {
+  display: grid;
+  margin: var(--ed-space-1) 0 0;
+}
+
+.log-facts__line:has(small) + .log-facts__line {
+  margin-top: var(--ed-space-2);
+}
+
+.ui-page-research-log :is(.log-facts small, .log-note) {
+  display: block;
+  color: var(--obs-muted);
+  font-size: var(--ed-small);
+}
+
+.log-pathway {
+  container-type: inline-size;
+  --hang: max(2.5rem, (100cqi + var(--grid-gap)) / var(--k, 99) - var(--ed-space-3));
+}
+
+@media (min-width: 761px) {
+  .log-pathway {
+    --k: 8;
+  }
+}
+
+@media (min-width: 961px) {
+  .ui-page-research-log .log-facts {
+    grid-row: 1 / span 4;
+    margin-top: 0;
+  }
+}
+
+@media (min-width: 961px) and (max-width: 1199px) {
+  .log-record > * {
+    grid-column: span 5;
+  }
+
+  .ui-page-research-log .log-facts {
+    grid-column: 6 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .log-record {
+    padding-top: var(--ed-space-6);
+  }
+
+  .log-actions .button {
+    flex: 1 1 100%;
+  }
+
+  .log-access .button {
+    width: 100%;
+  }
+}

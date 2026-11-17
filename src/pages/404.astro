@@ -1,11 +1,22 @@
 ---
-import LegacyShell from "../components/LegacyShell.astro";
+import SiteShell from "../components/SiteShell.astro";
+import Masthead from "../components/Masthead.astro";
+import Section from "../components/Section.astro";
+import Ledger from "../components/Ledger.astro";
 import { contentPages, getPageScripts } from "../data/site";
 
 const scriptHtml = getPageScripts("home");
+// The archive index as a contents list: number, section, dotted leader, and the address the section lives at.
+// Links are root-relative, because this page answers for any missing address at any depth.
+const archiveIndex = contentPages.map((page, index) => ({
+  number: String(index + 1).padStart(2, "0"),
+  title: page.title,
+  href: `/${page.href}`,
+  detail: `/${page.href}`
+}));
 ---
 
-<LegacyShell
+<SiteShell
   title="Page not found | I. Mads Lieu"
   description="The requested page is not part of this research archive."
   current="not-found"
@@ -14,20 +25,12 @@ const scriptHtml = getPageScripts("home");
   scriptHtml={scriptHtml}
   noindex
 >
-  <section>
-    <p class="eyebrow">Signal lost · 404</p>
-    <h1>This page is not in the archive</h1>
-    <p class="lead">
+  <div class="page">
+    <Masthead kicker="Signal lost · 404" title="This page is not in the archive">
       The address may have changed, or the page was never catalogued. The sections below are current.
-    </p>
-  </section>
-
-  <section class="section two-col">
-    <h2 class="section-label">Archive index</h2>
-    <div class="card">
-      <ul class="archive-index">
-        {contentPages.map((page) => <li><a href={`/${page.href}`}>{page.title}</a></li>)}
-      </ul>
-    </div>
-  </section>
-</LegacyShell>
+    </Masthead>
+    <Section id="archive-index-title" title="Archive index">
+      <Ledger ordered leaders items={archiveIndex} class="archive-index" />
+    </Section>
+  </div>
+</SiteShell>

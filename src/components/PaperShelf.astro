@@ -1,89 +1,91 @@
 ---
+import Masthead from "./Masthead.astro";
+import Section from "./Section.astro";
 import { papers, paperAuthorLabel, paperCategories, paperGroups, paperHref, paperIssue, paperReference } from "../data/papers";
 
+// The shelf as a bibliography (src/styles/folio/pages/paper-shelf.css): the year hangs in the margin, the title
+// links to the DOI, the citation and the paper's summary follow, then "My reading", the owner's note, set apart from
+// what the paper reports. The hooks of public/assets/js/paper-shelf.js (data-paper-*) and the ids are unchanged.
 const filters = [{ label: "All", id: "" }, ...paperCategories];
 const groups = paperGroups();
 const countLabel = (count: number) => `${count} ${count === 1 ? "paper" : "papers"}`;
+const contents = `${countLabel(papers.length)} in ${groups.length} sections`;
+// Letter–letter en-dash compounds (Ca–Mg) are kept on one line; the text is unchanged.
+const unbroken = (text: string) => text.split(/(\p{L}+–\p{L}+)/u);
 ---
 
-<section>
-  <p class="eyebrow">Paper Shelf</p>
-  <h1>Paper Shelf</h1>
-  <p class="lead">
+<div class="page">
+  <Masthead kicker="Paper Shelf" title="Paper Shelf">
     A curated reading shelf for my graduation research on the Orgueil CI1 chondrite, grouped by main topic and listed by year.
-  </p>
-  <p class="paper-shelf-note">Summaries report each paper’s published work. The notes on why a paper matters for my project are my reading of it, not my results.</p>
-</section>
+    <Fragment slot="meta">{contents}</Fragment>
+    <p slot="aside" class="paper-shelf-note">Summaries report each paper’s published work. The notes on why a paper matters for my project are my reading of it, not my results.</p>
+  </Masthead>
 
-<section class="section paper-shelf-tools" aria-label="Paper Shelf filters">
-  <div class="paper-shelf-search">
-    <label for="paper-search">Search</label>
-    <input id="paper-search" type="search" placeholder="Search title, author, journal, tag..." data-paper-search>
-  </div>
-  <div class="paper-filter-row" data-paper-filters>
-    {filters.map((filter, index) => (
-      <button
-        class="paper-filter"
-        type="button"
-        data-paper-filter={filter.id}
-        aria-pressed={index === 0 ? "true" : "false"}
-      >
-        {filter.label}
-      </button>
-    ))}
-  </div>
-</section>
-
-<div class="paper-results"><p data-paper-count role="status" aria-live="polite">{countLabel(papers.length)}</p><button class="button secondary" type="button" data-paper-reset hidden>Clear filters</button></div>
-<p data-paper-empty hidden>No papers match this search. Try a broader term or clear the filters.</p>
-<section class="section paper-shelf" aria-label="Reading list">
-  {groups.map((group) => (
-    <section class="paper-group" data-paper-group={group.id} aria-labelledby={`paper-group-${group.id}`}>
-      <h2 class="paper-group-title" id={`paper-group-${group.id}`}>
-        <span>{group.label}</span>
-        <span class="paper-group-count" data-paper-group-count data-paper-group-total={group.papers.length}>{countLabel(group.papers.length)}</span>
-      </h2>
-      {group.papers.map((paper) => (
-        <article
-          id={paper.id}
-          class="paper-card"
-          data-paper-card
-          data-paper-text={`${paper.title} ${paper.authors.map((author) => author.family).join(" ")} ${paperAuthorLabel(paper)} ${paper.year} ${paper.journal} ${paper.summary} ${paper.relevance} ${paper.tags.join(" ")}`.toLowerCase()}
-          data-paper-filters={paper.filters.join(" ")}
+  <section class="paper-shelf-tools folio" aria-label="Paper Shelf filters">
+    <label class="paper-search-label kicker in-margin" for="paper-search">Search</label>
+    <input id="paper-search" class="paper-search" type="search" placeholder="Search title, author, journal, tag..." data-paper-search>
+    <div class="paper-filter-row" data-paper-filters>
+      {filters.map((filter, index) => (
+        <button
+          class="paper-filter"
+          type="button"
+          data-paper-filter={filter.id}
+          aria-pressed={index === 0 ? "true" : "false"}
         >
-          {paper.legacyAnchor && <span id={paper.legacyAnchor} class="paper-anchor-alias" aria-hidden="true"></span>}
-          <div class="paper-card-body">
-            <h3 class="paper-title"><a href={paperHref(paper)} target="_blank" rel="noopener">{paper.title}<span class="visually-hidden"> (opens in a new tab)</span></a></h3>
-            <p class="paper-citation"><time class="paper-year" datetime={String(paper.year)}>{paper.year}</time> <span class="paper-citation-sep" aria-hidden="true">·</span> {paperAuthorLabel(paper)} <span aria-hidden="true">·</span> <span class="paper-journal">{paper.journal}</span>{paperIssue(paper) ? ` ${paperIssue(paper)}` : ""}</p>
-            <p class="paper-summary">{paper.summary}</p>
-            <p class="paper-relevance"><span class="paper-relevance-label">Why it matters<span class="paper-relevance-scope"> for my project</span></span> {paper.relevance}</p>
-            <div class="paper-card-foot">
-              <div class="project-tags">
-                {paper.tags.map((tag) => <span>{tag}</span>)}
-              </div>
+          {filter.label}
+        </button>
+      ))}
+    </div>
+    <div class="paper-results in-notes"><p class="tabular" data-paper-count role="status" aria-live="polite">{countLabel(papers.length)}</p><button class="button secondary" type="button" data-paper-reset hidden>Clear filters</button></div>
+  </section>
+
+  <section class="paper-shelf folio" aria-label="Reading list">
+    <p class="paper-empty" data-paper-empty hidden>No papers match this search. Try a broader term or clear the filters.</p>
+    {groups.map((group) => (
+      <section class="paper-group span-full" data-paper-group={group.id} aria-labelledby={`paper-group-${group.id}`}>
+        <h2 class="paper-group-title" id={`paper-group-${group.id}`}>
+          <span>{group.label}</span>
+          <span class="paper-group-count tabular" data-paper-group-count data-paper-group-total={group.papers.length}>{countLabel(group.papers.length)}</span>
+        </h2>
+        {group.papers.map((paper) => (
+          <article
+            id={paper.id}
+            class="paper-card"
+            data-paper-card
+            data-paper-text={`${paper.title} ${paper.authors.map((author) => author.family).join(" ")} ${paperAuthorLabel(paper)} ${paper.year} ${paper.journal} ${paper.summary} ${paper.relevance} ${paper.tags.join(" ")}`.toLowerCase()}
+            data-paper-filters={paper.filters.join(" ")}
+          >
+            {paper.legacyAnchor && <span id={paper.legacyAnchor} class="paper-anchor-alias" aria-hidden="true"></span>}
+            <time class="paper-year" datetime={String(paper.year)}>{paper.year}</time>
+            <div class="paper-card-body">
+              <h3 class="paper-title"><a href={paperHref(paper)} target="_blank" rel="noopener">{paper.title}<span class="paper-title__mark" aria-hidden="true">&nbsp;↗</span><span class="visually-hidden"> (opens in a new tab)</span></a></h3>
+              <p class="paper-citation">{paperAuthorLabel(paper)} <span aria-hidden="true">·</span> <span class="paper-journal">{paper.journal}</span>{paperIssue(paper) ? ` ${paperIssue(paper)}` : ""}</p>
+              <p class="paper-summary">{unbroken(paper.summary).map((part, index) => index % 2 ? <span class="nobreak">{part}</span> : part)}</p>
+              <p class="paper-relevance"><span class="paper-relevance-label kicker">My reading<span class="paper-relevance-scope visually-hidden">, why it matters for my project</span></span> {unbroken(paper.relevance).map((part, index) => index % 2 ? <span class="nobreak">{part}</span> : part)}</p>
+              <p class="project-tags"><strong>Keywords:</strong> {paper.tags.map((tag, index) => <Fragment>{index > 0 && <Fragment>&nbsp;<span aria-hidden="true">·</span> </Fragment>}<span>{tag}</span></Fragment>)}</p>
+            </div>
+            <div class="paper-card-tools">
               <button
-                class="button secondary paper-copy"
+                class="paper-copy"
                 type="button"
                 data-paper-copy
                 data-paper-reference={paperReference(paper)}
                 aria-label={`Copy reference: ${paper.title}`}
-              ><svg class="paper-copy-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><rect x="8" y="8" width="12" height="13" rx="2"></rect><path d="M16 8V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h2"></path></svg><span class="paper-copy-text">Copy reference</span></button>
+              ><svg class="paper-copy-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="8" y="8" width="12" height="13" rx="2"></rect><path d="M16 8V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h2"></path></svg><span class="paper-copy-text">Copy reference</span></button>
+              <p class="paper-reference-status" data-paper-copy-status role="status" aria-live="polite" aria-atomic="true"></p>
             </div>
-            <p class="muted paper-reference-status" data-paper-copy-status role="status" aria-live="polite" aria-atomic="true"></p>
             <div class="paper-reference-fallback" data-paper-copy-fallback hidden>
               <label for={`paper-reference-${paper.id}`}>Reference — authors, year, title, journal and DOI link</label>
               <textarea id={`paper-reference-${paper.id}`} data-paper-reference-text readonly rows="4"></textarea>
             </div>
-          </div>
-        </article>
-      ))}
-    </section>
-  ))}
-</section>
+          </article>
+        ))}
+      </section>
+    ))}
+  </section>
 
-<section class="section research-reading-context" aria-labelledby="reading-context-title">
-  <p class="eyebrow">Reading in context</p>
-  <h2 id="reading-context-title">How the references connect</h2>
-  <p>Dolomite-growth studies frame the formation question; CI and Orgueil mineralogy provides the material context. Ryugu and Bennu offer returned-sample comparisons for aqueous alteration.</p>
-  <p>Nakamura et al.’s proposed Ryugu history is illustrated in <a href="origins-study.html">Origins</a>. Together, these references inform the <a href="research.html#research-methods-title">analytical pathway of my Orgueil research</a>.</p>
-</section>
+  <Section id="reading-context-title" kicker="Reading in context" title="How the references connect" class="research-reading-context">
+    <p>Dolomite-growth studies frame the formation question; CI and Orgueil mineralogy provides the material context. Ryugu and Bennu offer returned-sample comparisons for aqueous alteration.</p>
+    <p>Nakamura et al.’s proposed Ryugu history is illustrated in <a href="origins-study.html">Origins</a>. Together, these references inform the <a href="research.html#research-methods-title">analytical pathway of my Orgueil research</a>.</p>
+  </Section>
+</div>

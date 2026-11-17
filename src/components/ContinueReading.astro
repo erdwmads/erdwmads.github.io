@@ -1,4 +1,6 @@
 ---
+// Onward links at the end of main: two ruled rows, the number in the hanging margin on desktop. The landmark keeps its
+// name "Continue exploring"; the visible kicker reads "Onward". Styles: src/styles/folio/components/continue-reading.css.
 interface Props { current: string }
 const {current}=Astro.props;
 const destinations={
@@ -19,7 +21,7 @@ const routes:Record<string,(keyof typeof destinations)[]>={
 };
 const links=(routes[current]||[]).map(key=>destinations[key]);
 ---
-{links.length>0&&<nav class="continue-reading" aria-label="Continue exploring">
-  <p class="continue-reading-label">Continue exploring</p>
-  <div>{links.map((link,i)=><a href={link.href}><span class="continue-reading-number" aria-hidden="true">0{i+1}</span><span><strong>{link.label}</strong><small>{link.detail}</small></span><span class="continue-reading-arrow" aria-hidden="true">↗</span></a>)}</div>
+{links.length>0&&<nav class="continue-reading page" aria-label="Continue exploring">
+  <p class="continue-reading-label">Onward</p>
+  <div class="continue-reading__links">{links.map((link,i)=><a href={link.href}><span class="continue-reading-number tabular" aria-hidden="true">0{i+1}</span><span class="continue-reading__text"><strong>{link.label}</strong><small>{link.detail}</small></span><span class="continue-reading-arrow" aria-hidden="true">→</span></a>)}</div>
 </nav>}

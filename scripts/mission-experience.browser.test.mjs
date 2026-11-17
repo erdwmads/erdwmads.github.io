@@ -32,6 +32,8 @@ async function swipe(page, selector, dx, dy=0) {
   await client.detach();
 }
 try {
+  // The pointer edge light (gold and blue gradient, data-edge-active) is retired by Folio 2046 decision R2, so the
+  // desktop part keeps only its layout check: moving the pointer across a primary action never moves it.
   const desktop = await browser.newPage({viewport:{width:1440,height:1000}});
   await desktop.addInitScript(()=>{sessionStorage.setItem('mads-entry-gate-v1','done');sessionStorage.setItem('mads-cosmic-arrival-v1','done');});
   await desktop.goto(`${base}/index.html`);
@@ -39,63 +41,18 @@ try {
   if (await desktop.locator('html').evaluate(el=>el.classList.contains('ambient-fx-disabled'))) await toggleFx(desktop);
   const control = desktop.locator('main .button').first();
   await control.scrollIntoViewIfNeeded();
-  await check('gold and blue edge follows pointer without layout changes',async()=>{
+  await check('pointer movement across a primary action leaves its layout unchanged',async()=>{
     const box = await control.boundingBox();
     const arrow = await control.evaluate(el=>getComputedStyle(el,'::after').content);
     await desktop.mouse.move(box.x+8,box.y+box.height/2);
     await desktop.waitForTimeout(100);
-    const left=await control.evaluate(el=>({angle:el.style.getPropertyValue('--edge-angle'),paint:getComputedStyle(el.querySelector('.obs-edge-light')).backgroundImage}));
     await desktop.mouse.move(box.x+box.width-8,box.y+box.height/2);
     await desktop.waitForTimeout(100);
-    const right=await control.evaluate(el=>({angle:el.style.getPropertyValue('--edge-angle'),paint:getComputedStyle(el.querySelector('.obs-edge-light')).backgroundImage}));
-    assert.notEqual(left.angle,right.angle);
-    const colours=await desktop.evaluate(()=>{const e=document.createElement('span');document.body.append(e);e.style.color='var(--obs-accent)';const gold=getComputedStyle(e).color;e.style.color='var(--obs-cyan)';const blue=getComputedStyle(e).color;e.remove();return {gold,blue};});
-    assert(right.paint.includes(colours.gold),`Missing gold: ${right.paint}`);
-    assert(right.paint.includes(colours.blue),`Missing blue: ${right.paint}`);
     assert.equal(await control.evaluate(el=>getComputedStyle(el,'::after').content),arrow);
     assert.deepEqual(await control.boundingBox(),box);
-    await control.screenshot({path:'.codex_tmp/mission-edge-space.png'});
     await desktop.mouse.move(0,999);
-    await desktop.waitForTimeout(50);
-    assert.equal(await desktop.locator('[data-edge-active]').count(),0);
-  });
-  await check('light theme, reduced motion, FX-off and scroll cleanup',async()=>{
-    await desktop.locator('.theme-toggle').click();
-    await control.hover();
-    await desktop.waitForTimeout(100);
-    assert.equal(await control.locator('.obs-edge-light').count(),1);
-    await control.screenshot({path:'.codex_tmp/mission-edge-light.png'});
-    await desktop.mouse.wheel(0,100);
-    await desktop.waitForTimeout(100);
-    assert.equal(await desktop.locator('[data-edge-active]').count(),0);
-    await desktop.emulateMedia({reducedMotion:'reduce'});
-    await control.hover();
-    assert.equal(await desktop.locator('[data-edge-active]').count(),0);
-    await desktop.emulateMedia({reducedMotion:'no-preference'});
-    if(!await desktop.locator('html').evaluate(el=>el.classList.contains('ambient-fx-disabled')))await toggleFx(desktop);
-    await control.hover();
-    assert.equal(await desktop.locator('[data-edge-active]').count(),0);
-  });
-  await check('touch input on a fine-pointer desktop never creates an edge',async()=>{
-    await toggleFx(desktop);
-    assert(await desktop.evaluate(()=>matchMedia('(pointer: fine)').matches&&!document.documentElement.classList.contains('ambient-fx-disabled')));
-    await control.dispatchEvent('pointermove',{pointerType:'touch',clientX:120,clientY:540});
-    await desktop.waitForTimeout(100);
-    assert.equal(await desktop.locator('[data-edge-active], .obs-edge-light').count(),0);
   });
   await desktop.close();
-  const coarse=await browser.newPage({viewport:{width:1280,height:900},hasTouch:true});
-  await coarse.addInitScript(()=>{sessionStorage.setItem('mads-entry-gate-v1','done');sessionStorage.setItem('mads-cosmic-arrival-v1','done');});
-  await coarse.goto(`${base}/index.html`);
-  await check('desktop-width coarse-pointer device never creates an edge',async()=>{
-    assert(await coarse.evaluate(()=>matchMedia('(pointer: coarse)').matches));
-    // Isolate the pointer guard from the independent mobile ambient-FX policy.
-    await coarse.evaluate(()=>document.documentElement.classList.remove('ambient-fx-disabled'));
-    await coarse.locator('main .button').first().hover();
-    await coarse.waitForTimeout(100);
-    assert.equal(await coarse.locator('[data-edge-active], .obs-edge-light').count(),0);
-  });
-  await coarse.close();
   for (const width of process.env.TEST_EDGE_ONLY ? [] : [390,320]) {
     const context=await browser.newContext({viewport:{width,height:844},hasTouch:true,isMobile:true,deviceScaleFactor:1});
     const page=await context.newPage();
@@ -106,20 +63,32 @@ try {
     await page.locator('.mission-log-entry:not(.mission-log-entry-placeholder)').waitFor();
     await check(`${width}px scientific figure is not cropped`,async()=>assert.equal(await page.locator('.mission-log-entry img').evaluate(el=>getComputedStyle(el).objectFit),'contain'));
     await check(`${width}px defaults to newest log`,async()=>assert.equal(await page.locator('.mission-log-entry').getAttribute('id'),'log-011'));
-    const timeline='[data-mission-index-list]';
-    await page.locator(timeline).scrollIntoViewIfNeeded();
-    await check(`${width}px timeline swipe and page scroll`,async()=>{
-      await page.locator(timeline).evaluate(el=>el.scrollLeft=0);
+    // On phones the Mission Index is a closed disclosure ("Mission Index · 11 records") with 48 px rows in one column;
+    // the list does not scroll on its own, so a vertical swipe over it scrolls the page.
+    const ledger='.mission-ledger', summary='.mission-ledger__summary', timeline='[data-mission-index-list]';
+    await page.locator(summary).scrollIntoViewIfNeeded();
+    await check(`${width}px ledger disclosure: closed, named with its count, opens, 48 px rows, page scrolls vertically`,async()=>{
+      assert.equal(await page.locator(ledger).evaluate(el=>el.open),false,'Ledger starts open on a phone');
+      assert.equal(await page.locator(timeline).isVisible(),false,'Rows show before the ledger opens');
+      assert.match((await page.locator(summary).innerText()).replace(/\s+/g,' ').trim(),/^Mission Index · 11 records/);
+      assert((await page.locator(summary).boundingBox()).height>=48,'Summary under 48 px');
+      await page.locator(summary).tap();
+      assert.equal(await page.locator(ledger).evaluate(el=>el.open),true,'Tap did not open the ledger');
+      const rows=await page.locator('.mission-jump-card').evaluateAll(nodes=>nodes.map(el=>{const r=el.getBoundingClientRect();return {top:r.top,bottom:r.bottom,height:r.height,left:r.left,right:r.right};}));
+      assert.equal(rows.length,11);
+      assert(rows.every(row=>row.height>=47.5),'A row is under 48 px: '+JSON.stringify(rows.map(row=>row.height)));
+      assert(rows.every((row,i)=>!i||row.top>=rows[i-1].bottom-1),'Rows do not stack in one column');
+      assert(rows.every(row=>row.left>=0&&row.right<=width+1),'A row leaves the viewport');
+      assert.equal(await page.locator(timeline).evaluate(el=>el.scrollHeight>el.clientHeight+1||el.scrollWidth>el.clientWidth+1),false,'The list scrolls inside itself on a phone');
       const before=await page.locator('.mission-log-entry').getAttribute('id');
-      await swipe(page,timeline,-180);
-      const forward=await page.locator(timeline).evaluate(el=>el.scrollLeft);
-      assert(forward>30,'Timeline did not move');
-      await swipe(page,timeline,160);
-      assert(await page.locator(timeline).evaluate(el=>el.scrollLeft)<forward,'Reverse swipe did not move');
-      assert.equal(await page.locator('.mission-log-entry').getAttribute('id'),before,'Swipe accidentally selected a log');
+      await page.locator(timeline).evaluate(el=>el.scrollIntoView({block:'start'}));
       const y=await page.evaluate(()=>scrollY);
       await swipe(page,timeline,0,-150);
       assert(Math.abs(await page.evaluate(()=>scrollY)-y)>30,'Vertical scrolling blocked');
+      assert.equal(await page.locator('.mission-log-entry').getAttribute('id'),before,'Swipe accidentally selected a log');
+      await page.locator('[data-mission-target="log-004"]').tap();
+      await page.waitForFunction(()=>document.querySelector('.mission-log-entry')?.id==='log-004');
+      assert.equal(await page.locator('[data-mission-target="log-004"]').getAttribute('aria-current'),'true');
       assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Page overflow');
     });
     await page.locator('[data-private-atlas]').click();

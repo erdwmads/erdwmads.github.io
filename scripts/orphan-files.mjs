@@ -7,8 +7,7 @@
 // - every file under src/scripts/ must be reachable through imports from src/pages or
 //   src/components, unless it is a test (*.test.mjs) or a test helper (*.test-helper.mjs,
 //   *.fixture.mjs). A module imported only by tests is still an orphan: delete it with its tests.
-//   Component stylesheets listed in componentStylesheets in src/data/site.ts (appended to the
-//   stylesheet bundle) are reachable too.
+//   Stylesheets live in src/styles/folio (the stylesheets manifest), so a .css file here is one too.
 // Imports are read from static import/export ... from, side-effect imports, import("...") and
 // new URL("...", import.meta.url); ?raw and other query suffixes are ignored, and template
 // specifiers with ${} cannot be followed.
@@ -65,11 +64,7 @@ export function findOrphanedFiles(root, { distDir = path.join(root, "dist") } = 
   const srcDir = path.join(root, "src");
   const entries = [...filesUnder(path.join(srcDir, "pages")), ...filesUnder(path.join(srcDir, "components"))]
     .filter((file) => moduleExtensions.has(path.extname(file)) && !testPattern.test(file));
-  const siteData = path.join(srcDir, "data", "site.ts");
-  const componentStylesheets = fs.existsSync(siteData)
-    ? [...(fs.readFileSync(siteData, "utf8").match(/export const componentStylesheets = \[([\s\S]*?)\]/)?.[1] || "").matchAll(/"([^"]+\.css)"/g)].map((match) => path.join(root, match[1]))
-    : [];
-  const siteReach = reachableFrom([...entries, ...componentStylesheets]);
+  const siteReach = reachableFrom(entries);
   const testReach = reachableFrom([...filesUnder(path.join(root, "scripts")), ...filesUnder(srcDir)].filter((file) => testPattern.test(file)));
 
   const legacy = filesUnder(path.join(srcDir, "legacy"))

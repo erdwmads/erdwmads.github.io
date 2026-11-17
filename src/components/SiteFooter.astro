@@ -1,0 +1,29 @@
+---
+// The site footer, a colophon in three rows (spec §3.2): the long-term question, then the owner, ORCID iD and the
+// page actions, then the imprint line. Rendered by SiteShell.astro after main. Styles:
+// src/styles/folio/components/footer.css.
+import { colophon } from "../data/colophon";
+import { footerItems, orcid } from "../data/site";
+import { revisionDate } from "../lib/revision";
+
+// "Long-term question: …" keeps its label as text, colon included (spec §3.2), set apart above the question so it is
+// not read as the thesis question.
+const [identity, ...notes] = footerItems;
+const footerNotes = notes.map((item) => {
+  const split = item.indexOf(": ");
+  return split > 0 ? { label: item.slice(0, split), text: item.slice(split + 2) } : { label: "", text: item };
+});
+const revision = revisionDate();
+---
+<footer class="site-footer">
+  <div class="footer-inner page">
+    {footerNotes.map((note) => <p class="footer-question">{note.label && <Fragment><span class="footer-question__label">{note.label}:</span> </Fragment>}<span class="footer-question__text">{note.text}</span></p>)}
+    <p class="footer-meta">
+      <span class="footer-identity">{identity} <a class="orcid-link orcid-link--compact" href={orcid.url} target="_blank" rel="me noopener noreferrer"><img src={orcid.icon} width="16" height="16" alt="ORCID iD"><span>{orcid.id}</span><span class="orcid-new-tab"> (opens in a new tab)</span></a></span>
+      {/* Phones only: the fixed Replay button would cover the reading column there. entry.js shows it when a replay is available. */}
+      <button class="footer-replay" type="button" data-arrival-replay hidden>Replay entrance</button>
+      <a class="footer-top" href="#main-content">Back to top ↑</a>
+    </p>
+    <p class="footer-colophon"><span>{colophon.imprint}</span>&nbsp;· <span>{colophon.edition}</span>&nbsp;· <span>{colophon.revisionLabel} <time datetime={revision}>{revision}</time></span>&nbsp;· <span>{colophon.type}</span>&nbsp;· <span>{colophon.build}</span></p>
+  </div>
+</footer>

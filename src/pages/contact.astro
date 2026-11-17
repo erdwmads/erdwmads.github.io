@@ -1,11 +1,43 @@
 ---
-import LegacyShell from "../components/LegacyShell.astro";
+import SiteShell from "../components/SiteShell.astro";
+import Masthead from "../components/Masthead.astro";
 import { getPageScripts } from "../data/site";
-import mainHtml from "../legacy/contact-main.html?raw";
 
 const scriptHtml = getPageScripts("contact");
+const orcid = "https://orcid.org/0009-0007-3960-3959";
 ---
 
-<LegacyShell title='Contact | I. Mads Lieu' description='Contact and affiliation details for I. Mads Lieu, Department of Earth Sciences, School of Education, Waseda University.' current='contact' mainClass='main' path="contact.html" scriptHtml={scriptHtml}>
-  <Fragment set:html={mainHtml} />
-</LegacyShell>
+<SiteShell title='Contact | I. Mads Lieu' description='Contact and affiliation details for I. Mads Lieu, Department of Earth Sciences, School of Education, Waseda University.' current='contact' mainClass='main' path="contact.html" scriptHtml={scriptHtml}>
+  <div class="page">
+    <Masthead kicker="Contact" title="Contact">For academic communication, please contact me by email.</Masthead>
+
+    {/* One correspondence block of ruled rows (src/styles/folio/pages/contact.css). The page carries only the
+        "[at] [dot]" form of the address; contact.js builds the real one, fills the compose link and reveals the
+        actions, whose box is kept meanwhile (data-reserve-space) so nothing below moves. */}
+    <div class="correspondence folio">
+      <div class="contact-row contact-email">
+        <h2><span class="kicker">Email</span></h2>
+        <div>
+          <p><code data-email-address>madslieu [at] gmail [dot] com</code></p>
+          <div class="contact-actions" data-email-actions hidden data-reserve-space><a class="button" data-email-compose>Write an email</a><button class="button secondary" type="button" data-email-copy>Copy address</button></div>
+          <p class="contact-note in-notes" data-email-status role="status" aria-live="polite">Replace [at] with @ and [dot] with a full stop when typing the address.</p>
+        </div>
+      </div>
+      <div class="contact-row contact-orcid">
+        <h2><span class="kicker">ORCID</span></h2>
+        <p><a class="orcid-link" href={orcid} target="_blank" rel="me noopener noreferrer"><img src="assets/img/orcid/ORCID-iD_icon-vector.svg" width="24" height="24" alt="ORCID iD"><span>{orcid}</span><span class="orcid-new-tab"> (opens in a new tab)</span></a></p>
+      </div>
+      <div class="contact-row">
+        <h2><span class="kicker">Affiliation</span></h2>
+        <div>
+          <h3 class="person-name">I. Mads Lieu</h3>
+          <p>
+            Department of Earth Sciences, School of Education, Waseda University<br>
+            <a href="https://min-lab.w.waseda.jp/en/index.html" target="_blank" rel="noopener noreferrer">Mineralogy Laboratory</a>
+          </p>
+          <p>External Research Student, The University Museum, The University of Tokyo</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</SiteShell>

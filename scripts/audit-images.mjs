@@ -72,6 +72,30 @@ if (missionProblems.length) {
   throw new Error(`Mission Log images must be display derivatives (at most ${MISSION_MAX_EDGE} px on the long edge and ${formatBytes(MISSION_MAX_BYTES)}, EXIF/XMP stripped); back up the original to 事前準備 and replace: ${missionProblems.join("; ")}`);
 }
 
+// Scene posters (scripts/capture-scene-posters.mjs): every 3D viewer at 1600 px, at most 140 KB, and at 640 px, at
+// most 60 KB (spec §7.2, WP4 phase B).
+const posterDir = path.join(imageDir, "posters");
+const posterViewers = ["missions", "planetary", "origins"];
+const posterLimits = [[1600, 140 * 1024], [640, 60 * 1024]];
+const posterProblems = [];
+for (const name of posterViewers) {
+  for (const [width, limit] of posterLimits) {
+    const file = path.join(posterDir, `${name}-${width}.webp`);
+    if (!fs.existsSync(file)) { posterProblems.push(`${name}-${width}.webp is missing`); continue; }
+    const bytes = fs.statSync(file).size;
+    const metadata = await sharp(file).metadata();
+    const problems = [
+      metadata.format !== "webp" && metadata.format,
+      metadata.width !== width && `${metadata.width} px wide`,
+      bytes > limit && formatBytes(bytes)
+    ].filter(Boolean);
+    if (problems.length) posterProblems.push(`${name}-${width}.webp (${problems.join(", ")})`);
+  }
+}
+if (posterProblems.length) {
+  throw new Error(`Scene posters must be WebP at 1600 px (at most 140 KB) and 640 px (at most 60 KB); rebuild and run node scripts/capture-scene-posters.mjs: ${posterProblems.join("; ")}`);
+}
+
 const imageFiles = walk(imageDir)
   .filter((file) => /\.(png|jpe?g|webp|svg|ico)$/i.test(file))
   .map((file) => {
@@ -94,6 +118,7 @@ const lines = [
   `Total image weight: ${formatBytes(totalBytes)}`,
   `Images over 1 MB: ${largeImages.length}`,
   `Mission Log display images: ${missionCount}, all within ${MISSION_MAX_EDGE} px, ${formatBytes(MISSION_MAX_BYTES)} and no EXIF/XMP`,
+  `Scene posters: ${posterViewers.length * posterLimits.length}, each 3D viewer at 1600 px (at most 140 KB) and 640 px (at most 60 KB)`,
   "",
   "## Largest Images",
   "",
@@ -105,8 +130,9 @@ const lines = [
   "",
   `- New Mission Log images publish display derivatives in \`public/assets/img/mission-log/\`: auto-oriented sRGB JPEG, at most ${MISSION_MAX_EDGE} px on the long edge and ${formatBytes(MISSION_MAX_BYTES)}, EXIF/XMP stripped. This audit fails otherwise.`,
   "- Instrument and camera originals live in `C:\\Users\\tsuku\\Desktop\\Grad Research\\Orgueil Grad Data\\事前準備` as `orgueil-mission-log-YYYYMMDD-figNN.jpg`; back up the original there before publishing its derivative.",
-  "- Keep Photography originals and other original files in `public/assets/img/` unless the owner explicitly approves destructive replacement; page display uses generated derivatives (`npm run images:derive`, `npm run images:backgrounds`).",
+  "- Keep Photography originals and other original files in `public/assets/img/` unless the owner explicitly approves destructive replacement; page display uses generated derivatives (`npm run images:derive`).",
   "- Mission Log images should keep `loading=\"lazy\"` and `decoding=\"async\"`.",
+  "- Scene posters in `public/assets/img/posters/` are stills of the site's own 3D scenes, made by `node scripts/capture-scene-posters.mjs` after a build (provenance and hashes in `posters/PROVENANCE.md`). Recapture them when a scene's first frame or its stage size changes.",
   "- Before replacing public or Mission Log images, run `npm run check`."
 ];
 

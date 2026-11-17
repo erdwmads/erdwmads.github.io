@@ -68,7 +68,7 @@ try {
     for(const width of [320,390,760,1440]) {
       await page.setViewportSize({width,height:900});
       for(const theme of ['space','light']) {
-        await page.evaluate(theme=>document.documentElement.dataset.theme=theme,theme);
+        await page.evaluate(theme=>{const r=document.documentElement;r.dataset.theme=theme;r.toggleAttribute('data-theme-space',theme!=='light');},theme);
         for(const material of ['orgueil','bennu']) {
           await root.locator(`[data-material="${material}"]`).click();
           assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);

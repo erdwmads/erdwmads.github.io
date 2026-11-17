@@ -1,0 +1,55 @@
+---
+// The site header, rendered by SiteShell.astro before the inline header controller (site-header.js). Its classes
+// and data attributes are frozen hooks for site-header.js, observatory-interactions.js, legacy-navigation.js and
+// theme.js (scripts/lib/js-hooks.mjs). Styles: src/styles/folio/components/header.css.
+// Three bands: one 72 px row at 1200 px and wider; brand, gate and theme above the links at 761-1199 px; a 56 px bar
+// with the Menu button at 760 px and below, where the actions open as a sheet in the page flow.
+import { brand, navItems, researchLogGate } from "../data/site";
+
+interface Props {
+  // Navigation key: marks the active header link or the Research Log gate.
+  current: string;
+}
+
+const { current } = Astro.props;
+// A quiet divider separates the research pages from the personal ones (navItems order).
+const navLinks = navItems.map((item, index) => ({ ...item, groupStart: index > 0 && navItems[index - 1].group !== item.group }));
+---
+<header class="site-header">
+  <div class="header-inner page page--wide">
+    <a class="brand" href={brand.homeHref}>
+      <strong>{brand.name}</strong>
+      <span set:html={brand.tagline} />
+      <span class="visually-hidden">, home</span>
+    </a>
+    {/* The visible word is part of the name ("Open menu" / "Close menu", site-header.js), so speech input can say it. */}
+    <button
+      class="nav-toggle"
+      type="button"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="mobile-navigation"
+      data-nav-toggle
+    >
+      <span class="nav-toggle__icon" aria-hidden="true"></span>
+      <span class="nav-toggle__label">Menu</span>
+    </button>
+    <div class="header-actions" id="mobile-navigation" data-mobile-nav>
+      <nav class="nav" aria-label="Main navigation">
+        <div class="nav__links">
+          {navLinks.map((item) => <Fragment>{item.groupStart && <span class="nav__divider" aria-hidden="true"></span>}<a href={item.href} aria-current={current === item.key ? "page" : undefined}>{item.label}</a></Fragment>)}
+        </div>
+      </nav>
+      <a class="nav-log-gate" href={researchLogGate.href} aria-current={current === researchLogGate.key ? "page" : undefined}>
+        <span class="nav-log-gate__signal" aria-hidden="true"></span>
+        <span class="nav-log-gate__copy">
+          <strong>{researchLogGate.label}</strong>
+          <small>{researchLogGate.status}</small>
+        </span>
+      </a>
+      <button class="theme-toggle" type="button" aria-label="Switch to Light Mode">Light Mode</button>
+      {/* Phones only: the 56 px bar hides the brand's tagline, so the sheet carries it as text (never both at once). */}
+      <p class="header-actions__tagline" set:html={brand.tagline} />
+    </div>
+  </div>
+</header>

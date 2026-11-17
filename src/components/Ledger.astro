@@ -1,0 +1,35 @@
+---
+// A ruled list: a hanging key (a date or a number, in tabular figures), the title or link, and an optional detail.
+// leaders sets each row on one line with a dotted leader before the detail (contents lists); ordered uses an ol.
+// Styles: src/styles/folio/components/ledger.css.
+import { ledgerItems } from "./ledger.js";
+
+interface Item {
+  date?: string;
+  number?: string;
+  title: string;
+  href?: string;
+  detail?: string;
+}
+
+interface Props {
+  items: Item[];
+  leaders?: boolean;
+  ordered?: boolean;
+  class?: string;
+}
+
+const { leaders = false, ordered = false, class: className } = Astro.props;
+const items = ledgerItems(Astro.props.items);
+const List = ordered ? "ol" : "ul";
+---
+<List class:list={["ledger", leaders && "ledger--leaders", className]}>
+  {items.map((item) => (
+    <li>
+      {item.key && <span class="ledger__key tabular">{item.key}</span>}
+      {item.href ? <a class="ledger__title" href={item.href}>{item.title}</a> : <span class="ledger__title">{item.title}</span>}
+      {leaders && item.detail && <span class="ledger__leader" aria-hidden="true"></span>}
+      {item.detail && <span class="ledger__detail">{item.detail}</span>}
+    </li>
+  ))}
+</List>

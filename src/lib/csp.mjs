@@ -1,5 +1,5 @@
 // Content Security Policy for every page. GitHub Pages cannot set response headers, so pages carry it as
-// <meta http-equiv="Content-Security-Policy"> (LegacyShell.astro and the Sample Cabinet stub). A meta policy
+// <meta http-equiv="Content-Security-Policy"> (SiteShell.astro and the Sample Cabinet stub). A meta policy
 // cannot set frame-ancestors, report-uri or sandbox, and it cannot stop navigation; it keeps the site free of
 // third-party requests and stops an injected script from running or sending decrypted Mission Log text away.
 // Plain JavaScript so scripts/check-site.mjs and the tests share it with the build (src/lib/inline-scripts.ts).

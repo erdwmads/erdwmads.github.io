@@ -1,0 +1,137 @@
+/* @owner WP3 · @budget 4KB · @important 0 · Research, scoped under .ui-page-research */
+/* h2 boxes reach the section rule, so a contents link lands the kicker below the bar. */
+.ui-page-research .masthead {
+  margin: 0;
+  border: 0;
+}
+
+.ui-page-research h1 {
+  font-size: min(var(--ed-display), 10vw);
+}
+
+.ui-page-research .folio-section {
+  container-type: inline-size;
+  --hang: max(2.5rem, (100cqi + var(--grid-gap)) / var(--k, 99) - var(--ed-space-3));
+}
+
+.ui-page-research .folio-section > h2 {
+  position: relative;
+  margin-top: -3.25rem;
+  padding-top: 3.25rem;
+  outline: 0;
+  font-size: min(var(--ed-h2), 8vw);
+}
+
+.ui-page-research .folio-section > .kicker {
+  position: relative;
+  z-index: 1;
+}
+
+.ui-page-research .folio-section > h2:focus-visible::after {
+  content: "";
+  position: absolute;
+  inset: 3.25rem 0 0;
+  outline: 2px solid var(--obs-focus);
+  outline-offset: 3px;
+}
+
+.ui-page-research .research-question > h2 {
+  max-width: none;
+  margin-bottom: var(--section-gap);
+}
+
+.ui-page-research :is(.research-subquestions, .research-scope, .marks-key) {
+  max-width: calc(var(--measure-body) + var(--hang));
+}
+
+.ui-page-research .research-subquestions {
+  padding: 0;
+  list-style: none;
+}
+
+.ui-page-research .research-subquestions > li {
+  display: grid;
+  grid-template-columns: var(--hang) minmax(0, 1fr);
+  column-gap: var(--ed-space-3);
+  padding-block: var(--ed-space-4);
+  border-top: 1px solid var(--obs-hairline);
+}
+
+.ui-page-research .research-subquestions__key {
+  grid-row: span 2;
+  color: var(--obs-muted);
+  font: 1.25rem/1.45 var(--type-serif);
+}
+
+.ui-page-research .research-subquestions h3 {
+  margin: 0;
+  font-size: var(--ed-lead);
+}
+
+.ui-page-research :is(.research-record-note, .research-methods-reading, .marks-key__note) {
+  color: var(--obs-muted);
+  font-size: var(--ed-small);
+}
+
+.ui-page-research :is(.research-scope, .marks-key dl) {
+  border-top: 2px solid var(--obs-rule);
+}
+
+.ui-page-research .research-scope {
+  padding-top: var(--ed-space-3);
+}
+
+.ui-page-research .marks-key {
+  margin-top: var(--ed-space-7);
+  font-size: var(--ed-small);
+}
+
+.ui-page-research :is(.research-scope, .marks-key) dl {
+  margin-block: var(--ed-space-3);
+}
+
+.ui-page-research :is(.research-scope, .marks-key) dl > div {
+  padding-block: var(--ed-space-2);
+  border-bottom: 1px solid var(--obs-hairline);
+}
+
+.ui-page-research :is(.research-scope, .marks-key) dd {
+  margin: 0;
+  color: var(--obs-text);
+}
+
+.ui-page-research .research-scope dd span {
+  display: block;
+  color: var(--obs-muted);
+}
+
+@media (min-width: 761px) {
+  .ui-page-research .folio-section {
+    --k: 8;
+  }
+}
+
+@media (min-width: 1200px) {
+  .ui-page-research .folio-section {
+    --k: 6;
+  }
+
+  .ui-page-research .research-question > h2 {
+    grid-column: wide;
+  }
+
+  .ui-page-research .research-scope {
+    grid-row: span 4;
+  }
+
+  .ui-page-research .research-subquestions {
+    grid-column: margin-start / text-end;
+    max-width: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .ui-page-research .research-record-links .button {
+    flex: 1 1 100%;
+  }
+}

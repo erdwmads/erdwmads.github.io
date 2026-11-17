@@ -87,7 +87,7 @@ Keep `questionShort` stable at the project level unless the project scope change
 
 Pathway statuses (`In progress`, `Next`, `Planned`, `Interpretation`, dated by `statusAsOf`) are set by the owner; all seven were owner-confirmed for October 2026. Never mark a step `Completed` without the owner's confirmation: `scripts/project-facts.test.mjs` and `check:site` fail on any other status, and the test pins each step's status, so a change is a deliberate edit to both `project.mjs` and the test.
 
-Still hand-written: the Research experience entry in `src/legacy/cv-main.html`, page meta descriptions in `src/pages/*.astro`, the Interface 2046 HUD labels in `public/assets/js/research-coordinates.js` and the field-guide focus sentence in `src/scripts/planetary-explorer.js`.
+Still hand-written: the Research experience entry (`researchExperience` in `src/data/cv.ts`), the rest of the Home text in `src/data/home.ts`, page meta descriptions in `src/pages/*.astro`, the Interface 2046 HUD labels in `public/assets/js/research-coordinates.js` and the field-guide focus sentence in `src/scripts/planetary-explorer.js`.
 
 ## Image Data
 

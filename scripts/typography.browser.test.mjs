@@ -1,40 +1,60 @@
-import assert from 'node:assert/strict';
-import {pathToFileURL} from 'node:url';
-const {chromium}=await import(pathToFileURL(`${process.env.PLAYWRIGHT_MODULE}/index.mjs`).href);
-const browser=await chromium.launch({headless:true,executablePath:process.env.EDGE_EXECUTABLE});
-const routes=['index','research','cv','paper-shelf','photography','contact','research-log','research-graduation'];
-const failures=[];
-try {
-  for(const width of (process.env.TEST_WIDTHS?.split(',').map(Number)||[1440,390,320]))for(const theme of ['space','light']){
-    const context=await browser.newContext({viewport:{width,height:1000},hasTouch:width<760,isMobile:width<760,reducedMotion:'reduce'});
-    const page=await context.newPage();
-    const errors=[],remoteFonts=[];
-    page.on('pageerror',e=>errors.push(e.message));
-    page.on('request',r=>{if(/fonts\.(googleapis|gstatic)\.com/.test(r.url()))remoteFonts.push(r.url());});
-    await page.addInitScript(theme=>{localStorage.setItem('mads-theme',theme);sessionStorage.setItem('mads-entry-gate-v1','done');},theme);
-    for(const route of routes){
-      try{
-        await page.goto(`${process.env.SITE_TEST_URL||'http://127.0.0.1:4322'}/${route}.html`);
-        await page.evaluate(()=>document.fonts.ready);
-        assert((await page.locator('body').evaluate(el=>getComputedStyle(el).fontFamily)).startsWith('Montserrat'));
-        // Headings keep Montserrat; only the owner's name uses the serif name face, so "Ioong" cannot read as "loong".
-        const heading=page.locator('h1:not(#home-name)').first();
-        if(await heading.count())assert((await heading.evaluate(el=>getComputedStyle(el).fontFamily)).startsWith('Montserrat'));
-        for(const family of await page.locator('.brand strong, #home-name, .person-name').evaluateAll(nodes=>nodes.map(el=>getComputedStyle(el).fontFamily)))assert(family.startsWith('Georgia'),'owner name uses the serif name face: '+family);
-        const fonts=await page.evaluate(()=>[...document.fonts].filter(f=>f.status==='loaded').map(f=>f.family.replace(/["']/g,'')));
-        assert(fonts.includes('Montserrat'),'original local font face loaded');
-        assert(!fonts.some(font=>['Source Sans 3','Manrope','Inter'].includes(font)),'experimental font faces are not loaded');
-        assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'page horizontal overflow');
-        const clipped=await page.locator('main .button, .nav a, .theme-toggle').evaluateAll(nodes=>nodes.filter(el=>el.getBoundingClientRect().width>0&&el.scrollWidth>el.clientWidth+2).map(el=>el.textContent.trim()));
-        assert.deepEqual(clipped,[],'control labels overflow');
-        if(['index','research','cv','contact','research-graduation'].includes(route)&&width!==390)await page.screenshot({path:`.codex_tmp/type-${route}-${width}-${theme}.png`});
-      }catch(error){failures.push(`${route} ${width}px ${theme}: ${error.message}`);}
-    }
-    assert.deepEqual(remoteFonts,[],'no external font requests');
-    assert.deepEqual(errors,[]);
-    console.log(`CHECKED 9 pages at ${width}px ${theme}`);
-    await context.close();
+// Typography (spec §2.6, §6.3): body text, controls and labels are set in Source Sans 3; h1–h3, the owner's names
+// and leads in Source Serif 4. The serif is never smaller than 18 px, so a name set below that (the masthead meta
+// line, a citation) stays in the sans and only names at 18 px or more must be in the serif. The faces load from
+// this site only (no Montserrat, Inter or Manrope, nothing remote), document.fonts reports them loaded, no font file
+// fails, labels are not clipped and nothing overflows sideways.
+// Pages, widths and themes follow the guard filters (scripts/lib/guard.mjs); findings are reported per page.
+import { gotoGuardPage, runGuard } from './lib/guard.mjs';
+
+const retired = /montserrat|inter-|manrope/i;
+
+await runGuard('typography', async (page, { entry, base }) => {
+  const findings = [];
+  const requests = [];
+  const onRequest = request => { if (request.resourceType() === 'font' || /\.woff2?(\?|$)/.test(request.url())) requests.push(request.url()); };
+  page.on('request', onRequest);
+  await gotoGuardPage(page, base, entry, { settle: 0 });
+  page.off('request', onRequest);
+  for (const url of requests) {
+    if (!url.startsWith(base)) findings.push({ owner: 'WP1', message: `remote font request ${url}` });
+    else if (retired.test(url)) findings.push({ owner: 'WP1', message: `retired font requested ${url.split('/').pop()}` });
   }
-  assert.deepEqual(failures,[]);
-  console.log('PASS all requested page/theme/viewport checks: local fonts, hierarchy, labels and overflow');
-}finally{await browser.close();}
+  const result = await page.evaluate(() => {
+    const visible = el => el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
+    const family = el => getComputedStyle(el).fontFamily.replace(/["']/g, '');
+    const out = [];
+    const size = el => parseFloat(getComputedStyle(el).fontSize);
+    const expect = (selector, face, owner, minSize = 0) => {
+      for (const el of document.querySelectorAll(selector)) {
+        if (!visible(el) || el.closest('[aria-hidden="true"], svg, canvas') || size(el) < minSize) continue;
+        if (!family(el).startsWith(face)) out.push({ owner: owner || window.__guardOwner(el), message: `${window.__guardName(el)} "${el.textContent.trim().slice(0, 40)}" is set in ${family(el).split(',')[0]}, not ${face}` });
+      }
+    };
+    // The body face is WP1's (tokens and base); the face of any other element belongs to the element's owner.
+    expect('body', 'Source Sans 3', 'WP1');
+    expect('button, input, select, textarea, label, .button, .kicker, .chip, .pathway-chip, .evidence-status__tag, .nav a, .theme-toggle', 'Source Sans 3');
+    expect('h1, h2, h3', 'Source Serif 4');
+    expect('#home-name, .brand strong', 'Source Serif 4');
+    expect('.person-name', 'Source Serif 4', undefined, 17.95);
+    expect('.lead, .masthead__lead', 'Source Serif 4');
+    // The serif's floor: no text in it below 18 px (rounded sizes such as 17.99 px count as 18).
+    for (const el of document.querySelectorAll('body *')) {
+      if (!visible(el) || el.closest('[aria-hidden="true"], svg, canvas') || ![...el.childNodes].some(node => node.nodeType === 3 && node.textContent.trim())) continue;
+      if (family(el).startsWith('Source Serif 4') && size(el) < 17.95) out.push({ owner: window.__guardOwner(el), message: `${window.__guardName(el)} "${el.textContent.trim().slice(0, 40)}" is set in Source Serif 4 at ${size(el)} px, below the serif's 18 px floor` });
+    }
+    const faces = [...document.fonts];
+    for (const face of faces.filter(face => face.status === 'error')) out.push({ owner: 'WP1', message: `font face ${face.family} ${face.weight} ${face.style} failed to load` });
+    const loaded = faces.filter(face => face.status === 'loaded').map(face => face.family.replace(/["']/g, ''));
+    for (const name of loaded.filter(name => /Montserrat|Inter|Manrope/.test(name))) out.push({ owner: 'WP1', message: `retired face ${name} loaded` });
+    // Every page sets body text in the sans at 400 and its h1 in the serif at 500.
+    for (const spec of ['400 16px "Source Sans 3"', '500 32px "Source Serif 4"']) {
+      if (!document.fonts.check(spec) || !faces.some(face => spec.includes(face.family.replace(/["']/g, '')) && face.status === 'loaded')) out.push({ owner: 'WP1', message: `document.fonts does not report ${spec} loaded` });
+    }
+    // Labels fit their controls.
+    for (const el of document.querySelectorAll('.button, .nav a, .theme-toggle, .nav-log-gate, main button, .chip, .pathway-chip')) {
+      if (visible(el) && el.getBoundingClientRect().width > 0 && el.scrollWidth > el.clientWidth + 2) out.push({ owner: window.__guardOwner(el), message: `label clipped: ${window.__guardName(el)} "${el.textContent.trim().slice(0, 40)}" (${el.scrollWidth} > ${el.clientWidth})` });
+    }
+    return [...out, ...window.__guardOverflow()];
+  });
+  return [...findings, ...result];
+}, { widths: [1440, 390, 320], contextOptions: { reducedMotion: 'reduce' } });

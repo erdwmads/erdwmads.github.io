@@ -1,0 +1,18 @@
+/* @owner WP4 · @budget 1KB · @important 0 · Origins, scoped under .ui-page-origins */
+/* A tight masthead; a notes column from 961 px. */
+.ui-page-origins .study-intro { padding-block-end: var(--ed-space-5); margin-block-end: var(--ed-space-6); }
+.ui-page-origins .study-intro > .button { place-self: start; }
+@media (max-width: 760px) {
+  .ui-page-origins .study-intro { row-gap: var(--ed-space-3); padding-block-start: var(--ed-space-5); }
+}
+@media (min-width: 961px) {
+  .ui-page-origins .study-intro > :is(.lead, .study-project-context) { grid-column: 1 / -4; }
+  .ui-page-origins .study-intro > :is(.evidence-status, .button) { grid-column: -4 / -1; grid-row: 3; }
+  .ui-page-origins .study-intro > .button { grid-row: 4; }
+}
+@media (min-width: 1200px) {
+  .ui-page-origins .study-intro > :is(.lead, .study-project-context) { grid-column: text; }
+}
+@media print {
+  .ui-page-origins :is(.transport, .scene-controls, .scene-load-state, .scene-hint, .scene-explore, .study-intro > .button) { display: none; }
+}

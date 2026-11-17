@@ -1,0 +1,186 @@
+/* @owner WP2 · @budget 5KB · @important 0 · Interface 2046 layer: orbit mechanics, the spine (.ui2046-rail) and its position tick (.ui2046-progress) */
+/* Interface 2046, the instrument layer (interface-2046.js; never created at 760 px and below): the orbit diagram
+   behind the content while FX is on (from 901 px, quieter to 1120 px), and from 1200 px the spine, a vertical
+   running head beside a 1 px track whose ink tick follows the scroll. Nothing here takes input. The layer has no
+   z-index and no transform, so it forms no stacking context: the diagram stays under main's veil, the spine above
+   it, and nothing can trap the fixed tick. */
+.ui2046-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ui2046-solar-system {
+  position: fixed;
+  top: clamp(8rem, 20vh, 14rem);
+  right: clamp(2rem, 5vw, 6rem);
+  z-index: var(--z-orbit);
+  width: min(44vw, 660px);
+  aspect-ratio: 1.72;
+  opacity: calc(var(--fx-orbit-alpha) * .5);
+  transform: rotate(-7deg);
+  pointer-events: none;
+}
+
+.ui2046-kuiper-belt,
+.ui2046-system-orbit {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border: 1px dashed color-mix(in srgb, var(--obs-link) 22%, transparent);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.ui2046-kuiper-belt {
+  width: 98%;
+  height: 81%;
+}
+
+/* Each orbit is an ellipse sized by --w and --h; --alpha sets the strength of its line. */
+.ui2046-system-orbit {
+  width: var(--w);
+  height: var(--h);
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--obs-link) calc(var(--alpha, .12) * 200%), transparent);
+  transition: border-color var(--ed-dur-2) var(--ed-ease-out);
+}
+
+.ui2046-system-orbit.dwarf {
+  border-style: dashed;
+}
+
+/* A route under the pointer in the header lights its orbit and label (observatory-interactions.js). */
+.ui2046-system-orbit.is-route-active {
+  border-color: color-mix(in srgb, var(--obs-link) 70%, transparent);
+}
+
+/* The script turns each track through its orbit with a compositor animation; the planet and its label sit at the
+   track's origin, so the track's transform is their position (x = a cos θ, y = b sin θ). */
+.ui2046-orbit-track {
+  position: absolute;
+  inset: 0;
+}
+
+.ui2046-planet {
+  position: absolute;
+  top: var(--top, 0%);
+  left: var(--left, 0%);
+  width: var(--size, 3px);
+  height: var(--size, 3px);
+  border-radius: 50%;
+  background: var(--color, var(--obs-muted));
+  transform: translate(-50%, -50%);
+}
+
+.ui2046-planet-label,
+.ui2046-system-label {
+  position: absolute;
+  top: var(--label-top, 0%);
+  left: var(--label-left, 0%);
+  color: var(--obs-muted);
+  font-size: var(--ed-runhead);
+  font-weight: 600;
+  letter-spacing: .16em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform: translate(8px, -50%);
+}
+
+.ui2046-planet-label {
+  opacity: 0;
+  transition: opacity var(--ed-dur-2) var(--ed-ease-out);
+}
+
+.ui2046-planet-label.is-major,
+.ui2046-system-label {
+  opacity: .5;
+}
+
+.is-route-active .ui2046-planet-label {
+  opacity: 1;
+}
+
+/* The spine: "INTERFACE 2046 · {route}" read downwards in running-head capitals, left of the track. */
+.ui2046-rail {
+  position: fixed;
+  top: 10rem;
+  right: .75rem;
+  bottom: 10rem;
+  z-index: var(--z-rail);
+  display: flex;
+  gap: .6em;
+  padding-right: var(--ed-space-2);
+  color: var(--obs-muted);
+  font-size: var(--ed-runhead);
+  font-weight: 600;
+  letter-spacing: .16em;
+  line-height: 1;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  pointer-events: none;
+}
+
+.ui2046-rail > span {
+  order: -1;
+}
+
+.ui2046-rail > strong {
+  font-weight: inherit;
+}
+
+.ui2046-rail > strong::before {
+  content: "·";
+  margin-inline-end: .6em;
+}
+
+/* Track and tick are borders, so forced colours keep them. The tick (2 x 24 px) is ink, not brass: content may
+   already show the three brass marks a viewport allows. */
+.ui2046-rail-line {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  border-right: 1px solid var(--obs-hairline);
+}
+
+.ui2046-progress {
+  position: fixed;
+  top: 10rem;
+  right: calc(.75rem - .5px);
+  z-index: var(--z-progress);
+  width: 2px;
+  height: calc(100vh - 20rem);
+  pointer-events: none;
+}
+
+.ui2046-progress > span {
+  display: block;
+  height: 24px;
+  border-left: 2px solid var(--obs-rule);
+  translate: 0 calc(var(--scroll-progress, 0) * (100vh - 20rem - 24px));
+}
+
+:where(html.is-edge-page-exiting) :is(.ui2046-layer, .ui2046-progress, .is-edge-teardown) {
+  visibility: hidden;
+}
+
+@media (max-width: 1199px) {
+  .ui2046-rail,
+  .ui2046-progress {
+    display: none;
+  }
+}
+
+@media (max-width: 1120px) {
+  .ui2046-solar-system {
+    opacity: calc(var(--fx-orbit-alpha) * .25);
+  }
+}
+
+@media (max-width: 900px), (forced-colors: active) {
+  .ui2046-solar-system {
+    display: none;
+  }
+}

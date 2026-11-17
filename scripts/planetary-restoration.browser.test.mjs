@@ -62,7 +62,7 @@ try {
     const url=encodeObservation({material:'bennu',view:'shape',camera:{position:[0,0,4],target:[0,0,0],up:[0,1,0],zoom:2}},`${base}/ryugu-bennu.html`);
     await loading.goto(url,{waitUntil:'domcontentloaded'});
     await loading.waitForFunction(()=>document.querySelector('.planetary')?.dataset.modelReady==='loading');
-    if(action==='theme')await loading.evaluate(()=>document.documentElement.dataset.theme='light');
+    if(action==='theme')await loading.evaluate(()=>{const r=document.documentElement;r.dataset.theme='light';r.removeAttribute('data-theme-space');});
     else await loading.locator('[data-view="sample"]').click();
     release();
     if(action==='theme') {

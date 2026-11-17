@@ -5,16 +5,17 @@
 // would leave a short last row that either stretches into one oversized photograph or leaves a hole.
 //
 // The target row height is a fixed share of the wall width in each band below, so one partition holds for
-// every width in a band: the row heights scale with the wall. observatory-experience.css repeats these
-// bands as container queries on the wall (max-width and rowShare as cqw) and computes each row height from
-// the ratio sum and gap count that rowProperties() gives every tile.
+// every width in a band: the row heights scale with the wall. src/styles/folio/pages/photography.css repeats
+// these bands as container queries (max-width and rowShare as cqw) and computes each row height from the ratio
+// sum and gap count that rowProperties() gives every tile. The gaps reach the CSS from here only:
+// PhotographyGallery.astro writes them on the wall as --photo-gap-<band>.
 export const MIN_ROW_SCALE = 0.6;
 export const MAX_ROW_SCALE = 1.75;
 export const WALL_BANDS = [
   // Phones: one or two photographs per row.
-  { name: "narrow", maxWidth: 520, sampleWidth: 390, rowShare: 0.36, gap: 10, maxPerRow: 2 },
-  { name: "medium", maxWidth: 720, sampleWidth: 620, rowShare: 0.26, gap: 10, maxPerRow: Infinity },
-  { name: "wide", maxWidth: 1200, sampleWidth: 960, rowShare: 0.215, gap: 16, maxPerRow: Infinity }
+  { name: "narrow", maxWidth: 520, sampleWidth: 390, rowShare: 0.36, gap: 8, maxPerRow: 2 },
+  { name: "medium", maxWidth: 720, sampleWidth: 620, rowShare: 0.26, gap: 8, maxPerRow: Infinity },
+  { name: "wide", maxWidth: 1200, sampleWidth: 960, rowShare: 0.215, gap: 12, maxPerRow: Infinity }
 ];
 
 // ratios: width / height of each photograph in reading order; width: the usable wall width in CSS px;
@@ -43,6 +44,11 @@ export function partitionRows(ratios, width, gap, target, maxPerRow = Infinity) 
     rows.unshift({ start, end, height: (width - gap * (end - start - 1)) / sum });
   }
   return rows;
+}
+
+// The inline style of the wall: one gap per band (--photo-gap-<band>), the only place the CSS learns them.
+export function wallGapProperties() {
+  return WALL_BANDS.map((band) => `--photo-gap-${band.name}: ${band.gap}px`).join("; ");
 }
 
 // One inline style per photograph: its ratio, and for each band the ratio sum (--photo-sum-<band>) and gap

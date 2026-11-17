@@ -1,0 +1,33 @@
+/* @owner WP5 · @budget 1KB · @important 0 · 404, scoped under .ui-page-not-found */
+/* The masthead opens straight onto the archive index; the section rule divides them, a hairline heads the list. */
+.ui-page-not-found .masthead {
+  margin-block-end: 0;
+  padding-block-end: 0;
+  border: 0;
+}
+
+.ui-page-not-found .archive-index {
+  border-top-color: var(--obs-hairline);
+}
+
+/* The contents list: the address after the leader, in the small size. */
+.ui-page-not-found .ledger__detail {
+  font-size: var(--ed-small);
+}
+
+/* Phones: the address drops under its section, without the leader, aligned with the link. */
+@media (max-width: 760px) {
+  .ui-page-not-found .ledger > li {
+    row-gap: 0;
+  }
+
+  .ui-page-not-found .ledger__leader {
+    display: none;
+  }
+
+  .ui-page-not-found .ledger__detail {
+    --index-indent: calc(2.5rem + var(--ed-space-4));
+    flex-basis: calc(100% - var(--index-indent));
+    margin-inline-start: var(--index-indent);
+  }
+}

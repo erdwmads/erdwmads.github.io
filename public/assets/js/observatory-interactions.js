@@ -78,50 +78,6 @@
   new ResizeObserver(() => moveBeam(activeLink(), false)).observe(header);
   window.addEventListener('mads:fx-state', () => lightOrbit());
 
-  // One pointer frame, no continuously running spotlight loop or moving blur layer.
-  let edgeFrame = 0;
-  let edgeTarget = null;
-  let pointer = null;
-  const edgeLight = document.createElement('span');
-  edgeLight.className = 'obs-edge-light';
-  edgeLight.setAttribute('aria-hidden', 'true');
-  const edgeSelector = 'a.button, button.button, a.paper-card, a.pathway-step, .nav-log-gate, .theme-toggle, .paper-filter, .planetary-materials button, .planetary-toolbar button, .planetary-mineral-tabs button';
-  function clearEdge() {
-    cancelAnimationFrame(edgeFrame);
-    edgeFrame = 0;
-    edgeTarget?.removeAttribute('data-edge-active');
-    edgeTarget?.style.removeProperty('--edge-angle');
-    edgeLight.remove();
-    edgeTarget = null;
-  }
-  document.addEventListener('pointermove', event => {
-    if (event.pointerType === 'touch' || !desktop.matches || reduced.matches || root.classList.contains('ambient-fx-disabled') || window.__madsPowerState?.lowPower) return clearEdge();
-    const target = event.target.closest(edgeSelector);
-    if (target?.matches(':disabled, [aria-disabled="true"]')) return clearEdge();
-    if (target !== edgeTarget) { clearEdge(); edgeTarget = target; }
-    if (!target) return;
-    pointer = { x: event.clientX, y: event.clientY };
-    if (edgeFrame) return;
-    edgeFrame = requestAnimationFrame(() => {
-      edgeFrame = 0;
-      if (!edgeTarget?.isConnected) return clearEdge();
-      const box = edgeTarget.getBoundingClientRect();
-      const angle = Math.atan2(pointer.y - box.top - box.height / 2, pointer.x - box.left - box.width / 2) * 180 / Math.PI + 90;
-      edgeTarget.style.setProperty('--edge-angle', `${angle}deg`);
-      if (edgeLight.parentElement !== edgeTarget) edgeTarget.appendChild(edgeLight);
-      edgeTarget.setAttribute('data-edge-active', '');
-    });
-  }, { passive: true });
-  document.addEventListener('pointerout', event => { if (!event.relatedTarget) clearEdge(); });
-  document.addEventListener('scroll', clearEdge, { capture: true, passive: true });
-  document.addEventListener('visibilitychange', clearEdge);
-  window.addEventListener('blur', clearEdge);
-  window.addEventListener('pagehide', clearEdge);
-  window.addEventListener('mads:soft-nav-start', clearEdge);
-  window.addEventListener('mads:fx-state', clearEdge);
-  desktop.addEventListener('change', clearEdge);
-  reduced.addEventListener('change', clearEdge);
-
   let dock;
   if (fx) {
     dock = document.createElement('div');
@@ -137,29 +93,20 @@
     panel.querySelector('legend').after(fx);
     const coordinates = document.querySelector('.research-coordinates');
     if (coordinates) panel.appendChild(coordinates);
-    const compactDock = matchMedia('(max-width: 760px)');
-    const sheet = document.querySelector('[data-mobile-nav]');
-    const docked = () => panel.parentElement === dock;
-    // Open and close apply only to the floating dock; in the navigation sheet the panel is always shown.
+    // The panel lives in the dock. At 760 px and below the dock is hidden (components/fx-dock.css): FX is forced off
+    // there, so a phone needs no effects panel (decision R3).
     const closeSettings = () => {
-      if (!docked()) return;
       panel.hidden = true;
       settings.setAttribute('aria-expanded', 'false');
     };
-    // Phones (760 px and below): the panel joins the navigation sheet after the theme toggle and the fixed
-    // dock is hidden (home-shell.css), so no floating control covers the reading column. Wider windows keep the dock,
-    // and so does a page whose header controller failed (no data-nav-ready), where the sheet cannot be closed.
-    const placePanel = () => {
-      const restoreFocus = panel.contains(document.activeElement);
-      const inSheet = Boolean(compactDock.matches && sheet && root.hasAttribute('data-nav-ready'));
-      settings.setAttribute('aria-expanded', 'false');
-      if (inSheet && panel.parentElement !== sheet) sheet.appendChild(panel);
-      if (!inSheet && !docked()) dock.appendChild(panel);
-      panel.hidden = !inSheet;
-      if (restoreFocus) (inSheet ? document.querySelector('[data-nav-toggle]') : settings)?.focus({ preventScroll: true });
-    };
-    compactDock.addEventListener('change', placePanel);
-    placePanel();
+    // A window narrowing to a phone hides the dock: close the panel, and move a focus that was in the dock to the
+    // Menu button (or to main when the header controller is missing), so it never falls back to the body.
+    matchMedia('(max-width: 760px)').addEventListener('change', event => {
+      if (!event.matches) return;
+      const focused = dock.contains(document.activeElement);
+      closeSettings();
+      if (focused) (document.querySelector('html[data-nav-ready] [data-nav-toggle]') || document.querySelector('main'))?.focus({ preventScroll: true });
+    });
     panel.querySelector(`input[value="${intensity}"]`).checked = true;
     settings.addEventListener('click', () => {
       panel.hidden = !panel.hidden;
@@ -174,7 +121,7 @@
     window.addEventListener('pagehide', closeSettings);
     window.addEventListener('mads:soft-nav-start', closeSettings);
     document.addEventListener('keydown', event => {
-      if (event.key === 'Escape' && docked() && !panel.hidden) { closeSettings(); settings.focus(); }
+      if (event.key === 'Escape' && !panel.hidden) { closeSettings(); settings.focus(); }
     });
   }
 
@@ -483,7 +430,7 @@
     });
   }
   let entrance;
-  window.addEventListener('mads:soft-nav-start', () => { closePresentation(); clearEdge(); entrance?.cancel(); });
+  window.addEventListener('mads:soft-nav-start', () => { closePresentation(); entrance?.cancel(); });
   window.addEventListener('mads:soft-nav-ready', () => {
     enhancePage();
     if (!reduced.matches && !window.__madsPowerState?.lowPower) {

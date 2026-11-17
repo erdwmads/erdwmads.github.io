@@ -1,0 +1,67 @@
+/* @owner WP1 · @budget 3KB · @important 0 · Ledgers (Ledger.astro): ruled lists with hanging dates or numbers, optional dot leaders */
+/* A strong rule on top, hairlines between rows. The key (a date or a number) hangs in its own column in tabular
+   figures; the title or link follows, with an optional one-line detail below it. */
+.ledger {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--obs-rule);
+  list-style: none;
+}
+
+.ledger > li {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  column-gap: var(--ed-space-5);
+  padding-block: var(--ed-space-3);
+  border-bottom: 1px solid var(--obs-hairline);
+}
+
+.ledger__key {
+  color: var(--obs-muted);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.ledger__title {
+  grid-column: 2;
+  font-weight: 600;
+}
+
+.ledger__detail {
+  grid-column: 2;
+  color: var(--obs-muted);
+  font-size: var(--ed-small);
+}
+
+/* Contents lists ("01 Sample selection ...... In progress"): one line per row, a dotted leader filling the gap. */
+.ledger--leaders > li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ed-space-3);
+}
+
+.ledger--leaders .ledger__key {
+  flex: none;
+  min-width: 2.5rem;
+}
+
+.ledger__leader {
+  flex: 1 1 2rem;
+  min-width: 2rem;
+  border-bottom: 1px dotted var(--obs-control-border);
+}
+
+.ledger--leaders .ledger__detail {
+  flex: none;
+  font-size: var(--ed-body);
+}
+
+@media (max-width: 760px) {
+  .ledger > li {
+    grid-template-columns: 5rem minmax(0, 1fr);
+    column-gap: var(--ed-space-4);
+  }
+
+  .ledger--leaders > li {
+    flex-wrap: wrap;
+  }
+}

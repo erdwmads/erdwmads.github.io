@@ -1,0 +1,30 @@
+/* @owner WP1 · @budget 2KB · @important 0 · Evidence status line (EvidenceStatus.astro): tag, then one muted sentence */
+/* No box and no left border. The tag names the kind of evidence in capitals behind its square marker
+   (components/marker.css); the sentence follows in 14.5 px muted text. Never collapsed, never in a tooltip. */
+.evidence-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--ed-space-1) var(--ed-space-3);
+  max-width: var(--measure-caption);
+  color: var(--obs-muted);
+  font-size: .90625rem;
+  line-height: 1.45;
+}
+
+.evidence-status__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ed-space-2);
+  color: var(--obs-text);
+  font-size: var(--ed-label);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.evidence-status__text {
+  flex: 1 1 16rem;
+}

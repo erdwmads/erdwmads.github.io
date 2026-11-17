@@ -1,6 +1,6 @@
 # Performance And Browser Watchlist
 
-The main technical risk in this site is rendering complexity, not JavaScript syntax. The current site uses fixed layers, backdrop filters, animations, and many CSS overrides. Refactors should reduce compositor work.
+The main technical risk in this site is rendering complexity, not JavaScript syntax. The site uses fixed layers (the ambient FX and the Interface 2046 HUD), animations and 3D scenes. Since the November 2026 rebuild it has no `backdrop-filter` (the CSS lint bans it), no fixed background images and no override layers. Refactors should keep reducing compositor work.
 
 ## Current Stable Ambient Baseline
 
@@ -56,18 +56,19 @@ Current practical policy:
 
 The sustainable fix is to reduce rendering load:
 
-- fewer fixed layers
-- fewer `backdrop-filter` surfaces
+- fewer fixed layers (the rebuild removed the fixed Bennu and solar-system backdrops; add no new ones)
+- no `backdrop-filter` surfaces
 - fewer always-running animations
 - structured content rendered into static HTML
-- smaller CSS: prune dead rules and consolidate owners inside the one bundle (see "Stylesheet Ownership" in `docs/ui-invariants.md` before splitting it per page)
+- smaller CSS: each file stays within the budget in its header, inside the one bundle (see "Stylesheet Ownership" in `docs/ui-invariants.md` before splitting it per page)
 
 The site already runs on Astro with TypeScript and JSON/ES module data files; keep moving content into those rather than rendering it at runtime. The goal is not a dynamic app. The goal is a cleaner static site that GitHub Pages can serve reliably.
 
 ## Asset Budget Notes
 
-- All stylesheets, the three component stylesheets from `src/` included, ship as one render-blocking request, `assets/css/site.css` (whitespace-minified bundle, about 76 KB gzip on 2026-10-28; 117 KB gzip across 16 separate requests before bundling).
+- All stylesheets, every file in `src/styles/folio/`, ship as one render-blocking request, `assets/css/site.css`: 141,804 bytes whitespace-minified and about 25 KB gzip on 2026-11-17, down from about 543 KB and 76 KB gzip before the rebuild (117 KB gzip across 16 separate requests before bundling). The lint's cap is 145 KB minified; the rebuild planned 100 KB, and the owner raised it on 2026-11-17 to keep the reviewed design.
+- Until a 3D scene is ready, its stage shows a still WebP poster from `public/assets/img/posters/` (at most 140 KB at 1600 px, 60 KB at 640 px), so the scenes no longer open on an empty box.
 - The Ryugu shape model ships as `ryugu.glb` (0.6 MB) instead of the 2.6 MB OBJ. It is an exact float32 re-encoding; `restoreFacetedShape` rebuilds the OBJ loader's geometry bit for bit.
 - The comparison workspaces (sample-return missions, planetary field guide, published microscopy) live on `ryugu-bennu.html`, and `src/scripts/feature-loader.js` imports each heavy feature only on a page that contains it, so the Research page does not load three.js or the shape models.
 
-Run `npm run audit:css:check` when changing stylesheet ownership; it fails if `style.css` grows or a stylesheet is missing from the baseline. After an intentional change, refresh the baseline with `npm run audit:css -- --write`. Treat `docs/css-baseline.json` as a complexity ceiling: new work should not increase `style.css` size or repeated-selector count.
+Run `npm run audit:css:check` after any CSS change; it fails if a file exceeds the budget in its header, breaks the specificity or `!important` rules, or the minified bundle passes 145 KB. `npm run audit:css` without `--check` reports every file's size against its budget. A budget changes only through its header and the pinned table in `scripts/lib/css-lint.mjs` together (see `src/styles/folio/README.md`). Loading performance is probed by `node scripts/lib/perf-probe.mjs --compare` against `docs/perf-baseline.json` (LCP and CLS at 390 and 1440 px; see `scripts/README.md`).

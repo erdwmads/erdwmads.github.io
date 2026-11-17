@@ -1,0 +1,25 @@
+---
+// A page masthead on the .folio grid: kicker with the brass rule, the title, a serif standfirst (default slot), a
+// tabular meta line (slot "meta") and an aside in the notes column (slot "aside"), closed by a hairline.
+// Styles: src/styles/folio/components/masthead.css and 04-layout.css.
+import Kicker from "./Kicker.astro";
+import { mastheadProps } from "./masthead.js";
+
+interface Props {
+  kicker?: string;
+  title: string;
+  level?: 1 | 2;
+  size?: "display" | "name";
+  id?: string;
+}
+
+const { kicker, title, level, size, id } = mastheadProps(Astro.props);
+const Heading = `h${level}`;
+---
+<header class:list={["masthead", "folio", size === "name" && "masthead--name"]}>
+  {kicker && <Kicker rule>{kicker}</Kicker>}
+  <Heading id={id}>{title}</Heading>
+  {Astro.slots.has("default") && <p class="masthead__lead"><slot /></p>}
+  {Astro.slots.has("meta") && <p class="masthead__meta tabular"><slot name="meta" /></p>}
+  {Astro.slots.has("aside") && <div class="in-notes"><slot name="aside" /></div>}
+</header>

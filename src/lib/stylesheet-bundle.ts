@@ -2,9 +2,12 @@ import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { createRequire } from "node:module";
-import { componentStylesheets, stylesheets } from "../data/site";
+import { stylesheets } from "../data/site";
 
 type Bundle = { css: string; version: string };
+
+// The stylesheet tree. Every .css file in it must be listed in the manifest, and every listed file must exist.
+const stylesDir = "src/styles/folio";
 
 let cached: Promise<Bundle> | undefined;
 
@@ -18,15 +21,28 @@ async function loadEsbuild() {
   return fromVite("esbuild");
 }
 
-async function build(): Promise<Bundle> {
-  const cssDir = path.join(process.cwd(), "public", "assets", "css");
-  // The public stylesheets in cascade order, then the component stylesheets from src/ at the end of the cascade.
-  const files = [
-    ...stylesheets.map((file) => ({ label: file, file: path.join(cssDir, file) })),
-    ...componentStylesheets.map((file) => ({ label: file, file: path.join(process.cwd(), file) }))
+// The manifest and the tree must agree in both directions, so a new file cannot be left out of the cascade and a
+// renamed one cannot silently drop its rules.
+function checkManifest(root: string) {
+  const listed: readonly string[] = stylesheets;
+  const onDisk = fs
+    .readdirSync(path.join(root, stylesDir), { recursive: true, encoding: "utf8" })
+    .filter((file) => file.endsWith(".css"))
+    .map((file) => `${stylesDir}/${file.split(path.sep).join("/")}`);
+  const problems = [
+    ...listed.filter((file, index) => listed.indexOf(file) !== index).map((file) => `${file} is listed twice`),
+    ...listed.filter((file) => !fs.existsSync(path.join(root, file))).map((file) => `${file} is listed but does not exist`),
+    ...onDisk.filter((file) => !listed.includes(file)).map((file) => `${file} is not listed, so no page would load it`)
   ];
-  const source = files
-    .map(({ label, file }) => `/*! ${label} */\n${fs.readFileSync(file, "utf8")}\n`)
+  if (problems.length) throw new Error(`Stylesheet manifest (stylesheets in src/data/site.ts):\n- ${problems.join("\n- ")}`);
+}
+
+async function build(): Promise<Bundle> {
+  const root = process.cwd();
+  checkManifest(root);
+  // Each file behind a /*! path */ marker, which the minifier keeps, in cascade order.
+  const source = stylesheets
+    .map((file) => `/*! ${file} */\n${fs.readFileSync(path.join(root, file), "utf8")}\n`)
     .join("");
   const esbuild = await loadEsbuild();
   // Whitespace and comments only: selectors, declarations and rule order stay exactly as written.

@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { shell as shellPaths } from "../../scripts/lib/site-paths.mjs";
 import { attributeValue, contentSecurityPolicy, executableInlineScripts, isExecutableScriptType, isOffOrigin, normalizeInlineScript, pageRequestProblems, parsePolicy, policyDirectives, policyMetas, scriptHash } from "./csp.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -62,12 +63,12 @@ test("every executable inline script in the components is rendered from the hash
   for (const file of fs.readdirSync(path.join(root, "src/scripts/inline"))) {
     assert.ok(registry.includes(`../scripts/inline/${file}?raw`), `src/lib/inline-scripts.ts must hash src/scripts/inline/${file}`);
   }
-  assert.ok(registry.includes("../../public/assets/js/site-header.js?raw"), "the inline header controller is hashed from the file LegacyShell renders");
-  assert.match(read("src/components/LegacyShell.astro"), /import siteHeaderSource from "\.\.\/\.\.\/public\/assets\/js\/site-header\.js\?raw";/);
+  assert.ok(registry.includes("../../public/assets/js/site-header.js?raw"), `the inline header controller is hashed from the file ${shellPaths.name} renders`);
+  assert.match(read(shellPaths.file), /import siteHeaderSource from "\.\.\/\.\.\/public\/assets\/js\/site-header\.js\?raw";/);
 });
 
 test("the policy meta comes first in every page head", () => {
-  const shell = read("src/components/LegacyShell.astro");
+  const shell = read(shellPaths.file);
   const head = shell.slice(shell.indexOf("<head>"), shell.indexOf("</head>"));
   assert.ok(head.indexOf('<meta http-equiv="Content-Security-Policy" content={contentSecurityPolicy}>') >= 0);
   assert.ok(head.indexOf("http-equiv=\"Content-Security-Policy\"") < head.indexOf("<script"), "a meta policy governs only what follows it");

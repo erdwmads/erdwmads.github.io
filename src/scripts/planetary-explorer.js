@@ -38,28 +38,34 @@ function init() {
     const button=root.querySelector('[data-action="interact"]');
     button.setAttribute('aria-pressed',String(enabled));
     button.title=enabled?'Return to page scrolling':'Enable model rotation and pinch zoom';
-    button.setAttribute('aria-label',button.title);
-    button.querySelector('[data-interact-label]').textContent=enabled?'Done':'Explore';
+    // The name starts with the visible word (WCAG 2.5.3), then says what the button does.
+    const label=enabled?'Done':'Explore';
+    button.setAttribute('aria-label',`${label}: ${button.title[0].toLowerCase()}${button.title.slice(1)}`);
+    button.querySelector('[data-interact-label]').textContent=label;
     root.querySelector('.planetary-interaction-bar>span').textContent=enabled?'Drag to rotate · pinch to zoom':'Swipe to scroll the page';
     el('stage').toggleAttribute('data-touch-active',enabled);viewer?.setTouch(enabled);
   }
   matchMedia('(pointer: coarse)').addEventListener('change',()=>touchMode(false),{signal});
-  // Phones (760px and below): the scene comes first. The orbital time controls move under it, and the date, speed
-  // and view selects sit behind a "View settings" disclosure there. Wider screens keep them above the scene.
-  // Moving the nodes (not only restyling them) keeps the focus order equal to the visual order.
+  // The scene comes first: the orbital time controls sit under it at every width. Phones (760px and below) fold the
+  // date, speed and view selects behind a "View settings" disclosure there and move the shape tools under the scene
+  // (after the time controls, which Shapes hides), so the toolbar above it is the same camera and share row in every
+  // view; wider screens keep the view selects and the shape tools in the toolbar above the scene. Moving the nodes
+  // (not only restyling them) keeps the focus order equal to the visual order.
   const compact = matchMedia('(max-width: 760px)');
   function placeControls() {
     const time = el('time-controls'), settings = el('view-settings'), body = el('view-settings-body');
     const date = el('date').closest('label'), speed = el('speed'), now = root.querySelector('[data-action="now"]'), active = document.activeElement;
+    // Both arrangements keep the share status directly under the toolbar that holds the share button.
+    root.querySelector('.planetary-toolbar').after(root.querySelector('.planetary-sharing'));
+    root.querySelector('.planetary-measure').after(time);
     if (compact.matches) {
-      root.querySelector('.planetary-measure').after(time);
+      time.after(el('shape-tools'));
       body.append(date, speed, now, el('orbit-tools'));
       settings.hidden = false;
       // Focus cannot return to a control inside a closed disclosure, so open it when it now holds the focus.
       if (active && body.contains(active)) settings.open = true;
     } else {
-      root.querySelector('.planetary-toolbar').prepend(el('orbit-tools'));
-      root.querySelector('.planetary-sharing').after(time);
+      root.querySelector('.planetary-toolbar').prepend(el('orbit-tools'), el('shape-tools'));
       root.querySelector('[data-action="play"]').after(date, speed, now);
       settings.hidden = true;
     }
@@ -162,7 +168,9 @@ function init() {
         el('object-title').textContent = title;
         el('description').textContent = ['bennu','ryugu'].includes(state.inspected) ? `${title} in the present-day near-Earth environment. The diagram uses Sun-centred coordinates, not a schematic circular orbit.` : `${title} provides a planetary reference for the asteroid orbits.`;
         const point = body && viewer?.position(body.id,state.day), earth = viewer?.position('earth',state.day);
-        facts([['Distance from Sun', point ? `${Math.hypot(...point).toFixed(3)} AU` : 'Loading...'], ['Distance from Earth', point && earth ? `${Math.hypot(...point.map((v,i) => v-earth[i])).toFixed(3)} AU` : 'Loading...']]);
+        // A failed scene has no positions to wait for: the readouts say so instead of loading.
+        const missing = root.dataset.renderState === 'error' ? 'Unavailable' : 'Loading...';
+        facts([['Distance from Sun', point ? `${Math.hypot(...point).toFixed(3)} AU` : missing], ['Distance from Earth', point && earth ? `${Math.hypot(...point.map((v,i) => v-earth[i])).toFixed(3)} AU` : missing]]);
         el('interpretation').textContent = 'Orbital proximity does not imply that these bodies formed together. Their mineral records provide an independent line of evidence.';
       }
     } else if (state.view === 'shape') {
@@ -292,6 +300,7 @@ function init() {
     if (signal.aborted || error?.name === 'AbortError') return;
     playing = false; clockUI(); scheduleClock();
     root.dataset.renderState = 'error';
+    describe();
     touchMode(false);
     shareUI();
     el('stage').querySelector('canvas')?.style.setProperty('visibility','hidden');
@@ -305,6 +314,8 @@ function init() {
   async function start() {
     if (starting || viewer) return;
     starting = true;
+    // A Retry pressed from the keyboard hands focus to the stage before it hides, so focus never falls to the body.
+    if (document.activeElement === el('retry')) el('stage').focus({ preventScroll: true });
     el('retry').hidden = true;
     root.dataset.renderState = 'loading';
     el('status').textContent = 'Loading orbital data...';

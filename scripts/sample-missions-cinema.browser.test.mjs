@@ -34,7 +34,9 @@ try{
  await root.screenshot({path:process.env.TEMP+'/mission-cinema-mobile-dark.png'});
  await page.evaluate(()=>{document.documentElement.dataset.theme='light';document.documentElement.removeAttribute('data-theme-space');});
  await root.screenshot({path:process.env.TEMP+'/mission-cinema-mobile-light.png'});
- assert.equal(await root.locator('[data-mission-status]').evaluate(e=>getComputedStyle(e).color),'rgb(210, 205, 196)');
+ // The scene is a night plate in both themes: in Light the status line still reads the night plate's muted token.
+ const status=await root.locator('[data-mission-status]').evaluate(e=>{const i=document.createElement('i');i.style.color='var(--obs-muted)';e.closest('.on-night').append(i);const token=getComputedStyle(i).color;i.remove();return {color:getComputedStyle(e).color,token,ground:getComputedStyle(e.closest('.on-night')).backgroundColor};});
+ assert.equal(status.color,status.token,'status colour is the night plate muted token');assert.equal(status.ground,'rgb(10, 15, 26)','the scene keeps the night ground in Light');
  assert.deepEqual(errors,[]);
  console.log('PASS cold chapter dissolves, rapid chapter selection, paused render idle, label bounds, uncluttered canvas and responsive final images');
 }finally{await browser.close();}

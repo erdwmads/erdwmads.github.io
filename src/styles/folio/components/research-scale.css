@@ -1,0 +1,91 @@
+/* @owner WP4 · @budget 3KB · @important 0 · Published microscopy figure: caption, facts and boundary */
+/* The caption is plate anatomy (label, title, description, facts, credit); from 1200 px the facts and credit
+   stand in the notes column. The boundary line closes the section. */
+.research-scale {
+  margin-block-start: var(--section-gap);
+  padding-block-start: var(--ed-space-3);
+  border-top: 1px solid var(--obs-rule);
+}
+
+.research-scale__figure {
+  margin-block-start: var(--ed-space-5);
+}
+
+.research-scale__caption {
+  display: grid;
+  gap: var(--ed-space-3) var(--grid-gap);
+  margin-block-start: var(--ed-space-5);
+  font-size: var(--ed-small);
+}
+
+.research-scale__caption > * {
+  max-width: var(--measure-body);
+  margin: 0;
+}
+
+.research-scale__eyebrow {
+  font-size: var(--ed-caption);
+}
+
+.research-scale__facts {
+  display: grid;
+  gap: var(--ed-space-3);
+}
+
+.research-scale__facts div {
+  padding-block-start: var(--ed-space-2);
+  border-top: 1px solid var(--obs-hairline);
+}
+
+.research-scale__facts dd {
+  margin: 0;
+}
+
+.research-scale__credit {
+  color: var(--obs-muted);
+  font-size: .8125rem;
+}
+
+.research-scale__boundary {
+  padding-block-start: var(--ed-space-3);
+  border-top: 1px solid var(--obs-hairline);
+  font-size: var(--ed-small);
+}
+
+@media (min-width: 1200px) {
+  .research-scale__caption {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .research-scale__caption > * {
+    grid-column: 3 / 9;
+  }
+
+  .research-scale__caption > :is(.research-scale__facts, .research-scale__credit) {
+    grid-column: 10 / 13;
+  }
+
+  .research-scale__facts {
+    grid-row: 1 / span 3;
+  }
+}
+
+/* Phones: the inspector topline breaks between its names. */
+@media (max-width: 760px) {
+  .inspector-topline [aria-hidden] {
+    display: none;
+  }
+
+  .inspector-topline .kicker > :last-child {
+    display: block;
+  }
+}
+
+@media (pointer: coarse) {
+  :is(.research-scale__open, .research-scale__credit) a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}

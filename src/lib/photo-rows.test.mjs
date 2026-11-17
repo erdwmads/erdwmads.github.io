@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
-import { MAX_ROW_SCALE, WALL_BANDS, partitionRows, rowProperties } from './photo-rows.js';
+import { readBundleSource } from '../../scripts/lib/read-bundle-source.mjs';
+import { MAX_ROW_SCALE, WALL_BANDS, partitionRows, rowProperties, wallGapProperties } from './photo-rows.js';
 
 const data = fs.readFileSync(new URL('../data/photography.ts', import.meta.url), 'utf8');
 const photographs = vm.runInNewContext(`${data.replace(/export const/g, 'const')}\nphotographs`);
@@ -67,7 +68,7 @@ test('phones get one or two photographs per row, and only the panorama stands al
 });
 
 test('the partition avoids the lone last photograph a greedy fill leaves', () => {
-  // At 1024px (929px wall, 203px target) greedy rows end with one photograph, which would have to grow to
+  // A sample wall (929px, 203px target, 16px gap) where greedy rows end with one photograph, which would have to grow to
   // about 2.7x the target to fill the wall.
   const [width, gap, target] = [929, 16, 203];
   assert.equal(greedyRows(width, gap, target).at(-1).length, 1);
@@ -108,28 +109,37 @@ test('tile styles carry each row ratio sum and gap count, and the CSS row height
       rows.push({ sum, gaps, ratios: row.map(style => style['--photo-ratio']) });
       index += gaps + 1;
     }
-    // observatory-experience.css: row height = (100cqw - 1px - gaps x gap) / sum; flex-grow closes the last pixel.
+    // pages/photography.css: row height = (100cqw - 1px - gaps x gap) / sum; flex-grow closes the last pixel.
     for (let width = lower; width <= band.maxWidth; width += 37) {
-      for (const gap of [10, 16]) {
-        for (const row of rows) {
-          const height = (width - 1 - row.gaps * gap) / row.sum;
-          const used = row.ratios.reduce((total, ratio) => total + ratio * height, 0) + row.gaps * gap;
-          assert.ok(width - used > 0.99 && width - used < 1.01);
-        }
+      for (const row of rows) {
+        const height = (width - 1 - row.gaps * band.gap) / row.sum;
+        const used = row.ratios.reduce((total, ratio) => total + ratio * height, 0) + row.gaps * band.gap;
+        assert.ok(width - used > 0.99 && width - used < 1.01);
       }
     }
     lower = band.maxWidth + 1;
   }
 });
 
-test('observatory-experience.css repeats the wall bands as container queries', () => {
-  const css = fs.readFileSync(new URL('../../public/assets/css/observatory-experience.css', import.meta.url), 'utf8');
+test('the wall gaps are 8, 8 and 12 px and reach the CSS only through the wall style', () => {
+  assert.deepEqual(WALL_BANDS.map(band => [band.name, band.gap]), [['narrow', 8], ['medium', 8], ['wide', 12]]);
+  assert.equal(wallGapProperties(), '--photo-gap-narrow: 8px; --photo-gap-medium: 8px; --photo-gap-wide: 12px');
+  const gallery = fs.readFileSync(new URL('../components/PhotographyGallery.astro', import.meta.url), 'utf8');
+  assert.ok(gallery.includes('const wallStyle = wallGapProperties();') && gallery.includes('<div class="photo-wall" style={wallStyle}>'));
+});
+
+// pages/photography.css repeats the bands as container queries: each band's share as cqw, its ratio sums and its gap.
+test('the stylesheet repeats the wall bands as container queries that use the band gaps', () => {
+  const css = readBundleSource();
   const [narrow, medium, wide] = WALL_BANDS;
   for (const band of [narrow, medium]) {
     const query = css.indexOf(`@container photo-wall (max-width: ${band.maxWidth}px)`);
     assert.ok(query > 0, `no container query for ${band.name}`);
-    const rule = css.slice(query, css.indexOf('}', query));
-    assert.ok(rule.includes(`--photo-target-h: ${Math.round(band.rowShare * 1000) / 10}cqw`) && rule.includes(`var(--photo-sum-${band.name})`), band.name);
+    const block = css.slice(query, css.indexOf('\n}\n', query));
+    for (const part of [`--photo-target-h: ${Math.round(band.rowShare * 1000) / 10}cqw`, `var(--photo-sum-${band.name})`, `var(--photo-gaps-${band.name})`, `--photo-gap: var(--photo-gap-${band.name})`]) {
+      assert.ok(block.includes(part), `${band.name}: ${part}`);
+    }
   }
-  assert.ok(css.includes(`--photo-target-h: ${Math.round(wide.rowShare * 1000) / 10}cqw`) && css.includes('var(--photo-sum-wide)'));
+  for (const part of [`--photo-target-h: ${Math.round(wide.rowShare * 1000) / 10}cqw`, 'var(--photo-sum-wide)', '--photo-gap: var(--photo-gap-wide)']) assert.ok(css.includes(part), part);
+  assert.doesNotMatch(css, /--photo-gap-(?:narrow|medium|wide)\s*:/, 'the gap numbers live in WALL_BANDS only');
 });

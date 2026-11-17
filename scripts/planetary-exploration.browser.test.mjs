@@ -81,8 +81,8 @@ try {
   assert.equal(await root.locator('[data-mineral-detail]').isChecked(),true);
   for(const width of [320,390,760,1440]) {
     await page.setViewportSize({width,height:900});
-    for(const theme of ['light','dark']) {
-      await page.evaluate(theme=>document.documentElement.dataset.theme=theme,theme);
+    for(const theme of ['light','space']) {
+      await page.evaluate(theme=>{const r=document.documentElement;r.dataset.theme=theme;r.toggleAttribute('data-theme-space',theme!=='light');},theme);
       await root.locator('[data-view="sample"]').click();
       await root.locator('[data-material="ryugu"]').click();
       await page.waitForFunction(()=>{const img=document.querySelector('[data-sample-image]');return img.complete&&img.naturalWidth>0;});

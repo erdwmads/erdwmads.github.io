@@ -1,0 +1,71 @@
+/* @owner WP1 · @budget 3KB · @important 1 · Reset: box model, margins, media, hidden, closed dialogs, form fonts, no sideways scroll */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+:where(body) {
+  margin: 0;
+}
+
+:where(h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd, ol, ul, pre) {
+  margin-block: 0;
+}
+
+:where(figure, blockquote) {
+  margin-inline: 0;
+}
+
+/* Images keep the ratio of their width and height attributes, so they reserve their box before they load. */
+:where(img, video) {
+  max-width: 100%;
+  height: auto;
+}
+
+:where(img, svg, video, canvas) {
+  vertical-align: middle;
+}
+
+:where(table) {
+  border-collapse: collapse;
+}
+
+/* The type has no weight above 600, so headers declare 600 rather than the browser's bold. */
+:where(th) {
+  font-weight: 600;
+}
+
+:where(button, input, select, textarea) {
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+}
+
+:where(button) {
+  cursor: pointer;
+}
+
+:where(fieldset) {
+  min-inline-size: 0;
+}
+
+/* [hidden] always hides; the one exception is the space-reserving utility in 05-utilities.css. */
+[hidden] {
+  display: none !important;
+}
+
+/* A component that sets display on its dialog does so on dialog[open], so a closed dialog never shows. */
+dialog:not([open]) {
+  display: none;
+}

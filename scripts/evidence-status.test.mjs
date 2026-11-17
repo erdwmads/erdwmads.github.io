@@ -4,6 +4,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { evidenceKinds } from "../src/components/evidence-status.js";
+import { shell } from "./lib/site-paths.mjs";
 
 const source = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 const statuses = (text) => [...text.matchAll(/<EvidenceStatus kind="([^"]+)">([\s\S]*?)<\/EvidenceStatus>/g)].map(([, kind, sentence]) => ({ kind, sentence }));
@@ -54,7 +55,7 @@ test("Origins keeps its calibrated wording in the status lines", async () => {
 
 test("comparison page meta descriptions stay within 155 characters", async () => {
   for (const path of ["src/pages/ryugu-bennu.astro", "src/pages/origins-study.astro"]) {
-    const description = (await source(path)).match(/<LegacyShell\b[^>]*?\bdescription=(["'])(.*?)\1/)?.[2];
+    const description = (await source(path)).match(new RegExp(`<${shell.name}\\b[^>]*?\\bdescription=(["'])(.*?)\\1`))?.[2];
     assert.ok(description, `${path}: description`);
     assert.ok(description.length <= 155, `${path}: ${description.length} characters`);
   }

@@ -1,5 +1,7 @@
 ---
-import LegacyShell from "../components/LegacyShell.astro";
+import SiteShell from "../components/SiteShell.astro";
+import Masthead from "../components/Masthead.astro";
+import Section from "../components/Section.astro";
 import AnalyticalPathway from "../components/AnalyticalPathway.astro";
 import { getPageScripts } from "../data/site";
 import { displayTitle, formalTitle, question, targetMaterial, targetPhase, methodsSummary, laboratories, period, projectStatus } from "../data/project.mjs";
@@ -15,72 +17,47 @@ const archiveParts: [string, string][] = [
 ];
 ---
 
-<LegacyShell title='Research Log | I. Mads Lieu' description='Research Log for Dolomite in Orgueil CI1: the question, the Analytical Pathway and what the protected Mission Log archive holds.' current='research-log' mainClass='main research-log-main' path="research-log.html" scriptHtml={scriptHtml}>
-  <section class="research-dashboard" aria-labelledby="current-project-title">
-    <p class="eyebrow">Research Log · Graduation research</p>
-    <div class="research-dashboard__status">
-      <span class="status-badge">{projectStatus}</span>
-      <span>{period}</span>
+<SiteShell title='Research Log | I. Mads Lieu' description='Research Log for Dolomite in Orgueil CI1: the question, the Analytical Pathway and what the protected Mission Log archive holds.' current='research-log' mainClass='main research-log-main' path="research-log.html" scriptHtml={scriptHtml}>
+  <div class="page">
+    {/* The accession record: the project title, its formal title and status, the way into the protected archive,
+        and the public facts (beside the title from 961 px, after the way in on narrower screens). The status line is
+        the project's, not a pathway status, so it has no marker. The methods are set one status per line, in the
+        words of methodsSummary, with the " · " kept for screen readers and copied text. */}
+    <div class="log-record folio">
+      <Masthead kicker="Research Log · Graduation research" title={displayTitle} id="current-project-title">
+        {formalTitle}
+        <Fragment slot="meta">{projectStatus} · {period}</Fragment>
+      </Masthead>
+      <p class="log-summary">Public overview of my undergraduate graduation research. The question and the Analytical Pathway are on this page; the dated laboratory records are in the protected Mission Log archive.</p>
+      <div class="log-actions cluster">
+        <a class="button" href="research-graduation.html">Open protected archive</a>
+        <a class="quiet-link" href="research.html">Research overview <span aria-hidden="true">→</span></a>
+      </div>
+      <dl class="log-facts in-notes">
+        <div><dt class="kicker">Research question</dt><dd>{question}</dd></div>
+        <div><dt class="kicker">Material</dt><dd>{targetMaterial} · {targetPhase}</dd></div>
+        <div><dt class="kicker">Methods</dt><dd>{methodsSummary.split(" · ").map((part, index) => <Fragment>{index > 0 && <span class="visually-hidden"> · </span>}<span class="log-facts__line">{part}</span></Fragment>)}</dd></div>
+        <div>
+          <dt class="kicker">Laboratories</dt>
+          <dd>{laboratories.map((lab) => <Fragment><span class="log-facts__line">{lab.name}, {lab.institution} <small>Adviser: {lab.adviser}</small></span>{" "}</Fragment>)}</dd>
+        </div>
+      </dl>
     </div>
 
-    <h1 id="current-project-title">{displayTitle}</h1>
-    <p class="research-dashboard__full-title">{formalTitle}</p>
-    <p class="research-dashboard__summary">
-      Public overview of my undergraduate graduation research. The question and the Analytical Pathway are on this page; the dated laboratory records are in the protected Mission Log archive.
-    </p>
+    <Section id="research-log-pathway-title" kicker="Analytical Pathway" title="From observation to interpretation" class="log-pathway">
+      <AnalyticalPathway variant="compact" />
+      <p class="log-note">What each step can answer and cannot establish: <a href="research.html#research-methods-title">the full Analytical Pathway on Research →</a></p>
+    </Section>
 
-    <dl class="research-dashboard__facts">
-      <div>
-        <dt>Research question</dt>
-        <dd>{question}</dd>
-      </div>
-      <div>
-        <dt>Material</dt>
-        <dd>{targetMaterial} · {targetPhase}</dd>
-      </div>
-      <div>
-        <dt>Methods</dt>
-        <dd>{methodsSummary}</dd>
-      </div>
-      <div>
-        <dt>Laboratories</dt>
-        <dd>
-          {laboratories.map((lab) => (
-            <span class="research-dashboard__lab">{lab.name}, {lab.institution} <small>Adviser: {lab.adviser}</small></span>
-          ))}
-        </dd>
-      </div>
-    </dl>
-
-    <div class="research-dashboard__actions">
-      <a class="button" href="research-graduation.html">Open protected archive</a>
-      <a class="button secondary" href="research.html">Research overview</a>
-    </div>
-  </section>
-
-  <section class="research-log-pathway" aria-labelledby="research-log-pathway-title">
-    <header class="research-log-section-heading">
-      <p class="eyebrow">Analytical Pathway</p>
-      <h2 id="research-log-pathway-title">From observation to interpretation</h2>
-    </header>
-    <AnalyticalPathway variant="compact" />
-    <p class="research-log-section-note">What each step can answer and cannot establish: <a href="research.html#research-methods-title">the full Analytical Pathway on Research →</a></p>
-  </section>
-
-  <section class="research-log-archive" aria-labelledby="research-log-archive-title">
-    <header class="research-log-section-heading">
-      <p class="eyebrow">Protected archive</p>
-      <h2 id="research-log-archive-title">What the Mission Log archive holds</h2>
+    <Section id="research-log-archive-title" kicker="Protected archive" title={"What the Mission\u00a0Log archive holds"} class="research-log-archive">
       <p>The laboratory record of this project is kept as an encrypted archive. It opens in the browser with the archive password or a linked passkey, and locks again when you leave the page.</p>
-    </header>
-    <dl class="research-log-archive__parts">
-      {archiveParts.map(([term, text]) => (
-        <div><dt>{term}</dt><dd>{text}</dd></div>
-      ))}
-    </dl>
-    <div class="research-log-archive__access">
-      <p>Entries are working records of unpublished research; their observations and interpretations are provisional.</p>
-      <a class="button" href="research-graduation.html">Open protected archive</a>
-    </div>
-  </section>
-</LegacyShell>
+      <dl class="log-parts">
+        {archiveParts.map(([term, text]) => (
+          <div><dt>{term}</dt><dd>{text}</dd></div>
+        ))}
+      </dl>
+      <p class="log-note">Entries are working records of unpublished research; their observations and interpretations are provisional.</p>
+      <p class="log-access"><a class="button" href="research-graduation.html">Open protected archive</a></p>
+    </Section>
+  </div>
+</SiteShell>

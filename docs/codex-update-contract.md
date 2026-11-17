@@ -13,11 +13,12 @@ The user supplies research content, notes, papers, images, or presentation goals
 - Research page: `src/pages/research.astro` (research question, sub-questions, Analytical Pathway and the Orgueil vs returned samples card), plus `src/components/EvidenceAtlasData.astro`
 - Project facts (titles, question, methods, Analytical Pathway and its owner-set statuses): `src/data/project.mjs`, rendered by `src/components/CurrentFocus.astro`, `src/components/AnalyticalPathway.astro` and the Research, Research Log and graduation pages; see Project Facts in `docs/content-workflow.md`
 - Comparison materials page (sample-return missions, planetary field guide, published microscopy): `src/pages/ryugu-bennu.astro`
-- Stylesheet cascade order and bundle: `stylesheets` then `componentStylesheets` in `src/data/site.ts`, built into the one `assets/css/site.css`; every owner file is listed in `docs/ui-invariants.md`
-- Theme tokens (`--obs-*`, `--evo-*`): `public/assets/css/tokens.css`
-- Header, navigation, mobile shell, and HUD: `public/assets/css/shell-evolution.css`
-- Research Log dashboard and protected research surfaces: `public/assets/css/research-log-evolution.css`
-- Legacy visual compatibility: `public/assets/css/style.css` (do not append new component rules)
+- Home, CV and colophon text: `src/data/home.ts`, `src/data/cv.ts` and `src/data/colophon.ts`, rendered by `src/pages/index.astro`, `src/pages/cv.astro` and `src/components/SiteFooter.astro`
+- Shared shell (head, header, footer): `src/components/SiteShell.astro`, `src/components/SiteHeader.astro` and `src/components/SiteFooter.astro`
+- Stylesheets: every file lives in `src/styles/folio/`, listed in cascade order in `stylesheets` in `src/data/site.ts` and built into the one `assets/css/site.css`; files, owners and rules are in `src/styles/folio/README.md` (summary in `docs/ui-invariants.md`)
+- Theme tokens (`--obs-*`, both themes): `src/styles/folio/00-tokens.css`, the only file that may name a theme
+- Header, navigation and mobile shell: `src/styles/folio/components/header.css`; Interface 2046: `components/interface-2046.css`
+- Protected lock gate, Mission Index and Mission Log entries: `src/styles/folio/components/mission-log.css` and `pages/graduation.css`
 - Effects and interaction: `public/assets/js/` (classic scripts registered in `src/data/site.ts`) and `src/scripts/` (bundled modules; the planetary explorer, Origins, sample missions and image inspector load through `src/scripts/feature-loader.js`)
 - Inline scripts and Content Security Policy: `src/scripts/inline/`, `src/lib/inline-scripts.ts` and `src/lib/csp.mjs` (rules in `docs/ui-invariants.md`)
 
@@ -64,7 +65,7 @@ When the user asks for slides, Codex should:
 
 Codex commits or pushes only when the owner asks. Before pushing to `main`, Codex should:
 
-1. Run `npm run check`, and `npm run audit:css:check` after CSS ownership changes so the baseline does not regress.
+1. Run `npm run check`, and `npm run audit:css:check` after any CSS change so no file exceeds its budget or breaks the lint.
 2. Confirm `git status --short --branch`.
 3. Commit with a clear message.
 4. Push `main`.

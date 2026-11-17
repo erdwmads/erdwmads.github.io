@@ -60,7 +60,10 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
   const originRim = new THREE.DirectionalLight(0x75cddd,1.6);originRim.position.set(-3,1,-3);originRim.visible=false;scene.add(originRim);
   const sunlight = new THREE.PointLight(0xfff4e5,3,0,0); sunlight.visible=false; scene.add(sunlight);
 
-  function color() { return document.documentElement.dataset.theme === 'light' ? { bg:0xe8f0f4, line:0x9caeb7, blue:0x287e9c, gold:0x99731f, body:0x626f79 } : { bg:0x091219, line:0x41535e, blue:0x8ed4e9, gold:0xe6c77b, body:0x737b82 }; }
+  // The stage is a night plate in both themes (.on-night), so the scene keeps the night palette in Light too. bg is
+  // the plate (--obs-plate-night). The shape and mineral views tone-map their background (ACES, OutputPass), so they
+  // clear with plateMapped, which comes out as the same #0a0f1a.
+  function color() { return { bg:0x0a0f1a, plateMapped:0x1c212d, line:0x41535e, blue:0x8ed4e9, gold:0xe6c77b, body:0x737b82 }; }
   function halo(size) {
     const canvas = document.createElement('canvas'); canvas.width = canvas.height = 64;
     const context = canvas.getContext('2d'), glow = context.createRadialGradient(32,32,4,32,32,32);
@@ -118,7 +121,7 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
       for (const [name,value] of Object.entries({x1:x,y1:y,x2:left,y2:top+height/2})) entry.leader.setAttribute(name,String(value));
       placed.push({x:left,y:top,w:width,h:height});
     }
-    if (status.hidden && root.dataset.renderState!=='ready') {root.dataset.renderState='ready';onReady?.();}
+    if (status.hidden && root.dataset.renderState!=='ready') {root.dataset.renderState='ready';stage.querySelector('[data-scene-poster]')?.setAttribute('data-scene-poster','done');onReady?.();}
   }
   function resize() {
     if (!alive || stage.hidden) return;
@@ -139,7 +142,9 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
     if (!value) { cancelAnimationFrame(frame); frame = 0; }
     else { resize(); requestRender(); }
   }
-  function setTouch(value) { touch = value; controls.enabled = visible && !contextLost && (!coarse.matches || touch); }
+  // OrbitControls writes touch-action:none on the stage. On a coarse pointer the page scrolls over the stage (pan-y)
+  // until the reader turns on Explore; the inline value follows, since CSS cannot outweigh it without !important.
+  function setTouch(value) { touch = value; controls.enabled = visible && !contextLost && (!coarse.matches || touch); stage.style.touchAction = coarse.matches && !touch ? 'pan-y' : 'none'; }
   coarse.addEventListener('change', () => setTouch(false), { signal });
   function reset() {
     camera.zoom = 1;
@@ -285,7 +290,7 @@ export function createPlanetaryRenderer(root, data, { signal, onSelect, onFeatur
       labelLayer.hidden = false;
       root.querySelector('[data-fallback]').hidden = true;
       renderer.domElement.style.visibility = '';
-      renderer.setClearColor(color().bg);scene.background=new THREE.Color(state.view==='orbit'?color().bg:0x050a0d);
+      renderer.setClearColor(color().bg);scene.background=new THREE.Color(state.view==='orbit'?color().bg:color().plateMapped);
       status.hidden = true;
       root.querySelector('[data-retry]').hidden = true;
       if (state.view === 'minerals') root.dataset.modelReady = state.mineral;

@@ -1,0 +1,161 @@
+/* @owner WP1 · @budget 8KB · @important 0 · Design tokens: colour for both themes, type, spacing, motion, layers and layout */
+/* The only file that may name [data-theme]. One attribute on html decides the theme: Space is the server default
+   (data-theme="space" data-theme-space) and lives on :root; Light applies only when the preload or theme.js sets
+   data-theme="light" without data-theme-space, mirroring the inline first-paint style in SiteShell.astro. The grounds
+   #0f1625 and #f7f3eb must equal that style, both theme-color metas and theme-preload.js. Components read tokens
+   only. .on-night (night plates) and the two screens the scripts build without it (.obs-presentation, .mission-lightbox)
+   keep the Space colours in either theme. The Light rule is
+   wrapped in :where() so it weighs the same as :root and wins by order; states/contrast.css can then override a
+   token for both themes. */
+:root,
+.on-night,
+.obs-presentation,
+.mission-lightbox {
+  color-scheme: dark;
+  --obs-paper: #0f1625;
+  --obs-surface: #171d2c;
+  --obs-surface-hover: #202735;
+  --obs-highlight: #242e41;
+  --obs-reading: rgba(15, 22, 37, .88);
+  --obs-text: #eee9e0;
+  --obs-muted: #afb6c2;
+  --obs-hairline: rgba(238, 233, 224, .12);
+  --obs-rule: rgba(238, 233, 224, .6);
+  --obs-control-border: #727a87;
+  --obs-accent: #d2bb8f;
+  --obs-link: #a6c1df;
+  --obs-focus: #a6c1df;
+  --obs-error: #e8a29a;
+  --obs-plate: #0a0d13;
+  --obs-primary-face: #eee9e0;
+  --obs-primary-text: #0f1625;
+  --obs-primary-hover: color-mix(in srgb, var(--obs-primary-face) 94%, var(--obs-paper));
+  --obs-toggle-face: #202735;
+  --obs-shadow-overlay: 0 18px 48px rgba(0, 0, 0, .45);
+}
+
+:root:where([data-theme="light"]:not([data-theme-space])) {
+  color-scheme: light;
+  --obs-paper: #f7f3eb;
+  --obs-surface: #fcfaf5;
+  --obs-surface-hover: #f0ebe1;
+  --obs-highlight: #f1e8d6;
+  --obs-reading: rgba(247, 243, 235, .94);
+  --obs-text: #1d2434;
+  --obs-muted: #555c6a;
+  --obs-hairline: rgba(29, 36, 52, .14);
+  --obs-rule: #1d2434;
+  --obs-control-border: #857c6f;
+  --obs-accent: #765725;
+  --obs-link: #355781;
+  --obs-focus: #355781;
+  --obs-error: #8a2d2d;
+  --obs-plate: #e8e6e1;
+  --obs-primary-face: #1d2434;
+  --obs-primary-text: #f7f3eb;
+  --obs-primary-hover: color-mix(in srgb, var(--obs-primary-face) 94%, var(--obs-paper));
+  --obs-toggle-face: #f1e8d6;
+  --obs-shadow-overlay: 0 18px 48px rgba(29, 36, 52, .16);
+}
+
+/* Text inherits the colour the page computed, not the tokens, so a night box sets its own from the Space token. */
+.on-night,
+.obs-presentation,
+.mission-lightbox {
+  color: var(--obs-text);
+}
+
+:root {
+  /* Theme-independent grounds: night plates, the presentation and lightbox screen, and the overlay scrim. */
+  --obs-plate-night: #0a0f1a;
+  --obs-screen: #05070c;
+  --obs-scrim: rgba(10, 13, 19, .6);
+
+  /* Visual effects density. data-fx-intensity (observatory-interactions.js) changes these and nothing else. */
+  --fx-dust-opacity: .7;
+  --fx-orbit-alpha: .72;
+
+  /* Type. Sizes interpolate linearly from 390 px to 1440 px; the root size is never set in px. */
+  --type-serif: "Source Serif 4", "Serif Fallback", Georgia, "Noto Serif", serif;
+  --type-sans: "Source Sans 3", "Sans Fallback", Arial, Roboto, sans-serif;
+  --type-mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --ed-name: clamp(3rem, 2.0714rem + 3.8095vw, 5.5rem);
+  --ed-display: clamp(2.5rem, 1.7571rem + 3.0476vw, 4.5rem);
+  --ed-h2: clamp(1.875rem, 1.55rem + 1.3333vw, 2.75rem);
+  --ed-h3: clamp(1.375rem, 1.2357rem + .5714vw, 1.75rem);
+  --ed-h4: clamp(1.125rem, 1.0786rem + .1905vw, 1.25rem);
+  --ed-lead: clamp(1.1875rem, 1.0946rem + .381vw, 1.4375rem);
+  --ed-body: clamp(1.0625rem, 1.0393rem + .0952vw, 1.125rem);
+  --ed-small: .9375rem;
+  --ed-caption: .875rem;
+  --ed-label: .75rem;
+  --ed-runhead: .6875rem;
+  --measure-body: 36rem;
+  --measure-lead: 32rem;
+  --measure-caption: 34rem;
+
+  /* Spacing: 4, 8, 12, 16, 24, 32, 48, 64, 96 and 128 px. */
+  --ed-space-1: .25rem;
+  --ed-space-2: .5rem;
+  --ed-space-3: .75rem;
+  --ed-space-4: 1rem;
+  --ed-space-5: 1.5rem;
+  --ed-space-6: 2rem;
+  --ed-space-7: 3rem;
+  --ed-space-8: 4rem;
+  --ed-space-9: 6rem;
+  --ed-space-10: 8rem;
+  --section-gap: 6rem;
+
+  /* Radii: 0 for images and plates, 2 px for records and chips, 4 px for controls. */
+  --radius-record: 2px;
+  --radius-control: 4px;
+
+  /* Motion: interface motion answers input and lasts at most 320 ms. */
+  --ed-dur-1: 120ms;
+  --ed-dur-2: 200ms;
+  --ed-dur-3: 320ms;
+  --ed-ease-out: cubic-bezier(.2, 0, 0, 1);
+  --ed-ease-in: cubic-bezier(.4, 0, 1, 1);
+
+  /* Layers, in the stacking order the scripts rely on: fixed FX below the content, overlays above it, the skip
+     link on top. Native dialogs sit in the top layer and need none. */
+  --z-orbit: 0;
+  --z-ambient: 1;
+  --z-interface: 2;
+  --z-rail: 3;
+  --z-content: 3;
+  --z-guide: 40;
+  --z-float: 90;
+  --z-dock: 180;
+  --z-progress: 9998;
+  --z-lightbox: 9999;
+  --z-skip: 10000;
+
+  /* Layout: reading content 1,200 px, the header 1,360 px. --page-pad keeps the Photography sizes maths
+     (100vw - 80px above 760 px, 100vw - 40px at or below). */
+  --page-max: 75rem;
+  --page-max-wide: 85rem;
+  --page-pad: 2.5rem;
+  --grid-gap: 1.5rem;
+}
+
+:root[data-fx-intensity="immersive"] {
+  --fx-dust-opacity: 1;
+  --fx-orbit-alpha: .9;
+}
+
+@media (max-width: 1199px) {
+  :root {
+    --section-gap: 4.5rem;
+    --grid-gap: 1.25rem;
+  }
+}
+
+@media (max-width: 760px) {
+  :root {
+    --section-gap: 3.5rem;
+    --grid-gap: 1rem;
+    --page-pad: 1.25rem;
+  }
+}

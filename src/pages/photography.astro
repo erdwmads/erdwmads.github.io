@@ -1,11 +1,11 @@
 ---
-import LegacyShell from "../components/LegacyShell.astro";
+import SiteShell from "../components/SiteShell.astro";
 import PhotographyGallery from "../components/PhotographyGallery.astro";
 import { getPageScripts } from "../data/site";
 
 const scriptHtml = getPageScripts("photography");
 ---
 
-<LegacyShell title='Photography | I. Mads Lieu' description='Film-inspired photographs, environmental portraits and visual notes by I. Mads Lieu.' current='photography' mainClass='main' path="photography.html" scriptHtml={scriptHtml}>
+<SiteShell title='Photography | I. Mads Lieu' description='Film-inspired photographs, environmental portraits and visual notes by I. Mads Lieu.' current='photography' mainClass='main' path="photography.html" scriptHtml={scriptHtml}>
   <PhotographyGallery />
-</LegacyShell>
+</SiteShell>

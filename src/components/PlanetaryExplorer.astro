@@ -1,16 +1,25 @@
 ---
+// The planetary field guide (planetary-explorer.js): a section on the .folio grid. The instrument (toolbar, the
+// scene on a night plate, then its orbital time controls) sits beside its reading (the summary, in the notes column
+// on desktop). The shape and camera tools keep their box while hidden (data-reserve-space), so choosing Orgueil,
+// which has no measured shape, moves nothing; on a coarse pointer the interaction bar does the same, so every plate
+// starts at one height. The figure wraps the scene and its reference image. Styles:
+// src/styles/folio/components/planetary.css.
 import ResearchQuestions from './ResearchQuestions.astro';
 import EvidenceStatus from './EvidenceStatus.astro';
+import Kicker from './Kicker.astro';
+import ScenePoster from './ScenePoster.astro';
 ---
-<section class="planetary" data-planetary-explorer aria-labelledby="planetary-title">
-  <header class="planetary-heading">
-    <p class="eyebrow">Planetary field guide</p>
+<section class="planetary folio-section folio" data-planetary-explorer aria-labelledby="planetary-title">
+  <span class="folio-section__number in-margin">02</span>
+  <Kicker>Planetary field guide</Kicker>
+  <header class="planetary-heading span-wide">
     <h2 id="planetary-title">Compare materials and observations</h2>
     <EvidenceStatus kind="model">Orbits follow interpolated JPL Horizons daily ephemerides; bodies are enlarged independently, not to scale, and present orbits are not formation locations.</EvidenceStatus>
-    <p>Choose a material, then compare its orbital context, external shape, sample photographs and illustrative mineral forms.</p>
+    <p class="planetary__intro">Choose a material, then compare its orbital context, external shape, sample photographs and illustrative mineral forms.</p>
   </header>
   <ResearchQuestions />
-  <div class="planetary-navigation">
+  <div class="planetary-navigation span-wide">
     <div class="planetary-steps" role="tablist" aria-label="Observation scale">
       <button type="button" role="tab" id="planetary-orbit" aria-controls="planetary-panel" aria-selected="true" data-view="orbit"><span>01</span> Orbits</button>
       <button type="button" role="tab" id="planetary-shape" aria-controls="planetary-panel" aria-selected="false" tabindex="-1" data-view="shape"><span>02</span> Shapes</button>
@@ -18,76 +27,78 @@ import EvidenceStatus from './EvidenceStatus.astro';
       <button type="button" role="tab" id="planetary-minerals" aria-controls="planetary-panel" aria-selected="false" tabindex="-1" data-view="minerals"><span>04</span> Minerals</button>
     </div>
     <div class="planetary-materials" role="group" aria-label="Selected material">
-      <button type="button" data-material="bennu" aria-pressed="true">Bennu</button>
-      <button type="button" data-material="ryugu" aria-pressed="false">Ryugu</button>
-      <button type="button" data-material="orgueil" aria-pressed="false">CI / Orgueil</button>
+      <button type="button" class="button secondary" data-material="bennu" aria-pressed="true">Bennu</button>
+      <button type="button" class="button secondary" data-material="ryugu" aria-pressed="false">Ryugu</button>
+      <button type="button" class="button secondary" data-material="orgueil" aria-pressed="false">CI / Orgueil</button>
     </div>
   </div>
-  <div id="planetary-panel" role="tabpanel" aria-labelledby="planetary-orbit" tabindex="0">
-    <div class="planetary-toolbar">
-      <div data-orbit-tools class="planetary-options">
-        <select data-scope aria-label="Solar system extent"><option value="inner">Inner solar system</option><option value="solar">Solar system</option></select>
-        <select data-angle aria-label="Orbital viewing angle"><option value="plan">Top view</option><option value="tilt">Inclined view</option></select>
-      </div>
-      <div data-shape-tools class="planetary-options" hidden>
-        <button type="button" data-action="wireframe" aria-pressed="false">Wireframe</button>
-        <button type="button" data-action="compare" aria-pressed="false">Compare sizes</button>
-      </div>
-      <div class="planetary-tools" data-camera-tools>
-
-        <button type="button" data-action="zoom-in" aria-label="Zoom in" title="Zoom in"><span data-icon="zoom-in"></span></button>
-        <button type="button" data-action="zoom-out" aria-label="Zoom out" title="Zoom out"><span data-icon="zoom-out"></span></button>
-        <button type="button" data-action="reset" aria-label="Reset view" title="Reset view"><span data-icon="reset"></span></button>
-        <output data-zoom aria-label="Magnification">100%</output>
-      </div>
-      <button type="button" data-action="share" data-share disabled aria-label="Copy observation link" title="Copy observation link"><span data-icon="share"></span></button>
-    </div>
-    <div class="planetary-sharing"><p data-share-status role="status"></p><input data-share-link readonly type="url" aria-label="Observation link" hidden /></div>
-    <fieldset class="planetary-time" data-time-controls disabled>
-      <legend class="planetary-sr-only">Orbital time</legend>
-      <button type="button" data-action="play" aria-label="Play orbital motion" title="Play orbital motion" aria-pressed="false"><span data-icon="play"></span></button>
-      <label>UTC<input data-date type="datetime-local" step="60" aria-label="Orbital date and time in UTC" /></label>
-      <select data-speed aria-label="Time speed"><option value="1">Real-time speed</option><option value="86400">1 day / second</option><option value="2592000" selected>30 days / second</option><option value="31557600">1 year / second</option></select>
-      <button type="button" data-action="now" title="Track current UTC time at 1× speed" aria-label="Track current UTC time at 1× speed"><span data-icon="now"></span></button>
-      <input data-timeline type="range" min="0" max="52584" step="1" value="0" aria-label="Orbital timeline in hours" />
-      <p data-clock-status role="status">Loading ephemeris...</p>
-      <!-- Phones: planetary-explorer.js moves this fieldset under the scene and the date, speed and view selects in here. -->
-      <details class="planetary-view-settings" data-view-settings hidden>
-        <summary>View settings</summary>
-        <div class="planetary-view-settings-body" data-view-settings-body></div>
-      </details>
-    </fieldset>
+  <div id="planetary-panel" class="planetary-panel span-wide" role="tabpanel" aria-labelledby="planetary-orbit" tabindex="0">
     <div class="planetary-layout">
-      <div class="planetary-visual">
-        <div class="planetary-interaction-bar"><span>Swipe to scroll the page</span><button type="button" data-action="interact" aria-label="Enable model rotation and pinch zoom" title="Enable model rotation and pinch zoom" aria-pressed="false" class="planetary-touch"><span data-icon="hand"></span><span data-interact-label>Explore</span></button></div>
-        <div class="planetary-stage" data-stage tabindex="0" role="group" aria-label="Interactive solar system, asteroid and mineral models" aria-describedby="planetary-stage-hint">
-          <div class="planetary-labels" data-labels></div>
-          <img class="planetary-fallback" data-fallback hidden alt="Public reference image of the selected material" />
-          <p class="planetary-status" data-status role="status">Loading orbital data...</p>
-          <button type="button" data-retry data-action="retry" hidden>Retry view</button>
-          <span class="planetary-sr-only" id="planetary-stage-hint">Arrow keys rotate the model. Zoom in, Zoom out and Reset view buttons are above it.</span>
-        </div>
-        <div class="planetary-ci" data-ci-figure hidden>
-          <p class="eyebrow">CI / Orgueil</p>
-          <h3>No measured 3D shape available</h3>
-          <p>Orgueil is a meteorite specimen. A photograph cannot establish its unseen geometry.</p>
-          <button type="button" data-action="show-sample">View specimen in Samples</button>
-        </div>
-        <figure class="planetary-sample" data-sample-figure hidden>
-          <img data-sample-image alt="" />
-          <figcaption data-sample-credit></figcaption>
-          <p data-sample-error hidden>Reference photograph unavailable. The source link remains available.</p>
-        </figure>
-        <div class="planetary-minerals" data-mineral-diagram hidden>
-          <div class="planetary-mineral-tabs" role="group" aria-label="Mineral examples">
-            <button type="button" data-mineral="carbonate" aria-pressed="true">Dolomite</button>
-            <button type="button" data-mineral="matrix" aria-pressed="false">Lizardite</button>
-            <button type="button" data-mineral="sulfide" aria-pressed="false">Pentlandite</button>
+      <div class="planetary__instrument">
+        <div class="planetary-toolbar">
+          <div data-orbit-tools class="planetary-options">
+            <select data-scope aria-label="Solar system extent"><option value="inner">Inner solar system</option><option value="solar">Solar system</option></select>
+            <select data-angle aria-label="Orbital viewing angle"><option value="plan">Top view</option><option value="tilt">Inclined view</option></select>
           </div>
-          <label class="planetary-detail"><input type="checkbox" data-mineral-detail /><span data-detail-label>Separate cleavage blocks</span></label>
-          <p class="planetary-caption" data-mineral-caption>Illustrative mineral form, not a measured grain or an atomic structure.</p>
+          <div data-shape-tools class="planetary-options" hidden data-reserve-space>
+            <button type="button" class="button secondary" data-action="wireframe" aria-pressed="false">Wireframe</button>
+            <button type="button" class="button secondary" data-action="compare" aria-pressed="false">Compare sizes</button>
+          </div>
+          <div class="planetary-tools" data-camera-tools data-reserve-space>
+            <button type="button" class="icon-button" data-action="zoom-in" aria-label="Zoom in" title="Zoom in"><span data-icon="zoom-in"></span></button>
+            <button type="button" class="icon-button" data-action="zoom-out" aria-label="Zoom out" title="Zoom out"><span data-icon="zoom-out"></span></button>
+            <button type="button" class="icon-button" data-action="reset" aria-label="Reset view" title="Reset view"><span data-icon="reset"></span></button>
+            <output data-zoom aria-label="Magnification">100%</output>
+          </div>
+          <button type="button" class="icon-button" data-action="share" data-share disabled aria-label="Copy observation link" title="Copy observation link"><span data-icon="share"></span></button>
         </div>
-        <div class="planetary-measure"><span data-scale-note>Heliocentric · AU</span><span data-epoch>07 Sep 2026 · 00:00 TDB</span></div>
+        <div class="planetary-sharing"><p data-share-status role="status"></p><input data-share-link readonly type="url" aria-label="Observation link" hidden /></div>
+        <figure class="planetary-visual">
+          <div class="planetary-interaction-bar" data-reserve-space><span>Swipe to scroll the page</span><button type="button" class="planetary-touch button secondary" data-action="interact" aria-label="Explore: enable model rotation and pinch zoom" title="Enable model rotation and pinch zoom" aria-pressed="false"><span data-icon="hand"></span><span data-interact-label>Explore</span></button></div>
+          <div class="planetary-stage on-night" data-stage tabindex="0" role="group" aria-label="Interactive solar system, asteroid and mineral models" aria-describedby="planetary-stage-hint">
+            <ScenePoster name="planetary" />
+            <div class="planetary-labels" data-labels></div>
+            <img class="planetary-fallback" data-fallback hidden alt="Public reference image of the selected material" />
+            <p class="planetary-status" data-status role="status">Loading orbital data...</p>
+            <button type="button" class="button secondary" data-retry data-action="retry" hidden>Retry view</button>
+            <span class="planetary-sr-only" id="planetary-stage-hint">Arrow keys rotate the model. Zoom in, Zoom out and Reset view buttons are above it.</span>
+          </div>
+          <div class="planetary-ci on-night" data-ci-figure hidden>
+            <p class="kicker">CI / Orgueil</p>
+            <h3>No measured 3D shape available</h3>
+            <p>Orgueil is a meteorite specimen. A photograph cannot establish its unseen geometry.</p>
+            <button type="button" class="button secondary" data-action="show-sample">View specimen in Samples</button>
+          </div>
+          <figure class="planetary-sample" data-sample-figure hidden>
+            <img data-sample-image alt="" />
+            <figcaption data-sample-credit></figcaption>
+            <p data-sample-error hidden>Reference photograph unavailable. The source link remains available.</p>
+          </figure>
+          <div class="planetary-measure"><span data-scale-note>Heliocentric · AU</span><span data-epoch>07 Sep 2026 · 00:00 TDB</span></div>
+          <fieldset class="planetary-time" data-time-controls disabled>
+            <legend class="planetary-sr-only">Orbital time</legend>
+            <button type="button" class="icon-button" data-action="play" aria-label="Play orbital motion" title="Play orbital motion" aria-pressed="false"><span data-icon="play"></span></button>
+            <label class="planetary-date">UTC<input data-date type="datetime-local" step="60" aria-label="Orbital date and time in UTC" /></label>
+            <select data-speed aria-label="Time speed"><option value="1">Real-time speed</option><option value="86400">1 day / second</option><option value="2592000" selected>30 days / second</option><option value="31557600">1 year / second</option></select>
+            <button type="button" class="icon-button" data-action="now" title="Track current UTC time at 1× speed" aria-label="Track current UTC time at 1× speed"><span data-icon="now"></span></button>
+            <input data-timeline type="range" min="0" max="52584" step="1" value="0" aria-label="Orbital timeline in hours" />
+            <p data-clock-status role="status">Loading ephemeris...</p>
+            <!-- Phones: planetary-explorer.js moves the date, speed and view selects in here. -->
+            <details class="planetary-view-settings" data-view-settings hidden>
+              <summary>View settings</summary>
+              <div class="planetary-view-settings-body" data-view-settings-body></div>
+            </details>
+          </fieldset>
+          <div class="planetary-minerals" data-mineral-diagram hidden>
+            <div class="planetary-mineral-tabs" role="group" aria-label="Mineral examples">
+              <button type="button" class="button secondary" data-mineral="carbonate" aria-pressed="true">Dolomite</button>
+              <button type="button" class="button secondary" data-mineral="matrix" aria-pressed="false">Lizardite</button>
+              <button type="button" class="button secondary" data-mineral="sulfide" aria-pressed="false">Pentlandite</button>
+            </div>
+            <label class="planetary-detail"><input type="checkbox" data-mineral-detail /><span data-detail-label>Separate cleavage blocks</span></label>
+            <p class="planetary-caption" data-mineral-caption>Illustrative mineral form, not a measured grain or an atomic structure.</p>
+          </div>
+        </figure>
       </div>
       <aside class="planetary-summary" data-summary aria-live="polite" aria-atomic="true">
         <p class="planetary-evidence" data-evidence>JPL ephemeris</p>
@@ -102,11 +113,13 @@ import EvidenceStatus from './EvidenceStatus.astro';
     <p class="planetary-boundary" data-boundary>Positions at the stated epoch. Trajectory traces span approximately one revolution per body. Body models are enlarged independently, not to scale; present orbits are not formation locations.</p>
     <details class="planetary-sources">
       <summary>Sources &amp; model conventions</summary>
-      <p>Orbits: <a href="https://ssd.jpl.nasa.gov/horizons/">NASA/JPL Horizons</a>, Sun-centred geometric vectors, J2000 ecliptic / ICRF, astronomical units. Moving positions use linear interpolation of daily UTC vectors from 2025-01-01 to 2031-01-01; the current-clock view is an ephemeris estimate, not live telemetry or navigation-grade data. <a href="/assets/data/planetary/timeline.json">Download time-series data and provenance</a>. Orbit guide curves use approximately one revolution from 2026-09-07 TDB and are not spacecraft flight paths. <a href="/assets/data/planetary/orbits.json">Orbit guide data</a>.</p>
-      <p>Shapes: <a href="https://svs.gsfc.nasa.gov/5069">Bennu: NASA SVS, OSIRIS-REx OLA v20 global model (Daly et al. 2020), simplified</a>; <a href="https://data.darts.isas.jaxa.jp/pub/hayabusa2/paper/Watanabe_2019/">Ryugu: ISAS/JAXA, Watanabe et al. (2019), shape-model team</a>. Public meshes are recentered, oriented for display and rendered with neutral lighting. Comparison preserves the source dimensions on a common scale; both meshes are in kilometres. The labels give approximate mean diameters (490 m and 900 m), not maximum widths. This is an educational comparison, not metrology. Both meshes have about 49,000 triangles (Bennu simplified from 3.4 million), but they come from different methods (Ryugu: stereo imaging; Bennu: laser altimetry), so displayed roughness is only broadly comparable. Lighting, orientation and wireframe colours are not measured albedo, spin state or mineral composition. <a href="https://www.isas.jaxa.jp/en/researchers/data-policy/">JAXA data policy</a>.</p>
-      <p>Orbital body appearance: Earth day and cloud textures reuse the <a href="https://github.com/mrdoob/three.js/tree/dev/examples/textures/planets">Three.js planet examples</a> under the MIT license; <a href="/assets/img/arrival/ASSET-CREDITS.md">local asset credits</a>. The Sun and other planetary surfaces are procedural illustrations. Body display sizes, spin orientations and surface appearances are illustrative, not measured scale or spin states. Use Shapes for the separate asteroid size comparison.</p>
-      <p>Mineral interpretation: <a href="https://www.isas.jaxa.jp/en/topics/003094.html">Ryugu initial chemical analysis</a>; <a href="https://doi.org/10.1111/maps.14227">Lauretta, Connolly et al. (2024), Bennu sample analysis</a>. Orgueil photograph: <a href="https://naturalhistory.si.edu/object/nmnhmineralsciences_1017941">Chip Clark / Smithsonian, USNM 388, CC0</a>. This specimen is not the author's experimental sample. No CI parent-body orbit or specimen scan is asserted.</p>
-      <p>Sample photographs: <a href="https://www.nasa.gov/image-detail/osiris-rex-pe-examination-5/">Bennu: NASA / Erika Blumenfeld &amp; Joseph Aebersold</a>; <a href="https://www.hayabusa2.jaxa.jp/en/topics/20201225_samples/">Ryugu chamber A: JAXA</a>, unchanged published image, used for scientific education under the <a href="https://global.jaxa.jp/policy.html">JAXA site policy</a>. These views show different evidence types, not continuous magnifications of one specimen.</p>
+      <div class="planetary__sources-body">
+        <p>Orbits: <a href="https://ssd.jpl.nasa.gov/horizons/">NASA/JPL Horizons</a>, Sun-centred geometric vectors, J2000 ecliptic / ICRF, astronomical units. Moving positions use linear interpolation of daily UTC vectors from 2025-01-01 to 2031-01-01; the current-clock view is an ephemeris estimate, not live telemetry or navigation-grade data. <a href="/assets/data/planetary/timeline.json">Download time-series data and provenance</a>. Orbit guide curves use approximately one revolution from 2026-09-07 TDB and are not spacecraft flight paths. <a href="/assets/data/planetary/orbits.json">Orbit guide data</a>.</p>
+        <p>Shapes: <a href="https://svs.gsfc.nasa.gov/5069">Bennu: NASA SVS, OSIRIS-REx OLA v20 global model (Daly et al. 2020), simplified</a>; <a href="https://data.darts.isas.jaxa.jp/pub/hayabusa2/paper/Watanabe_2019/">Ryugu: ISAS/JAXA, Watanabe et al. (2019), shape-model team</a>. Public meshes are recentered, oriented for display and rendered with neutral lighting. Comparison preserves the source dimensions on a common scale; both meshes are in kilometres. The labels give approximate mean diameters (490 m and 900 m), not maximum widths. This is an educational comparison, not metrology. Both meshes have about 49,000 triangles (Bennu simplified from 3.4 million), but they come from different methods (Ryugu: stereo imaging; Bennu: laser altimetry), so displayed roughness is only broadly comparable. Lighting, orientation and wireframe colours are not measured albedo, spin state or mineral composition. <a href="https://www.isas.jaxa.jp/en/researchers/data-policy/">JAXA data policy</a>.</p>
+        <p>Orbital body appearance: Earth day and cloud textures reuse the <a href="https://github.com/mrdoob/three.js/tree/dev/examples/textures/planets">Three.js planet examples</a> under the MIT license; <a href="/assets/img/arrival/ASSET-CREDITS.md">local asset credits</a>. The Sun and other planetary surfaces are procedural illustrations. Body display sizes, spin orientations and surface appearances are illustrative, not measured scale or spin states. Use Shapes for the separate asteroid size comparison.</p>
+        <p>Mineral interpretation: <a href="https://www.isas.jaxa.jp/en/topics/003094.html">Ryugu initial chemical analysis</a>; <a href="https://doi.org/10.1111/maps.14227">Lauretta, Connolly et al. (2024), Bennu sample analysis</a>. Orgueil photograph: <a href="https://naturalhistory.si.edu/object/nmnhmineralsciences_1017941">Chip Clark / Smithsonian, USNM 388, CC0</a>. This specimen is not the author's experimental sample. No CI parent-body orbit or specimen scan is asserted.</p>
+        <p>Sample photographs: <a href="https://www.nasa.gov/image-detail/osiris-rex-pe-examination-5/">Bennu: NASA / Erika Blumenfeld &amp; Joseph Aebersold</a>; <a href="https://www.hayabusa2.jaxa.jp/en/topics/20201225_samples/">Ryugu chamber A: JAXA</a>, unchanged published image, used for scientific education under the <a href="https://global.jaxa.jp/policy.html">JAXA site policy</a>. These views show different evidence types, not continuous magnifications of one specimen.</p>
+      </div>
     </details>
   </div>
 </section>

@@ -55,6 +55,22 @@
   const shouldReduceMotion = () =>
     window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
 
+  // The Mission Index is a sticky ledger at 1200 px and wider and a disclosure below (MissionLogShell.astro).
+  const ledgerQuery = window.matchMedia?.('(min-width: 1200px)');
+
+  const solLabel = (entry) => (entry.sol ? `SOL ${String(entry.sol).padStart(3, '0')}` : '');
+
+  const isoDate = (value) => normaliseDate(value).replaceAll('/', '-');
+
+  // A ledger row's title: the entry's own title, else the text of the first h3 in its record (parsed inertly, as
+  // renderComparisonFigure does), else its stage.
+  const entryTitle = (entry) => {
+    if (entry.title) return entry.title;
+    const template = document.createElement('template');
+    template.innerHTML = entry.bodyHtml || '';
+    return template.content.querySelector('h3')?.textContent.trim() || entry.stage || '';
+  };
+
   const bindCurrentNodes = () => {
     list = document.querySelector('[data-mission-log-list]');
     indexList = document.querySelector('[data-mission-index-list]');
@@ -87,19 +103,37 @@
       return numberDiff || dateScore(a.date || a.isoDate) - dateScore(b.date || b.isoDate);
     });
 
+    // Ledger rows read SOL | date | title; without a SOL the LOG label takes its place, otherwise it stays as
+    // hidden text so every row still names its record number.
     indexList.innerHTML = navigatorEntries.map((item) => {
       const id = escapeAttr(item.id);
       const logLabel = escapeHtml(item.label || `LOG ${String(item.number || 0).padStart(3, '0')}`);
-      const sol = item.sol ? `SOL ${String(item.sol).padStart(3, '0')}` : '';
-      const meta = [sol, normaliseDate(item.date || item.isoDate)].filter(Boolean).join(' &middot; ');
+      const sol = escapeHtml(solLabel(item));
+      const date = normaliseDate(item.date || item.isoDate);
       return `
-        <a class="mission-jump-card compact-jump-card" href="#${id}" data-mission-target="${id}">
-          <span class="mission-jump-log">${logLabel}</span>
-          <span class="mission-jump-meta">${meta}</span>
-          <span class="mission-jump-stage">${escapeHtml(item.stage || '')}</span>
+        <a class="mission-jump-card" href="#${id}" data-mission-target="${id}">
+          <span class="mission-jump-sol tabular">${sol || logLabel}</span>
+          <time class="mission-jump-date"${date ? ` datetime="${isoDate(date)}"` : ''}>${date}</time>
+          <span class="mission-jump-title">${escapeHtml(entryTitle(item))}</span>
+          ${sol ? `<span class="mission-jump-log visually-hidden">${logLabel}</span>` : ''}
         </a>
       `;
     }).join('');
+  };
+
+  // The summary of the closed ledger states the record count ("Mission Index · 11 records").
+  const writeRecordCount = () => {
+    const count = missionEntries.length;
+    document.querySelectorAll('[data-i18n-key="missionIndexCount"]').forEach((node) => {
+      node.textContent = `${count} ${count === 1 ? 'record' : 'records'}`;
+    });
+  };
+
+  // Forced open at 1200 px and wider, closed by default below; the reader's own toggle is left alone until the
+  // breakpoint changes. The content goes from hidden to shown in this frame, so opening it here never animates.
+  const syncLedger = () => {
+    const ledger = indexList?.closest?.('details');
+    if (ledger) ledger.open = Boolean(ledgerQuery?.matches);
   };
 
   const setActiveLink = (id) => {
@@ -107,8 +141,22 @@
       const active = link.getAttribute('href') === `#${id}`;
       link.classList.toggle('is-active', active);
       link.setAttribute('aria-current', active ? 'true' : 'false');
-      if (active) indexList.scrollTo?.({ left: link.offsetLeft - indexList.offsetLeft - (indexList.clientWidth - link.offsetWidth) / 2, behavior: 'instant' });
+      if (!active) return;
+      // Keep the current row in view inside a list that scrolls (the sticky ledger); a list that scrolls sideways
+      // centres it instead. Only the list scrolls, never the page.
+      if (indexList.scrollHeight > indexList.clientHeight + 1) {
+        const offset = link.getBoundingClientRect().top - indexList.getBoundingClientRect().top;
+        indexList.scrollTo?.({ top: indexList.scrollTop + offset - (indexList.clientHeight - link.offsetHeight) / 2, behavior: 'instant' });
+      } else if (indexList.scrollWidth > indexList.clientWidth + 1) {
+        indexList.scrollTo?.({ left: link.offsetLeft - indexList.offsetLeft - (indexList.clientWidth - link.offsetWidth) / 2, behavior: 'instant' });
+      }
     });
+  };
+
+  const onLedgerBreakpoint = () => {
+    if (!active || !started || !indexList) return;
+    syncLedger();
+    if (currentId) setActiveLink(currentId);
   };
 
   const renderProgress = (entry) => `<dl class="mission-progress">${[
@@ -172,6 +220,8 @@
     const entry = byId.get(id) || latestEntry;
     if (!entry) return false;
     currentId = entry.id;
+    const sol = escapeHtml(solLabel(entry));
+    const date = normaliseDate(entry.date || entry.isoDate);
 
     list.innerHTML = `
       <article
@@ -189,7 +239,7 @@
       >
         <div class="research-note-body">
           <header class="mission-record-header">
-            <div class="mission-record-meta"><span class="research-note-date">${escapeHtml(entry.label)}</span><time>${escapeHtml(normaliseDate(entry.date || entry.isoDate))}</time></div>
+            <div class="mission-record-meta">${sol ? `<span class="mission-record-sol tabular">${sol}</span>` : ''}<span class="research-note-date">${escapeHtml(entry.label)}</span><time${date ? ` datetime="${isoDate(date)}"` : ''}>${date}</time></div>
             <div class="mission-record-actions" role="group" aria-label="Record tools">
               ${missionEntries.length > 1 ? '<button type="button" class="button secondary mission-compare-toggle" data-mission-compare-toggle aria-expanded="false" aria-controls="mission-comparison">Compare records</button>' : ''}
             </div>
@@ -233,6 +283,13 @@
 
     if (renderMissionEntry(targetId, { scroll: true })) {
       event.preventDefault();
+      // Below 1200 px the index is a disclosure above the entry, so focus follows the reader down to the record
+      // instead of staying on a row that has scrolled away.
+      const record = !ledgerQuery?.matches && document.getElementById(targetId);
+      if (record) {
+        record.setAttribute('tabindex', '-1');
+        record.focus({ preventScroll: true });
+      }
     }
   };
 
@@ -272,6 +329,9 @@
 
       applyStaticLabels();
       renderNavigator();
+      writeRecordCount();
+      // Open the ledger before the first entry renders, so the current row can be scrolled into view.
+      syncLedger();
       indexList.addEventListener('click', onIndexClick);
       list.addEventListener('click', onComparisonClick);
       list.addEventListener('change', onComparisonChange);
@@ -305,6 +365,7 @@
     document.removeEventListener('mads:research-locked', resetRenderer);
     window.removeEventListener('popstate', onLocationChange);
     window.removeEventListener('hashchange', onLocationChange);
+    ledgerQuery?.removeEventListener?.('change', onLedgerBreakpoint);
     if (window[cleanupKey] === cleanup) delete window[cleanupKey];
   };
 
@@ -312,6 +373,7 @@
   document.addEventListener('mads:research-locked', resetRenderer);
   window.addEventListener('popstate', onLocationChange);
   window.addEventListener('hashchange', onLocationChange);
+  ledgerQuery?.addEventListener?.('change', onLedgerBreakpoint);
   window[cleanupKey] = cleanup;
 
   const autoStart = document.querySelector('[data-mission-log-list]')?.dataset.missionAutoStart !== 'false';

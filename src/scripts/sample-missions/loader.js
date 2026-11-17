@@ -29,12 +29,12 @@ function enter(){
  function clearShare(){shareVersion++;el('share-manual').hidden=true;el('share-status').textContent='';action('copy').disabled=!ready;}
  const action=n=>root.querySelector('[data-mission-action="'+n+'"]');
  function touchMode(active){
-  action('touch').setAttribute('aria-pressed',String(active));action('touch').setAttribute('aria-label',active?'Return to page scrolling':'Enable model rotation and pinch zoom');el('touch-label').textContent=active?'Done':'Explore';
+  action('touch').setAttribute('aria-pressed',String(active));action('touch').setAttribute('aria-label',active?'Done: return to page scrolling':'Explore: enable model rotation and pinch zoom');el('touch-label').textContent=active?'Done':'Explore';
   el('viewport').toggleAttribute('data-touch-active',active);viewer?.touch(active);el('hint').textContent=coarse.matches?(active?'Drag to rotate · pinch to zoom · inspection pauses playback':'Tap Explore to rotate · inspection pauses playback'):'Drag to orbit · Ctrl/⌘ + scroll to zoom · inspection pauses playback';
  }
  function busy(value,message='Preparing the mission model…'){
   if(value){el('range').textContent='Preparing trajectory…';el('utc').textContent='';}
-  ready=!value;root.dataset.ready=String(ready);el('loading').hidden=!value;el('loading').querySelector('span').textContent=message;
+  ready=!value;root.dataset.ready=String(ready);if(ready)el('viewport').querySelector('[data-scene-poster]')?.setAttribute('data-scene-poster','done');el('loading').hidden=!value;el('loading').querySelector('span').textContent=message;
   root.querySelectorAll('[data-mission-progress], [data-mission-action]').forEach(c=>{if(!['retry','previous','next'].includes(c.dataset.missionAction))c.disabled=value;});
   action('previous').disabled=stage===0;action('next').disabled=stage===missions[mission].stages.length-1;
  }
@@ -46,7 +46,7 @@ function enter(){
  }
  el('chapters').addEventListener('scroll',stripUI,{signal,passive:true});
  // Chromium does not scroll a partly visible element on keyboard focus, so bring a focused chapter inside the
- // strip's scroll-padding (style.css), clear of the edge fades. Pointer focus is left to chapterUI's centring.
+ // strip's scroll-padding (src/styles/folio/components/sample-missions.css), clear of the edge fades. Pointer focus is left to chapterUI's centring.
  el('chapters').addEventListener('focusin',e=>{const b=e.target.closest?.('button');if(b?.matches(':focus-visible'))b.scrollIntoView({block:'nearest',inline:'nearest',behavior:reduced.matches?'instant':'smooth'});},{signal});
  const stripObserver=new ResizeObserver(stripUI);stripObserver.observe(el('chapters'));signal.addEventListener('abort',()=>stripObserver.disconnect(),{once:true});
  // Scroll the current chapter to the middle of the strip. On entry this waits for the first frame, so
@@ -55,6 +55,9 @@ function enter(){
  function centerChapter(defer){
   cancelAnimationFrame(centerFrame);centerFrame=0;
   if(defer){centerFrame=requestAnimationFrame(()=>{centerFrame=0;if(!disposed)centerChapter();});return;}
+  // A chapter that has keyboard focus stays in view: the viewer can become ready while the reader tabs along the strip.
+  // Only the strip scrolls: scrollIntoView would also move the page back to it.
+  const focused=el('chapters').querySelector(':focus-visible');if(focused){const strip=el('chapters'),r=focused.getBoundingClientRect(),sr=strip.getBoundingClientRect(),pad=48;if(r.left<sr.left+pad)strip.scrollLeft+=r.left-sr.left-pad;else if(r.right>sr.right-pad)strip.scrollLeft+=r.right-sr.right+pad;stripUI();return;}
   const activeChapter=el('chapters').querySelector('[aria-current=step]');if(activeChapter){const strip=el('chapters'),r=activeChapter.getBoundingClientRect(),sr=strip.getBoundingClientRect();strip.scrollTo({left:strip.scrollLeft+r.left-sr.left-(sr.width-r.width)/2,behavior:reduced.matches?'instant':'smooth'});}stripUI();
  }
  function chapterUI(deferCentering){
@@ -138,7 +141,7 @@ function enter(){
   if(a==='play'){playing=!playing;viewer.play(playing);controlsUI();}
   else if(a==='previous'||a==='next')select(stage+(a==='next'?1:-1));
   else if(a==='touch')touchMode(b.getAttribute('aria-pressed')!=='true');
-  else if(a==='retry'){viewer?.dispose();viewer=undefined;starting=false;action('retry').hidden=true;start();}
+  else if(a==='retry'){viewer?.dispose();viewer=undefined;starting=false;if(document.activeElement===action('retry'))el('viewport').focus({preventScroll:true});action('retry').hidden=true;start();}
   else if(a){viewer?.action(a);controlsUI();}
   if(a)remember();
  },{signal});

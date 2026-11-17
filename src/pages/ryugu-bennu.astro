@@ -1,5 +1,7 @@
 ---
-import LegacyShell from "../components/LegacyShell.astro";
+import SiteShell from "../components/SiteShell.astro";
+import Masthead from "../components/Masthead.astro";
+import Plate from "../components/Plate.astro";
 import ResearchGuide from "../components/ResearchGuide.astro";
 import ResearchScaleJourney from "../components/ResearchScaleJourney.astro";
 import PlanetaryExplorer from "../components/PlanetaryExplorer.astro";
@@ -12,18 +14,27 @@ const sections: [string, string][] = [
   ["planetary-title", "Materials & orbits"],
   ["research-scale-title", "Published microscopy"]
 ];
+// Plates I and II: capture dates, credits and reuse terms as recorded in public/assets/img/research-scale/PROVENANCE.md.
+// Both images are shown whole, at their own aspect ratio (no crop or colour change); no-break spaces keep each date
+// on one line.
 ---
 
-<LegacyShell title='Ryugu & Bennu | I. Mads Lieu' description='Sample-return missions, orbits, shapes and published microscopy of asteroids Ryugu and Bennu, comparison materials for my Orgueil CI1 research.' current='ryugu-bennu' mainClass='main' path="ryugu-bennu.html" scriptHtml={scriptHtml}>
-  <section class="research-intro">
-    <p class="eyebrow">Comparison materials</p>
-    <h1>Ryugu &amp; Bennu</h1>
-    <p class="lead">
+<SiteShell title='Ryugu & Bennu | I. Mads Lieu' description='Sample-return missions, orbits, shapes and published microscopy of asteroids Ryugu and Bennu, comparison materials for my Orgueil CI1 research.' current='ryugu-bennu' mainClass='main' path="ryugu-bennu.html" scriptHtml={scriptHtml}>
+  <div class="page">
+    <Masthead kicker="Comparison materials" title="Ryugu & Bennu">
       Samples returned from two carbon-rich asteroids provide independent comparisons for the mineral record of water in my <a href="research.html#research-focus-title">Orgueil research</a>. They do not establish Orgueil’s parent body.
-    </p>
-  </section>
-  <ResearchGuide label="On this page" ariaLabel="Ryugu and Bennu sections" sections={sections} />
-  <SampleMissions />
-  <PlanetaryExplorer />
-  <ResearchScaleJourney />
-</LegacyShell>
+    </Masthead>
+    <div class="plate-pair">
+      <Plate label="Plate I" caption={"(162173) Ryugu · Hayabusa2 ONC-T, 26 June 2018"} credit="Image: JAXA, University of Tokyo and collaborators" evidence="literature" evidenceText="Published JAXA mission image. Ryugu is a comparison body, not my sample." ground="night">
+        <img src="/assets/img/research-scale/ryugu-jaxa.jpg" width="512" height="512" fetchpriority="high" decoding="async" alt="Asteroid Ryugu seen by Hayabusa2: a dark, top-shaped body with a ridge around its equator." />
+      </Plate>
+      <Plate label="Plate II" caption={"(101955) Bennu · OSIRIS-REx PolyCam mosaic, 2 December 2018"} credit="Image: NASA/Goddard/University of Arizona" evidence="literature" evidenceText="Published NASA mission image. Bennu is a comparison body, not my sample." ground="night">
+        <img src="/assets/img/research-scale/bennu-whole.webp" width="1024" height="968" decoding="async" alt="Asteroid Bennu in a mosaic of OSIRIS-REx PolyCam images: a top-shaped body with an equatorial bulge and a boulder-strewn surface." />
+      </Plate>
+    </div>
+    <ResearchGuide label="On this page" ariaLabel="Ryugu and Bennu sections" sections={sections} />
+    <SampleMissions />
+    <PlanetaryExplorer />
+    <ResearchScaleJourney />
+  </div>
+</SiteShell>

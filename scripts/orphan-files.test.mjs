@@ -34,8 +34,7 @@ test("reports unimported legacy fragments, unloaded public scripts and unreachab
   const root = fixture({
     "src/pages/index.astro": "---\nimport Shell from '../components/Shell.astro';\nimport main from '../legacy/main.html?raw';\n---\n<Shell />",
     "src/components/Shell.astro": "<script>\n  import '../scripts/entry.js';\n</script>\n<script src=\"assets/js/header.js\"></script>",
-    "src/data/site.ts": "export const scripts = ['assets/js/theme.js?v=1'];\nexport const componentStylesheets = [\"src/scripts/lazy/style.css\"] as const;",
-    "src/scripts/lazy/style.css": "",
+    "src/data/site.ts": "export const scripts = ['assets/js/theme.js?v=1'];",
     "src/scripts/lazy/unlisted.css": "",
     "src/legacy/main.html": "<main></main>",
     "src/legacy/retired.html": "<main></main>",

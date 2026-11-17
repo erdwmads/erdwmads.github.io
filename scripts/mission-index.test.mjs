@@ -125,7 +125,22 @@ const strictAtob = (value) => {
 
 const flush = async () => new Promise((resolve) => setImmediate(resolve));
 
-const bootPage = (payloads) => {
+// Enough of a <template> for mission-index.js, which reads the first h3 of a record for its ledger title.
+const createTemplate = () => {
+  const template = {
+    innerHTML: "",
+    content: {
+      querySelector(selector) {
+        const match = selector === "h3" && template.innerHTML.match(/<h3\b[^>]*>([\s\S]*?)<\/h3>/i);
+        return match ? { textContent: match[1].replace(/<[^>]*>/g, "") } : null;
+      }
+    }
+  };
+  return template;
+};
+
+// wide: the (min-width: 1200px) query matches, so the ledger disclosure is opened after unlock.
+const bootPage = (payloads, { wide = false } = {}) => {
   const gate = new FakeElement();
   gate.dataset.protectedArchiveUrl = "assets/data/mission-log.enc.json";
   const content = new FakeElement();
@@ -145,7 +160,12 @@ const bootPage = (payloads) => {
     list.dataset.missionAutoStart = "false";
     list.dataset.initialLogId = "log-002";
     const indexList = new FakeElement();
-    missionNodes = { indexList, list };
+    // The list sits inside the ledger disclosure, and the summary holds the record count.
+    const ledger = { open: false };
+    indexList.closest = (selector) => (selector === "details" ? ledger : null);
+    const count = new FakeElement();
+    count.textContent = "records";
+    missionNodes = { indexList, list, ledger, count };
   };
 
   content._innerHTML = lockedMarkup;
@@ -166,11 +186,15 @@ const bootPage = (payloads) => {
         "[data-mission-index-list]": missionNodes.indexList
       }[selector] || null;
     },
-    querySelectorAll() {
-      return [];
+    querySelectorAll(selector) {
+      return selector === '[data-i18n-key="missionIndexCount"]' ? [missionNodes.count] : [];
     },
     getElementById() {
       return null;
+    },
+    createElement(tag) {
+      assert.equal(tag, "template");
+      return createTemplate();
     },
     addEventListener(type, listener) {
       const listeners = documentListeners.get(type) || [];
@@ -193,7 +217,7 @@ const bootPage = (payloads) => {
     crypto: webcrypto,
     history: { pushState() {} },
     location: { hash: "" },
-    matchMedia: () => ({ matches: false }),
+    matchMedia: (query) => ({ matches: query === "(min-width: 1200px)" && wide }),
     requestAnimationFrame: (callback) => {
       callback();
       return 1;
@@ -321,4 +345,46 @@ test("progress brief uses escaped archive metadata and preserves the original re
   assert.equal(page.missionNodes.list.listenerCount('click'), 1);
   page.window.emit('pagehide', { persisted: true });
   assert.equal(page.content.innerHTML, page.lockedMarkup);
+});
+
+test("ledger rows read SOL, date and title, the summary states the count, and the ledger opens on wide screens", async () => {
+  const entries = [
+    { id: "log-001", number: 1, sol: 3, date: "2026/04/12", label: "LOG 001", title: "Stored title", bodyHtml: "<h3>Heading not used</h3>" },
+    { id: "log-002", number: 2, sol: 21, date: "2026/09/03", label: "LOG 002", stage: "Stage fallback", bodyHtml: "<p class=\"mission-entry-kicker\">LOG 002</p><h3>First <em>record</em> heading</h3><h3>Second heading</h3>" },
+    { id: "log-003", number: 3, date: "2026/09/04", label: "LOG 003", stage: "Stage <only>", bodyHtml: "<p>No heading</p>" }
+  ];
+  const page = bootPage([createPayload(entries)], { wide: true });
+  page.input.value = password;
+  await page.form.emit("submit");
+  await flush();
+  const { indexList, list, ledger, count } = page.missionNodes;
+  const rows = indexList.innerHTML.split("</a>").slice(0, 3);
+  // SOL first, then the date (with a machine-readable datetime), then the title; the LOG label stays as hidden text.
+  assert.match(rows[0], /mission-jump-sol tabular">SOL 003<[\s\S]*datetime="2026-04-12">2026\/04\/12<[\s\S]*mission-jump-title">Stored title<[\s\S]*mission-jump-log visually-hidden">LOG 001</);
+  assert.match(rows[1], /SOL 021[\s\S]*mission-jump-title">First record heading</);
+  // Without a SOL the LOG label takes its place and is not repeated; without a heading the stage is the title.
+  assert.match(rows[2], /mission-jump-sol tabular">LOG 003<[\s\S]*mission-jump-title">Stage &lt;only&gt;</);
+  assert.doesNotMatch(rows[2], /mission-jump-log/);
+  assert.equal(count.textContent, "3 records");
+  assert.equal(ledger.open, true);
+  // The entry (LOG 002, the page's initial record) shows its SOL figure before its one LOG label.
+  assert.match(list.innerHTML, /<div class="mission-record-meta"><span class="mission-record-sol tabular">SOL 021<\/span><span class="research-note-date">LOG 002<\/span><time datetime="2026-09-03">2026\/09\/03<\/time>/);
+  assert.equal((list.innerHTML.match(/research-note-date/g) || []).length, 1);
+  page.window.emit("pagehide", { persisted: true });
+  assert.equal(page.content.innerHTML, page.lockedMarkup);
+});
+
+test("an entry without a SOL keeps only its LOG label; the ledger stays closed on narrow screens", async () => {
+  const entries = [
+    { id: "log-001", number: 1, date: "2026/04/12", label: "LOG 001", bodyHtml: "<h3>Only record</h3>" }
+  ];
+  const page = bootPage([createPayload(entries)]);
+  page.input.value = password;
+  await page.form.emit("submit");
+  await flush();
+  const { list, ledger, count } = page.missionNodes;
+  assert.match(list.innerHTML, /<div class="mission-record-meta"><span class="research-note-date">LOG 001<\/span><time datetime="2026-04-12">2026\/04\/12<\/time>/);
+  assert.doesNotMatch(list.innerHTML, /mission-record-sol/);
+  assert.equal(count.textContent, "1 record");
+  assert.equal(ledger.open, false);
 });

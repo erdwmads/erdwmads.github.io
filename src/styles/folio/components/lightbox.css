@@ -1,0 +1,32 @@
+/* @owner WP6 · @budget 4KB · @important 0 · Mission Log lightbox (.mission-lightbox) and the Mobile Mission Log: Disable Large Image Lightbox block */
+.mission-lightbox { position: fixed; inset: 0; z-index: var(--z-lightbox); display: grid; padding: var(--ed-space-5); background: var(--obs-screen); opacity: 0; visibility: hidden; pointer-events: none; touch-action: none; overscroll-behavior: contain; transition: opacity var(--ed-dur-3) var(--ed-ease-out), visibility 0s var(--ed-dur-3); }
+.mission-lightbox.is-open { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity var(--ed-dur-3) var(--ed-ease-out); }
+.mission-lightbox__viewer { display: grid; grid-template: auto minmax(0, 1fr) / 44px minmax(0, 1fr) 44px; gap: var(--ed-space-3) var(--ed-space-5); align-items: center; min-height: 0; }
+.mission-lightbox__close { grid-area: 1 / 3; }
+.mission-lightbox__prev { grid-area: 2 / 1; }
+.mission-lightbox__next { grid-area: 2 / 3; }
+.mission-lightbox__figure { display: grid; grid-area: 2 / 2; grid-template-rows: minmax(0, 1fr) auto; gap: var(--ed-space-4); align-self: stretch; min-height: 0; margin: 0; }
+.mission-lightbox__stage { position: relative; min-height: 0; }
+.mission-lightbox__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; opacity: 0; transition: opacity var(--ed-dur-2) var(--ed-ease-out); }
+.mission-lightbox__img.is-ready { opacity: 1; }
+.mission-lightbox__captionbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: var(--ed-space-5); padding-top: var(--ed-space-3); border-top: 1px solid var(--obs-hairline); font-size: var(--ed-caption); }
+.mission-lightbox__caption { min-width: 0; max-width: var(--measure-caption); }
+.mission-lightbox__counter { color: var(--obs-muted); font-variant-numeric: lining-nums tabular-nums; }
+.mission-lightbox__btn, .atlas-close { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--obs-control-border); border-radius: var(--radius-control); background: transparent; }
+.mission-lightbox__btn:hover, .atlas-close:hover { background: var(--obs-surface-hover); }
+.mission-lightbox__close-icon { position: relative; width: 16px; height: 16px; }
+.mission-lightbox__close-icon::before, .mission-lightbox__close-icon::after { content: ""; position: absolute; top: 7px; left: -2px; width: 20px; border-top: 1.5px solid; rotate: 45deg; }
+.mission-lightbox__close-icon::after { rotate: -45deg; }
+.mission-lightbox__nav::before { content: ""; width: 10px; height: 10px; border: solid; border-width: 1.5px 0 0 1.5px; translate: 2px 0; rotate: -45deg; }
+.mission-lightbox__next::before { translate: -2px 0; rotate: 135deg; }
+.mission-photo-grid figure { min-width: 0; margin: 0; }
+.mission-comparison-figure { margin: var(--ed-space-4) 0 0; }
+.mission-log-entry .mission-photo-grid img, .mission-comparison-figure img, .atlas-image-source img { display: block; width: 100%; height: auto; object-fit: contain; border: 1px solid var(--obs-hairline); background: var(--obs-plate); }
+.mission-photo-grid img { aspect-ratio: 4 / 3; }
+.mission-log-entry figure[role="button"] { cursor: zoom-in; }
+.mission-photo-grid figcaption, .mission-comparison-figure figcaption, .mission-comparison-note { margin-top: var(--ed-space-3); color: var(--obs-muted); font-size: var(--ed-caption); line-height: 1.45; }
+.mission-photo-grid figcaption > strong:first-child { display: block; color: var(--obs-text); }
+/* Mobile Mission Log: Disable Large Image Lightbox */
+html.mobile-mission-lightbox-disabled .mission-lightbox { display: none; }
+html.mobile-mission-lightbox-disabled .mission-log-entry figcaption { display: block; }
+html.mobile-mission-lightbox-disabled .mission-photo-grid img { pointer-events: none; }

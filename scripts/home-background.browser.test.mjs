@@ -25,9 +25,10 @@ try {
   await page.evaluate(()=>window.backgroundBefore=document.querySelector('.ambient-space-layer'));
   await page.locator('.site-header .brand').click();await page.waitForURL('**/index.html');
   assert.equal(await page.evaluate(()=>window.backgroundBefore===document.querySelector('.ambient-space-layer')),true,'Navigation keeps the same background layer');
-  await page.locator('.hero').waitFor();
+  // The Home masthead (WP3) replaces the legacy hero; the name and the portrait keep their hooks.
+  await page.locator('#home-name').waitFor();
   assert.equal(await page.locator('h1').innerText(),'I. Mads Lieu');
-  assert.equal(await page.locator('.hero .avatar img').evaluate(e=>e.complete&&e.naturalWidth>0),true);
+  assert.equal(await page.locator('main img[src*="assets/img/profile"]').evaluate(e=>e.complete&&e.naturalWidth>0),true);
   await page.locator('.obs-fx-settings').click();
   const fx=page.locator('.ambient-fx-toggle');
   assert.ok(await fx.isVisible(),'Wide touch users can access the FX switch');
@@ -42,7 +43,7 @@ try {
       await page.setViewportSize({width,height:900});
       await page.waitForTimeout(180);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),theme+' '+width+' overflow');
-      const bounds=await page.locator('.hero h1').evaluate(e=>{
+      const bounds=await page.locator('#home-name').evaluate(e=>{
         const range=document.createRange();range.selectNodeContents(e);
         return [...range.getClientRects()].every(r=>r.left>=0&&r.right<=innerWidth);
       });

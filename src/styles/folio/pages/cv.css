@@ -1,0 +1,227 @@
+/* @owner WP5 · @budget 4.5KB · @important 0 · CV, scoped under .ui-page-cv, including the CV print rules */
+.ui-page-cv .masthead {
+  margin-block-end: 0;
+  padding-block-end: 0;
+  border: 0;
+}
+
+/* At the lead measure the standfirst breaks to three lines in the web font and two in its fallback: the body measure
+   keeps two in both, so the font swap moves nothing. */
+.ui-page-cv .masthead__lead {
+  max-width: var(--measure-body);
+}
+
+.ui-page-cv .cv-identity-block {
+  display: grid;
+  justify-items: start;
+  gap: var(--ed-space-2);
+  margin-block-start: var(--ed-space-5);
+  padding-block-start: var(--ed-space-5);
+  border-top: 1px solid var(--obs-hairline);
+}
+
+.ui-page-cv .cv-identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--ed-space-3);
+}
+
+.ui-page-cv .person-name {
+  font: var(--ed-h3)/1.25 var(--type-serif);
+}
+
+.ui-page-cv .cv-citation {
+  display: grid;
+  align-items: baseline;
+  gap: var(--ed-space-1) var(--grid-gap);
+  margin-block-start: var(--ed-space-3);
+  font-size: var(--ed-label);
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.ui-page-cv .cv-citation .person-name {
+  color: var(--obs-text);
+  font: 500 var(--ed-h2)/1.12 var(--type-serif);
+  letter-spacing: -.01em;
+  text-transform: none;
+}
+
+.ui-page-cv .orcid-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ed-space-2);
+  min-height: 44px;
+  font-size: var(--ed-small);
+  overflow-wrap: anywhere;
+}
+
+.ui-page-cv .cv-print-identity {
+  display: none;
+}
+
+.ui-page-cv .cv-print-action {
+  --reserve-display: inline-flex;
+  margin-block-start: var(--ed-space-3);
+}
+
+.ui-page-cv .cv-photo {
+  margin: 0;
+}
+
+.ui-page-cv .cv-ledger > li {
+  grid-template-columns: 9rem minmax(0, 1fr);
+}
+
+.ui-page-cv .ledger__key {
+  line-height: calc(var(--ed-lead) * 1.3);
+}
+
+.ui-page-cv .cv-edu-body > h3 {
+  font-size: var(--ed-lead);
+  line-height: 1.3;
+}
+
+.ui-page-cv .cv-edu-body > p {
+  margin-block-start: var(--ed-space-1);
+  font-size: var(--ed-small);
+}
+
+.ui-page-cv :is(.muted, .cv-citation) {
+  color: var(--obs-muted);
+}
+
+.ui-page-cv :is(.cv-ledger, .cv-list) {
+  padding: 0;
+  border-top: 1px solid var(--obs-hairline);
+  list-style: none;
+}
+
+.ui-page-cv .cv-list > li {
+  padding-block: var(--ed-space-3);
+  border-bottom: 1px solid var(--obs-hairline);
+}
+
+/* Tablets: the identity in a column, the plate beside it (as in print). */
+@media (min-width: 761px) and (max-width: 1199px) {
+  .ui-page-cv .masthead {
+    grid-template-columns: minmax(0, 1fr) 16rem;
+  }
+
+  .ui-page-cv .masthead > * {
+    grid-column: 1;
+  }
+
+  .ui-page-cv .masthead > .cv-photo {
+    grid-column: 2;
+    grid-row: 1 / span 4;
+    align-self: start;
+  }
+}
+
+@media (min-width: 1200px) {
+  .ui-page-cv :is(.cv-ledger, .cv-identity-block) {
+    grid-column: margin-start / text-end;
+  }
+
+  .ui-page-cv :is(.cv-ledger > li, .cv-identity-block) {
+    grid-template-columns: calc((100% + var(--grid-gap)) / 4 - var(--grid-gap)) minmax(0, 1fr);
+    column-gap: var(--grid-gap);
+  }
+
+  .ui-page-cv .cv-identity-block > * {
+    grid-column: 2;
+  }
+
+  .ui-page-cv .cv-identity-block > .cv-citation {
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+  }
+}
+
+@media (max-width: 760px) {
+  .ui-page-cv :is(.cv-ledger > li, .ledger__key) {
+    display: block;
+  }
+
+  .ui-page-cv .ledger__key {
+    font-size: var(--ed-small);
+    line-height: 1.6;
+  }
+}
+
+/* Print: A4, 20 mm margins, only main, sizes in pt. */
+@page cv {
+  size: A4;
+  margin: 20mm;
+}
+
+@media print {
+  .ui-page-cv main {
+    page: cv;
+  }
+
+  .ui-page-cv > :not(main),
+  .ui-page-cv :is(.cv-identity, .cv-print-action) {
+    display: none;
+  }
+
+  .ui-page-cv {
+    font-size: 10pt;
+  }
+
+  .ui-page-cv .cv-print-identity {
+    display: block;
+  }
+
+  .ui-page-cv .page {
+    padding: 0;
+  }
+
+  .ui-page-cv .masthead {
+    grid-template-columns: 1fr 52mm;
+    padding: 0 0 10pt;
+  }
+
+  .ui-page-cv .masthead > * {
+    grid-column: 1;
+  }
+
+  .ui-page-cv .cv-photo {
+    grid-area: 1 / 2 / span 4;
+  }
+
+  .ui-page-cv h1 {
+    font-size: 24pt;
+  }
+
+  .ui-page-cv :is(h2, .cv-citation .person-name) {
+    font-size: 16pt;
+    break-after: avoid;
+  }
+
+  .ui-page-cv :is(.masthead__lead, .cv-edu-body > h3) {
+    font-size: 12pt;
+  }
+
+  .ui-page-cv .folio-section {
+    margin-block-start: 14pt;
+  }
+
+  .ui-page-cv .cv-ledger > li {
+    display: grid;
+    grid-template-columns: 34mm minmax(0, 1fr);
+    padding-block: 5pt;
+    break-inside: avoid;
+  }
+
+  .ui-page-cv .cv-list > li {
+    padding-block: 3pt;
+  }
+
+  .ui-page-cv .cv-list {
+    margin-inline-start: calc(34mm + var(--ed-space-5));
+  }
+}

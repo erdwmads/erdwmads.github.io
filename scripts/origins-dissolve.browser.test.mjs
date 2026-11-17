@@ -7,8 +7,13 @@ try{
  await page.addInitScript(()=>sessionStorage.setItem('mads-cosmic-arrival-v1','done'));
  await page.goto((process.env.SITE_TEST_URL||'http://127.0.0.1:52523')+'/origins-study.html');
  await page.locator('#viewport').scrollIntoViewIfNeeded();await page.waitForFunction(()=>window.study&&document.querySelector('.origins-study').dataset.inView==='true',null,{timeout:90000});
+ // The scene poster fades out over 240 ms once the scene is ready (posters stage); the crossfade is sampled after it.
+ await page.waitForFunction(()=>{const p=document.querySelector('[data-scene-poster]');return !p||(p.dataset.scenePoster==='done'&&getComputedStyle(p).opacity==='0');},null,{timeout:10000});
  await page.evaluate(()=>{study.setProgress(.5);study.select(1,.5);});
  assert.equal(await page.locator('.study-dissolve').count(),1,'Outgoing rendered scene must remain during crossfade');
+ // The fade is sampled 110 ms after it has started: in the integrated site the compositor can take 100-200 ms to
+ // start it (measured at the fix stage), which is not part of what this test checks.
+ await page.locator('.study-dissolve').evaluate(n=>n.getAnimations()[0]?.ready.then(()=>true));
  await page.waitForTimeout(110);
  const opacity=await page.locator('.study-dissolve').evaluate(n=>Number(getComputedStyle(n).opacity));assert(opacity>0&&opacity<1);
  await page.evaluate(()=>{study.select(2,.6);study.select(3,.6);});

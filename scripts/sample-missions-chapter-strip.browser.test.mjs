@@ -70,5 +70,12 @@ try{
  const s=await strip(desktop);
  assert.equal(s.cue,'01 / 11');assert.ok(s.cueVisible&&s.cueBeside);
  if(s.scrollable)assert.equal(s.overflow,'end');else assert.equal(s.overflow,'');
- console.log('PASS desktop chapter strip cue and fade');
+ // A chapter with keyboard focus keeps its place in the strip without pulling the page back to it.
+ await desktop.waitForFunction(()=>document.querySelector('[data-sample-missions]').dataset.ready==='true',null,{timeout:60000});
+ await desktop.keyboard.press('Shift');await desktop.locator('[data-mission-chapters] [data-mission-stage="1"]').focus();
+ assert.ok(await desktop.evaluate(()=>document.activeElement.matches(':focus-visible')),'the chapter has keyboard focus');
+ await desktop.evaluate(()=>scrollBy(0,1200));const y=await desktop.evaluate(()=>scrollY);
+ await desktop.evaluate(()=>window.sampleMissions.select(2,0));await desktop.waitForTimeout(300);
+ assert.equal(await desktop.evaluate(()=>scrollY),y,'a later chapter update leaves the page where the reader scrolled');
+ console.log('PASS desktop chapter strip cue and fade, focused chapter without a page jump');
 }finally{await browser.close();}

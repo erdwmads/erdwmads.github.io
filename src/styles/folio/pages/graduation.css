@@ -1,0 +1,20 @@
+/* @owner WP6 · @budget 2KB · @important 0 · Graduation Research Log page frame, scoped under .ui-page-research-graduation */
+.ui-page-research-graduation .archive-edition { margin-top: var(--ed-space-7); }
+.ui-page-research-graduation .masthead > .in-notes { align-self: start; }
+.ui-page-research-graduation .research-unlocked-session { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--ed-space-3) var(--ed-space-5); padding-bottom: var(--ed-space-3); }
+.ui-page-research-graduation .research-unlocked-session > p { flex: 1 1 20rem; margin: 0; color: var(--obs-muted); font-size: var(--ed-small); }
+.ui-page-research-graduation .research-formal-title { max-width: var(--measure-lead); font-family: var(--type-serif); font-size: var(--ed-lead); font-style: italic; line-height: 1.45; }
+.ui-page-research-graduation .graduation-facts { margin: 0; border-top: 1px solid var(--obs-rule); }
+.ui-page-research-graduation .graduation-facts > div { padding-block: var(--ed-space-3); border-bottom: 1px solid var(--obs-hairline); }
+.ui-page-research-graduation .graduation-facts dt { color: var(--obs-text); }
+.ui-page-research-graduation .graduation-facts dd { margin: var(--ed-space-1) 0 0; }
+.ui-page-research-graduation :is(.graduation-facts__lab, .graduation-facts small) { display: block; }
+.ui-page-research-graduation .graduation-note { color: var(--obs-muted); font-size: var(--ed-small); }
+@media (max-width: 760px) {
+  .ui-page-research-graduation .research-lock-card { padding: var(--ed-space-5) var(--ed-space-4); }
+}
+@media (min-width: 1200px) {
+  .ui-page-research-graduation .masthead > .in-notes { margin-top: calc(var(--ed-space-3) * -1); }
+  .ui-page-research-graduation .research-unlocked-session { border-bottom: 1px solid var(--obs-hairline); }
+  .ui-page-research-graduation .graduation-facts { grid-row: span 3; align-self: start; }
+}

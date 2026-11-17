@@ -1,3 +1,6 @@
+// Shell refinements (WP2) with the Home and contents-bar checks that sit on them (WP3): the coordinates readout lives
+// only in the desktop settings dock, one dock entry, Current Focus and the research title disclosure, the contents bar's
+// section paths without rebuilding the page, the footer at the end of a short page, and no readout on phones.
 import assert from 'node:assert/strict';import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url),{chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const browser=await chromium.launch({headless:true,executablePath:process.env.EDGE_EXECUTABLE});const base=process.env.SITE_TEST_URL||'http://127.0.0.1:52523';
@@ -14,7 +17,7 @@ await page.locator('.research-title-detail summary').click();assert.match(await 
 for(const [route,count] of [['research',3],['ryugu-bennu',3]]){await page.goto(base+'/'+route+'.html',{waitUntil:'networkidle'});
 await page.evaluate(()=>window.researchMain=document.querySelector('main'));
 const links=page.locator('[data-research-guide] a');assert.equal(await links.count(),count);
-for(const link of await links.all()){const href=await link.getAttribute('href');assert.equal(await page.locator(href).count(),1);await link.click();await page.waitForTimeout(120);assert((await page.locator(href).boundingBox()).y<800);}
+for(const link of await links.all()){const href=await link.getAttribute('href');assert.equal(await page.locator(href).count(),1);await link.click({timeout:10000});await page.waitForTimeout(120);assert((await page.locator(href).boundingBox()).y<800);}
 assert(await page.evaluate(()=>window.researchMain===document.querySelector('main')),`section anchors must not rebuild ${route}`);}
 await page.goto(base+'/research-log.html',{waitUntil:'networkidle'});assert.doesNotMatch(await page.locator('main').innerText(),/Mission Log 010/);
 const footer=await page.locator('.site-footer').boundingBox();assert(footer.y+footer.height>=999,'short pages place the footer at the viewport end');

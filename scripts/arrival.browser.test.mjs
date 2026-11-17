@@ -13,6 +13,10 @@ try{
   assert.equal(await page.locator('#cosmic-arrival').count(),1,'New entrance is integrated into the real site');
   await page.waitForFunction(()=>document.querySelector('#cosmic-arrival').dataset.state==='playing');
   assert.equal(await page.locator('#arrival-question').textContent(),'What was responsible for making diverse planets in the Solar System?');
+  // A title page: the name, a rule, the imprint line, then the question (CSS order; the DOM keeps the question first).
+  assert.equal((await page.locator('.arrival-imprint').textContent()).replace(/\s+/g,' '),'Astromineralogy research archive · Interface 2046');
+  const lines=await page.evaluate(()=>['.arrival-name','.arrival-imprint','#arrival-question'].map(selector=>document.querySelector(selector).getBoundingClientRect().top));
+  assert.ok(lines[0]<lines[1]&&lines[1]<lines[2],`Title page order is name, imprint, question: ${lines}`);
   assert.equal(await page.locator('.entry-gate').count(),0,'No second, legacy intro');
   assert.equal(await page.locator('html').getAttribute('data-fx-intensity'),'immersive');
   assert.equal(await page.locator('#cosmic-arrival canvas').count(),1);

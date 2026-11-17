@@ -24,13 +24,7 @@ try {
   await page.keyboard.press('Escape');
   // FX has been on by default since b8ab393 (it was opt-in when this test was written); only switch it on if off.
   if (await page.locator('html').evaluate(el => el.classList.contains('ambient-fx-disabled'))) await toggleFx(page);
-  const researchButton = page.locator('main .button').first();
-  await researchButton.hover();
-  await page.waitForTimeout(100);
-  assert.equal(await researchButton.getAttribute('data-edge-active'), '');
-  await toggleFx(page);
-  assert.equal(await page.locator('[data-edge-active]').count(), 0);
-  await toggleFx(page);
+  // The pointer edge light on buttons is retired (Folio 2046 decision R2), so this test no longer hovers for it.
   await page.locator('.nav a[href="photography.html"]').hover();
   assert.equal(await page.locator('body').getAttribute('data-orbit-route'), 'photography');
   assert.equal(await page.locator('.ui2046-system-orbit.is-route-active').count(), 1);
@@ -53,16 +47,16 @@ try {
   assert.equal(await page.locator('.obs-presentation img').getAttribute('src'), null);
   await page.goto(`${base}/research-graduation.html`, { waitUntil: 'networkidle' });
   assert.equal(await page.locator('[data-present-mission]').count(), 0);
-  assert.equal(await page.locator('.mission-jump-stage').count(), 0);
+  assert.equal(await page.locator('.mission-jump-card').count(), 0);
   if (process.env.MISSION_TEST_PASSWORD) {
     await page.locator('[data-research-lock-input]').fill(process.env.MISSION_TEST_PASSWORD);
     await page.locator('[data-research-lock-form] button[type="submit"]').click();
     await page.locator('[data-present-mission]').waitFor();
-    assert.ok(await page.locator('.mission-jump-stage').count() > 1);
-    assert.equal(await page.locator('[data-mission-index-list]').evaluate(el => getComputedStyle(el).flexWrap), 'nowrap');
-    await page.locator('.compact-jump-card').first().click();
+    assert.ok(await page.locator('.mission-jump-title').count() > 1);
+    assert.ok((await page.locator('.mission-jump-card').first().boundingBox()).height >= 47.5, 'ledger rows are 48 px');
+    await page.locator('.mission-jump-card').first().click();
     assert.equal(await page.locator('.mission-log-entry').count(), 1);
-    await page.locator('.compact-jump-card').last().click();
+    await page.locator('.mission-jump-card').last().click();
     await page.setViewportSize({ width: 390, height: 844 });
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'unlocked mobile timeline overflow');
     await page.locator('[data-present-mission]').click();

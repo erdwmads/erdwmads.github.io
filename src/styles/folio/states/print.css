@@ -1,0 +1,71 @@
+/* @owner WP1 · @budget 2KB · @important 4 · Global print: the reading content only, on a light ground */
+/* Page-specific print rules (the CV) live in their page file. Every colour token takes a print value, night plates
+   included, so nothing prints light on white or dark on dark. The inline first-paint style in SiteShell.astro
+   paints the html ground with !important, at most (0,2,1) for the Light rule; html:root:root and
+   html:root:root body weigh (0,2,1) and (0,2,2) and come later, so paper is white in both themes. */
+@media print {
+  /* (0,1,1), as heavy as the first-paint html[data-theme="space"] colour scheme, and later. */
+  html:root {
+    color-scheme: light;
+  }
+
+  :root,
+  .on-night {
+    color-scheme: light;
+    --obs-paper: #fff;
+    --obs-surface: #fff;
+    --obs-surface-hover: #fff;
+    --obs-highlight: #f1e8d6;
+    --obs-reading: #fff;
+    --obs-text: #1d2434;
+    --obs-muted: #555c6a;
+    --obs-link: #1d2434;
+    --obs-focus: #355781;
+    --obs-error: #8a2d2d;
+    --obs-accent: #765725;
+    --obs-hairline: rgba(29, 36, 52, .2);
+    --obs-rule: #1d2434;
+    --obs-control-border: #857c6f;
+    --obs-plate: #e8e6e1;
+    --obs-plate-night: #e8e6e1;
+    --obs-screen: #fff;
+    --obs-primary-face: #1d2434;
+    --obs-primary-text: #fff;
+    --obs-toggle-face: #fff;
+    --obs-shadow-overlay: none;
+  }
+
+  html:root:root,
+  html:root:root body {
+    background: #fff !important;
+    color: #1d2434 !important;
+  }
+
+  .site-header,
+  .site-footer,
+  .site-skip-link,
+  .continue-reading,
+  .ambient-space-layer,
+  .ui2046-layer,
+  .ui2046-progress,
+  .obs-fx-dock,
+  .research-coordinates,
+  .mineral-cleavage,
+  :where(#arrival-replay) {
+    display: none !important;
+  }
+
+  main {
+    background: none;
+  }
+
+  *,
+  ::before,
+  ::after {
+    text-shadow: none !important;
+  }
+
+  ::details-content {
+    transition: none;
+  }
+}

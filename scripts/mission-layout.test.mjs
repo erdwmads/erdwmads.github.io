@@ -1,13 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
-const css=fs.readFileSync(new URL('../public/assets/css/observatory-experience.css',import.meta.url),'utf8');
-const shell=fs.readFileSync(new URL('../src/components/MissionLogShell.astro',import.meta.url),'utf8');
-test('scientific thumbnails preserve the entire image rather than cropping spectra and scale bars',()=>{
-  assert.match(css,/\.mission-log-entry \.mission-photo-grid img\s*\{[^}]*object-fit:\s*contain\s*!important/s);
-});
-test('light-mode log tags use a legible dark accent',()=>{
-  assert.match(css,/html\[data-theme="light"\][^{]+\.mission-log-entry :is\(\.research-note-date, \.log-tags span\)\s*\{[^}]*color:\s*#6b542a\s*!important/s);
+import { read } from './lib/site-paths.mjs';
+// Markup and script contracts of the Mission Index (spec §3.3, §3.4). The contained-figure check moved to the browser
+// tests (progress-polish, mission-experience) and the colour pin is dropped (spec §6.3).
+const shell=read('src/components/MissionLogShell.astro');
+const script=read('public/assets/js/mission-index.js');
+test('the Mission Index is a ledger disclosure that the script keeps open from 1200 px and counts in its summary',()=>{
+  assert.match(shell,/<details class="mission-ledger">\s*<summary[^>]*>[\s\S]*data-i18n-key="missionIndexCount"[\s\S]*<\/summary>[\s\S]*data-mission-index-list[\s\S]*<\/details>/);
+  assert.match(script,/matchMedia\?\.\('\(min-width: 1200px\)'\)/);
+  assert.match(script,/closest\?\.\('details'\)/);
+  assert.match(script,/\[data-i18n-key="missionIndexCount"\]/);
+  // The server copy never carries an archive count.
+  assert.doesNotMatch(shell,/\d+\s+records?/);
 });
 test('timeline is a labelled keyboard-scrollable region and does not pin an obsolete latest log',()=>{
   assert.match(shell,/data-mission-index-list role="region" aria-label="Experiment timeline" tabindex="0"/);

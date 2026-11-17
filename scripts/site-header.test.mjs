@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
+import { readShell } from './lib/site-paths.mjs';
 
 const source = fs.readFileSync(new URL('../public/assets/js/site-header.js', import.meta.url), 'utf8');
 const read = (path) => fs.readFileSync(new URL(path, import.meta.url), 'utf8');
@@ -94,7 +95,7 @@ test('a second run replaces the first controller and leaves the navigation ready
 });
 
 test('the header controller is inlined right after the header and runs once per page load', () => {
-  const shell = read('../src/components/LegacyShell.astro');
+  const shell = readShell();
   assert.match(shell, /import siteHeaderSource from "\.\.\/\.\.\/public\/assets\/js\/site-header\.js\?raw";/);
   assert.match(shell, /<\/header>\s*<script is:inline data-site-header set:html=\{siteHeaderSource\}><\/script>\s*<main\b/);
   const navigation = read('../public/assets/js/legacy-navigation.js');

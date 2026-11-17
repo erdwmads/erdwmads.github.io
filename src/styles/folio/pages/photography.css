@@ -1,0 +1,153 @@
+/* @owner WP5 · @budget 4KB · @important 0 · Photography wall and contact sheet, scoped under .ui-page-photography */
+.ui-page-photography .masthead {
+  margin-block-end: var(--ed-space-5);
+  padding-block-end: var(--ed-space-6);
+}
+
+.ui-page-photography .obs-photo-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ed-space-3);
+  margin-block-end: var(--ed-space-4);
+}
+
+.ui-page-photography .photo-layout-switch {
+  display: flex;
+  gap: var(--ed-space-5);
+}
+
+.ui-page-photography .photo-layout-switch button {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--obs-muted);
+  font-size: var(--ed-small);
+  font-weight: 600;
+  text-decoration: underline 2px transparent;
+  text-underline-offset: .5em;
+}
+
+.ui-page-photography .photo-layout-switch :is(button:hover, [aria-pressed="true"]) {
+  color: var(--obs-text);
+}
+
+.ui-page-photography .photo-layout-switch [aria-pressed="true"] {
+  text-decoration-color: currentColor;
+}
+
+/* Present keeps room for its icon. */
+.ui-page-photography .obs-present-launch {
+  --reserve-display: inline-flex;
+}
+
+.ui-page-photography .obs-present-launch:not(:has(svg)) {
+  padding-inline-start: calc(1.25rem + 18px + var(--ed-space-2));
+}
+
+@media (max-width: 760px) {
+  .ui-page-photography .obs-present-launch {
+    flex: 1 0 100%;
+  }
+}
+
+/* Justified rows (src/lib/photo-rows.js) in the section container. */
+.ui-page-photography .photo-experience {
+  container: photo-wall / inline-size;
+}
+
+.ui-page-photography .photo-wall {
+  --photo-gap: var(--photo-gap-wide);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--photo-gap);
+}
+
+.ui-page-photography .photo-tile {
+  --photo-target-h: 21.5cqw;
+  --photo-grow: var(--photo-grow-wide);
+  --photo-row-h: calc((100cqw - 1px - var(--photo-gaps-wide) * var(--photo-gap)) / var(--photo-sum-wide));
+  display: block;
+  flex: var(--photo-grow, var(--photo-ratio)) 1 calc(var(--photo-ratio) * var(--photo-row-h, var(--photo-target-h)));
+  min-width: 0;
+  background: var(--obs-plate);
+  text-decoration: none;
+  cursor: zoom-in;
+}
+
+@container photo-wall (max-width: 720px) {
+  .ui-page-photography .photo-wall {
+    --photo-gap: var(--photo-gap-medium);
+  }
+
+  .ui-page-photography .photo-tile {
+    --photo-target-h: 26cqw;
+    --photo-grow: var(--photo-grow-medium);
+    --photo-row-h: calc((100cqw - 1px - var(--photo-gaps-medium) * var(--photo-gap)) / var(--photo-sum-medium));
+  }
+}
+
+@container photo-wall (max-width: 520px) {
+  .ui-page-photography .photo-wall {
+    --photo-gap: var(--photo-gap-narrow);
+  }
+
+  .ui-page-photography .photo-tile {
+    --photo-target-h: 36cqw;
+    --photo-grow: var(--photo-grow-narrow);
+    --photo-row-h: calc((100cqw - 1px - var(--photo-gaps-narrow) * var(--photo-gap)) / var(--photo-sum-narrow));
+  }
+}
+
+.ui-page-photography .photo-tile img {
+  display: block;
+  width: 100%;
+}
+
+.ui-page-photography .photo-tile:focus-visible {
+  outline-offset: -2px;
+}
+
+.ui-page-photography .photo-tile:focus-visible img {
+  outline: 2px solid var(--obs-paper);
+  outline-offset: -4px;
+}
+
+.ui-page-photography .photo-index-label {
+  display: none;
+}
+
+/* Contact sheet: equal frames. */
+.ui-page-photography [data-photo-layout="contact"] .photo-wall {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(10rem, calc(50% - var(--ed-space-2))), 1fr));
+  gap: var(--ed-space-6) var(--ed-space-4);
+}
+
+.ui-page-photography [data-photo-layout="contact"] .photo-tile {
+  background: none;
+}
+
+.ui-page-photography [data-photo-layout="contact"] img {
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+  border: 1px solid var(--obs-hairline);
+  background: var(--obs-plate);
+}
+
+.ui-page-photography [data-photo-layout="contact"] .photo-index-label {
+  display: grid;
+  padding-block-start: var(--ed-space-3);
+  color: var(--obs-muted);
+  font-size: var(--ed-caption);
+}
+
+@media (min-width: 1200px) {
+  .ui-page-photography .photo-camera > h3 {
+    grid-column: margin;
+    align-self: baseline;
+  }
+}

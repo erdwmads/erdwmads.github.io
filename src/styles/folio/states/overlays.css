@@ -1,0 +1,10 @@
+/* @owner WP1 · @budget 1.5KB · @important 0 · Scroll locks while the entrance, lightbox, presentation or atlas is open */
+/* The scripts set these classes while their overlay is open (arrival entry.js, mission-lightbox.js,
+   observatory-interactions.js, mineral-interactions.js). Pausing the FX layers meanwhile is components/ambient.css. */
+html.cosmic-arrival-active,
+html.mission-lightbox-open,
+body.mission-lightbox-open,
+html.obs-presenting,
+html.mineral-atlas-open {
+  overflow: hidden;
+}

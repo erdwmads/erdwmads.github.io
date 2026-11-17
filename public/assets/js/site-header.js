@@ -17,14 +17,14 @@
     }
     document.documentElement.classList.remove("mobile-nav-open");
     toggle.setAttribute("aria-expanded", "false");
-    toggle.setAttribute("aria-label", "Open navigation");
+    toggle.setAttribute("aria-label", "Open menu");
   }
 
   toggle.addEventListener("click", () => {
     const open = !document.documentElement.classList.contains("mobile-nav-open");
     document.documentElement.classList.toggle("mobile-nav-open", open);
     toggle.setAttribute("aria-expanded", String(open));
-    toggle.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+    toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
   }, { signal });
 
   navigation.addEventListener("click", (event) => {

@@ -1,0 +1,125 @@
+/* @owner WP1 · @budget 5KB · @important 0 · Layout: page containers, the .folio monograph grid, placement classes, stacks, section rhythm */
+/* Containers. The padding is the page gutter, so the content box is 1,200 px (1,360 px for .page--wide, the header). */
+.page {
+  width: 100%;
+  max-width: calc(var(--page-max) + 2 * var(--page-pad));
+  margin-inline: auto;
+  padding-inline: var(--page-pad);
+}
+
+.page--wide {
+  max-width: calc(var(--page-max-wide) + 2 * var(--page-pad));
+}
+
+/* The .folio grid (Masthead, Section). Below 1200 px every child spans the full width in source order, kept to the
+   text measure: a margin item reads as a kicker above its block, a note drops below its paragraph. At 1200 px and
+   wider it becomes the monograph grid: a hanging margin (columns 1-2), the text column (3-8) and margin notes
+   (10-12). Children default to the text column; sparse auto-placement keeps a margin item on the row of the block
+   that follows it and a note on the row of the block before it. Spacing comes from row-gap only, so a note lines
+   up with its paragraph. */
+.folio {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  row-gap: var(--ed-space-4);
+}
+
+.folio > * {
+  grid-column: 1 / -1;
+  min-width: 0;
+  margin-block: 0;
+}
+
+.folio > :where(:not(.span-wide, .span-full)) {
+  max-width: var(--measure-body);
+}
+
+.folio > :where(h2, h3) {
+  margin-block-end: var(--ed-space-2);
+}
+
+@media (min-width: 761px) {
+  .folio {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .folio {
+    grid-template-columns:
+      [full-start margin-start] repeat(2, minmax(0, 1fr))
+      [margin-end text-start wide-start] repeat(6, minmax(0, 1fr))
+      [text-end] minmax(0, 1fr)
+      [notes-start] repeat(3, minmax(0, 1fr)) [notes-end wide-end full-end];
+  }
+
+  .folio > * {
+    grid-column: text;
+  }
+
+  .folio > :where(:not(.span-wide, .span-full)) {
+    max-width: none;
+  }
+
+  .folio > .in-margin {
+    grid-column: margin;
+  }
+
+  .folio > .in-notes {
+    grid-column: notes;
+  }
+
+  .folio > .span-wide {
+    grid-column: wide;
+  }
+
+  .folio > .span-full {
+    grid-column: full;
+  }
+}
+
+/* Margin and note text: small, muted, never the reading face. */
+.in-margin,
+.in-notes {
+  color: var(--obs-muted);
+  font-size: var(--ed-small);
+  line-height: 1.5;
+}
+
+/* Sections (Section.astro): a strong rule, 12 px, then the kicker; 24 px from heading to body. */
+.folio-section {
+  margin-block-start: var(--section-gap);
+  padding-block-start: var(--ed-space-3);
+  border-top: 1px solid var(--obs-rule);
+}
+
+.folio-section__number {
+  font-family: var(--type-serif);
+  font-size: 1.25rem;
+  line-height: 1.2;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* Below 1200 px the section number leads its kicker on one row. */
+@media (max-width: 1199px) {
+  .folio > .folio-section__number {
+    grid-column: 1 / 2;
+    align-self: center;
+  }
+
+  .folio > .folio-section__number + .kicker {
+    grid-column: 2 / -1;
+  }
+}
+
+/* Stacks: .flow spaces its children vertically, .cluster lays them out in a wrapping row. */
+.flow > * + * {
+  margin-block-start: var(--flow-space, 1em);
+}
+
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--cluster-gap, var(--ed-space-3) var(--ed-space-4));
+}

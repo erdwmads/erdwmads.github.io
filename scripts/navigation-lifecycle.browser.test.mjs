@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
+import { shell } from './lib/site-paths.mjs';
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const browser = await chromium.launch({ headless: true, ...(process.env.EDGE_EXECUTABLE ? { executablePath: process.env.EDGE_EXECUTABLE } : {}) });
@@ -146,7 +147,7 @@ try {
     await skew.unroute('**/contact.html');
 
     await markDocument();
-    const shellModule = await serveFromNextDeploy('research', html => html.replace(/(<script type="module" src="\/_astro\/LegacyShell[^"]*?)\.js"/, '$1.next.js"'));
+    const shellModule = await serveFromNextDeploy('research', html => html.replace(new RegExp(`(<script type="module" src="/_astro/${shell.name}[^"]*?)\\.js"`), '$1.next.js"'));
     await skew.locator('.site-header a[href="research.html"]').first().click();
     await skew.waitForURL('**/research.html');
     await skew.waitForLoadState('load');

@@ -121,7 +121,7 @@ try {
   await root.locator('[data-view="minerals"]').click();
   assert.ok(await root.locator('[data-mineral-diagram]').isVisible());
   for (const theme of ['space','light']) {
-    await page.evaluate(t=>document.documentElement.dataset.theme=t,theme);
+    await page.evaluate(t=>{const r=document.documentElement;r.dataset.theme=t;r.toggleAttribute('data-theme-space',t!=='light');},theme);
     let previous;
     for (const id of ['carbonate','matrix','sulfide']) {
       await root.locator(`[data-mineral="${id}"]`).click();
@@ -185,7 +185,7 @@ try {
   assert.equal(await mr.locator('canvas').evaluate(el=>getComputedStyle(el).touchAction),'pan-y');
   assert.equal(await mr.locator('[data-stage]').evaluate(el=>getComputedStyle(el).touchAction),'pan-y');
   for (const theme of ['space', 'light']) {
-    await mobile.evaluate(t => document.documentElement.dataset.theme = t, theme);
+    await mobile.evaluate(t=>{const r=document.documentElement;r.dataset.theme=t;r.toggleAttribute('data-theme-space',t!=='light');}, theme);
     for (const width of [320,390,760]) {
       await mobile.setViewportSize({ width, height: 844 });
       for (const view of ['orbit','shape','minerals']) {

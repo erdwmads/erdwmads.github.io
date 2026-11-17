@@ -1,11 +1,11 @@
 ---
-import LegacyShell from "../components/LegacyShell.astro";
+import SiteShell from "../components/SiteShell.astro";
 import PaperShelf from "../components/PaperShelf.astro";
 import { getPageScripts } from "../data/site";
 
 const scriptHtml = getPageScripts("paper-shelf");
 ---
 
-<LegacyShell title='Paper Shelf | I. Mads Lieu' description='A curated shelf of papers behind my Orgueil CI1 research, grouped by topic: dolomite, CI chondrites, Ryugu and Bennu, methods and chronology.' current='paper-shelf' mainClass='main' path="paper-shelf.html" scriptHtml={scriptHtml}>
+<SiteShell title='Paper Shelf | I. Mads Lieu' description='A curated shelf of papers behind my Orgueil CI1 research, grouped by topic: dolomite, CI chondrites, Ryugu and Bennu, methods and chronology.' current='paper-shelf' mainClass='main' path="paper-shelf.html" scriptHtml={scriptHtml}>
   <PaperShelf />
-</LegacyShell>
+</SiteShell>

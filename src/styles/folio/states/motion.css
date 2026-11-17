@@ -1,0 +1,53 @@
+/* @owner WP1 · @budget 2KB · @important 12 · Motion states: soft navigation, reduced motion, smooth scrolling */
+/* Soft navigation (legacy-navigation.js sets the class on html and body during a swap): no smooth scrolling, and
+   no transitions on main or the fixed layers while the page content changes. */
+html.mads-soft-nav-active,
+body.mads-soft-nav-active {
+  scroll-behavior: auto;
+}
+
+.mads-soft-nav-active :is(main, .ambient-space-layer, .ui2046-layer, .ui2046-progress) {
+  transition-property: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Reduced motion: every animation and transition takes no time. The one allowance is an opacity fade of at most
+   120 ms: a component sets --motion-fade (a time, not inherited) on the element that fades, and only where its
+   transition is opacity alone. */
+@property --motion-fade {
+  syntax: "<time>";
+  inherits: false;
+  initial-value: 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: min(var(--motion-fade), 120ms) !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* The universal selector does not reach these pseudo-elements. Each has its own rule, so a browser that does not
+     know one of them still keeps the rest. */
+  ::backdrop {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+
+  ::details-content {
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}

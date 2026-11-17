@@ -1,0 +1,790 @@
+/* @owner WP4 · @budget 18KB · @important 0 · Planetary explorer (.planetary-*) */
+/* Planetary field guide (planetary-explorer.js). */
+
+.planetary {
+  --planetary-plate: 460px;
+}
+
+.planetary-heading,
+.planetary-panel,
+.planetary-layout,
+.planetary__instrument,
+.planetary-visual,
+.planetary-summary,
+.planetary-sample,
+.planetary-sharing,
+.planetary-time {
+  display: grid;
+  align-content: start;
+  row-gap: var(--ed-space-3);
+  min-width: 0;
+  margin: 0;
+}
+
+.planetary-heading > *,
+.planetary-panel > *,
+.planetary-summary > *,
+.planetary-ci > *,
+.planetary-time > p,
+.planetary-sharing > p,
+.planetary-questions li > * {
+  margin: 0;
+}
+
+.planetary-heading {
+  row-gap: var(--ed-space-4);
+}
+
+.planetary-heading > h2 {
+  margin-block-end: var(--ed-space-2);
+}
+
+.planetary__intro,
+.planetary-ci > p,
+.planetary-caption,
+.planetary-boundary,
+.planetary-question-boundary {
+  max-width: var(--measure-body);
+}
+
+/* Label capitals, then muted readouts. */
+.planetary-steps span,
+.planetary-date,
+.planetary-evidence,
+.planetary-summary dt,
+.planetary-questions h4 {
+  color: var(--obs-muted);
+  font-size: var(--ed-label);
+  font-weight: 600;
+  line-height: 1.3;
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.planetary-tools > output,
+.planetary-sample > figcaption,
+.planetary-sharing,
+.planetary-time > p,
+.planetary-measure,
+.planetary__sources-body {
+  color: var(--obs-muted);
+  font-size: var(--ed-caption);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* Ruled indexes: the open tab inked on the rule. */
+.planetary-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--ed-space-3) var(--ed-space-6);
+  margin-block-start: var(--ed-space-5);
+  border-bottom: 1px solid var(--obs-hairline);
+}
+
+.planetary-steps,
+.planetary-question-tabs {
+  display: flex;
+  gap: var(--ed-space-5);
+}
+
+.planetary-steps > button,
+.planetary-question-tabs > button,
+.planetary-question-footer > button {
+  min-height: 44px;
+  padding: var(--ed-space-3) 0;
+  border: 0 solid transparent;
+  background: none;
+  color: var(--obs-muted);
+  font-weight: 600;
+  text-align: start;
+}
+
+.planetary-steps > button,
+.planetary-question-tabs > button {
+  display: inline-flex;
+  text-wrap: balance;
+  align-items: last baseline;
+  gap: var(--ed-space-2);
+  margin-block-end: -1px;
+  border-bottom-width: 2px;
+}
+
+.planetary-steps > button:hover,
+.planetary-question-tabs > button:hover {
+  border-color: var(--obs-control-border);
+  color: var(--obs-text);
+}
+
+.planetary-steps > [aria-selected="true"],
+.planetary-question-tabs > [aria-selected="true"] {
+  border-color: var(--obs-text);
+  color: var(--obs-text);
+}
+
+.planetary-materials,
+.planetary-options,
+.planetary-tools,
+.planetary-mineral-tabs,
+.planetary-minerals,
+.planetary-measure,
+.planetary-question-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ed-space-2);
+}
+
+.planetary-materials {
+  padding-block-end: var(--ed-space-1);
+}
+
+.planetary .button {
+  padding-inline: var(--ed-space-4);
+  white-space: nowrap;
+}
+
+.planetary .button[aria-pressed="true"],
+.planetary .icon-button[aria-pressed="true"] {
+  background: var(--obs-highlight);
+  text-decoration: underline 2px;
+  text-underline-offset: .35em;
+}
+
+.planetary .button[aria-pressed="true"]:hover {
+  background: color-mix(in srgb, var(--obs-highlight) 86%, var(--obs-text));
+}
+
+.planetary [data-icon] {
+  display: contents;
+}
+
+.planetary-touch svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.5;
+}
+
+.planetary :where(select, input[type="datetime-local"]) {
+  min-height: 44px;
+  max-width: 100%;
+  padding-inline: var(--ed-space-3);
+  border: 1px solid var(--obs-control-border);
+  border-radius: var(--radius-control);
+  background: var(--obs-surface);
+  color: var(--obs-text);
+  font-size: var(--ed-small);
+  font-weight: 400;
+}
+
+/* Orbit and shape tools share the first cell; camera and share follow. */
+.planetary-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 44px;
+  align-items: center;
+  gap: var(--ed-space-3) var(--ed-space-4);
+}
+
+.planetary-toolbar > .planetary-options {
+  grid-area: 1 / 1;
+}
+
+.planetary-tools > output {
+  min-width: 3.25rem;
+  text-align: center;
+}
+
+/* The share status keeps its line, so a message moves nothing. */
+.planetary-sharing > p {
+  min-height: 1lh;
+  text-align: end;
+}
+
+.planetary-sharing > input {
+  min-height: 44px;
+}
+
+.planetary__instrument,
+.planetary-sharing,
+.planetary-sample {
+  row-gap: var(--ed-space-2);
+}
+
+.planetary-time {
+  grid-template-columns: 44px repeat(2, minmax(0, 1fr)) 44px;
+  align-items: center;
+  gap: var(--ed-space-2) var(--ed-space-3);
+  padding: 0;
+  border: 0;
+}
+
+.planetary-date {
+  display: flex;
+  align-items: center;
+  gap: var(--ed-space-3);
+  min-width: 0;
+}
+
+.planetary-date > input {
+  flex: 1;
+  min-width: 0;
+  letter-spacing: normal;
+}
+
+.planetary-time select {
+  width: 100%;
+}
+
+.planetary-time > :is([data-timeline], p, details) {
+  grid-column: 1 / -1;
+}
+
+.planetary-time > [data-timeline] {
+  width: 100%;
+  height: 32px;
+  margin: 0;
+}
+
+/* Touch bar: coarse pointers only; there it keeps its row. */
+.planetary-interaction-bar {
+  --reserve-display: none;
+  display: none;
+}
+
+/* Night plates: Space colours in both themes. */
+.planetary-stage,
+.planetary-ci {
+  height: var(--planetary-plate);
+  border: 1px solid var(--obs-hairline);
+  background: var(--obs-plate-night);
+}
+
+.planetary-stage {
+  position: relative;
+  overflow: hidden;
+}
+
+.planetary-stage canvas,
+.planetary-fallback {
+  display: block;
+  grid-area: 1 / 1 / 2 / -1;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Corner brackets; the focus ring replaces them. */
+.planetary-stage:focus-visible {
+  outline-offset: -9px;
+}
+
+.planetary-stage::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: var(--ed-space-2);
+  border: 1px solid var(--obs-text);
+  pointer-events: none;
+  mask: conic-gradient(at 8px 8px, #0000 75%, #000 0) 0 0 / calc(100% - 8px) calc(100% - 8px);
+}
+
+.planetary-stage:focus-visible::after,
+.planetary[data-render-state="error"] .planetary-stage::after {
+  display: none;
+}
+
+/* Overlays take no input; only the object labels do. */
+.planetary-labels,
+.planetary-leaders {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.planetary-labels {
+  z-index: 1;
+}
+
+.planetary-leaders {
+  width: 100%;
+  height: 100%;
+  stroke: var(--obs-muted);
+  opacity: .6;
+}
+
+/* Labels sit 4 px inside the stage, so rings never clip. */
+.planetary-label {
+  position: absolute;
+  padding: 1px 6px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-record);
+  background: var(--obs-surface);
+  color: var(--obs-text);
+  font-size: var(--ed-label);
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.planetary-label[aria-pressed="true"] {
+  border-color: var(--obs-text);
+  background: var(--obs-highlight);
+}
+
+.planetary-label:focus-visible {
+  outline-offset: 1px;
+}
+
+span.planetary-label {
+  color: var(--obs-muted);
+  pointer-events: none;
+}
+
+/* A failed scene: image, strip and Retry in a grid. */
+.planetary-status {
+  position: absolute;
+  z-index: 2;
+  right: var(--ed-space-3);
+  bottom: var(--ed-space-3);
+  left: var(--ed-space-3);
+  margin: 0;
+  min-height: 44px;
+  padding: var(--ed-space-1) var(--ed-space-3);
+  align-content: center;
+  border: 1px solid var(--obs-hairline);
+  background: var(--obs-surface);
+  font-size: var(--ed-caption);
+  line-height: 1.45;
+  text-wrap: balance;
+}
+
+.planetary-stage:has(> [data-fallback]:not([hidden])) {
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr) auto;
+  gap: var(--ed-space-3);
+  padding: var(--ed-space-3);
+}
+
+.planetary-stage:has(> [data-fallback]:not([hidden])) .planetary-status {
+  position: static;
+}
+
+.planetary[data-render-state="error"] .planetary-status {
+  color: var(--obs-error);
+}
+
+.planetary[data-render-state="error"] .planetary-status::before {
+  content: "! " / "";
+  font-weight: 600;
+}
+
+.planetary[data-render-state="error"] .planetary-interaction-bar {
+  visibility: hidden;
+}
+
+/* Orgueil: a note on a stage-sized plate. */
+.planetary-ci {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: var(--ed-space-3);
+  padding: var(--ed-space-6) var(--ed-space-7);
+}
+
+/* Specimen plates, never cropped. */
+.planetary-sample > :is(img, [data-sample-error]) {
+  width: 100%;
+  height: var(--planetary-plate);
+  border: 1px solid var(--obs-hairline);
+  background: var(--obs-plate);
+}
+
+.planetary-sample > img {
+  object-fit: contain;
+}
+
+.planetary-sample > [data-sample-error] {
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: var(--ed-space-5);
+  color: var(--obs-muted);
+  text-align: center;
+}
+
+.planetary-measure {
+  justify-content: space-between;
+  column-gap: var(--ed-space-4);
+}
+
+.planetary-minerals {
+  gap: var(--ed-space-3) var(--ed-space-5);
+  padding-block-start: var(--ed-space-2);
+}
+
+.planetary-detail {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ed-space-2);
+  min-height: 44px;
+}
+
+/* Caveats are reading text. */
+.planetary-detail,
+.planetary-caption,
+.planetary-boundary,
+.planetary-summary,
+.planetary-questions li,
+.planetary-question-footer,
+.planetary-question-boundary {
+  font-size: var(--ed-small);
+  line-height: 1.55;
+}
+
+.planetary-caption {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.planetary-summary > dl {
+  border-top: 1px solid var(--obs-hairline);
+}
+
+.planetary-summary dl > div {
+  display: grid;
+  gap: 2px;
+  padding-block: var(--ed-space-2);
+  border-bottom: 1px solid var(--obs-hairline);
+}
+
+.planetary-summary dd {
+  margin: 0;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.planetary-summary > a {
+  justify-self: start;
+}
+
+.planetary-summary > a::after {
+  content: " \2197" / "";
+}
+
+/* The answer is a ledger under one rule. */
+.planetary-questions {
+  max-width: none;
+  margin-block-start: var(--ed-space-5);
+  border-block: 1px solid var(--obs-hairline);
+}
+
+.planetary-question-tabs {
+  margin-block-start: var(--ed-space-2);
+  border-bottom: 1px solid var(--obs-hairline);
+}
+
+.planetary-question-tabs > button {
+  font-size: var(--ed-small);
+  line-height: 1.4;
+}
+
+.planetary-questions ol {
+  margin: var(--ed-space-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.planetary-questions li {
+  display: grid;
+  grid-template-columns: minmax(0, 12rem) minmax(0, var(--measure-body));
+  align-items: baseline;
+  gap: var(--ed-space-1) var(--grid-gap);
+  padding-block: var(--ed-space-3);
+}
+
+.planetary-questions li + li {
+  border-top: 1px solid var(--obs-hairline);
+}
+
+.planetary-question-footer {
+  justify-content: space-between;
+  gap: var(--ed-space-3) var(--ed-space-5);
+  padding-block: var(--ed-space-4) var(--ed-space-3);
+}
+
+.planetary-question-footer > button {
+  color: var(--obs-text);
+  text-decoration: underline transparent;
+}
+
+.planetary-question-footer > button:hover {
+  text-decoration-color: currentColor;
+}
+
+.planetary-question-footer > button::after {
+  content: " \2192" / "";
+}
+
+.planetary-question-boundary {
+  margin: 0 0 var(--ed-space-4);
+}
+
+.planetary-sources {
+  border-top: 1px solid var(--obs-hairline);
+}
+
+.planetary__sources-body {
+  columns: 2 22rem;
+  column-gap: var(--grid-gap);
+  line-height: 1.5;
+}
+
+.planetary__sources-body > p {
+  margin: 0 0 var(--ed-space-3);
+  break-inside: avoid;
+}
+
+.planetary-panel,
+.planetary-layout {
+  row-gap: var(--ed-space-5);
+}
+
+/* Coarse pointers: the page scrolls until Explore. */
+@media (pointer: coarse) {
+  .planetary-interaction-bar {
+    --reserve-display: flex;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ed-space-3);
+    color: var(--obs-muted);
+    font-size: var(--ed-caption);
+  }
+
+  .planetary-stage,
+  .planetary-stage canvas {
+    touch-action: pan-y;
+  }
+
+  .planetary-stage[data-touch-active],
+  .planetary-stage[data-touch-active] canvas {
+    touch-action: none;
+  }
+
+  .planetary-time > [data-timeline] {
+    height: 44px;
+  }
+}
+
+/* To 960 px the rule stays under the wrapped tabs. */
+@media (max-width: 960px) {
+  .planetary-navigation {
+    border: 0;
+  }
+
+  .planetary-steps {
+    flex-basis: 100%;
+    border-bottom: 1px solid var(--obs-hairline);
+  }
+}
+
+/* 761-1199 px: the reading in two columns. */
+@media (min-width: 761px) and (max-width: 1199px) {
+  .planetary-summary {
+    display: block;
+    columns: 2;
+    column-gap: var(--grid-gap);
+  }
+
+  .planetary-summary > * {
+    margin-block-end: var(--ed-space-3);
+    break-inside: avoid;
+  }
+
+  .planetary-summary > dl {
+    break-before: column;
+  }
+
+  .planetary-summary > a {
+    display: block;
+    width: fit-content;
+  }
+}
+
+/* From 1200 px: the notes column. */
+@media (min-width: 1200px) {
+  .planetary-heading,
+  .planetary-panel,
+  .planetary-layout {
+    grid-template-columns: subgrid;
+  }
+
+  .planetary-heading > *,
+  .planetary-panel > * {
+    grid-column: text;
+  }
+
+  .planetary-heading > .evidence-status {
+    grid-column: notes;
+    grid-row: 1 / span 2;
+    align-self: start;
+    padding-block-start: var(--ed-space-2);
+  }
+
+  .planetary-questions {
+    grid-column: wide;
+  }
+
+  .planetary-navigation {
+    display: grid;
+    grid-template-columns: subgrid;
+    column-gap: var(--grid-gap);
+    align-items: end;
+  }
+
+  .planetary-steps {
+    grid-column: text-start / notes-start;
+  }
+
+  .planetary-materials {
+    grid-column: notes;
+    gap: var(--ed-space-1);
+  }
+
+  .planetary-materials > .button {
+    flex: 1;
+    padding-inline: var(--ed-space-2);
+  }
+
+  .planetary-panel > :is(.planetary-layout, .planetary-sources) {
+    grid-column: text-start / notes-end;
+  }
+
+  .planetary__instrument {
+    grid-column: text-start / notes-start;
+  }
+
+  .planetary-summary {
+    grid-column: notes;
+  }
+}
+
+/* Phones: the moved shape tools reserve a row only in Shapes. */
+@media (max-width: 760px) {
+  .planetary {
+    --planetary-plate: 340px;
+  }
+
+  .planetary-steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--ed-space-2);
+  }
+
+  .planetary-materials,
+  .planetary-mineral-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(max-content, 1fr));
+    width: 100%;
+  }
+
+  .planetary-steps > button {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    padding-block: var(--ed-space-2);
+    font-size: var(--ed-small);
+  }
+
+  .planetary .button {
+    padding-inline: var(--ed-space-2);
+  }
+
+  .planetary-toolbar {
+    grid-template-columns: minmax(0, 1fr) 44px;
+    gap: var(--ed-space-2);
+  }
+
+  .planetary [data-shape-tools] {
+    --reserve-display: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .planetary[data-mode="shape"] [data-shape-tools] {
+    --reserve-display: grid;
+  }
+
+  .planetary-time {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+
+  .planetary-time > p {
+    min-height: 2lh;
+    text-wrap: balance;
+  }
+
+  .planetary-time > [data-timeline] {
+    grid-column: 2;
+    grid-row: 1;
+    height: 44px;
+  }
+
+  .planetary-view-settings {
+    border-block: 1px solid var(--obs-hairline);
+  }
+
+  .planetary-view-settings-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 44px;
+    gap: var(--ed-space-3);
+    padding-block-end: var(--ed-space-4);
+  }
+
+  .planetary-view-settings-body > :is(label, .planetary-options) {
+    grid-column: 1 / -1;
+  }
+
+  .planetary-view-settings-body > .planetary-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  }
+
+  .planetary-stage:has(> [data-fallback]:not([hidden])) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .planetary-ci {
+    padding: var(--ed-space-5);
+  }
+
+  .planetary-question-tabs {
+    flex-direction: column;
+    gap: 0;
+    border: 0;
+    border-inline-start: 1px solid var(--obs-hairline);
+  }
+
+  .planetary-question-tabs > button {
+    margin: 0 0 0 -1px;
+    padding-inline-start: var(--ed-space-3);
+    border-width: 0 0 0 2px;
+  }
+
+  .planetary-questions li {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Forced colours: chosen items. */
+@media (forced-colors: active) {
+  .planetary :is(.button, .icon-button, .planetary-label)[aria-pressed="true"],
+  :is(.planetary-steps, .planetary-question-tabs) > [aria-selected="true"] {
+    forced-color-adjust: none;
+    background: SelectedItem;
+    color: SelectedItemText;
+  }
+}

@@ -1,0 +1,11 @@
+---
+// A kicker: muted capitals above a heading. rule leads it with the 24 x 2 px brass rule (mastheads only).
+// Styles: src/styles/folio/components/masthead.css.
+interface Props {
+  rule?: boolean;
+  class?: string;
+}
+
+const { rule = false, class: className } = Astro.props;
+---
+<p class:list={["kicker", className]}>{rule && <span class="kicker__rule" aria-hidden="true"></span>}<slot /></p>

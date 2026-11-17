@@ -1,0 +1,95 @@
+/* @owner WP3 · @budget 2KB · @important 0 · Comparison table (.comparison-table) */
+/* Row labels in the margin (16%: cells treat a mixed calc() width as auto). Phones: rows stack, each cell names its
+   material; the empty corner cell stays (zero height), so every cell keeps its column header. */
+.comparison-table {
+  table-layout: fixed;
+}
+
+.comparison-table caption {
+  text-wrap: balance;
+}
+
+.comparison-table thead > tr > :first-child {
+  width: 10rem;
+}
+
+.comparison-table thead th {
+  vertical-align: bottom;
+  font-weight: 400;
+}
+
+.comparison-table thead td {
+  padding-block: 0;
+  border-bottom-color: var(--obs-rule);
+}
+
+.comparison-table__title {
+  display: block;
+  margin-top: var(--ed-space-2);
+  font: 500 var(--ed-h3)/1.25 var(--type-serif);
+  text-wrap: balance;
+}
+
+.comparison-table__designation {
+  display: block;
+  margin-top: var(--ed-space-1);
+  color: var(--obs-muted);
+  font-size: var(--ed-caption);
+}
+
+.comparison-table .comparison-table__cell-label {
+  display: none;
+}
+
+.comparison-table tfoot td {
+  padding-top: var(--ed-space-4);
+  border: 0;
+}
+
+.comparison-table tfoot p {
+  max-width: var(--measure-body);
+  margin: 0;
+}
+
+@media (min-width: 761px) {
+  .comparison-table tfoot td:first-child {
+    padding-left: calc(10rem + var(--ed-space-3));
+  }
+}
+
+@media (min-width: 1200px) {
+  .comparison-table thead > tr > :first-child {
+    width: 16%;
+  }
+
+  .comparison-table tfoot td:first-child {
+    padding-left: calc(16% + var(--ed-space-3));
+  }
+}
+
+@media (max-width: 760px) {
+  .comparison-table thead {
+    display: block;
+  }
+
+  .comparison-table thead th + th {
+    margin-top: var(--ed-space-3);
+    padding-top: var(--ed-space-3);
+    border-top: 1px solid var(--obs-hairline);
+  }
+
+  .comparison-table tbody th {
+    padding-top: var(--ed-space-4);
+  }
+
+  .comparison-table td + td {
+    padding-top: var(--ed-space-3);
+  }
+
+  .comparison-table .comparison-table__cell-label {
+    display: block;
+    font-size: var(--ed-small);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+}

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import os from 'node:os';import path from 'node:path';
+import {explore} from '../src/data/home.ts';
 const require=createRequire(import.meta.url),{chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const browser=await chromium.launch({headless:true,executablePath:process.env.EDGE_EXECUTABLE});
 const base=process.env.SITE_TEST_URL||'http://127.0.0.1:52523';
@@ -8,14 +9,14 @@ try {
  const page=await browser.newPage({viewport:{width:1440,height:1000},reducedMotion:'reduce'});page.setDefaultTimeout(12000);
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto(base+'/index.html');await page.evaluate(()=>document.fonts.ready);
- assert.equal(await page.locator('h1').innerText(),'I. Mads Lieu');assert.deepEqual(await page.locator('.home-explore-list a').evaluateAll(links=>links.map(a=>a.getAttribute('href'))),['ryugu-bennu.html','origins-study.html','research-log.html','paper-shelf.html','photography.html'],'Explore is a compact list that includes Ryugu & Bennu');
- assert.equal(await page.locator('.hero-card .avatar img').evaluate(e=>e.complete&&e.naturalWidth>0),true);
+ assert.equal(await page.locator('h1').innerText(),'I. Mads Lieu');assert.deepEqual(await page.locator('.home-explore-list a').evaluateAll(links=>links.map(a=>a.getAttribute('href'))),explore.map(item=>item.href),'Explore is the ledger from src/data/home.ts');assert.ok(explore.some(item=>item.href==='ryugu-bennu.html'),'Explore includes Ryugu & Bennu');
+ assert.equal(await page.locator('.home-portrait img').evaluate(e=>e.complete&&e.naturalWidth>0),true);
  await page.screenshot({path:path.join(os.tmpdir(),'folio100-home-desktop.png')});
 for(const theme of ['space','light']) {
  await page.evaluate(t=>document.documentElement.dataset.theme=t,theme);
  for(const width of [320,390,641,700,760,1024,1440]) {
  await page.setViewportSize({width,height:1000});await page.waitForTimeout(60);
- const bounds=await page.locator('.hero h1').evaluate(e=>{const range=document.createRange();range.selectNodeContents(e);const r=range.getBoundingClientRect(),h=e.getBoundingClientRect();return {textRight:r.right,boxRight:h.right,viewport:innerWidth};});
+ const bounds=await page.locator('#home-name').evaluate(e=>{const range=document.createRange();range.selectNodeContents(e);const r=range.getBoundingClientRect(),h=e.getBoundingClientRect();return {textRight:r.right,boxRight:h.right,viewport:innerWidth};});
  assert.ok(bounds.textRight<=bounds.boxRight+1&&bounds.textRight<=bounds.viewport,theme+' '+width+' '+JSON.stringify(bounds));
  }}
 await page.evaluate(()=>document.documentElement.dataset.theme='space');

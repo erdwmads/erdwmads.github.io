@@ -1,0 +1,188 @@
+/* @owner WP4 · @budget 20KB · @important 0 · Origins study (.origins-study) */
+/* Source order is reading order. The rail stays outside .observatory (a subgrid), whose controls loader.js disables. */
+.study-panel { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: repeat(7, auto); }
+.observatory { display: grid; grid-area: 1 / 1 / -1 / -1; grid-template-columns: subgrid; grid-template-rows: subgrid; }
+:is(.scene-frame, .chapters) { position: relative; z-index: 1; grid-column: 1 / -1; }
+.scene-frame { grid-row: 1; }
+.chapters { grid-row: 2; }
+.scene-controls { grid-row: 3; }
+.transport { grid-row: 4; }
+.chapter-copy { grid-row: 5; }
+.mineral-budget { grid-column: 1 / -1; grid-row: 7; }
+@media (min-width: 1200px) {
+  .study-panel { grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: repeat(5, auto) 1fr auto; column-gap: var(--grid-gap); }
+  :is(.scene-frame, .chapters, .transport, .scene-controls) { grid-column: 1 / 10; }
+  .chapter-copy { grid-column: 10 / -1; grid-row: 1 / 7; }
+}
+:where(.transport, .scene-controls, .reaction-sequence, .scene-note, .mineral-budget details, .sources-dialog dt) { border-top: 1px solid var(--obs-hairline); }
+:where(.chapter-copy :is(h2, ol, p), .mineral-budget > *, .mineral-budget h3, .sources-dialog dd) { margin: 0; }
+
+/* The night plate, sized by its width; corner brackets 4 px in, overlays 16 px in. */
+.scene-viewport { position: relative; width: 100%; aspect-ratio: 4 / 5; max-height: 80svh; overflow: hidden; isolation: isolate; border: 1px solid var(--obs-hairline); }
+.scene-viewport::after { content: ""; position: absolute; z-index: 4; inset: var(--ed-space-1); border: 1px solid var(--obs-text); pointer-events: none; mask: conic-gradient(at 8px 8px, #0000 75%, #000 0) 0 0 / calc(100% - 8px) calc(100% - 8px); }
+@media (min-width: 761px) {
+  .scene-viewport { aspect-ratio: 16 / 9; }
+}
+:is(.scene-viewport, .scene-hint, .scene-load-state, .section-locator, .fragment-guide span) { background: var(--obs-plate-night); }
+.scene-viewport > canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; }
+.scene-viewport > canvas:focus-visible { outline-offset: -5px; }
+canvas.study-dissolve { z-index: 1; pointer-events: none; }
+:is(.scene-hint, .section-locator, .fragment-guide, .scene-load-state) { position: absolute; z-index: 2; pointer-events: none; }
+.scene-hint { inset: auto var(--ed-space-6) var(--ed-space-4); width: fit-content; margin-inline: auto; padding: 2px var(--ed-space-2); text-align: center; text-wrap: balance; }
+.scene-viewport .scene-explore { position: absolute; z-index: 2; top: var(--ed-space-4); right: var(--ed-space-4); display: none; background: var(--obs-surface); }
+.scene-load-state { z-index: 3; inset: 0; display: grid; place-content: center; justify-items: center; gap: var(--ed-space-4); padding: var(--ed-space-6); text-align: center; }
+.scene-load-state .button { pointer-events: auto; }
+.scene-viewport:has(> :focus-visible) .scene-load-state { outline: 2px solid var(--obs-focus); outline-offset: -5px; }
+.section-locator { top: var(--ed-space-4); left: var(--ed-space-4); display: flex; align-items: center; gap: var(--ed-space-3); max-width: calc(100% - 2rem); padding: var(--ed-space-2); border: 1px solid var(--obs-hairline); }
+.locator-view { position: relative; flex: none; width: 84px; height: 84px; background: var(--obs-screen); }
+.locator-view > * { position: absolute; inset: 0; width: 100%; height: 100%; }
+:is(.locator-plane, .locator-mark) { stroke: var(--obs-text); stroke-width: 1.2; vector-effect: non-scaling-stroke; }
+.locator-plane { fill: none; stroke-dasharray: 3 2.5; }
+.locator-mark { fill: color-mix(in srgb, var(--obs-text) 25%, transparent); }
+.locator-copy { display: grid; gap: 2px; line-height: 1.35; }
+.locator-copy b { color: var(--obs-text); }
+.fragment-guide { inset: var(--ed-space-4) var(--ed-space-4) auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--ed-space-2) var(--ed-space-3); }
+.fragment-guide span { padding: var(--ed-space-1) var(--ed-space-2); border-left: 2px solid #b8c6ca; white-space: nowrap; }
+.fragment-guide span:last-child { margin-inline-start: auto; border-left-color: #c5a779; }
+
+/* Labels; muted captions. */
+:where(.region-label, .locator-title, .origins-study .eyebrow, .scene-frame-tag, .scene-frame-counter, .chapters button > span, .reaction-sequence button > span, .locator-copy small) {
+  display: block; font-size: var(--ed-label); font-weight: 600; line-height: 1.3; letter-spacing: .08em; text-transform: uppercase; font-variant-numeric: tabular-nums;
+}
+:where(.scene-hint, .scene-load-state, .locator-copy, .fragment-guide, .scene-frame-bar, .legend, .view-key > p, .chapters small, .reaction-sequence small, .scene-note p, .mineral-budget-source) { font-size: var(--ed-caption); color: var(--obs-muted); }
+:where(.region-label, .origins-study .eyebrow, .mineral-budget details p, .sources-dialog dd) { color: var(--obs-muted); }
+:where(.study-project-context, .transport-copy > span:last-child, .transport output, .reaction-sequence strong, .chapter-description p, .sources-dialog :is(p, dd, dt), .mineral-budget-note, .mineral-budget details) { font-size: var(--ed-small); }
+
+/* Caption line. */
+.scene-frame-bar { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--ed-space-1) var(--ed-space-4); margin-top: var(--ed-space-3); }
+.scene-frame-tag { display: inline-flex; align-items: center; gap: var(--ed-space-2); color: var(--obs-text); }
+.scene-frame-counter { margin-inline-start: auto; }
+
+/* Rail: drawn rules; the current one darkens, a 2 px bar shows progress. */
+.chapters { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: var(--grid-gap); margin-top: var(--ed-space-5); }
+:is(.chapters, .segmented, .reaction-sequence) button { position: relative; min-height: 44px; border: 0; background: transparent; color: var(--obs-muted); text-align: start; transition: color var(--ed-dur-1) var(--ed-ease-out); }
+.chapters button { display: grid; align-content: start; gap: 2px; padding: var(--ed-space-4) 0; }
+.chapters strong { color: var(--obs-text); font-size: var(--ed-h4); line-height: 1.3; text-wrap: balance; }
+:is(.chapters, .segmented, .reaction-sequence) button:hover, .chapters button[aria-current="step"] { color: var(--obs-text); }
+.chapters button::before, .chapters [aria-current]::after, .reaction-sequence [aria-current] > button::after { content: ""; position: absolute; }
+.chapters button::before { inset: 0 0 auto; border-top: 1px solid var(--obs-hairline); }
+.chapters [aria-current]::before { border-top-color: currentColor; }
+.chapters [aria-current]::after { inset: 0 0 auto; border-top: 2px solid; transform: scaleX(var(--chapter-progress, 1)); transform-origin: 0; }
+
+/* View tools; only the pressed colour mode is underlined. */
+.scene-controls { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; align-items: center; column-gap: var(--ed-space-4); padding-block: var(--ed-space-3); }
+.view-tools { display: contents; }
+.camera-tools { display: flex; grid-column: 4; gap: var(--ed-space-2); }
+.view-key { grid-column: 3; grid-row: 1; min-width: 0; }
+.segmented { display: flex; }
+.segmented button { padding: 0 var(--ed-space-3); font-weight: 600; text-decoration-thickness: 2px; text-underline-offset: .5em; }
+.segmented button[aria-pressed="true"] { color: var(--obs-text); text-decoration-line: underline; }
+.legend { display: flex; flex-wrap: wrap; column-gap: var(--ed-space-4); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+/* Colour keys: outlined bars, not marker shapes. */
+:is(.legend, .mineral-budget-table) i { display: inline-block; width: 12px; height: 6px; background: var(--swatch, var(--phase-color)); box-shadow: inset 0 0 0 1px var(--obs-hairline); forced-color-adjust: none; }
+
+/* Timeline: the moment keeps two lines. */
+.transport { display: grid; grid-template-columns: auto minmax(0, 20rem) minmax(0, 1fr) auto; align-items: center; gap: var(--ed-space-2) var(--ed-space-4); padding-block: var(--ed-space-4); }
+.transport-copy { display: grid; gap: 2px; }
+.transport-copy > span:last-child { min-height: 2.8em; line-height: 1.4; }
+.transport input { width: 100%; height: 44px; margin: 0; }
+.transport output { min-width: 3.5em; font-variant-numeric: tabular-nums; text-align: end; }
+:is(.transport input, .segmented button, .reaction-sequence button):disabled { opacity: .55; cursor: not-allowed; }
+
+/* Chapter text: beside the scene on desktop, at the measure below. */
+.chapter-copy { display: flex; flex-direction: column; gap: var(--ed-space-5); min-width: 0; margin-top: var(--ed-space-7); }
+:is(.chapter-heading, .mineral-budget-heading) { display: grid; gap: var(--ed-space-2); }
+.reaction-sequence { padding: 0; list-style: none; }
+.reaction-sequence li { border-bottom: 1px solid var(--obs-hairline); }
+.reaction-sequence button { display: grid; grid-template-columns: 2rem minmax(0, 1fr); align-items: baseline; width: 100%; padding: var(--ed-space-3) 0 var(--ed-space-3) var(--ed-space-3); }
+.reaction-sequence :is(strong, small) { display: block; line-height: 1.45; }
+.reaction-sequence li[aria-current="step"] > button { color: var(--obs-text); }
+.reaction-sequence [aria-current] > button::after { inset: 0 auto 0 0; border-left: 2px solid; }
+.scene-note { display: grid; gap: var(--ed-space-2); padding-top: var(--ed-space-4); }
+.scene-note strong { font-size: var(--ed-label); letter-spacing: .08em; text-wrap: balance; }
+@media (min-width: 1200px) {
+  .chapter-copy { margin-top: 0; }
+  .chapter-heading h2 { font-size: var(--ed-h3); line-height: 1.25; letter-spacing: 0; }
+}
+@media (max-width: 1199px) {
+  .chapter-copy > * { max-width: var(--measure-body); }
+  .chapter-description p { font-size: var(--ed-body); }
+}
+
+/* Mineral budget. */
+.mineral-budget { display: grid; align-content: start; gap: var(--ed-space-4) var(--grid-gap); margin-top: var(--ed-space-8); padding-top: var(--ed-space-3); border-top: 1px solid var(--obs-rule); }
+.mineral-budget > * { min-width: 0; max-width: var(--measure-body); }
+.mineral-budget-bar { display: flex; height: 8px; margin-bottom: var(--ed-space-4); }
+.mineral-budget-bar span { background: var(--phase-color); forced-color-adjust: none; }
+.mineral-budget-table :is(th, td) { padding-block: var(--ed-space-2); }
+.mineral-budget-table tbody th { font-weight: 400; }
+.mineral-budget-table i { margin-inline-end: var(--ed-space-2); vertical-align: middle; }
+.mineral-budget details p { margin: 0 0 var(--ed-space-3); }
+@media (min-width: 1200px) {
+  .mineral-budget { grid-template-columns: subgrid; grid-template-rows: repeat(4, auto) 1fr; }
+  .mineral-budget > * { grid-column: 1 / 7; }
+  .mineral-budget > .mineral-budget-data { grid-column: 10 / -1; grid-row: 1 / -1; }
+}
+
+/* Scientific context: a level 2 sheet with a sticky head band. */
+.sources-dialog[open] {
+  --pad: var(--ed-space-6);
+  width: min(40rem, calc(100% - 2 * var(--page-pad))); max-height: 85svh;
+  padding: 0 var(--pad) var(--pad); overflow: auto; border: 1px solid var(--obs-hairline); border-radius: var(--radius-control);
+  background: var(--obs-surface); color: var(--obs-text); box-shadow: var(--obs-shadow-overlay);
+}
+.sources-dialog::backdrop { background: var(--obs-scrim); }
+.sources-dialog__head { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; margin-inline: calc(-1 * var(--pad)); padding: var(--ed-space-3) var(--pad); border-bottom: 1px solid var(--obs-hairline); background: var(--obs-surface); }
+.sources-dialog h2 { margin-top: var(--ed-space-5); font-size: var(--ed-h3); line-height: 1.25; }
+.sources-dialog dt { margin-top: var(--ed-space-4); padding-top: var(--ed-space-3); }
+.source-links { display: grid; border-top: 1px solid var(--obs-rule); }
+.source-links a { padding-block: var(--ed-space-3); border-bottom: 1px solid var(--obs-hairline); }
+
+/* Phones. */
+@media (max-width: 760px) {
+  .sources-dialog[open] { --pad: var(--ed-space-5); }
+  .chapters { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--ed-space-4); }
+  .chapters button { padding-block: var(--ed-space-3); }
+  .view-tools > .region-label { display: none; }
+  .transport { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .transport-copy { grid-column: 2 / -1; }
+  .transport input { grid-column: 1 / 3; }
+  .scene-controls { grid-template-columns: minmax(0, 1fr) auto; }
+  .camera-tools { grid-column: 2; }
+  .view-key { grid-column: 1 / -1; grid-row: 2; min-height: 2.9em; }
+  .section-locator { gap: var(--ed-space-2); padding: var(--ed-space-1); }
+  .locator-view { width: 58px; height: 58px; }
+  .locator-copy { font-size: var(--ed-label); white-space: nowrap; }
+  .scene-frame-caption { order: 1; flex-basis: 100%; }
+  .mineral-budget-table tr { display: flex; justify-content: space-between; gap: var(--ed-space-3); padding-block: 0; }
+  .mineral-budget-table [data-label]::before { display: inline; margin-inline-end: var(--ed-space-2); }
+}
+@media (max-width: 379px) {
+  .scene-controls { grid-template-columns: minmax(0, 1fr); }
+  .camera-tools { grid-column: 1; }
+  .view-key { grid-row: 3; }
+}
+
+/* Touch: the page scrolls until Explore; overlays clear it. */
+@media (pointer: coarse) {
+  .scene-viewport > canvas { touch-action: pan-y; }
+  .scene-viewport[data-exploring] > canvas { touch-action: none; }
+  .scene-viewport .scene-explore { display: inline-flex; }
+  :is(.fragment-guide, .section-locator) { top: calc(var(--ed-space-5) + 44px); }
+  .scene-hint { font-size: 0; }
+  .scene-hint::after { content: "Swipe to scroll · Tap Explore to rotate"; font-size: var(--ed-caption); }
+  .scene-viewport[data-exploring] .scene-hint::after { content: "Drag to rotate · Pinch to zoom · Done to scroll"; }
+}
+
+/* Render states. Explore (outside .observatory, never disabled) shows only when ready. */
+:where(.origins-study[data-render-state="ready"]) .scene-load-state { display: none; }
+:where(.origins-study[data-render-state="error"]) .scene-viewport > canvas { visibility: hidden; }
+:where(.origins-study[data-render-state="error"]) .scene-viewport :is(.scene-hint, .scene-explore) { display: none; }
+:where(.origins-study:not([data-render-state="ready"])) .scene-viewport .scene-explore { display: none; }
+/* A failed scene keeps the tool boxes (nothing moves) but not the icon buttons: their icons come with the scene module. */
+:where(.origins-study[data-render-state="error"]) .observatory .icon-button { visibility: hidden; }
+/* Forced colours paint every chapter rule in the system text colour, so the current one is heavier. */
+@media (forced-colors: active) {
+  .chapters [aria-current]::before { border-top-width: 3px; }
+}

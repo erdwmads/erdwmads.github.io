@@ -1,0 +1,159 @@
+/* @owner WP4 · @budget 5KB · @important 0 · Scene poster, night-plate scene frame and the poster-to-canvas fade */
+/* A 3D scene is a night plate: the night ground, Space colours inside in both themes (.on-night in the markup) and
+   the corner brackets that mark an illustrative model, as on its evidence tag and on model plates. A bar above the
+   canvas names the current view; the tools row below it carries the live status and the camera controls.
+   --scene-veil is the ground of the readouts that sit on the canvas. */
+.mission-scene {
+  --scene-veil: color-mix(in srgb, var(--obs-plate-night) 88%, transparent);
+  background: var(--obs-plate-night);
+}
+
+.mission-viewport::after {
+  --bracket: linear-gradient(var(--obs-text), var(--obs-text));
+  content: "";
+  position: absolute;
+  inset: 6px;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    var(--bracket) 0 0 / 8px 1px, var(--bracket) 0 0 / 1px 8px,
+    var(--bracket) 100% 0 / 8px 1px, var(--bracket) 100% 0 / 1px 8px,
+    var(--bracket) 0 100% / 8px 1px, var(--bracket) 0 100% / 1px 8px,
+    var(--bracket) 100% 100% / 8px 1px, var(--bracket) 100% 100% / 1px 8px;
+  background-repeat: no-repeat;
+}
+
+.mission-scene-bar {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--ed-space-3);
+  padding: var(--ed-space-3) var(--ed-space-4);
+  border-bottom: 1px solid var(--obs-hairline);
+  color: var(--obs-muted);
+  font-size: var(--ed-label);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.mission-scene-bar > :first-child {
+  color: var(--obs-text);
+}
+
+.mission-camera-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ed-space-2) var(--ed-space-4);
+  padding: var(--ed-space-2) var(--ed-space-4);
+  border-top: 1px solid var(--obs-hairline);
+}
+
+.mission-camera-tools > p {
+  flex: 1 1 14rem;
+  margin: 0;
+  color: var(--obs-muted);
+  font-size: var(--ed-caption);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.mission-camera-tools > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ed-space-2);
+}
+
+/* Touch mode is offered only to coarse pointers; a mouse orbits the model directly. */
+.mission-scene .mission-touch {
+  display: none;
+  padding-inline: var(--ed-space-3);
+}
+
+@media (pointer: coarse) {
+  .mission-scene .mission-touch {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 760px) {
+  .mission-scene-bar > :last-child {
+    display: none;
+  }
+
+  .mission-scene-bar,
+  .mission-camera-tools {
+    padding-inline: var(--ed-space-3);
+  }
+
+  .mission-camera-tools > div {
+    flex: 1 1 100%;
+  }
+
+  .mission-camera-tools [data-mission-action="cutaway"] {
+    flex: 1 0 100%;
+  }
+}
+
+/* The narrowest phones keep the four camera tools on one row. */
+@media (max-width: 359px) {
+  .mission-scene-bar,
+  .mission-camera-tools {
+    padding-inline: var(--ed-space-2);
+  }
+
+  .mission-camera-tools > div {
+    gap: var(--ed-space-1);
+  }
+
+  .mission-scene .mission-touch {
+    padding-inline: var(--ed-space-2);
+  }
+}
+
+/* The poster (ScenePoster.astro): a still of the scene, shown until the scene has rendered. It covers the canvas and
+   sits under the readouts and the brackets, fades out on the stage's ready state and stays out once the viewer marks
+   it done. Reduced motion keeps the fade at 120 ms. */
+.scene-poster {
+  --motion-fade: 120ms;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  transition: opacity 240ms ease-out;
+}
+
+.scene-poster > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+:where([data-ready="true"], [data-render-state="ready"]) .scene-poster,
+.scene-poster[data-scene-poster="done"] {
+  opacity: 0;
+}
+
+/* Each poster is its viewer's opening view. A link or a saved session that opens another mission, chapter or
+   planetary view goes without it, and a failed planetary scene shows its public reference image instead. */
+:where(.sample-missions:has([aria-current="step"]:not([data-mission-stage="0"]), [data-mission="osiris-rex"][aria-selected="true"])) .scene-poster,
+:where(.planetary[data-mode]:not([data-mode="orbit"]), .planetary[data-render-state="error"]) .scene-poster {
+  display: none;
+}
+
+/* While the poster shows, the loading line is a band along the foot of the plate, so the still stays in view; the
+   Origins hint waits for the scene. A failed scene keeps the full veil over the poster. */
+:where(.sample-missions:not([data-ready="error"])) .scene-poster:not([data-scene-poster="done"]) ~ .mission-loading,
+:where(.origins-study:not([data-render-state="error"])) .scene-poster:not([data-scene-poster="done"]) ~ .scene-load-state {
+  inset: auto 0 0;
+  flex-flow: row wrap;
+  padding: var(--ed-space-3) var(--ed-space-4);
+  border-top: 1px solid var(--obs-hairline);
+  background: var(--scene-veil, color-mix(in srgb, var(--obs-plate-night) 88%, transparent));
+}
+
+.scene-poster:not([data-scene-poster="done"]) ~ .scene-hint {
+  visibility: hidden;
+}

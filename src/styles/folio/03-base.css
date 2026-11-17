@@ -1,0 +1,172 @@
+/* @owner WP1 · @budget 6KB · @important 0 · Base: ground, reading veil, type scale for headings and text, links, focus, selection */
+html {
+  background: var(--obs-paper);
+  color: var(--obs-text);
+  interpolate-size: allow-keywords;
+}
+
+/* No synthesised bold or italic: the serif has a real italic at 400 only, and nothing uses weights above 600. */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  background: var(--obs-paper);
+  color: var(--obs-text);
+  font-family: var(--type-sans);
+  font-size: var(--ed-body);
+  font-weight: 400;
+  line-height: 1.6;
+  font-kerning: normal;
+  font-synthesis-weight: none;
+  font-synthesis-style: none;
+}
+
+/* The reading veil: the FX field shows through the opening view and is dimmed behind long reading. A static
+   gradient on a solid token, so text never rests on imagery. */
+:where(main) {
+  position: relative;
+  z-index: var(--z-content);
+  flex: 1 0 auto;
+  background: linear-gradient(180deg, transparent, var(--obs-reading) 20rem);
+}
+
+:where(h1, h2, h3) {
+  font-family: var(--type-serif);
+  font-weight: 500;
+  text-wrap: balance;
+}
+
+:where(h1) {
+  font-size: var(--ed-display);
+  line-height: 1.04;
+  letter-spacing: -.015em;
+}
+
+:where(h2) {
+  font-size: var(--ed-h2);
+  line-height: 1.12;
+  letter-spacing: -.01em;
+}
+
+:where(h3) {
+  font-size: var(--ed-h3);
+  line-height: 1.25;
+}
+
+:where(h4, h5, h6) {
+  font-family: var(--type-sans);
+  font-size: var(--ed-h4);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+:where(h5, h6) {
+  font-size: var(--ed-body);
+}
+
+:where(p, li, dd, figcaption) {
+  text-wrap: pretty;
+}
+
+/* Prose rhythm inside main: blocks after a sibling get one line of space, headings after a sibling a little more.
+   Components and the .folio grid set their own spacing over these zero-weight defaults. */
+:where(main) :where(* + p, * + ul, * + ol, * + dl, * + blockquote, * + pre, * + table, * + details, * + figure) {
+  margin-block-start: 1em;
+}
+
+:where(main) :where(* + h2, * + h3, * + h4) {
+  margin-block-start: 1.5em;
+}
+
+:where(main) :where(ul, ol) {
+  padding-inline-start: 1.25em;
+}
+
+:where(dt) {
+  font-weight: 600;
+}
+
+:where(strong, b) {
+  font-weight: 600;
+}
+
+:where(small) {
+  font-size: var(--ed-small);
+}
+
+:where(code, kbd, samp, pre) {
+  font-family: var(--type-mono);
+  font-size: .9em;
+}
+
+:where(s) {
+  text-decoration-thickness: 1px;
+}
+
+:where(time, data) {
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+:where(hr) {
+  height: 0;
+  margin-block: var(--ed-space-6);
+  border: 0;
+  border-top: 1px solid var(--obs-hairline);
+}
+
+/* Links: steel, a 1 px underline at 40% that turns solid and 2 px on hover. Colour and thickness only, so hover
+   never moves geometry. */
+:where(a) {
+  color: var(--obs-link);
+  text-decoration-line: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: .18em;
+  transition: text-decoration-color var(--ed-dur-1) var(--ed-ease-out), text-decoration-thickness var(--ed-dur-1) var(--ed-ease-out);
+}
+
+:where(a:hover) {
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 2px;
+}
+
+/* Focus is visible for keyboard users only: 2 px solid steel with a 3 px offset. The media box of a plate or figure
+   clips its image, so a focusable element inside it draws the outline inset, where the clip cannot cut it. */
+:focus-visible {
+  outline: 2px solid var(--obs-focus);
+  outline-offset: 3px;
+}
+
+:where(.plate__media, .figure__media) :focus-visible {
+  outline-offset: -5px;
+}
+
+::selection {
+  background: var(--obs-highlight);
+  color: var(--obs-text);
+}
+
+/* Targets of in-page links stay clear of the sticky contents bar (research-guide.js writes the offset). */
+:where(main *) {
+  scroll-margin-top: var(--research-guide-offset, 1rem);
+}
+
+/* The skip link waits above the viewport and drops in on focus, above every layer. */
+.site-skip-link {
+  position: fixed;
+  z-index: var(--z-skip);
+  top: var(--ed-space-3);
+  left: var(--ed-space-3);
+  padding: var(--ed-space-3) var(--ed-space-4);
+  border: 1px solid var(--obs-rule);
+  border-radius: var(--radius-control);
+  background: var(--obs-surface);
+  color: var(--obs-text);
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.site-skip-link:focus {
+  transform: none;
+}

@@ -1,0 +1,121 @@
+/* @owner WP1 · @budget 3KB · @important 0 · Plates (Plate.astro) and plain figures (Figure.astro) */
+/* Plate anatomy: the image on its ground in a 1 px hairline, no padding; label and caption; a muted credit; the
+   evidence line. Specimen plates use --obs-plate, night plates --obs-plate-night. Plate images are never cropped. */
+.plate,
+.figure {
+  margin-block: var(--ed-space-7);
+}
+
+.plate__media,
+.figure__media {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--obs-hairline);
+  background: var(--obs-plate);
+}
+
+.plate[data-ground="night"] > .plate__media {
+  background: var(--obs-plate-night);
+}
+
+.plate__media > :is(img, picture, video, canvas),
+.figure__media > :is(img, picture, video),
+:is(.plate__media, .figure__media) > picture > img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.plate__media img {
+  object-fit: contain;
+}
+
+/* A fixed-ratio figure (only the owner's own images) fills its box. */
+.figure__media--ratio > :is(img, picture),
+.figure__media--ratio > picture > img {
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Illustrative model: 1 x 8 px corner brackets inside the frame, as on its evidence tag. */
+.plate[data-model] > .plate__media::after {
+  --bracket: linear-gradient(var(--obs-text), var(--obs-text));
+  content: "";
+  position: absolute;
+  inset: var(--ed-space-2);
+  pointer-events: none;
+  background:
+    var(--bracket) 0 0 / 8px 1px, var(--bracket) 0 0 / 1px 8px,
+    var(--bracket) 100% 0 / 8px 1px, var(--bracket) 100% 0 / 1px 8px,
+    var(--bracket) 0 100% / 8px 1px, var(--bracket) 0 100% / 1px 8px,
+    var(--bracket) 100% 100% / 8px 1px, var(--bracket) 100% 100% / 1px 8px;
+  background-repeat: no-repeat;
+}
+
+.plate__caption,
+.figure__caption {
+  display: grid;
+  gap: var(--ed-space-2);
+  max-width: var(--measure-caption);
+  margin-block-start: var(--ed-space-3);
+  font-size: var(--ed-caption);
+  line-height: 1.45;
+}
+
+.plate__label {
+  margin-inline-end: var(--ed-space-2);
+  font-weight: 600;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.plate__credit,
+.figure__credit {
+  color: var(--obs-muted);
+  font-size: .8125rem;
+}
+
+.folio > .plate {
+  margin-block: var(--ed-space-6);
+}
+
+.folio > :is(.plate--wide, .plate--full) {
+  max-width: none;
+}
+
+/* Desktop, in a .folio grid: media in the text, wide or full columns; credit and evidence line in the notes
+   column beside the caption. */
+@media (min-width: 1200px) {
+  .folio > .plate,
+  .folio > .plate > .plate__caption {
+    display: grid;
+    grid-column: text-start / notes-end;
+    grid-template-columns: subgrid;
+    align-items: start;
+  }
+
+  .folio > .plate > .plate__media {
+    grid-column: text;
+  }
+
+  .folio > .plate--wide > .plate__media {
+    grid-column: wide;
+  }
+
+  .folio > .plate--full,
+  .folio > .plate--full > .plate__media {
+    grid-column: full;
+  }
+
+  .folio > .plate > .plate__caption {
+    max-width: none;
+  }
+
+  .folio > .plate .plate__title {
+    grid-column: text;
+    grid-row: 1 / span 2;
+  }
+
+  .folio > .plate :is(.plate__credit, .evidence-status) {
+    grid-column: notes;
+  }
+}

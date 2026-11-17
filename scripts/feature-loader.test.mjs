@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import vm from 'node:vm';
+import { read as readSource, shell as shellSource } from './lib/site-paths.mjs';
 
 const read = path => readFile(new URL(path, import.meta.url), 'utf8');
 const source = await read('../src/scripts/feature-loader.js');
@@ -60,7 +61,7 @@ test('the Origins scene starts loading from its header link before the page is o
 });
 
 test('the shell module imports the 3D features lazily, and each one mounts itself when imported late', async () => {
-  const shell = await read('../src/components/LegacyShell.astro');
+  const shell = readSource(shellSource.file);
   assert.match(shell, /import '\.\.\/scripts\/feature-loader\.js';/);
   for (const specifier of [...source.matchAll(/\['([^']+)', \(\) => import\('\.\/([^']+)'\)\]/g)].map(match => match[2])) {
     assert.equal(shell.includes(`import '../scripts/${specifier}'`), false, `${specifier} must not be imported on every page`);

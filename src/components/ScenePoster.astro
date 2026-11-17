@@ -1,0 +1,20 @@
+---
+// The still a 3D stage shows until its scene has rendered, so the night plate is never an empty box. The files are
+// captured from the real scenes by scripts/capture-scene-posters.mjs (provenance: public/assets/img/posters/). Phones
+// get the phone stage's own capture (1:1, 4:5), so the choice is by media, not by width. The poster sits on the
+// canvas and under the readouts and the loading line; components/scene.css fades it out on the stage's ready state,
+// and each viewer marks it done at its first ready ([data-scene-poster="done"]), so a later reload of the scene (a
+// mission switch, a new planetary view, Retry) never brings back a still of a different view. Lazy unless the stage
+// is above the fold.
+import path from 'node:path';
+import sharp from 'sharp';
+interface Props { name: 'missions' | 'planetary' | 'origins'; eager?: boolean }
+const {name, eager = false} = Astro.props;
+const dir = path.join(process.cwd(), 'public', 'assets', 'img', 'posters');
+const [phone, wide] = await Promise.all([640, 1600].map(async (width) => {
+  const file = `${name}-${width}.webp`;
+  const {height} = await sharp(path.join(dir, file)).metadata();
+  return {src: `/assets/img/posters/${file}`, width, height};
+}));
+---
+<picture class="scene-poster" data-scene-poster><source media="(max-width: 760px)" srcset={phone.src} width={phone.width} height={phone.height} /><img src={wide.src} width={wide.width} height={wide.height} alt="" loading={eager ? 'eager' : 'lazy'} decoding="async" /></picture>

@@ -1,0 +1,25 @@
+---
+// A plain figure for images that are not evidence (the portrait, photographs): the media (default slot), an
+// optional fixed ratio, caption and credit. Styles: src/styles/folio/components/plate.css.
+import { figureProps } from "./figure.js";
+
+interface Props {
+  caption?: string;
+  credit?: string;
+  ratio?: string;
+  id?: string;
+  class?: string;
+}
+
+const { caption, credit, aspectRatio, id } = figureProps(Astro.props);
+const { class: className } = Astro.props;
+---
+<figure class:list={["figure", className]} id={id}>
+  <div class:list={["figure__media", aspectRatio && "figure__media--ratio"]} style={aspectRatio ? `aspect-ratio: ${aspectRatio}` : undefined}><slot /></div>
+  {(caption || credit) && (
+    <figcaption class="figure__caption">
+      {caption && <span>{caption}</span>}
+      {credit && <span class="figure__credit">{credit}</span>}
+    </figcaption>
+  )}
+</figure>

@@ -93,7 +93,7 @@ try{
  const touch=mobile.locator('[data-mission-action="touch"]');await touch.click();
  assert.equal(await mv.getAttribute('data-touch-active'),'');
  await mv.press('Escape');assert.equal(await touch.getAttribute('aria-pressed'),'false');
- assert.equal(await touch.getAttribute('aria-label'),'Enable model rotation and pinch zoom');
+ assert.equal(await touch.getAttribute('aria-label'),'Explore: enable model rotation and pinch zoom');
  await mobile.locator('[data-mission-chapters] [data-mission-stage="5"]').click();await mobile.locator('[data-mission-progress]').fill('500');await mv.scrollIntoViewIfNeeded();
  await mobile.locator('.mission-scene').screenshot({path:process.env.TEMP+'/mission-mobile.png'});
  console.log('PASS play/pause/scrub, auto chapters, keyboard mission tabs, offscreen pause, reduced motion, sample destination, navigation cleanup, rapid switches, BFCache restore, 4 widths x 2 themes, both-theme text contrast and mobile touch');

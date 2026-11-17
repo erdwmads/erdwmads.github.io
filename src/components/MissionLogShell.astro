@@ -1,35 +1,38 @@
-<section id="mission-index" class="section mission-index-section compact-mission-index">
-  <div class="section-label" data-i18n-key="missionIndexLabel">Mission Index</div>
-  <div class="mission-index-panel">
-    <div class="mission-index-head">
-      <div>
-        <p class="eyebrow" data-i18n-key="quickJump">Quick Jump</p>
-        <h2 data-i18n-key="navigatorTitle">Mission Log Navigator</h2>
+---
+// The bound edition of the protected archive: the Mission Index ledger beside the Mission Log entry at 1200 px and
+// wider, a closed disclosure above the entry below that. mission-index.js fills both after unlock: it rewrites the
+// [data-i18n-key] copy (the server copy here is the same text), writes the record count into the summary and keeps
+// the disclosure open at 1200 px and wider. The server copy holds no archive data, so the count stays generic until
+// unlock. The list keeps its labelled-region attributes byte for byte (mission-layout.test).
+// Styles: src/styles/folio/components/mission-log.css.
+---
+<div class="archive-edition">
+  <section id="mission-index" class="mission-index-section" aria-labelledby="mission-index-title">
+    <details class="mission-ledger">
+      <summary class="mission-ledger__summary"><span data-i18n-key="missionIndexLabel">Mission Index</span> <span aria-hidden="true">·</span> <span class="mission-ledger__count" data-i18n-key="missionIndexCount">records</span></summary>
+      <div class="mission-index-panel">
+        <p class="kicker mission-index-kicker" data-i18n-key="missionIndexLabel">Mission Index</p>
+        <h2 id="mission-index-title" data-i18n-key="navigatorTitle">Mission Log Navigator</h2>
+        <p class="mission-index-mode" data-i18n-key="earliestFirst">Earliest first</p>
+        <div class="mission-jump-grid" data-mission-index-list role="region" aria-label="Experiment timeline" tabindex="0"></div>
       </div>
-      <div class="mission-index-tools">
-        <span class="mission-index-mode" data-i18n-key="earliestFirst">Earliest first</span>
-      </div>
-    </div>
-    <div class="mission-jump-grid compact-mission-jump-grid" data-mission-index-list role="region" aria-label="Experiment timeline" tabindex="0"></div>
-  </div>
-</section>
+    </details>
+  </section>
 
-<section class="section two-col research-notes-section" id="mission-log">
-  <div class="section-label">
-    <span data-i18n-key="missionLogLabel">Mission Log</span>
-    <span class="section-label-note" data-i18n-key="latestFirst">Latest first</span>
-  </div>
-  <div
-    class="research-note-list mission-log-list"
-    data-mission-log-list
-    data-mission-log-lazy
-    data-mission-auto-start="false"
-  >
-    <article class="research-note-card mission-log-entry mission-log-entry-placeholder">
-      <div class="research-note-date">LOCKED</div>
-      <div class="research-note-body">
-        <p>Enter the graduation research password to load the Mission Log.</p>
-      </div>
-    </article>
-  </div>
-</section>
+  <section id="mission-log" class="research-notes-section" aria-labelledby="mission-log-title">
+    <p class="kicker mission-log-label"><span id="mission-log-title" data-i18n-key="missionLogLabel">Mission Log</span> <span aria-hidden="true">·</span> <span data-i18n-key="latestFirst">Latest first</span></p>
+    <div
+      class="research-note-list mission-log-list"
+      data-mission-log-list
+      data-mission-log-lazy
+      data-mission-auto-start="false"
+    >
+      <article class="research-note-card mission-log-entry mission-log-entry-placeholder">
+        <div class="research-note-date">LOCKED</div>
+        <div class="research-note-body">
+          <p>Enter the graduation research password to load the Mission Log.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+</div>

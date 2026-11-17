@@ -170,17 +170,31 @@ export const methodsSummary = ['In progress', 'Next', 'Planned']
 /** Methods in pathway order without status, for compact labels. */
 export const methodsShort = 'SEM–EDS / EPMA · single-grain XRD · FIB–TEM';
 
-/** What each material can and cannot show. Ryugu and Bennu are comparison materials only. */
+/**
+ * What each material can and cannot show. Ryugu and Bennu are comparison materials only.
+ *
+ * `designation` is the catalogue line under each column head on Research (sources consulted on 2026-11-07):
+ * - Orgueil: the Meteoritical Bulletin Database record (https://www.lpi.usra.edu/meteor/metbull.php?code=18026).
+ *   A direct fetch of that page returned HTTP 403. The same facts (CI1; France; 14 May 1864) are recorded from the
+ *   Muséum national d'Histoire naturelle's page (https://www.mnhn.fr/fr/meteorite-d-orgueil), cited in
+ *   public/assets/img/research-scale/PROVENANCE.md, and agree with the Bulletin's search-engine index. Re-check them
+ *   on the Bulletin record itself. The day of the fall is left out until then, and the owner confirms the wording.
+ * - Ryugu and Bennu: the JPL Small-Body Database (https://ssd-api.jpl.nasa.gov/sbdb.api?sstr=162173 and
+ *   https://ssd-api.jpl.nasa.gov/sbdb.api?sstr=101955) gives "162173 Ryugu (1999 JU3)" and "101955 Bennu
+ *   (1999 RQ36)": the Minor Planet Center numbers with the names.
+ */
 export const comparisonMaterials = Object.freeze({
   orgueil: Object.freeze({
     label: 'Research material',
     title: 'Orgueil CI1 chondrite',
+    designation: 'CI1 · observed fall, 1864 · France',
     canShow: 'Textures, chemistry and, with the planned structural work, the crystal structure of Ca–Mg carbonate candidates within an aqueously altered, clay-rich CI1 matrix.',
     cannotShow: 'Its parent body is unknown. Orgueil fell in 1864 and has been on Earth since, so terrestrial alteration has to be separated from parent-body features.'
   }),
   returned: Object.freeze({
     label: 'Comparison materials',
     title: 'Ryugu and Bennu returned samples',
+    designation: '(162173) Ryugu · (101955) Bennu',
     canShow: 'Material collected directly from two known asteroids and curated to limit terrestrial contamination. Published studies report aqueously altered material with carbonates, an independent reference for the mineral record of water.',
     cannotShow: 'Similar minerals do not establish that Orgueil came from Ryugu, Bennu or a related body. On this site they appear through published mission data and microscopy.'
   })

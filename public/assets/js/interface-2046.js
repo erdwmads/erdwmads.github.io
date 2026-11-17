@@ -184,8 +184,7 @@
     const nearBottom = Math.ceil(scrollTop + viewportHeight) >= scrollHeight - 2;
     const pct = progress.hidden ? 0 : nearBottom ? 100 : Math.min(100, Math.max(0, (scrollTop / max) * 100));
 
-    bar.style.width = '100%';
-    bar.style.transform = `scaleX(${pct / 100})`;
+    // The spine tick is drawn by CSS from this one value (components/interface-2046.css).
     bar.style.setProperty('--scroll-progress', String(pct / 100));
   };
 
@@ -315,7 +314,7 @@
     startPlanetAnimation();
   };
 
-  // The bar starts empty (scaleX(var(--scroll-progress, 0))); measure the page in the next frame instead of forcing a layout here.
+  // The tick starts at the top (var(--scroll-progress, 0)); measure the page in the next frame instead of forcing a layout here.
   requestAnimationFrame(updateProgress);
   syncOrbitalSystem();
   restoreInterfaceLayers = () => {

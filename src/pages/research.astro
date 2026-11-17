@@ -1,82 +1,105 @@
 ---
-import LegacyShell from "../components/LegacyShell.astro";
+import SiteShell from "../components/SiteShell.astro";
+import Masthead from "../components/Masthead.astro";
+import Section from "../components/Section.astro";
+import Marker from "../components/Marker.astro";
 import ResearchGuide from "../components/ResearchGuide.astro";
 import AnalyticalPathway from "../components/AnalyticalPathway.astro";
 import EvidenceAtlasData from "../components/EvidenceAtlasData.astro";
+import { evidenceKinds } from "../components/evidence-status.js";
 import { getPageScripts } from "../data/site";
 import { inlineScripts } from "../lib/inline-scripts";
 import { question, subQuestions, comparisonMaterials } from "../data/project.mjs";
 
 const scriptHtml = getPageScripts("research");
-const comparison = [comparisonMaterials.orgueil, comparisonMaterials.returned];
+const { orgueil, returned } = comparisonMaterials;
+const materials = [orgueil, returned];
+const rows: [string, "canShow" | "cannotShow"][] = [["What it can show", "canShow"], ["What it cannot show", "cannotShow"]];
+// The one key to the site's calibration marks: circles for a pathway step's status, squares for the kind of evidence
+// beside a figure or scene, corner brackets for an illustrative model. Every mark on the site also carries its word.
+const marks = [
+  { meaning: "In hand now", status: ["in-progress", "In progress"], evidence: "measured" },
+  { meaning: "Established elsewhere or queued", status: ["next", "Next"], evidence: "literature" },
+  { meaning: "Not yet done", status: ["planned", "Planned"], evidence: "planned" },
+  { meaning: "Inference", status: ["interpretation", "Interpretation"], evidence: "interpretation" },
+  { meaning: "Model", evidence: "model" }
+] as const;
 ---
 
-<LegacyShell title='Research | I. Mads Lieu' description='Astromineralogy research on Ca–Mg carbonates reported as dolomite in Orgueil CI1: the question, the Analytical Pathway and the Ryugu and Bennu comparison.' current='research' mainClass='main' path="research.html" scriptHtml={scriptHtml}>
+<SiteShell title='Research | I. Mads Lieu' description='Astromineralogy research on Ca–Mg carbonates reported as dolomite in Orgueil CI1: the question, the Analytical Pathway and the Ryugu and Bennu comparison.' current='research' mainClass='main' path="research.html" scriptHtml={scriptHtml}>
   {/* Forwards shared views and section links made before the September 2026 move to ryugu-bennu.html.
       data-page-script: soft navigation runs it again, so an in-site link to an old section forwards too. */}
   <script is:inline data-page-script set:html={inlineScripts.researchForward}></script>
-  <section class="research-intro">
-    <p class="eyebrow">Research</p>
-    <h1>Astromineralogy</h1>
-    <p class="lead">
-      I study the mineral record preserved in primitive Solar System materials, with a focus on Ca–Mg carbonates reported as dolomite in the Orgueil CI1 chondrite.
-    </p>
-  </section>
-  <ResearchGuide />
+  <div class="page">
+    <Masthead kicker="Research" title="Astromineralogy">I study the mineral record preserved in primitive Solar System materials, with a focus on Ca–Mg carbonates reported as dolomite in the Orgueil CI1 chondrite.</Masthead>
+    <ResearchGuide />
 
-  <section class="research-question" aria-labelledby="research-focus-title">
-    <div class="research-question-copy">
-      <p class="eyebrow">01 / The research question</p>
-      <h2 id="research-focus-title">{question}</h2>
-      <p>My graduation research connects mineral textures, chemistry and crystal structure to investigate aqueous alteration and material evolution within a primitive parent body.</p>
+    <Section id="research-focus-title" number="01" kicker="The research question" title={question} class="research-question">
+      <p class="research-question__context">My graduation research connects mineral textures, chemistry and crystal structure to investigate aqueous alteration and material evolution within a primitive parent body.</p>
+      <aside class="research-scope in-notes" aria-label="Project scope">
+        <p class="kicker">Project scope</p>
+        <dl>
+          <div><dt class="kicker">Research target</dt><dd>Orgueil <span>CI1 chondrite</span></dd></div>
+          <div><dt class="kicker">Mineral record</dt><dd>Ca–Mg carbonate <span>Reported as dolomite</span></dd></div>
+          <div><dt class="kicker">Comparison materials</dt><dd>Ryugu &amp; Bennu <span>Returned asteroid samples</span></dd></div>
+        </dl>
+        <p>These returned samples provide independent comparisons for the mineral record of water. They do not establish Orgueil’s parent body.</p>
+      </aside>
       <ol class="research-subquestions" aria-label="Questions within the research question">
-        {subQuestions.map((item) => (
-          <li><h3>{item.title}</h3><p>{item.text}</p></li>
+        {subQuestions.map((item, index) => (
+          <li><span class="research-subquestions__key tabular">Q{index + 1}</span><h3>{item.title}</h3><p>{item.text}</p></li>
         ))}
       </ol>
-      <div class="research-record-links"><a class="button" href="research-log.html">Research Log</a><button class="button atlas-launch" type="button" data-public-atlas>Research atlas</button></div>
+      <div class="research-record-links cluster"><a class="button" href="research-log.html">Research Log</a><button class="button secondary atlas-launch" type="button" data-public-atlas><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98m-.01-10.98-6.82 3.98"/></svg>Research atlas</button></div>
       <p class="research-record-note">Detailed experimental records are in the protected Research Log archive. The research atlas is a short quick view of the material, the questions, the methods and the public sources.</p>
-    </div>
-    <aside class="research-context-card" aria-label="Project scope">
-      <p class="research-context-label">Project scope</p>
-      <dl>
-        <div><dt>Research target</dt><dd>Orgueil <span>CI1 chondrite</span></dd></div>
-        <div><dt>Mineral record</dt><dd>Ca–Mg carbonate <span>Reported as dolomite</span></dd></div>
-        <div><dt>Comparison materials</dt><dd>Ryugu &amp; Bennu <span>Returned asteroid samples</span></dd></div>
-      </dl>
-      <p>These returned samples provide independent comparisons for the mineral record of water. They do not establish Orgueil’s parent body.</p>
-    </aside>
-  </section>
+    </Section>
 
-  <section class="research-methods research-pathway" aria-labelledby="research-methods-title">
-    <header class="research-methods-heading">
-      <p class="eyebrow">02 / The Analytical Pathway</p>
-      <h2 id="research-methods-title">From observation to interpretation</h2>
+    <Section id="research-methods-title" number="02" kicker="The Analytical Pathway" title="From observation to interpretation" class="research-pathway">
       <p>The project connects texture, chemistry and crystal structure. Each step contributes a different part of the mineral record; open a step to see what it can answer and what it cannot establish.</p>
-    </header>
-    <AnalyticalPathway variant="full" />
-    <p class="research-methods-reading">The Analytical Pathway guides the investigation; the plan is still under discussion, and I update the statuses as it develops. <a href="paper-shelf.html?filter=methods">Read the methodological references →</a></p>
-  </section>
+      <AnalyticalPathway variant="full" />
+      <div class="marks-key" role="group" aria-labelledby="marks-key-title">
+        <p class="kicker" id="marks-key-title">How to read the marks</p>
+        <p class="marks-key__note">Circles show the status of a pathway step; squares show the kind of evidence beside a figure or scene.</p>
+        <dl>
+          {marks.map((row) => (
+            <div>
+              <dt class="kicker">{row.meaning}</dt>
+              <dd class="cluster">
+                {"status" in row && <span class="marks-key__mark"><Marker kind="status" value={row.status[0]} /><span class="visually-hidden">Status: </span>{row.status[1]}</span>}
+                <span class="marks-key__mark"><Marker kind="evidence" value={row.evidence} /><span class="visually-hidden">Evidence: </span>{evidenceKinds[row.evidence]}</span>
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+      <p class="research-methods-reading">The Analytical Pathway guides the investigation; the plan is still under discussion, and I update the statuses as it develops. <a href="paper-shelf.html?filter=methods">Read the methodological references →</a></p>
+    </Section>
 
-  <section class="research-methods research-comparison" aria-labelledby="comparison-title">
-    <header class="research-methods-heading">
-      <p class="eyebrow">03 / Comparison materials</p>
-      <h2 id="comparison-title">Orgueil vs returned samples</h2>
-      <p>Orgueil is the research material. Samples returned from asteroids Ryugu and Bennu are comparison materials for the mineral record of water; they do not establish Orgueil’s parent body.</p>
-    </header>
-    <div class="comparison-card">
-      {comparison.map((material) => (
-        <article class="comparison-column">
-          <p class="comparison-label">{material.label}</p>
-          <h3>{material.title}</h3>
-          <dl>
-            <div><dt>What it can show</dt><dd>{material.canShow}</dd></div>
-            <div><dt>What it cannot show</dt><dd>{material.cannotShow}</dd></div>
-          </dl>
-        </article>
-      ))}
-    </div>
-    <p class="research-methods-reading">The sample-return missions, orbital context and published microscopy have their own page. <a href="ryugu-bennu.html">Explore Ryugu &amp; Bennu →</a></p>
-  </section>
+    <Section id="comparison-title" number="03" kicker="Comparison materials" title="Orgueil vs returned samples" class="research-comparison">
+      <table class="data-table comparison-table span-full">
+        <caption>What each material can and cannot show</caption>
+        <thead>
+          <tr>
+            <td></td>
+            {materials.map((material) => (
+              <th scope="col"><span class="kicker">{material.label}</span><span class="comparison-table__title">{material.title}</span><span class="comparison-table__designation">{material.designation}</span></th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(([label, key]) => (
+            <tr>
+              <th scope="row"><span class="kicker">{label}</span></th>
+              {materials.map((material) => <td><span class="comparison-table__cell-label kicker" aria-hidden="true">{material.title}</span>{material[key]}</td>)}
+            </tr>
+          ))}
+        </tbody>
+        <tfoot>
+          <tr><td colspan="3"><p>Orgueil is the research material. Samples returned from asteroids Ryugu and Bennu are comparison materials for the mineral record of water; they do not establish Orgueil’s parent body.</p></td></tr>
+        </tfoot>
+      </table>
+      <p class="research-methods-reading">The sample-return missions, orbital context and published microscopy have their own page. <a href="ryugu-bennu.html">Explore Ryugu &amp; Bennu →</a></p>
+    </Section>
+  </div>
   <EvidenceAtlasData />
-</LegacyShell>
+</SiteShell>

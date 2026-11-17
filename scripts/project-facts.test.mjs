@@ -96,6 +96,18 @@ test("Ryugu and Bennu stay comparison materials", () => {
   assert.match(returned.cannotShow, /do not establish that Orgueil came from Ryugu, Bennu/);
 });
 
+test("the comparison designations are catalogue lines with their sources cited", () => {
+  const { orgueil, returned } = project.comparisonMaterials;
+  // Meteoritical Bulletin Database: official name, observed fall in 1864, France, CI1 (the record gives the year only).
+  assert.equal(orgueil.designation, "CI1 · observed fall, 1864 · France");
+  // JPL Small-Body Database: the Minor Planet Center numbers 162173 and 101955.
+  assert.equal(returned.designation, "(162173) Ryugu · (101955) Bennu");
+  const source = read("src/data/project.mjs");
+  for (const citation of ["lpi.usra.edu/meteor/metbull.php?code=18026", "ssd-api.jpl.nasa.gov/sbdb.api?sstr=162173", "ssd-api.jpl.nasa.gov/sbdb.api?sstr=101955"]) {
+    assert.ok(source.includes(citation), `project.mjs must cite ${citation} beside the designations`);
+  }
+});
+
 test("pages read the project facts instead of carrying copies", () => {
   for (const fragment of ["research-main.html", "research-methods.html", "research-log-main.html", "research-graduation-hero.html", "research-graduation-project-info.html", "research-graduation-after-log.html"]) {
     assert.equal(fs.existsSync(path.join(root, "src", "legacy", fragment)), false, `src/legacy/${fragment} was replaced by project.mjs`);

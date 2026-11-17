@@ -1,0 +1,155 @@
+/* @owner WP4 · @budget 4KB · @important 0 · Image inspector geometry and states */
+.inspector-topline {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--ed-space-1) var(--ed-space-4);
+  padding-block-end: var(--ed-space-2);
+  color: var(--obs-muted);
+  font-size: var(--ed-caption);
+}
+
+.inspector-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 15rem;
+  gap: var(--ed-space-5) var(--grid-gap);
+}
+
+.inspector-stage {
+  position: relative;
+  aspect-ratio: 1536 / 1120;
+  overflow: hidden;
+  border: 1px solid var(--obs-hairline);
+  background: var(--obs-plate);
+  touch-action: pan-y;
+}
+
+.inspector-stage img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+}
+
+[data-inspector-ready] .inspector-stage img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  max-width: none;
+  pointer-events: none;
+}
+
+[data-zoomed="true"] .inspector-stage {
+  cursor: grab;
+}
+
+.inspector-stage[data-dragging] {
+  cursor: grabbing;
+}
+
+.inspector-stage[data-moving] {
+  touch-action: none;
+}
+
+.inspector-controls {
+  --reserve-display: grid;
+  display: grid;
+  align-content: start;
+  gap: var(--ed-space-3);
+}
+
+.inspector-zoom-label,
+.inspector-note,
+.inspector-status,
+.inspector-regions span {
+  color: var(--obs-muted);
+  font-size: var(--ed-caption);
+}
+
+.inspector-zoom-label output {
+  display: inline;
+  margin-inline-start: var(--ed-space-2);
+  color: var(--obs-text);
+  font: 600 var(--ed-small) / 1.5 var(--type-sans);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.inspector-controls input {
+  min-height: 44px;
+  margin: 0;
+}
+
+.inspector-regions {
+  display: grid;
+  border-top: 1px solid var(--obs-hairline);
+}
+
+.inspector-regions button {
+  display: flex;
+  align-items: center;
+  gap: var(--ed-space-3);
+  min-height: 44px;
+  padding: 0 var(--ed-space-3);
+  border: 0;
+  border-bottom: 1px solid var(--obs-hairline);
+  border-left: 2px solid transparent;
+  background: none;
+  font-size: var(--ed-small);
+}
+
+.inspector-regions button:hover {
+  background: var(--obs-surface-hover);
+}
+
+.inspector-regions [aria-pressed="true"],
+.inspector-touch[aria-pressed="true"] {
+  border-left-color: var(--obs-text);
+  background: var(--obs-highlight);
+}
+
+.inspector-status {
+  margin-block-start: var(--ed-space-2);
+}
+
+@media (min-width: 1200px) {
+  .inspector-layout {
+    grid-template-columns: minmax(0, 1fr) calc((100% - 11 * var(--grid-gap)) / 4 + 2 * var(--grid-gap));
+  }
+
+  .inspector-topline,
+  .inspector-status {
+    margin-inline-end: calc((100% - 11 * var(--grid-gap)) / 4 + 3 * var(--grid-gap));
+  }
+}
+
+@media (max-width: 960px) {
+  .inspector-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .inspector-regions {
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--ed-space-3);
+  }
+
+  .inspector-regions > :first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media print {
+  .inspector-layout {
+    display: block;
+  }
+
+  .inspector-controls {
+    display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .inspector-regions :not([aria-pressed="true"]) {
+    border-left-color: Canvas;
+  }
+}

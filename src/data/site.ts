@@ -2,7 +2,7 @@ import { contentVersion } from "../lib/script-version";
 
 export const brand = {
   name: "I. Mads Lieu",
-  tagline: "Astromineralogy &bull; Planetology &bull; Meteoritics",
+  tagline: "Astromineralogy&nbsp;· Planetology&nbsp;· Meteoritics",
   homeHref: "index.html"
 } as const;
 
@@ -83,7 +83,7 @@ export const homeStructuredData = {
   ]
 } as const;
 
-// No Home entry: the brand links home. Research pages come first, then personal pages; LegacyShell
+// No Home entry: the brand links home. Research pages come first, then personal pages; SiteHeader
 // draws a quiet divider where the group changes.
 export const navItems = [
   { href: "research.html", label: "Research", key: "research", group: "research" },
@@ -114,40 +114,64 @@ export const contentPages = [
   { href: "contact.html", title: "Contact", key: "contact" }
 ] as const;
 
-// Cascade order of the public stylesheets in public/assets/css/. Pages link one bundle,
-// assets/css/site.css, generated at build time from these files in this order
-// (src/pages/assets/css/site.css.ts). Edit the source files, never the bundle.
+// The stylesheet manifest: every file in src/styles/folio, in cascade order, as paths from the project root (spec
+// §2.1). Pages link one bundle, assets/css/site.css, built from these files in this order with whitespace-only
+// minification (src/lib/stylesheet-bundle.ts), so rule order stays exactly as written. The build fails if a listed
+// file is missing or a file in src/styles/folio is not listed. Edit the source files, never the bundle; no component
+// imports CSS, because Astro would emit it as a second render-blocking sheet. Layer order and naming:
+// src/styles/folio/README.md.
 export const stylesheets = [
-  "style.css",
-  "tokens.css",
-  "shell-evolution.css",
-  "research-log-evolution.css",
-  "observatory.css",
-  "observatory-experience.css",
-  "mineral-interactions.css",
-  "research-scale.css",
-  "planetary-explorer.css",
-  "typography.css",
-  "site-refinement.css",
-  "review-refinement.css",
-  "research-reading.css",
-  "experimental-folio.css",
-  "image-inspector.css",
-  "quiet-observatory.css",
-  "components.css",
-  "research-hub.css",
-  "evidence-status.css",
-  "paper-shelf.css",
-  "home-shell.css"
-] as const;
-
-// Component stylesheets that live next to their code in src/ (paths from the project root). The bundle appends
-// them after `stylesheets`, at the end of the cascade and in this order, so pages still make one stylesheet
-// request. No component imports CSS: Astro would emit it as a second render-blocking sheet.
-export const componentStylesheets = [
-  "src/styles/arrival.css",
-  "src/scripts/origins-study/style.css",
-  "src/scripts/sample-missions/style.css"
+  "src/styles/folio/00-tokens.css",
+  "src/styles/folio/01-fonts.css",
+  "src/styles/folio/02-reset.css",
+  "src/styles/folio/03-base.css",
+  "src/styles/folio/04-layout.css",
+  "src/styles/folio/05-utilities.css",
+  "src/styles/folio/components/button.css",
+  "src/styles/folio/components/marker.css",
+  "src/styles/folio/components/evidence-status.css",
+  "src/styles/folio/components/masthead.css",
+  "src/styles/folio/components/plate.css",
+  "src/styles/folio/components/ledger.css",
+  "src/styles/folio/components/table.css",
+  "src/styles/folio/components/disclosure.css",
+  "src/styles/folio/components/form.css",
+  "src/styles/folio/components/header.css",
+  "src/styles/folio/components/footer.css",
+  "src/styles/folio/components/continue-reading.css",
+  "src/styles/folio/components/fx-dock.css",
+  "src/styles/folio/components/ambient.css",
+  "src/styles/folio/components/interface-2046.css",
+  "src/styles/folio/components/mineral-fx.css",
+  "src/styles/folio/components/arrival.css",
+  "src/styles/folio/components/research-guide.css",
+  "src/styles/folio/components/pathway.css",
+  "src/styles/folio/components/comparison.css",
+  "src/styles/folio/components/image-inspector.css",
+  "src/styles/folio/components/research-scale.css",
+  "src/styles/folio/components/scene.css",
+  "src/styles/folio/components/planetary.css",
+  "src/styles/folio/components/sample-missions.css",
+  "src/styles/folio/components/origins.css",
+  "src/styles/folio/components/presentation.css",
+  "src/styles/folio/components/lightbox.css",
+  "src/styles/folio/components/atlas.css",
+  "src/styles/folio/components/mission-log.css",
+  "src/styles/folio/pages/home.css",
+  "src/styles/folio/pages/research.css",
+  "src/styles/folio/pages/research-log.css",
+  "src/styles/folio/pages/ryugu-bennu.css",
+  "src/styles/folio/pages/origins.css",
+  "src/styles/folio/pages/paper-shelf.css",
+  "src/styles/folio/pages/photography.css",
+  "src/styles/folio/pages/cv.css",
+  "src/styles/folio/pages/contact.css",
+  "src/styles/folio/pages/not-found.css",
+  "src/styles/folio/pages/graduation.css",
+  "src/styles/folio/states/overlays.css",
+  "src/styles/folio/states/motion.css",
+  "src/styles/folio/states/contrast.css",
+  "src/styles/folio/states/print.css"
 ] as const;
 
 // The second item is the overarching, long-term question, labelled so it is not read as the thesis question.

@@ -2,6 +2,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
+import { cssRules } from './lib/css-rules.mjs';
+import { readBundleSource } from './lib/read-bundle-source.mjs';
+import { rule } from './style-contract/matchers.mjs';
 
 const source = fs.readFileSync(new URL('../public/assets/js/observatory-interactions.js', import.meta.url), 'utf8');
 const presentation = source.slice(source.indexOf("  const dialog = document.createElement('dialog');"), source.indexOf('  function enhancePage()'));
@@ -134,9 +137,10 @@ test('the crossed-out camera is announced and Camera is a section heading', () =
   const struck = '<s class="del">Hasselblad X2D</s><span class="visually-hidden"> (crossed out)</span>';
   assert.equal(gallery.split(struck).length - 1, 2);
   assert.doesNotMatch(gallery, /<span class="del">/);
-  assert.match(gallery, /<h1>Photography<\/h1>[\s\S]*<h2 class="section-label">Camera<\/h2>[\s\S]*<h3>Current setup<\/h3>/);
-  const refinement = fs.readFileSync(new URL('../public/assets/css/site-refinement.css', import.meta.url), 'utf8');
-  assert.match(refinement, /\.visually-hidden \{[^}]*position:absolute[^}]*clip-path:inset\(50%\)[^}]*white-space:nowrap/);
+  // The masthead's h1, then Camera as a Section heading (h2) with the setup as its h3, set as a kicker (as on Contact).
+  assert.match(gallery, /<Masthead kicker="Photography" title="Photography">[\s\S]*<Section id="camera-title" title="Camera"[^>]*>\s*<h3><span class="kicker">Current setup<\/span><\/h3>/);
+  const bundle = readBundleSource();
+  assert.ok(rule('.visually-hidden', 'position: absolute', 'clip-path: inset(50%)', 'white-space: nowrap').test(bundle, cssRules(bundle)), 'the bundle hides .visually-hidden text from sight but not from assistive technology');
 });
 
 test('a late error cannot replace the current loading or loaded state', () => {

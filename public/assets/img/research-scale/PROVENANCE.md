@@ -83,3 +83,21 @@ are used under NASA media guidelines, not blanket-claimed to have a CC license.
 - bennu-whole.png (505729 bytes): `896d32258c1112f4e7ab3e09b55e18210a5118e6f73a912916fa4bf50b417a6b`
 - bennu-sample.jpg (278425 bytes): `ecc44d2409c747de88e6c2404cb5b3098dd4555087e20815de29d566c1acf32c`
 - bennu-microstructure.jpg (334336 bytes): `01e170deb173375af65d7070ed2c64a6fe9b1b1d6a1b068e9f3b6e12c7de3f0d`
+
+## bennu-whole.webp (display derivative)
+
+- Derived from bennu-whole.png above: the same 1024 x 968 frame, re-encoded as WebP (quality 82) for delivery.
+  No crop, resize, colour change or enhancement.
+- 166770 bytes, SHA-256: `60ff523ecb248a3d35023769bd9dcd11284dc97fba8364e83a317fde2a59d201`
+- Used as Plate II on the Ryugu & Bennu page and as the planetary explorer's error fallback.
+
+## Plates on the Ryugu & Bennu page (2026-11)
+
+- Plate I: ryugu-jaxa.jpg, shown whole at its own 1:1 ratio. Caption "(162173) Ryugu · Hayabusa2 ONC-T,
+  26 June 2018" (the image date recorded above); credit "Image: JAXA, University of Tokyo and collaborators".
+- Plate II: bennu-whole.webp, shown whole at its own 1024:968 ratio. Caption "(101955) Bennu · OSIRIS-REx PolyCam
+  mosaic, 2 December 2018" (the date of the 12 PolyCam images, above); credit "Image: NASA/Goddard/University of
+  Arizona".
+- Both are labelled Literature: published mission images of comparison bodies, not the site author's samples.
+- Plate III: bennu-microstructure.jpg in the image inspector. At 1x the stage keeps the figure's own ratio, so the
+  whole figure and its scale bars show; no hint, control or annotation is laid over it.

@@ -1,0 +1,191 @@
+/* @owner WP3 · @budget 5KB · @important 0 · Analytical Pathway, full and compact, with rails and leaders, and its key */
+/* A page's --hang sets the title line. Phones: chips under titles. */
+.analytical-pathway {
+  padding: 0;
+  border-top: 1px solid var(--obs-rule);
+  list-style: none;
+}
+
+.folio > .analytical-pathway {
+  max-width: calc(var(--measure-body) + var(--hang, 0px));
+}
+
+.pathway-item {
+  display: grid;
+  grid-template-columns: var(--hang, 2.5rem) minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--ed-space-2) var(--ed-space-3);
+  padding-block: var(--ed-space-5);
+  border-bottom: 1px solid var(--obs-hairline);
+}
+
+.pathway-item-head {
+  display: contents;
+}
+
+.research-step-number {
+  grid-area: 1 / 1;
+  color: var(--obs-muted);
+  font: 1.25rem var(--type-serif);
+}
+
+.pathway-item > :is(h3, p, details) {
+  grid-column: 2 / -1;
+  margin: 0;
+}
+
+.analytical-pathway h3 {
+  grid-area: 1 / 2;
+  font-size: var(--ed-lead);
+}
+
+.pathway-chip {
+  grid-column: 2;
+  justify-self: start;
+}
+
+.analytical-pathway--full > li::before {
+  content: "";
+  grid-area: 2 / 1 / span 3;
+  align-self: stretch;
+  margin: 0 0 calc(-1 * var(--ed-space-5)) .6875rem;
+  border-left: 1px solid var(--obs-rule);
+}
+
+.pathway-item[data-status="next"]::before {
+  border-color: var(--obs-control-border);
+}
+
+.pathway-item:is([data-status="planned"], [data-status="interpretation"])::before {
+  border-left: 1px dashed var(--obs-control-border);
+}
+
+.analytical-pathway--full > [data-status="interpretation"] {
+  margin-top: var(--ed-space-6);
+}
+
+.pathway-detail > summary {
+  max-width: var(--measure-body);
+  color: var(--obs-text);
+}
+
+.pathway-detail dl {
+  display: grid;
+  gap: var(--ed-space-4) var(--ed-space-5);
+  padding-top: var(--ed-space-3);
+  border-top: 1px solid var(--obs-hairline);
+  font-size: var(--ed-small);
+}
+
+.pathway-detail dd {
+  margin: var(--ed-space-1) 0 0;
+}
+
+@media (min-width: 761px) {
+  .analytical-pathway--full > li {
+    grid-template-columns: var(--hang, 2.5rem) minmax(0, 1fr) auto;
+  }
+
+  .analytical-pathway--full .pathway-chip {
+    grid-area: 1 / 3;
+  }
+
+  .analytical-pathway--full > li::before {
+    grid-row: 2 / span 2;
+  }
+
+  .pathway-detail dl {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .analytical-pathway--compact > li {
+    grid-template-columns: var(--hang, 2.5rem) minmax(0, max-content) minmax(1.5rem, 1fr) auto;
+  }
+
+  .analytical-pathway--compact > li::after {
+    content: "";
+    grid-area: 1 / 3;
+    border-bottom: 1px dotted var(--obs-control-border);
+  }
+
+  .analytical-pathway--compact .pathway-chip {
+    grid-area: 1 / 4;
+  }
+
+  .marks-key dl > div {
+    display: grid;
+    grid-template-columns: 15rem 1fr;
+    align-items: baseline;
+    column-gap: var(--ed-space-5);
+  }
+}
+
+.analytical-pathway--compact > li {
+  padding-block: var(--ed-space-3);
+}
+
+.analytical-pathway--compact h3 {
+  font-size: var(--ed-h4);
+}
+
+@media (min-width: 1200px) {
+  .folio > .analytical-pathway {
+    --hang: calc((100% + var(--grid-gap)) / 4 - var(--ed-space-3));
+    grid-column: margin-start / text-end;
+    max-width: none;
+  }
+
+  .folio > .analytical-pathway--full,
+  .folio > .analytical-pathway--full > li {
+    display: grid;
+    grid-column: full;
+    grid-template-columns: subgrid;
+    column-gap: normal;
+  }
+
+  .folio > .analytical-pathway--full .research-step-number,
+  .folio > .analytical-pathway--full > li::before {
+    grid-column: margin;
+  }
+
+  .folio > .analytical-pathway--full > li > :is(h3, p) {
+    grid-column: text;
+  }
+
+  .folio > .analytical-pathway--full .pathway-chip {
+    grid-column: notes;
+    justify-self: end;
+  }
+
+  .folio > .analytical-pathway--full .pathway-detail {
+    grid-column: text-start / notes-end;
+  }
+}
+
+.marks-key dd {
+  display: grid;
+  grid-template-columns: 7rem auto;
+}
+
+.marks-key__mark {
+  white-space: nowrap;
+}
+
+.marks-key__mark:only-child {
+  grid-column: 2;
+}
+
+.marks-key .marker {
+  margin-right: var(--ed-space-2);
+}
+
+@media print {
+  .pathway-detail > summary {
+    display: none;
+  }
+
+  .pathway-detail::details-content {
+    content-visibility: visible;
+    block-size: auto;
+  }
+}

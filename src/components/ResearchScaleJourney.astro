@@ -1,48 +1,52 @@
 ---
+// Published microscopy on the monograph grid: the image inspector on a specimen plate, its caption set as plate
+// anatomy (label, title, description, facts and credit), then the boundary line. Nothing is laid over the licensed
+// figure: the hint sits in the line above it. The hint and the controls appear once the figure has loaded;
+// data-reserve-space keeps their boxes from the first paint, so revealing them shifts nothing (a failed figure
+// releases them). The section number hangs in the margin, as on Research.
+// Styles: src/styles/folio/components/{research-scale,image-inspector}.css.
 import EvidenceStatus from './EvidenceStatus.astro';
 ---
-<section class="research-scale" aria-labelledby="research-scale-title">
-  <header class="research-scale__heading">
-    <p class="research-scale__eyebrow">Published microscopy</p>
-    <h2 id="research-scale-title">What a closer observation can reveal</h2>
-    <EvidenceStatus kind="literature">Published Bennu observations (Lauretta &amp; Connolly et al., 2024), not my Orgueil results.</EvidenceStatus>
-    <p>After comparing whole bodies and samples above, this published Bennu figure shows the textures studied with optical and electron microscopy.</p>
-  </header>
-      <figure class="research-scale__figure">
-        <div class="image-inspector" data-image-inspector>
-          <div class="inspector-topline"><span>Image observation desk</span><span>Published Bennu figure</span></div>
-          <div class="inspector-layout">
-            <div class="inspector-stage" data-inspector-stage tabindex="0" role="group" aria-label="Published figure. Zoom with the controls; arrow keys pan when enlarged. Home resets the full figure.">
-              <img data-inspector-image src="/assets/img/research-scale/bennu-microstructure.jpg" width="1536" height="1120" loading="lazy" decoding="async" draggable="false" alt="Published four-panel Bennu figure: optical view at upper left, SEM overview at upper right, and two SEM detail views below. Original scale bars are retained." />
-              <span class="inspector-stage-note" data-inspector-hint hidden>Enlarge, then drag to explore</span>
-            </div>
-            <div class="inspector-controls" data-inspector-controls hidden>
-              <label class="inspector-zoom-label" for="bennu-display-zoom">Display zoom <output data-inspector-output>1.0×</output></label>
-              <input id="bennu-display-zoom" data-inspector-zoom type="range" min="1" max="4" step="0.1" value="1" aria-label="Display zoom" />
-              <div class="inspector-regions" role="group" aria-label="Frame a part of the figure">
-                <button type="button" data-inspector-region="all" aria-pressed="true">Full figure</button>
-                <button type="button" data-inspector-region="optical" aria-pressed="false"><span>01</span> Optical view</button>
-                <button type="button" data-inspector-region="sem-overview" aria-pressed="false"><span>02</span> SEM overview</button>
-                <button type="button" data-inspector-region="sem-fragment" aria-pressed="false"><span>03</span> SEM fragment</button>
-                <button type="button" data-inspector-region="sem-detail" aria-pressed="false"><span>04</span> SEM detail</button>
-              </div>
-              <button class="inspector-touch" data-inspector-touch type="button" aria-pressed="false">Move image</button>
-              <p class="inspector-note">Image enlargement only. Full figure restores the original scale-bar context.</p>
-            </div>
-          </div>
-          <p class="inspector-status" data-inspector-status role="status">Published optical and SEM views · Original figure and scale bars retained.</p>
+<section class="research-scale folio" aria-labelledby="research-scale-title">
+  <span class="folio-section__number in-margin">03</span>
+  <p class="kicker">Published microscopy</p>
+  <h2 id="research-scale-title">What a closer observation can reveal</h2>
+  <EvidenceStatus kind="literature">Published Bennu observations (Lauretta &amp; Connolly et al., 2024), not my Orgueil results.</EvidenceStatus>
+  <p>After comparing whole bodies and samples above, this published Bennu figure shows the textures studied with optical and electron microscopy.</p>
+  <figure class="research-scale__figure span-full">
+    <div class="image-inspector" data-image-inspector>
+      <div class="inspector-topline"><span class="kicker">Image observation desk <span aria-hidden="true">·</span> <span>Published Bennu figure</span></span><span class="inspector-hint" data-inspector-hint data-reserve-space hidden>Enlarge, then drag to explore</span></div>
+      <div class="inspector-layout">
+        <div class="inspector-stage" data-inspector-stage tabindex="0" role="group" aria-label="Published figure. Zoom with the controls; arrow keys pan when enlarged. Home resets the full figure.">
+          <img data-inspector-image src="/assets/img/research-scale/bennu-microstructure.jpg" width="1536" height="1120" loading="lazy" decoding="async" draggable="false" alt="Published four-panel Bennu figure: optical view at upper left, SEM overview at upper right, and two SEM detail views below. Original scale bars are retained." />
         </div>
-        <figcaption class="research-scale__caption">
-          <p class="research-scale__eyebrow">Bennu / grain and microstructure</p>
-          <h3>Minerals in context</h3>
-          <p>A published Bennu particle and SEM views of its fragment reveal phosphate-bearing textures. This is a comparison of observation scales, not evidence for dolomite in Orgueil.</p>
-          <dl class="research-scale__facts">
-            <div><dt>Observation</dt><dd>Optical microscopy + SEM</dd></div>
-            <div><dt>Research question</dt><dd>How do texture, chemistry and crystal structure connect?</dd></div>
-          </dl>
-          <p><a href="/assets/img/research-scale/bennu-microstructure.jpg" target="_blank" rel="noopener">Open full-resolution figure ↗</a></p>
-          <p class="research-scale__credit">Figure: Lauretta &amp; Connolly et al. (2024), unchanged NASA rendition.<br /><a href="https://www.nasa.gov/missions/osiris-rex/surprising-phosphate-finding-in-nasas-osiris-rex-asteroid-sample/">NASA source</a> &middot; <a href="https://doi.org/10.1111/maps.14227">Paper</a> &middot; <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></p>
-        </figcaption>
-      </figure>
+        <div class="inspector-controls" data-inspector-controls data-reserve-space hidden>
+          <label class="inspector-zoom-label" for="bennu-display-zoom">Display zoom <output data-inspector-output>1.0×</output></label>
+          <input id="bennu-display-zoom" data-inspector-zoom type="range" min="1" max="4" step="0.1" value="1" aria-label="Display zoom" />
+          <div class="inspector-regions" role="group" aria-label="Frame a part of the figure">
+            <button type="button" data-inspector-region="all" aria-pressed="true">Full figure</button>
+            <button type="button" data-inspector-region="optical" aria-pressed="false"><span>01</span> Optical view</button>
+            <button type="button" data-inspector-region="sem-overview" aria-pressed="false"><span>02</span> SEM overview</button>
+            <button type="button" data-inspector-region="sem-fragment" aria-pressed="false"><span>03</span> SEM fragment</button>
+            <button type="button" data-inspector-region="sem-detail" aria-pressed="false"><span>04</span> SEM detail</button>
+          </div>
+          <button class="button secondary inspector-touch" data-inspector-touch type="button" aria-pressed="false">Move image</button>
+          <p class="inspector-note">Image enlargement only. Full figure restores the original scale-bar context.</p>
+        </div>
+      </div>
+      <p class="inspector-status" data-inspector-status role="status">Published optical and SEM views · Original figure and scale bars retained.</p>
+    </div>
+    <figcaption class="research-scale__caption">
+      <p class="research-scale__eyebrow"><span class="plate__label">Plate III</span> Bennu · grain and microstructure</p>
+      <h3>Minerals in context</h3>
+      <p>A published Bennu particle and SEM views of its fragment reveal phosphate-bearing textures. This is a comparison of observation scales, not evidence for dolomite in Orgueil.</p>
+      <dl class="research-scale__facts">
+        <div><dt class="kicker">Observation</dt><dd>Optical microscopy + SEM</dd></div>
+        <div><dt class="kicker">Research question</dt><dd>How do texture, chemistry and crystal structure connect?</dd></div>
+      </dl>
+      <p class="research-scale__open"><a href="/assets/img/research-scale/bennu-microstructure.jpg" target="_blank" rel="noopener">Open full-resolution figure ↗</a></p>
+      <p class="research-scale__credit">Figure: Lauretta &amp; Connolly et al. (2024), unchanged NASA rendition.<br /><a href="https://www.nasa.gov/missions/osiris-rex/surprising-phosphate-finding-in-nasas-osiris-rex-asteroid-sample/">NASA source</a> &middot; <a href="https://doi.org/10.1111/maps.14227">Paper</a> &middot; <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></p>
+    </figcaption>
+  </figure>
   <p class="research-scale__boundary">This figure is a separate observation, not a magnification of the sample photographs above.</p>
 </section>

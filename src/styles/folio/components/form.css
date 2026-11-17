@@ -1,0 +1,54 @@
+/* @owner WP1 · @budget 3KB · @important 0 · Form controls: text and search inputs, select, range, radio and checkbox, the error state */
+/* 48 px fields with a 1 px control border on the surface tone. Zero-weight element defaults: a component styles
+   its own control with one class. */
+:where(input:is([type="text"], [type="search"], [type="password"], [type="email"], [type="url"], [type="tel"], [type="number"], :not([type])), select, textarea) {
+  min-height: 48px;
+  padding: 0 var(--ed-space-3);
+  border: 1px solid var(--obs-control-border);
+  border-radius: var(--radius-control);
+  background: var(--obs-surface);
+  color: var(--obs-text);
+}
+
+:where(textarea) {
+  min-height: 6rem;
+  padding-block: var(--ed-space-3);
+}
+
+:where(input, select, textarea)::placeholder {
+  color: var(--obs-muted);
+  opacity: 1;
+}
+
+:where(input[type="radio"], input[type="checkbox"], input[type="range"]) {
+  accent-color: var(--obs-text);
+}
+
+:where(input[type="radio"], input[type="checkbox"]) {
+  width: 1.125rem;
+  height: 1.125rem;
+  margin: 0;
+}
+
+:where(label) {
+  cursor: pointer;
+}
+
+/* Errors: the error colour on the field, and a message that starts with "!" and words (role="alert" in markup). */
+:where(input, select, textarea)[aria-invalid="true"] {
+  border-color: var(--obs-error);
+}
+
+.form-error {
+  color: var(--obs-error);
+  font-weight: 600;
+}
+
+.form-error::before {
+  content: "! " / "";
+}
+
+:where(input, select, textarea):disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}

@@ -1,0 +1,185 @@
+/* @owner WP2 · @budget 4.5KB · @important 0 · Arrival title page (#cosmic-arrival, styled through .arrival) and #arrival-replay */
+/* Name over its rule, imprint, question (CSS order; the DOM puts the question first). entry.js writes opacities. */
+.arrival {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: var(--obs-plate-night);
+}
+
+.arrival-universe,
+.arrival-universe canvas,
+.celestial-labels {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.celestial-labels {
+  pointer-events: none;
+}
+
+.celestial-labels span {
+  position: absolute;
+  color: var(--obs-muted);
+  font-size: var(--ed-runhead);
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+.arrival-signature {
+  position: absolute;
+  bottom: 22%;
+  left: 7%;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: min(36rem, 86%);
+  opacity: 0;
+}
+
+/* Night ground under the text only, fading up and right, so the orrery shows. */
+.arrival-signature::before {
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--ed-space-6)) calc(-1 * var(--ed-space-8)) -50vh -100vw;
+  z-index: -1;
+  background: linear-gradient(transparent, color-mix(in srgb, var(--obs-plate-night) 90%, transparent) var(--ed-space-6));
+  mask-image: linear-gradient(90deg, #000 calc(100% - var(--ed-space-8)), transparent);
+}
+
+/* Short screens: just over the bottom bar. */
+@media (max-height: 700px) {
+  .arrival-signature {
+    bottom: calc(var(--ed-space-6) + 44px + var(--ed-space-5));
+  }
+}
+
+.arrival-name {
+  order: -2;
+  padding-block-end: var(--ed-space-5);
+  border-bottom: 1px solid var(--obs-rule);
+  font: 500 var(--ed-name)/1 var(--type-serif);
+  letter-spacing: -.02em;
+  opacity: 0;
+}
+
+.arrival-imprint {
+  order: -1;
+  margin-block: var(--ed-space-4);
+  color: var(--obs-muted);
+  font-size: var(--ed-label);
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.arrival-question {
+  font: italic var(--ed-lead)/1.4 var(--type-serif);
+  text-wrap: balance;
+}
+
+.arrival-bottom {
+  position: absolute;
+  right: 5%;
+  bottom: max(var(--ed-space-6), env(safe-area-inset-bottom));
+  left: 7%;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ed-space-4);
+}
+
+.arrival-sequence {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--ed-space-2) var(--ed-space-3);
+  color: var(--obs-muted);
+  font: 600 var(--ed-runhead)/1 var(--type-sans);
+  letter-spacing: .16em;
+}
+
+.arrival-number {
+  color: var(--obs-text);
+}
+
+.arrival-track {
+  grid-column: 1 / -1;
+  width: min(200px, 40vw);
+  height: 1px;
+  background: var(--obs-hairline);
+}
+
+.arrival-track > span {
+  display: block;
+  height: 100%;
+  background: var(--obs-text);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.arrival-skip,
+.arrival-replay {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ed-space-2);
+  min-height: 44px;
+  padding: 0 var(--ed-space-4);
+  border: 1px solid var(--obs-control-border);
+  border-radius: var(--radius-control);
+  background: var(--obs-surface);
+  color: var(--obs-text);
+  font-size: .875rem;
+  font-weight: 600;
+  transition: background-color var(--ed-dur-1) var(--ed-ease-out);
+}
+
+:is(.arrival-skip, .arrival-replay):hover {
+  background: var(--obs-surface-hover);
+}
+
+.arrival-skip-key {
+  padding: 2px 4px;
+  border: 1px solid var(--obs-hairline);
+  border-radius: var(--radius-record);
+  color: var(--obs-muted);
+  font-size: var(--ed-runhead);
+  line-height: 1;
+}
+
+:is(.arrival-skip, .arrival-replay) svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Above the FX dock; phones replay from the footer. */
+.arrival-replay {
+  position: fixed;
+  right: var(--ed-space-4);
+  bottom: calc(var(--ed-space-4) + 44px + var(--ed-space-2));
+  z-index: var(--z-float);
+  width: 44px;
+  padding: 0;
+}
+
+@media (hover: none), (max-width: 600px) {
+  .arrival-skip-key {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .arrival-replay {
+    display: none;
+  }
+}

@@ -29,18 +29,18 @@ try {
     const before=await appearance();
     await card.hover();await page.waitForTimeout(300);
     assert.deepEqual(await appearance(),before,'Noninteractive education cards must not react like buttons');
-    assert.equal(await card.locator('.obs-edge-light').count(),0);
     await card.screenshot({path:`.codex_tmp/progress-card-${theme}.png`});
-    await page.goto(`${base}/index.html`);
+    // Home now offers one primary button and a quiet link (WP3 Home design), so the face check reads Research, which
+    // keeps both kinds: a.button "Research Log" and button.button.secondary "Research atlas".
+    await page.goto(`${base}/research.html`);
     const primary=page.locator('main .button:not(.secondary):not(.atlas-launch)').first();
     const secondary=page.locator('main .button.secondary').first();
     // Quiet controls carry no shadows (quiet-observatory.css), so the hierarchy lives in the face.
     const face=el=>el.evaluate(el=>{const s=getComputedStyle(el);return `${s.backgroundColor} ${s.backgroundImage}`;});
     assert.notEqual(await face(primary),await face(secondary),'primary actions keep a distinct face');
-    await primary.hover();await page.waitForTimeout(100);
-    assert.equal(await primary.locator('.obs-edge-light').count(),1);
+    // The pointer edge light on primary actions is retired (Folio 2046 decision R2); nothing is asserted about it.
     await page.close();
-    console.log(`PASS ${theme}: stable passive cards, primary hierarchy, pointer edge`);
+    console.log(`PASS ${theme}: stable passive cards, primary hierarchy`);
   }
   for(const width of [1440,390,320]) {
     const page=await browser.newPage({viewport:{width,height:1000},hasTouch:width<700,isMobile:width<700});
@@ -105,6 +105,8 @@ try {
     await comparison.screenshot({path:`.codex_tmp/progress-comparison-${width}.png`});
     await page.locator('[data-mission-compare-toggle]').click();
     assert.equal(await comparison.isVisible(),false);
+    // Below 1200 px the Mission Index is a closed disclosure (mission-ledger.browser); open it to pick a record.
+    if(width<1200) await page.locator('.mission-ledger__summary').click();
     await page.locator('[data-mission-target="log-002"]').click();
     assert.match(await page.locator('.mission-progress').innerText(),/Recorded observation 2/);
     assert.equal(await page.locator('[data-mission-comparison] img').count(),0);
@@ -128,6 +130,7 @@ try {
       await page.locator('[data-research-lock-input]').fill(password);
       await page.locator('[data-research-lock-form] button[type="submit"]').click();
       await page.locator('.mission-progress').waitFor();
+      if(width<1200) await page.locator('.mission-ledger__summary').click();
       for(const entry of realEntries) {
         await page.locator(`[data-mission-target="${entry.id}"]`).click();
         // The record is swapped in after the click; wait for this entry before reading it.

@@ -1,0 +1,155 @@
+/* @owner WP2 · @budget 3.5KB · @important 0 · Visual effects dock, settings panel, FX toggle and the research coordinates readout */
+/* A 44 px button opens a level-2 panel of flat rows (no blur). Phones have no dock (R3). */
+.obs-fx-dock {
+  position: fixed;
+  right: var(--ed-space-4);
+  bottom: var(--ed-space-4);
+  z-index: var(--z-dock);
+}
+
+.obs-fx-settings,
+.ambient-fx-toggle {
+  border: 1px solid var(--obs-control-border);
+  border-radius: var(--radius-control);
+  transition: background-color var(--ed-dur-1) var(--ed-ease-out);
+}
+
+.obs-fx-settings {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: var(--obs-surface);
+}
+
+.obs-fx-settings:hover,
+.obs-fx-settings[aria-expanded="true"],
+.ambient-fx-toggle:hover {
+  background: var(--obs-surface-hover);
+}
+
+.obs-fx-settings svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.5;
+}
+
+.obs-fx-panel {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + var(--ed-space-2));
+  width: 280px;
+  margin: 0;
+  padding: var(--ed-space-4);
+  border: 1px solid var(--obs-hairline);
+  border-radius: var(--radius-control);
+  background: var(--obs-surface);
+  box-shadow: var(--obs-shadow-overlay);
+  font-size: var(--ed-small);
+}
+
+/* Floated, the legend sets as a row. */
+.obs-fx-panel legend {
+  float: left;
+  width: 100%;
+  margin-block-end: var(--ed-space-3);
+  padding: 0;
+  color: var(--obs-muted);
+  font-size: var(--ed-label);
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.ambient-fx-toggle {
+  clear: both;
+  display: flex;
+  align-items: center;
+  gap: var(--ed-space-2);
+  width: 100%;
+  min-height: 44px;
+  padding: 0 var(--ed-space-3);
+  background: transparent;
+  font-weight: 600;
+}
+
+/* FX dot and radios: off a ring, on a heavy ring; borders survive forced colours. */
+.ambient-fx-toggle__dot,
+.obs-fx-panel input {
+  flex: none;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  appearance: none;
+}
+
+.ambient-fx-toggle__dot {
+  width: 10px;
+  height: 10px;
+}
+
+.ambient-fx-toggle.is-on .ambient-fx-toggle__dot,
+.obs-fx-panel input:checked {
+  border-width: 5px;
+}
+
+.obs-fx-panel label {
+  display: flex;
+  align-items: center;
+  gap: var(--ed-space-3);
+  min-height: 44px;
+}
+
+.research-coordinates {
+  display: grid;
+  margin-block-start: var(--ed-space-3);
+  border-top: 1px solid var(--obs-hairline);
+  color: var(--obs-muted);
+  font-size: var(--ed-caption);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.research-coordinates span {
+  padding-block: var(--ed-space-2);
+  border-bottom: 1px solid var(--obs-hairline);
+}
+
+/* Unseen and out of flow until docked. */
+:where(body) > :is(.ambient-fx-toggle, .research-coordinates) {
+  position: fixed;
+  visibility: hidden;
+}
+
+/* 761-1199 px: the gutter is narrower than the button, so the dock sits at the page foot. */
+@media (min-width: 761px) and (max-width: 1199px) {
+  .obs-fx-dock {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    max-width: calc(var(--page-max) + 2 * var(--page-pad));
+    margin-inline: auto;
+    padding: 0 var(--page-pad) var(--ed-space-6);
+    background: var(--obs-paper);
+  }
+
+  .obs-fx-panel {
+    right: var(--page-pad);
+  }
+}
+
+@media (max-width: 760px) {
+  .obs-fx-dock,
+  .research-coordinates {
+    display: none;
+  }
+}
+
+/* Clear of narrow mission toolbars, unless in use. */
+@media (max-width: 960px) {
+  :where(html[data-mission-in-view]) .obs-fx-dock:not(:focus-within, :has(.obs-fx-panel:not([hidden]))) {
+    visibility: hidden;
+  }
+}

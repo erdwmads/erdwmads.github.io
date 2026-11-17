@@ -1,0 +1,155 @@
+/* @owner WP3 · @budget 4KB · @important 0 · Contents bar: sticky, phone toggle, ink underline on the current section */
+/* Labels are kickers. From 961 px the label takes the folio's first column (--k: the column count). */
+html[data-research-reading] {
+  scroll-padding-top: 0;
+}
+
+.research-guide {
+  display: flex;
+  gap: var(--ed-space-5);
+  border-block: 1px solid var(--obs-hairline);
+  background: var(--obs-paper);
+}
+
+.research-guide[data-ready] {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-guide);
+}
+
+.research-guide-label {
+  align-self: center;
+}
+
+.research-guide ol {
+  display: flex;
+  gap: var(--ed-space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.research-guide a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--ed-space-2);
+  min-height: 48px;
+  color: var(--obs-text);
+  font-size: var(--ed-small);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.research-guide a > span {
+  color: var(--obs-muted);
+}
+
+.research-guide a::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 -1px;
+  border-top: 2px solid transparent;
+  transition: border-color var(--ed-dur-1) var(--ed-ease-out);
+}
+
+.research-guide a:hover::after {
+  border-color: var(--obs-control-border);
+}
+
+.research-guide a[aria-current]::after {
+  border-color: var(--obs-text);
+}
+
+.research-guide button {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 56px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: var(--ed-small);
+  text-align: start;
+}
+
+.research-guide button > span {
+  display: grid;
+}
+
+.research-guide svg {
+  transition: transform var(--ed-dur-2) var(--ed-ease-out);
+}
+
+.research-guide[data-open] svg {
+  transform: rotate(180deg);
+}
+
+@media (min-width: 961px) {
+  .research-guide {
+    display: grid;
+    grid-template-columns: calc((100% + var(--grid-gap)) / var(--k, 8) - var(--grid-gap)) 1fr;
+  }
+}
+
+@media (min-width: 1200px) {
+  .research-guide {
+    --k: 6;
+  }
+}
+
+@media (max-width: 760px) {
+  .research-guide,
+  .research-guide ol {
+    display: block;
+  }
+
+  .research-guide li {
+    border-top: 1px solid var(--obs-hairline);
+  }
+
+  .research-guide a::after {
+    width: var(--ed-space-5);
+  }
+
+  .research-guide[data-ready] .research-guide-label,
+  .research-guide[data-ready]:not([data-open]) ol {
+    display: none;
+  }
+
+  .research-guide[data-ready] button {
+    display: flex;
+  }
+}
+
+/* Phones, before the toggle is ready: one scrolling row in the same 56 px bar. */
+@media (max-width: 760px) and (scripting: enabled) {
+  .research-guide:not([data-ready]) .research-guide-label {
+    display: none;
+  }
+
+  .research-guide:not([data-ready]) ol {
+    display: flex;
+    gap: var(--ed-space-4);
+    height: 56px;
+    overflow: auto hidden;
+  }
+
+  .research-guide:not([data-ready]) li {
+    flex: none;
+    border: 0;
+  }
+}
+
+@media (forced-colors: active) {
+  .research-guide a[aria-current] {
+    text-decoration: underline;
+  }
+}
+
+@media print {
+  .research-guide {
+    display: none;
+  }
+}

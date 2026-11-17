@@ -33,24 +33,40 @@ try {
       await page.goto(`${base}/research.html`, { waitUntil: 'networkidle' });
       await page.waitForTimeout(1500);
       assert.ok(await page.evaluate(() => window.beamFrames.every(frame => Math.abs(frame.y - frame.expected) < 3)), `${theme}: initial marker travelled vertically`);
+      // The marker and the current link's resting rule are brass: the --obs-accent token of the theme.
+      const colours = await page.evaluate(() => {
+        const probe = document.createElement('i');
+        probe.style.color = 'var(--obs-accent)';
+        document.body.append(probe);
+        const accent = getComputedStyle(probe).color;
+        probe.remove();
+        // Both are drawn as a 2 px top border, which forced colours keep.
+        return { accent, beam: getComputedStyle(document.querySelector('.obs-nav-beam')).borderTopColor, rule: getComputedStyle(document.querySelector('.nav a[aria-current="page"]'), '::before').borderTopColor };
+      });
+      assert.deepEqual([colours.beam, colours.rule], [colours.accent, colours.accent], `${theme}: the marker is drawn in --obs-accent`);
       await page.evaluate(() => {
         window.previousHeader = document.querySelector('.site-header');
         window.previousBeam = document.querySelector('.obs-nav-beam');
         window.beamStartX = window.previousBeam.getBoundingClientRect().x;
         window.beamFrames = [];
-        const until = performance.now() + 1500;
+        window.beamSampling = true;
+        // Sample until the test stops it, 800 ms after the new page settles, so a slow soft navigation on a busy
+        // machine cannot end the window before the marker has moved (6 s at most).
+        const until = performance.now() + 6000;
         function sample() {
           const beam = document.querySelector('.obs-nav-beam');
           const active = document.querySelector('.nav a[aria-current="page"]');
           const box = beam.getBoundingClientRect();
           window.beamFrames.push({ x: box.x, y: box.y, expected: active.getBoundingClientRect().bottom - 5, active: active.getAttribute('href'), opacity: Number(getComputedStyle(active, '::before').opacity) });
-          if (performance.now() < until) requestAnimationFrame(sample);
+          if (window.beamSampling && performance.now() < until) requestAnimationFrame(sample);
         }
         requestAnimationFrame(sample);
       });
       await page.locator(`main .continue-reading a[href="${route}.html"]`).click();
       await page.waitForURL(`**/${route}.html`);
+      await page.waitForFunction(() => !document.documentElement.classList.contains('mads-soft-nav-active'));
       await page.waitForTimeout(800);
+      await page.evaluate(() => { window.beamSampling = false; });
       assert.equal(await page.locator('html').getAttribute('data-theme'), theme);
       assert.ok(await page.evaluate(() => window.previousHeader === document.querySelector('.site-header') && window.previousBeam === document.querySelector('.obs-nav-beam')), `${theme}/${route}: navigation rebuilt the header`);
       const frames = await page.evaluate(() => window.beamFrames);
@@ -87,6 +103,21 @@ try {
     const end = glide.samples.at(-1).x;
     assert.ok(Math.abs(end - glide.start) > 10, `${theme}: hover did not move`);
     assert.ok(glide.samples.some(frame => Math.abs(frame.x - glide.start) > 2 && Math.abs(frame.x - end) > 2), `${theme}: horizontal glide lost`);
+    // Keyboard preview: Tab onto another link moves the marker there, and the current page's resting rule steps aside
+    // as it does for the pointer, so one brass underline shows at a time; leaving the header restores both.
+    await page.locator('.nav a[href="research.html"]').focus();
+    await page.keyboard.press('Tab');
+    await page.waitForTimeout(400);
+    const keyed = await page.evaluate(() => {
+      const focused = document.activeElement, beam = document.querySelector('.obs-nav-beam').getBoundingClientRect();
+      const current = document.querySelector('.nav a[aria-current="page"]');
+      return { focused: focused.getAttribute('href'), focusVisible: focused.matches(':focus-visible'), current: current.getAttribute('href'), beamX: beam.x, linkX: focused.getBoundingClientRect().x + 10, rule: Number(getComputedStyle(current, '::before').opacity) };
+    });
+    assert.ok(keyed.focused === 'ryugu-bennu.html' && keyed.focusVisible && keyed.current !== keyed.focused, `${theme}: keyboard focus left the current link: ${JSON.stringify(keyed)}`);
+    assert.ok(Math.abs(keyed.beamX - keyed.linkX) < 2 && keyed.rule === 0, `${theme}: keyboard preview shows two underlines: ${JSON.stringify(keyed)}`);
+    await page.locator('main').focus();
+    await page.waitForTimeout(400);
+    assert.equal(await page.evaluate(() => Number(getComputedStyle(document.querySelector('.nav a[aria-current="page"]'), '::before').opacity)), 1, `${theme}: the resting rule returns once focus leaves the header`);
     for (const width of [1100, 760, 390, 1440]) {
       await page.setViewportSize({ width, height: 1000 });
       await page.waitForTimeout(300);

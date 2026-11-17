@@ -1,11 +1,76 @@
 ---
-import LegacyShell from "../components/LegacyShell.astro";
+import SiteShell from "../components/SiteShell.astro";
+import Kicker from "../components/Kicker.astro";
+import Figure from "../components/Figure.astro";
+import Section from "../components/Section.astro";
 import { getPageScripts } from "../data/site";
-import mainHtml from "../legacy/cv-main.html?raw";
+import { education, researchExperience, interests, skills } from "../data/cv";
 
 const scriptHtml = getPageScripts("cv");
+const orcid = "https://orcid.org/0009-0007-3960-3959";
+const orcidIcon = "assets/img/orcid/ORCID-iD_icon-vector.svg";
+// Each section of entries is a ledger with hanging dates (src/styles/folio/components/ledger.css); the entries keep
+// class cv-edu-card, which other tests read. Interests and skills are ruled lists.
+const entrySections = [
+  { id: "cv-education-title", title: "Education", entries: education },
+  { id: "cv-research-title", title: "Research experience", entries: researchExperience }
+];
+const listSections = [
+  { id: "cv-interests-title", title: "Interests", items: interests },
+  { id: "cv-skills-title", title: "Skills", items: skills }
+];
 ---
 
-<LegacyShell title='CV | I. Mads Lieu' description='Curriculum vitae of I. Mads Lieu: education, laboratory affiliations, research interests and analytical training in astromineralogy and planetology.' current='cv' mainClass='main' path="cv.html" scriptHtml={scriptHtml}>
-  <Fragment set:html={mainHtml} />
-</LegacyShell>
+<SiteShell title='CV | I. Mads Lieu' description='Curriculum vitae of I. Mads Lieu: education, laboratory affiliations, research interests and analytical training in astromineralogy and planetology.' current='cv' mainClass='main' path="cv.html" scriptHtml={scriptHtml}>
+  <div class="page">
+    {/* Masthead.astro's markup and classes, with the identity block after the lead: the name and ORCID iD on screen,
+        the citation form, and the print-only identity that cv.js completes with the decoded address. The print
+        button waits hidden for cv.js but keeps its box, so revealing it moves nothing. */}
+    <header class="masthead folio cv-masthead">
+      <Kicker rule>CV</Kicker>
+      <h1>Curriculum Vitae</h1>
+      <p class="masthead__lead">Academic background and analytical experience in astromineralogy and planetology.</p>
+      <div class="cv-identity-block">
+        <p class="cv-identity"><span class="person-name">I. Mads Lieu</span> <a class="orcid-link" href={orcid} target="_blank" rel="me noopener noreferrer"><img src={orcidIcon} width="24" height="24" alt="ORCID iD"><span>{orcid}</span><span class="orcid-new-tab"> (opens in a new tab)</span></a></p>
+        <p class="cv-print-identity">I. Mads Lieu · <span data-email-print>madslieu [at] gmail [dot] com</span><br>erdwmads.github.io · <a href={orcid}><img src={orcidIcon} width="16" height="16" alt="ORCID iD"> {orcid}</a></p>
+        <p class="cv-citation">Cite as <span class="person-name">Lieu, I. M.</span></p>
+        <button class="button secondary cv-print-action" type="button" data-print-cv hidden data-reserve-space>Print / save CV</button>
+      </div>
+      <Figure class="cv-photo in-notes" ratio="2275 / 1280">
+        <picture>
+          <source srcset="assets/img/CV-800.webp 800w, assets/img/CV-1200.webp 1200w" sizes="(max-width: 520px) calc(100vw - 40px), 480px" type="image/webp">
+          <img src="assets/img/CV.jpg" width="2275" height="1280" alt="I. Mads Lieu at the Bund, with the Shanghai skyline behind him" decoding="async" fetchpriority="high">
+        </picture>
+      </Figure>
+    </header>
+
+    {entrySections.map((section) => (
+      <Section id={section.id} title={section.title} class="cv-section">
+        <ul class="ledger cv-ledger">
+          {section.entries.map((entry) => (
+            <li class="cv-edu-card">
+              <span class="ledger__key tabular">{entry.date}</span>
+              <div class="cv-edu-body">
+                <h3>{entry.title}</h3>
+                {entry.details.map((detail) => (
+                  <p class:list={[{ muted: detail.muted }]}>
+                    {detail.label && <Fragment><strong>{detail.label}:</strong> </Fragment>}
+                    {typeof detail.text === "string" ? detail.text : detail.text.map((line, index) => <Fragment>{index > 0 && <br />}{line}</Fragment>)}
+                  </p>
+                ))}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </Section>
+    ))}
+
+    {listSections.map((section) => (
+      <Section id={section.id} title={section.title} class="cv-section">
+        <ul class="cv-list">
+          {section.items.map((item) => <li>{item}</li>)}
+        </ul>
+      </Section>
+    ))}
+  </div>
+</SiteShell>

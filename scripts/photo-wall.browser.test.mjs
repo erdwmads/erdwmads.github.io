@@ -1,9 +1,13 @@
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
+import { shellModulePattern } from './lib/site-paths.mjs';
+import { WALL_BANDS } from '../src/lib/photo-rows.js';
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const browser = await chromium.launch({ headless: true, ...(process.env.EDGE_EXECUTABLE ? { executablePath: process.env.EDGE_EXECUTABLE } : {}) });
 const base = process.env.SITE_TEST_URL || 'http://127.0.0.1:4322';
+// The gap of the band a wall width falls in (src/lib/photo-rows.js writes it on the wall; 12 px wide, 8 px narrower).
+const bandGap = width => WALL_BANDS.find(band => width <= band.maxWidth)?.gap ?? WALL_BANDS.at(-1).gap;
 // Groups the photo tiles into rendered rows, in DOM order, relative to the wall.
 const wallRows = page => page.locator('.photo-wall').evaluate(wall => {
   const box = wall.getBoundingClientRect();
@@ -49,7 +53,7 @@ try {
       assert.equal(await page.locator('.slideshow-stage, .filmstrip, .photo-marquee').count(), 0);
       const wall = await wallRows(page);
       assert.equal(wall.display, 'flex');
-      assert.equal(wall.gap, width <= 760 ? 10 : 16);
+      assert.equal(wall.gap, bandGap(wall.width), `${theme} ${width}px: gap for a ${Math.round(wall.width)} px wall`);
       assertJustified(wall, `${theme} ${width}px`);
       // Phones show one or two photographs per row; the panorama is simply the widest tile.
       if (wall.width <= 520) assert.ok(wall.rows.every(row => row.length <= 2), 'more than two photographs in a phone row');
@@ -94,14 +98,16 @@ try {
   }
   assert.deepEqual(errors, []);
   // The photograph controls keep their space until the scripts reveal them, so the wall does not shift down on load:
-  // with the revealing scripts blocked, the wall starts where it ends up (within the 2px the scripted Present icon adds).
-  for (const width of [1440, 390]) {
+  // with the revealing scripts blocked, the wall starts where it ends up (within the 2px the scripted Present icon adds),
+  // measured from the masthead above it, since blocking the shell scripts also changes the header (not this test's
+  // concern).
+  for (const width of [1440, 390, 320]) {
     const wallTop = async block => {
       const context = await browser.newContext({ viewport: { width, height: 900 } });
-      if (block) await context.route(/\/_astro\/LegacyShell[^/]*\.js$|observatory-interactions\.js/, route => route.abort());
+      if (block) await context.route(url => shellModulePattern.test(url.pathname) || url.pathname.endsWith('observatory-interactions.js'), route => route.abort());
       const blockedPage = await context.newPage();
       await blockedPage.goto(`${base}/photography.html`, { waitUntil: 'networkidle' });
-      const result = await blockedPage.locator('.photo-wall').evaluate(wall => ({ top: wall.getBoundingClientRect().top, hidden: [...document.querySelectorAll('.obs-photo-tools > [hidden]')].length }));
+      const result = await blockedPage.locator('.photo-wall').evaluate(wall => ({ top: wall.getBoundingClientRect().top - document.querySelector('.masthead').getBoundingClientRect().bottom, hidden: [...document.querySelectorAll('.obs-photo-tools > [hidden]')].length }));
       await context.close();
       return result;
     };

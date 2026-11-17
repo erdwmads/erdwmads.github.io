@@ -1,0 +1,75 @@
+/* @owner WP1 · @budget 2KB · @important 0 · Data tables (.data-table), stacked as label and value pairs on phones */
+/* Caption above in label capitals; a 2 px strong rule on top, 1 px rules under the head and between rows; no
+   vertical rules or stripes; numbers right-aligned in tabular figures. */
+.data-table {
+  width: 100%;
+  border-top: 2px solid var(--obs-rule);
+  font-size: var(--ed-small);
+  line-height: 1.5;
+}
+
+.data-table caption {
+  padding-block-end: var(--ed-space-2);
+  color: var(--obs-muted);
+  font-size: var(--ed-label);
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-align: start;
+  text-transform: uppercase;
+}
+
+.data-table :is(th, td) {
+  padding: var(--ed-space-3);
+  border-bottom: 1px solid var(--obs-hairline);
+  text-align: start;
+  vertical-align: top;
+}
+
+.data-table thead th {
+  border-bottom-color: var(--obs-rule);
+  font-weight: 600;
+}
+
+.data-table :is(th, td):first-child {
+  padding-inline-start: 0;
+}
+
+.data-table [data-numeric] {
+  font-variant-numeric: lining-nums tabular-nums;
+  text-align: end;
+}
+
+/* Phones: each row becomes a block of label and value pairs; a cell names its column through data-label. */
+@media (max-width: 760px) {
+  .data-table thead {
+    display: none;
+  }
+
+  .data-table :is(tr, th, td) {
+    display: block;
+  }
+
+  .data-table tr {
+    padding-block: var(--ed-space-2);
+    border-bottom: 1px solid var(--obs-hairline);
+  }
+
+  .data-table :is(th, td) {
+    padding: var(--ed-space-1) 0;
+    border: 0;
+  }
+
+  .data-table [data-label]::before {
+    content: attr(data-label);
+    display: block;
+    color: var(--obs-muted);
+    font-size: var(--ed-label);
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .data-table [data-numeric] {
+    text-align: start;
+  }
+}

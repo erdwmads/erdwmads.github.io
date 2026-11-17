@@ -1,0 +1,33 @@
+---
+// A numbered plate for every evidence figure: the media (default slot) on its plate ground, then the label and
+// caption, the credit and the evidence line. Night plates keep the Space colours inside the frame (.on-night) for
+// space imagery and scenes; specimen plates use the neutral ground. Building fails without a label, caption, credit
+// or a known evidence kind (plate.js). Styles: src/styles/folio/components/plate.css.
+import EvidenceStatus from "./EvidenceStatus.astro";
+import { plateProps } from "./plate.js";
+import type { evidenceKinds } from "./evidence-status.js";
+
+interface Props {
+  label: string;
+  caption: string;
+  credit: string;
+  evidence: keyof typeof evidenceKinds;
+  evidenceText?: string;
+  ground?: "specimen" | "night";
+  model?: boolean;
+  width?: "text" | "wide" | "full";
+  id?: string;
+  class?: string;
+}
+
+const { label, caption, credit, evidence, evidenceText, ground, model, width, id } = plateProps(Astro.props);
+const { class: className } = Astro.props;
+---
+<figure class:list={["plate", width !== "text" && `plate--${width}`, className]} data-ground={ground} data-model={model ? "" : undefined} id={id}>
+  <div class:list={["plate__media", ground === "night" && "on-night"]}><slot /></div>
+  <figcaption class="plate__caption">
+    <span class="plate__title"><span class="plate__label">{label}</span> {caption}</span>
+    <span class="plate__credit">{credit}</span>
+    <EvidenceStatus kind={evidence}>{evidenceText}</EvidenceStatus>
+  </figcaption>
+</figure>

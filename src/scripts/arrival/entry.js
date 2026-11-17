@@ -12,7 +12,7 @@ if(gate){
  const PREPARE_CAP=3000;
  let scene,frame,timer,serial=0,active=false,chapter=-1,replayed=false;
  // The fixed Replay button serves wider windows; on phones a footer button ([data-arrival-replay]) takes its place
- // (home-shell.css), so no fixed control covers the reading column. Focus returns to whichever one started the replay.
+ // (src/styles/folio/components/arrival.css and footer.css), so no fixed control covers the reading column. Focus returns to whichever one started the replay.
  const replays=[replay,...document.querySelectorAll('[data-arrival-replay]')];
  let replaySource=replay;
  const isHome=()=>document.body.classList.contains('ui-page-home');

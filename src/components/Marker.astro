@@ -1,0 +1,14 @@
+---
+// A 7 px calibration marker drawn in CSS (src/styles/folio/components/marker.css): circles for pathway status,
+// squares for evidence kinds, corner brackets for an illustrative model. Hidden from assistive technology; the text
+// label that must follow it carries the meaning.
+import { markerProps } from "./marker.js";
+
+interface Props {
+  kind: "status" | "evidence";
+  value: string;
+}
+
+const { kind, value } = markerProps(Astro.props);
+---
+<span class="marker" data-marker={kind} data-value={value} aria-hidden="true"></span>

@@ -1,13 +1,16 @@
-// Source-level checks for the Home, header and phone-control decisions of October 2026:
-// no Home navigation entry, grouped links, a labelled long-term question, phone controls in the sheet and footer,
-// and the Home SEO signals. check-site.mjs verifies the built pages; the browser tests verify layout.
+// Source-level checks for the Home, header and phone-control decisions of October 2026 and the Folio 2046 shell:
+// no Home navigation entry, grouped links, the Menu button (R5), a labelled long-term question, phone controls in
+// the footer rather than floating (R3), and the Home SEO signals. check-site.mjs verifies the built pages; the
+// browser tests verify layout, and scripts/style-contract/shell.mjs the stylesheet rules.
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
+import { exists, readShell } from "./lib/site-paths.mjs";
 
 const read = (path) => fs.readFileSync(new URL(path, import.meta.url), "utf8").replace(/\r\n/g, "\n");
 const site = read("../src/data/site.ts");
-const shell = read("../src/components/LegacyShell.astro");
+// The shell with its header and footer parts in place (SiteShell, SiteHeader, SiteFooter).
+const shell = readShell().replace(/\r\n/g, "\n");
 const navBlock = site.slice(site.indexOf("export const navItems"), site.indexOf("] as const;", site.indexOf("export const navItems")));
 const description = (page) => (read(`../src/pages/${page}.astro`).match(/description='([^']*)'/) || [])[1];
 
@@ -18,6 +21,13 @@ test("navigation has no Home entry and groups research pages before personal pag
   assert.match(shell, /<span class="nav__divider" aria-hidden="true"><\/span>/);
   // The brand is the way home; its accessible name is all of its visible text plus ", home" (no aria-label).
   assert.match(shell, /<a class="brand" href=\{brand\.homeHref\}>\s*<strong>\{brand\.name\}<\/strong>\s*<span set:html=\{brand\.tagline\} \/>\s*<span class="visually-hidden">, home<\/span>\s*<\/a>/);
+});
+
+test("the phone menu button shows the word Menu and names its action (R5)", () => {
+  assert.match(shell, /<button\s+class="nav-toggle"[^>]*aria-label="Open menu"[^>]*>\s*<span class="nav-toggle__icon" aria-hidden="true"><\/span>\s*<span class="nav-toggle__label">Menu<\/span>/);
+  const controller = read("../public/assets/js/site-header.js");
+  assert.match(controller, /open \? "Close menu" : "Open menu"/);
+  assert.doesNotMatch(controller, /(Open|Close) navigation/);
 });
 
 test("the footer labels the overarching question as long-term", () => {
@@ -43,25 +53,28 @@ test("Home metadata: title, short descriptions, root canonical and structured da
 test("Home renders Current Focus as a component and skips Continue exploring", () => {
   const index = read("../src/pages/index.astro");
   assert.match(index, /<CurrentFocus \/>/);
-  assert.doesNotMatch(read("../src/legacy/index-main.html"), /current-focus-section/);
+  assert.doesNotMatch(index, /current-focus-section/);
   assert.doesNotMatch(read("../src/components/ContinueReading.astro"), /\bhome:\[/);
-  assert.match(read("../src/legacy/index-explore.html"), /<ul class="home-explore-list">[\s\S]*href="ryugu-bennu\.html"/);
+  assert.match(index, /class="ledger home-explore-list"/);
+  assert.match(read("../src/data/home.ts"), /href: "ryugu-bennu\.html"/);
 });
 
+// Moved from mobile-layout.test.mjs.
+test("home profile uses only the Mineralogy Laboratory logo", () => {
+  const homeMarkup = read("../src/pages/index.astro");
+  assert.match(homeMarkup, /class="affiliation-emblem"/);
+  assert.match(homeMarkup, /assets\/img\/affiliation\/mineralogy-laboratory-logo\.png/);
+  assert.doesNotMatch(homeMarkup, /waseda-mineralogy-emblem/);
+  assert.doesNotMatch(homeMarkup, /affiliation-lockup__logo/);
+  assert.ok(exists("public/assets/img/affiliation/mineralogy-laboratory-logo.png"), "missing Mineralogy Laboratory logo asset");
+});
+
+// Replay entrance moves to the footer on phones, where the fixed button and the effects dock are hidden
+// (style-contract/shell.mjs, arrival-focus, reading-ui); the effects panel stays in its dock, never in the sheet (R3).
 test("phones keep floating controls off the reading column", () => {
-  const css = read("../public/assets/css/home-shell.css");
-  const phone = css.slice(css.indexOf("@media (max-width: 760px) {\n  html[data-theme] body#academic-site #arrival-replay"));
-  assert.match(phone, /#arrival-replay \{ display: none !important; \}/);
-  // Only once the header controller is ready; a failed controller keeps the dock, since that sheet cannot close.
-  assert.match(phone, /html\[data-nav-ready\]\[data-theme\] body#academic-site \.obs-fx-dock \{ display: none !important; \}/);
-  assert.match(read("../public/assets/js/observatory-interactions.js"), /compactDock\.matches && sheet && root\.hasAttribute\('data-nav-ready'\)/);
-  assert.match(phone, /\.header-actions > \.obs-fx-panel \{/);
-  assert.match(site, /"home-shell\.css"\s*\] as const;/, "home-shell.css is the last public stylesheet (only the src/ component stylesheets follow it)");
-  const observatory = read("../public/assets/js/observatory-interactions.js");
-  assert.match(observatory, /matchMedia\('\(max-width: 760px\)'\)/);
-  assert.match(observatory, /document\.querySelector\('\[data-mobile-nav\]'\)/);
-  assert.match(observatory, /sheet\.appendChild\(panel\)/);
-  const entry = read("../src/scripts/arrival/entry.js");
-  assert.match(entry, /document\.querySelectorAll\('\[data-arrival-replay\]'\)/);
   assert.match(shell, /<button class="footer-replay" type="button" data-arrival-replay hidden>Replay entrance<\/button>/);
+  assert.match(read("../src/scripts/arrival/entry.js"), /document\.querySelectorAll\('\[data-arrival-replay\]'\)/);
+  const observatory = read("../public/assets/js/observatory-interactions.js");
+  assert.match(observatory, /<fieldset id="obs-fx-panel" class="obs-fx-panel" hidden>/);
+  assert.doesNotMatch(observatory, /\[data-mobile-nav\]|appendChild\(panel\)/);
 });
