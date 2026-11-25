@@ -1,6 +1,10 @@
 // Controls (spec §6.3, formerly prism-controls): buttons are at least 44 px; a primary button's border is its own
-// face and a secondary or icon button rests on the control-border token; no control casts a shadow; hover changes
-// only the fill, and neither hover nor press moves or resizes anything; disabled controls are dimmed below .7 with a
+// face and a secondary or icon button rests on the control-border token; the lit kinds (buttons, icon buttons, the
+// gate, the theme toggle, the effects button) rest on --obs-control-shadow and glow with --obs-control-glow under a
+// hovering pointer (effects spec §7), on phones and touch screens the contents toggle and Origins' Explore rest on the old
+// --obs-touch-shadow (inventory E043), the chosen photo layout keeps the old inset brass bar (E048), every
+// other control casts no shadow; hover changes the fill and the shadow,
+// never the text colour, and neither hover nor press moves or resizes anything; disabled controls are dimmed below .7 with a
 // not-allowed cursor; keyboard focus draws a 2 px solid outline 3 px out in the focus colour; under reduced motion
 // transitions take no time. WP1's primitives are checked on every page through the stand-in fixture
 // (scripts/lib/guard.mjs), next to the first page controls and the shell toggles, which belong to their own packages.
@@ -17,16 +21,32 @@ function readControls(index) {
   const token = name => { probe.style.color = `var(${name})`; return getComputedStyle(probe).color; };
   const controlBorder = token('--obs-control-border'), focus = token('--obs-focus');
   probe.remove();
+  // The two shadow tokens as the control's own theme computes them: a probe beside it, removed before anything paints.
+  const litShadows = el => {
+    const probe = document.createElement('i');
+    el.parentElement.append(probe);
+    probe.style.boxShadow = 'var(--obs-control-shadow)';
+    const restShadow = getComputedStyle(probe).boxShadow;
+    probe.style.boxShadow = 'var(--obs-control-glow)';
+    const glowShadow = getComputedStyle(probe).boxShadow;
+    probe.style.boxShadow = 'var(--obs-touch-shadow)';
+    const touchShadow = getComputedStyle(probe).boxShadow;
+    probe.style.boxShadow = 'inset 0 -2px var(--obs-accent)';
+    const pressedEdge = el.matches('.photo-layout-switch [aria-pressed="true"]') ? getComputedStyle(probe).boxShadow : 'none';
+    probe.remove();
+    const touched = el.matches('[data-research-guide-toggle], .scene-explore') && matchMedia('(max-width: 760px), (hover: none) and (pointer: coarse)').matches;
+    return { restShadow: touched ? touchShadow : restShadow, glowShadow, touched, pressedEdge, hoverable: matchMedia('(hover: hover)').matches };
+  };
   const all = [...document.querySelectorAll('[data-guard-control]')];
   return (index === undefined ? all : [all[index]]).map(el => {
     const s = getComputedStyle(el), r = el.getBoundingClientRect();
     return {
       owner: window.__guardOwner(el), name: `${window.__guardName(el)} "${(el.textContent.trim() || el.getAttribute('aria-label') || '').slice(0, 30)}"`,
       primitive: el.matches('.button, .icon-button'), sized: !el.matches('.theme-toggle'), primary: el.matches('.button:not(.secondary)'),
-      disabled: el.matches(':disabled, [aria-disabled="true"]'), edge: Boolean(el.querySelector('.obs-edge-light')),
+      disabled: el.matches(':disabled, [aria-disabled="true"]'), lit: el.matches('.button, .icon-button, .nav-log-gate, .theme-toggle, .obs-fx-settings'),
       box: [r.x + scrollX, r.y + scrollY, r.width, r.height], border: [s.borderTopWidth, s.borderTopStyle, s.borderTopColor],
       background: s.backgroundColor, color: s.color, shadow: s.boxShadow, transform: s.transform, opacity: Number(s.opacity), cursor: s.cursor,
-      transitions: s.transitionDuration, controlBorder, focus
+      transitions: s.transitionDuration, controlBorder, focus, ...litShadows(el)
     };
   });
 }
@@ -48,7 +68,9 @@ await runGuard('controls', async (page, { entry, base }) => {
   for (const [index, control] of rest.entries()) {
     const add = message => findings.push({ owner: control.owner, message: `${control.name}: ${message}` });
     if (control.sized && (control.box[3] < 44 || (control.primitive && control.box[2] < 44))) add(`${Math.round(control.box[2])} x ${Math.round(control.box[3])} px, under the 44 px target`);
-    if (control.shadow !== 'none') add(`casts a shadow at rest (${control.shadow})`);
+    if (control.lit && control.shadow !== control.restShadow) add(`rests on the shadow ${control.shadow}, not --obs-control-shadow (${control.restShadow})`);
+    if (control.touched && !control.lit && control.shadow !== control.restShadow) add(`rests on the shadow ${control.shadow}, not --obs-touch-shadow (${control.restShadow})`);
+    if (!control.lit && !control.touched && control.shadow !== control.pressedEdge) add(`casts a shadow at rest (${control.shadow})`);
     if (control.transitions.split(',').some(value => parseFloat(value) > 0)) add(`transitions run under reduced motion (${control.transitions})`);
     if (control.primitive) {
       if (control.border[0] !== '1px' || control.border[1] !== 'solid') add(`border ${control.border.slice(0, 2).join(' ')}, expected 1px solid`);
@@ -73,15 +95,17 @@ await runGuard('controls', async (page, { entry, base }) => {
     await page.mouse.move(target.x, target.y);
     await page.waitForTimeout(60);
     const [hover] = await page.evaluate(readControls, index);
-    // R2 retired the pointer edge light; should its hover span (span.obs-edge-light) come back, it is WP2's finding.
-    const addMove = message => (hover.edge ? findings.push({ owner: 'WP2', message: `${control.name}: ${message}: hover inserts span.obs-edge-light, which R2 retires` }) : add(message));
-    if (moved(before, await boxes())) addMove('hover moves or resizes a control');
-    if (hover.shadow !== 'none' || hover.transform !== control.transform) add(`hover adds ${hover.shadow !== 'none' ? `a shadow (${hover.shadow})` : `a transform (${hover.transform})`}`);
+    // The page runs with reduced motion, so the pointer edge light (R2) must stay off; a lit ring is WP2's finding.
+    if (await page.evaluate(() => Boolean(document.querySelector('[data-edge-active]')))) findings.push({ owner: 'WP2', message: `${control.name}: the edge light shows under reduced motion` });
+    if (moved(before, await boxes())) add('hover moves or resizes a control');
+    const hoverShadow = control.touched ? control.restShadow : control.lit ? (control.hoverable ? control.glowShadow : control.restShadow) : control.pressedEdge;
+    if (hover.shadow !== hoverShadow) add(`hover casts the shadow ${hover.shadow}, expected ${control.touched ? '--obs-touch-shadow' : control.lit ? (control.hoverable ? '--obs-control-glow' : '--obs-control-shadow') : 'none'} (${hoverShadow})`);
+    if (hover.transform !== control.transform) add(`hover adds a transform (${hover.transform})`);
     if (control.primitive && hover.color !== control.color) add(`hover changes the text colour ${control.color} -> ${hover.color}`);
     if (control.primitive && hover.background === control.background && hover.border[2] === control.border[2]) add('hover leaves the fill unchanged');
     await page.mouse.down();
     await page.waitForTimeout(40);
-    if (moved(before, await boxes())) addMove('press moves or resizes a control');
+    if (moved(before, await boxes())) add('press moves or resizes a control');
     await page.mouse.move(1, 1);
     await page.mouse.up();
   }

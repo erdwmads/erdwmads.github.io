@@ -1,6 +1,6 @@
 /* @owner WP1 · @budget 3KB · @important 0 · Buttons: primary, secondary, quiet action, icon button */
-/* At most one primary per view: ink on ivory in Light, ivory on ink in Space. Hover changes the fill only, with no
-   shadow, lift or change of size, so geometry never moves. */
+/* At most one primary per view: ink on ivory in Light, ivory on ink in Space. Faces are background-color only, so the
+   sheen, shadow and hover glow of components/surface-light.css lie over them; nothing changes size. */
 .button {
   display: inline-flex;
   align-items: center;
@@ -10,7 +10,7 @@
   padding: 0 1.25rem;
   border: 1px solid var(--obs-primary-face);
   border-radius: var(--radius-control);
-  background: var(--obs-primary-face);
+  background-color: var(--obs-primary-face);
   color: var(--obs-primary-text);
   font-family: var(--type-sans);
   font-size: .9375rem;
@@ -24,18 +24,18 @@
 
 .button:hover {
   border-color: var(--obs-primary-hover);
-  background: var(--obs-primary-hover);
+  background-color: var(--obs-primary-hover);
 }
 
 /* Secondary: transparent with a control border; hover fills it with the surface tone. */
 .button.secondary {
   border-color: var(--obs-control-border);
-  background: transparent;
+  background-color: transparent;
   color: var(--obs-text);
 }
 
 .button.secondary:hover {
-  background: var(--obs-surface-hover);
+  background-color: var(--obs-surface-hover);
 }
 
 /* An icon keeps its 18 px slot from the first paint, so a script that swaps a Lucide placeholder (<i data-lucide>)
@@ -77,14 +77,14 @@
   padding: 0;
   border: 1px solid var(--obs-control-border);
   border-radius: var(--radius-control);
-  background: transparent;
+  background-color: transparent;
   color: var(--obs-text);
   cursor: pointer;
   transition: background-color var(--ed-dur-1) var(--ed-ease-out);
 }
 
 .icon-button:hover {
-  background: var(--obs-surface-hover);
+  background-color: var(--obs-surface-hover);
 }
 
 .icon-button svg {

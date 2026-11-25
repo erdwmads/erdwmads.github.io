@@ -1,8 +1,9 @@
-// Reading UI (spec §6.3): on phones the navigation sheet holds the links, the Research Log gate, the theme toggle and
-// the tagline in 56 px rows, and no effects panel (FX is off there, decision R3), with no fixed dock and no ambient
-// layer; Escape closes it and returns focus to Menu. The reading veil is a static gradient without blur in both themes.
-// Wider windows keep one settings dock whose panel never leaves it; narrowing to a phone, Escape and keyboard
-// navigation dismiss it without losing focus, and every selection marker is drawn in the brass token.
+// Reading UI (spec §6.3): on phones the navigation sheet holds the links, the Research Log gate, the theme toggle, the
+// one Visual effects panel right after it (FX switch, intensity and coordinates; R3 amended, owner decision E136) and
+// the tagline, with no fixed dock; the lite ambient field (E103) follows the switch there. Escape closes the sheet and
+// returns focus to Menu. The reading veil is a static gradient without blur in both themes. Wider windows keep one
+// settings dock; narrowing to a phone moves its panel into the sheet and its focus to Menu, widening moves it back
+// closed; Escape and keyboard navigation dismiss it without losing focus, and every selection marker is brass.
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 
@@ -22,13 +23,25 @@ try {
   const menu = page.locator('[data-nav-toggle]');
   const sheet = page.locator('[data-mobile-nav]');
   assert.equal(await page.locator('.obs-fx-dock').isVisible(), false, 'Phones have no fixed display-settings dock');
-  assert.equal(await sheet.locator('.obs-fx-panel').count(), 0, 'The effects panel stays out of the sheet (R3)');
-  assert.equal(await page.locator('.ambient-fx-toggle').isVisible(), false, 'Do not expose a particle toggle that mobile protection disables');
-  assert.equal(await page.locator('.ambient-space-layer').count(), 0);
+  assert.equal(await page.locator('.obs-fx-panel').count(), 1, 'One effects panel, never a copy');
+  assert.equal(await sheet.locator('.obs-fx-panel').count(), 1, 'The effects panel lies in the sheet (E136)');
+  assert.ok(await page.evaluate(() => document.querySelector('.theme-toggle').nextElementSibling === document.querySelector('.obs-fx-panel')), 'right after the theme toggle, as on the old site');
+  assert.equal(await page.locator('.ambient-fx-toggle').isVisible(), false, 'The FX switch shows only with the sheet open');
+  await page.waitForSelector('.ambient-space-layer.is-lite > .ambient-dust', { state: 'attached', timeout: 10000 });
+  assert.equal(await page.locator('.ambient-space-layer').count(), 1, 'Phones run one lite field (E103)');
+  assert.equal(await page.locator('.ambient-pebble').count(), 0, 'without pebbles');
   await menu.click();
   assert.equal(await menu.getAttribute('aria-expanded'), 'true');
   assert.equal(await sheet.locator('.nav a').count(), 7, 'The sheet holds the seven links');
-  for (const part of ['.nav-log-gate', '.theme-toggle', '.header-actions__tagline']) assert.ok(await sheet.locator(part).isVisible(), `The sheet shows ${part}`);
+  for (const part of ['.nav-log-gate', '.theme-toggle', '.obs-fx-panel', '.ambient-fx-toggle', '.research-coordinates', '.header-actions__tagline']) assert.ok(await sheet.locator(part).isVisible(), `The sheet shows ${part}`);
+  for (const label of await sheet.locator('.obs-fx-panel label').all()) assert.ok((await label.boundingBox()).height >= 44, 'Intensity choices are at least 44 px');
+  // The switch works on a phone: off removes the field, on brings the lite field back.
+  await sheet.locator('.ambient-fx-toggle').click();
+  assert.equal(await page.locator('.ambient-space-layer').count(), 0, 'FX off removes the phone field');
+  assert.equal(await sheet.locator('.ambient-fx-toggle').getAttribute('aria-pressed'), 'false');
+  await sheet.locator('.ambient-fx-toggle').click();
+  await page.waitForSelector('.ambient-space-layer.is-lite > .ambient-dust', { state: 'attached', timeout: 5000 });
+  assert.equal(await menu.getAttribute('aria-expanded'), 'true', 'Using the switch keeps the sheet open');
   for (const link of await sheet.locator('.nav a').all()) assert.ok(Math.abs((await link.boundingBox()).height - 56) < 1.5, 'Navigation rows are 56 px');
   for (const control of await sheet.locator('a, button').all()) assert.ok((await control.boundingBox()).height >= 44, 'Touch targets are at least 44 px');
   await page.keyboard.press('Escape');
@@ -60,18 +73,21 @@ try {
   assert.equal(await desktop.locator('html').getAttribute('data-fx-intensity'), 'immersive');
   assert.equal(await desktop.locator('.obs-fx-settings').getAttribute('aria-expanded'), 'true', 'Choosing an intensity keeps the panel open');
   assert.ok(await desktop.locator('.obs-fx-panel input[value="immersive"]').evaluate(el => el === document.activeElement), 'The checked radio holds focus');
-  // Narrowing to a phone hides the dock: the panel closes and the focus it held moves to Menu, not to the body.
+  // Narrowing to a phone hides the dock and moves the panel into the sheet (E136); the focus it held moves to Menu, not
+  // to the body.
   await desktop.setViewportSize({ width: 390, height: 844 });
   await desktop.waitForTimeout(200);
   assert.equal(await desktop.locator('.obs-fx-dock > button:visible').count(), 0, 'Narrowing to a phone hides the fixed dock');
-  assert.equal(await desktop.locator('.obs-fx-dock > .obs-fx-panel').count(), 1, 'and the panel stays in it');
-  assert.equal(await desktop.locator('[data-mobile-nav] .obs-fx-panel').count(), 0);
+  assert.equal(await desktop.locator('.obs-fx-dock > .obs-fx-panel').count(), 0, 'and the panel leaves it');
+  assert.equal(await desktop.locator('[data-mobile-nav] .obs-fx-panel').count(), 1, 'for the sheet');
   const narrowed = await desktop.evaluate(() => ({ hidden: document.querySelector('.obs-fx-panel').hidden, expanded: document.querySelector('.obs-fx-settings').getAttribute('aria-expanded'), focus: document.activeElement.matches('[data-nav-toggle]') }));
-  assert.deepEqual(narrowed, { hidden: true, expanded: 'false', focus: true }, `Narrowing closes the panel and moves its focus to Menu: ${JSON.stringify(narrowed)}`);
+  assert.deepEqual(narrowed, { hidden: false, expanded: 'false', focus: true }, `Narrowing moves the panel into the sheet and its focus to Menu: ${JSON.stringify(narrowed)}`);
   await desktop.setViewportSize({ width: 1440, height: 1000 });
   await desktop.waitForTimeout(200);
   assert.equal(await desktop.locator('.obs-fx-dock > button:visible').count(), 1, 'Widening shows the dock again');
+  assert.equal(await desktop.locator('.obs-fx-dock > .obs-fx-panel').count(), 1, 'with the panel back in it');
   assert.equal(await desktop.locator('.obs-fx-settings').getAttribute('aria-expanded'), 'false', 'and the panel stays closed');
+  assert.ok(await desktop.locator('.obs-fx-panel').isHidden(), 'closed');
   await desktop.locator('.obs-fx-settings').click();
   await desktop.keyboard.press('Escape');
   assert.equal(await desktop.locator('.obs-fx-settings').getAttribute('aria-expanded'), 'false', 'Escape closes the panel');
@@ -93,11 +109,33 @@ try {
   ]);
   assert.ok(markers.length >= 2, 'Navigation marker and resting rule are present');
   assert.ok(markers.every(marker => marker.color === accent && marker.image === 'none'), `Selection markers are drawn in the brass token ${accent}: ${JSON.stringify(markers)}`);
-  const surfaceBefore = await desktop.locator('main').evaluate(el => getComputedStyle(el).backgroundImage);
+  // Scrolling repaints nothing but the reading indicators: the spine tick and the old site's reading beam across the
+  // top of the window (E029), both drawn from --scroll-progress. Every other fixed layer and the reading surface keep
+  // their paint.
+  const paintOf = () => desktop.evaluate(() => {
+    const out = {};
+    const nodes = [document.querySelector('main'), ...[...document.querySelectorAll('body *')].filter(el => getComputedStyle(el).position === 'fixed'), ...document.querySelectorAll('.ui2046-progress > span')];
+    nodes.forEach((el, index) => { for (const pseudo of [null, '::before', '::after']) {
+      const cs = getComputedStyle(el, pseudo);
+      const name = el.matches('.ui2046-progress > span') ? 'reading-indicator' : `${el.tagName}.${el.classList[0] || ''}`;
+      out[`${index}:${name}${pseudo || ''}`] = [cs.backgroundImage, cs.backgroundColor, cs.boxShadow, cs.opacity, cs.filter, cs.transform, cs.translate].join(' | ');
+    } });
+    return out;
+  });
+  // The soft navigation's fade of main settles first, so only the scroll can change what follows.
+  await desktop.waitForFunction(() => getComputedStyle(document.querySelector('main')).opacity === '1');
+  await desktop.waitForTimeout(300);
+  const paintBefore = await paintOf();
   await desktop.evaluate(() => window.scrollTo(0, 650));
-  assert.equal(await desktop.locator('main').evaluate(el => getComputedStyle(el).backgroundImage), surfaceBefore, 'Reading paint must not change on scroll');
+  await desktop.waitForTimeout(300);
+  const paintAfter = await paintOf();
+  const changed = Object.keys(paintBefore).filter(key => paintBefore[key] !== paintAfter[key]);
+  assert.ok(changed.every(key => /:reading-indicator::(before|after)$/.test(key)), `Only the reading indicators may change on scroll: ${JSON.stringify(changed.map(key => [key, paintBefore[key], paintAfter[key]]))}`);
+  const beam = await desktop.locator('.ui2046-progress > span').evaluate(el => getComputedStyle(el, '::before').transform);
+  assert.notEqual(beam, 'matrix(0, 0, 0, 1, 0, 0)', 'The reading beam grows with the scroll (E029)');
+  assert.ok(!changed.some(key => key.includes('MAIN')), 'Reading paint must not change on scroll');
   assert.deepEqual(errors, []);
-  console.log('Reading UI passed: phone sheet without effects panel, particle protection, dismissal, responsive sheet, one dock on wider windows, brass markers, static reading surface and both themes.');
+  console.log('Reading UI passed: phone sheet with the one effects panel and a working FX switch over the lite field, dismissal, responsive sheet, one dock on wider windows, brass markers, static reading surface and both themes.');
 } finally {
   await browser.close();
 }

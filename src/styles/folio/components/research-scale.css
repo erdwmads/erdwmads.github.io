@@ -1,4 +1,4 @@
-/* @owner WP4 · @budget 3KB · @important 0 · Published microscopy figure: caption, facts and boundary */
+/* @owner WP4 · @budget 4.5KB · @important 0 · Published microscopy figure: caption, facts and boundary */
 /* The caption is plate anatomy (label, title, description, facts, credit); from 1200 px the facts and credit
    stand in the notes column. The boundary line closes the section. */
 .research-scale {
@@ -68,6 +68,75 @@
 
   .research-scale__facts {
     grid-row: 1 / span 3;
+  }
+}
+
+/* The gold beam of September's scale tabs (owner, 2026-11-18): a brass bar with a gold glow stands at the chosen
+   region's edge, in place of its ink rule, and slides to the next choice in 240 ms (effects on, motion allowed, from
+   761 px, as before). --i is the chosen region's index; every row is 44 px, its 1 px rule included, and under 961 px
+   the list wraps after the first region into two columns. */
+.research-scale .inspector-regions {
+  --i: 0;
+  position: relative;
+}
+
+.research-scale .inspector-regions::after {
+  content: "";
+  position: absolute;
+  top: calc(var(--i) * 44px);
+  left: 0;
+  width: 2px;
+  height: 43px;
+  background: var(--obs-accent);
+  box-shadow: 0 0 9px var(--obs-gold-glow);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.research-scale .inspector-regions:has(> [aria-pressed="true"])::after {
+  opacity: 1;
+}
+
+.research-scale .inspector-regions > [aria-pressed="true"] {
+  border-left-color: transparent;
+}
+
+.research-scale .inspector-regions:has(> :nth-child(2)[aria-pressed="true"]) {
+  --i: 1;
+}
+
+.research-scale .inspector-regions:has(> :nth-child(3)[aria-pressed="true"]) {
+  --i: 2;
+}
+
+.research-scale .inspector-regions:has(> :nth-child(4)[aria-pressed="true"]) {
+  --i: 3;
+}
+
+.research-scale .inspector-regions:has(> :nth-child(5)[aria-pressed="true"]) {
+  --i: 4;
+}
+
+@media (max-width: 960px) {
+  .research-scale .inspector-regions::after {
+    top: calc(round(up, var(--i) / 2) * 44px);
+    left: calc(min(var(--i), mod(var(--i) + 1, 2)) * (50% + var(--ed-space-3) / 2));
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) and (min-width: 761px) {
+  :where(html:not(.ambient-fx-disabled, .mads-power-low)) .research-scale .inspector-regions::after {
+    transition: top 240ms cubic-bezier(.2, .7, .2, 1), left 240ms cubic-bezier(.2, .7, .2, 1);
+  }
+}
+
+@media (forced-colors: active), print {
+  .research-scale .inspector-regions::after {
+    display: none;
+  }
+
+  .research-scale .inspector-regions > [aria-pressed="true"] {
+    border-left-color: var(--obs-text);
   }
 }
 

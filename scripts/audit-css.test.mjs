@@ -3,7 +3,7 @@
 // case of !important and theme selectors, remote addresses outside url(), and the pinned headers.
 import assert from "node:assert/strict";
 import test from "node:test";
-import { bans, countImportant, namesThemeSelector, nestedRules, pinnedHeaders, weighComplex } from "./lib/css-lint.mjs";
+import { bans, blurOutsideAllowList, countImportant, namesThemeSelector, nestedRules, pinnedHeaders, weighComplex } from "./lib/css-lint.mjs";
 import { bundleSources } from "./lib/read-bundle-source.mjs";
 import { folioStylesDir } from "./lib/site-paths.mjs";
 
@@ -36,7 +36,7 @@ test("a rule nested in a style rule, or a selector with &, is reported", () => {
 
 test("the bans, !important and theme selectors ignore case and spacing", () => {
   const banned = (css) => bans.filter(([pattern]) => pattern.test(css)).map(([, name]) => name);
-  assert.deepEqual(banned(".a { BACKDROP-FILTER: blur(2px) }"), ["backdrop-filter"]);
+  assert.deepEqual(banned(".a { BACKDROP-FILTER: blur(2px) }"), [], "blur has its own allow-list (below)");
   assert.deepEqual(banned(".a { background: url( 'https://example.com/x.png') }"), ["a remote url()", "a remote address in a string (image-set() or src)"]);
   assert.deepEqual(banned(".a { background: url(//example.com/x.png) }"), ["a remote url()"]);
   assert.deepEqual(banned(".a { background-image: image-set(\"https://example.com/x.png\" 1x) }"), ["a remote address in a string (image-set() or src)"]);
@@ -46,6 +46,15 @@ test("the bans, !important and theme selectors ignore case and spacing", () => {
   assert.ok(namesThemeSelector("[ data-theme=\"light\"] .a { color: red }"));
   assert.ok(namesThemeSelector("[DATA-THEME] .a { color: red }"));
   assert.ok(!namesThemeSelector("/* [data-theme] */ .a { color: red }"));
+});
+
+test("live blur is held to the allow-list of selectors, per file and in any letter case or prefix", () => {
+  const chip = ".ui-page-cv .cv-edu-card > .ledger__key";
+  assert.deepEqual(blurOutsideAllowList("pages/cv.css", `${chip} { backdrop-filter: blur(12px) }`), []);
+  assert.deepEqual(blurOutsideAllowList("pages/cv.css", `${chip}, .a { BACKDROP-FILTER: blur(2px) }`), [".a"]);
+  assert.deepEqual(blurOutsideAllowList("pages/home.css", `${chip} { backdrop-filter: blur(12px) }`), [chip]);
+  assert.deepEqual(blurOutsideAllowList("components/lightbox.css", ".a { -webkit-backdrop-filter: blur(4px) }"), [".a"]);
+  assert.deepEqual(blurOutsideAllowList("components/lightbox.css", ".a { filter: blur(4px) }"), []);
 });
 
 test("every manifest file has a pinned header, and every pinned file is in the manifest", () => {

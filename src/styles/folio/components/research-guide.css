@@ -1,10 +1,8 @@
-/* @owner WP3 · @budget 4KB · @important 0 · Contents bar: sticky, phone toggle, ink underline on the current section */
-/* Labels are kickers. From 961 px the label takes the folio's first column (--k: the column count). */
-html[data-research-reading] {
-  scroll-padding-top: 0;
-}
-
+/* @owner WP3 · @budget 5KB · @important 0 · Contents bar: sticky, phone toggle, a filled cell and brass bar on the current section */
+/* Labels are kickers. From 961 px the label takes the folio's first column (--k: the column count). The bar sticks
+   under the floating header (--header-clearance, 0 where the header does not float). */
 .research-guide {
+  isolation: isolate;
   display: flex;
   gap: var(--ed-space-5);
   border-block: 1px solid var(--obs-hairline);
@@ -13,7 +11,7 @@ html[data-research-reading] {
 
 .research-guide[data-ready] {
   position: sticky;
-  top: 0;
+  top: var(--header-clearance);
   z-index: var(--z-guide);
 }
 
@@ -57,8 +55,42 @@ html[data-research-reading] {
   border-color: var(--obs-control-border);
 }
 
+/* The old bar's cells (owner, 2026-11-18): a fill behind the link, soft under the pointer and highlighted on the
+   current section, which turns brass over a short centred brass bar. The fill and the bar lie outside the flow, so
+   marking a section moves nothing; both ease in 180 ms. */
+.research-guide a {
+  transition: color 180ms ease;
+}
+
+.research-guide a::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: var(--ed-space-1) calc(-1 * var(--ed-space-2));
+  border-radius: var(--radius-control);
+  transition: background-color 180ms ease;
+}
+
+.research-guide a:hover::before {
+  background-color: var(--obs-surface-hover);
+}
+
+.research-guide a[aria-current] {
+  color: var(--obs-accent);
+}
+
+.research-guide a[aria-current] > span {
+  color: inherit;
+}
+
+.research-guide a[aria-current]::before {
+  background-color: var(--obs-highlight);
+}
+
 .research-guide a[aria-current]::after {
-  border-color: var(--obs-text);
+  inset: auto calc(50% - 16px) -1px;
+  border-color: var(--obs-accent);
+  border-radius: 2px 2px 0 0;
 }
 
 .research-guide button {
@@ -113,6 +145,15 @@ html[data-research-reading] {
     width: var(--ed-space-5);
   }
 
+  /* In the open list the current row's bar stands at the cell's left edge. */
+  .research-guide a[aria-current]::after {
+    inset: var(--ed-space-3) auto var(--ed-space-3) calc(-1 * var(--ed-space-2));
+    width: auto;
+    border-top: 0;
+    border-left: 2px solid var(--obs-accent);
+    border-radius: 0 2px 2px 0;
+  }
+
   .research-guide[data-ready] .research-guide-label,
   .research-guide[data-ready]:not([data-open]) ol {
     display: none;
@@ -142,9 +183,24 @@ html[data-research-reading] {
   }
 }
 
+/* Phones and touch screens: the toggle sits on the old soft drop shadow. */
+@media (max-width: 760px), (hover: none) and (pointer: coarse) {
+  .research-guide button {
+    box-shadow: var(--obs-touch-shadow);
+  }
+}
+
 @media (forced-colors: active) {
   .research-guide a[aria-current] {
     text-decoration: underline;
+  }
+
+  .research-guide a::before {
+    display: none;
+  }
+
+  .research-guide button {
+    box-shadow: none;
   }
 }
 

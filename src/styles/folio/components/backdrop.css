@@ -1,0 +1,100 @@
+/* @owner WP2 · @budget 4KB · @important 0 · Page backdrops: Bennu behind every page, the graticule over it, the solar-system band under the floating header */
+/* The owner's choice of 2026-11-18, after the old site's body::before and header::before (2f20d7e). Both are static
+   images on fixed pseudo-elements of body, so neither is ever the Largest Contentful Paint or preloaded. Bennu, in
+   grayscale, lies under the FX field and main's reading veil, which dims it behind long reading; Home shows it
+   stronger. Where the header floats (the same media query as components/header.css and --header-clearance), the band
+   is its ground: the solar-system strip under a paper veil, slightly translucent, with the old soft glow below.
+   Second pass (owner, 2026-11-18: "all of my previous effects"): the old strengths, the graticule (the old body::after,
+   here html::after: a blueprint grid in both themes; in Space an edge haze and a diagonal brass light) and a loader
+   that keeps Bennu's image out of the first requests. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-backdrop);
+  background: url("../img/asteroid-bennu-1280.webp") 50% 50% / cover no-repeat;
+  opacity: var(--obs-backdrop-opacity);
+  filter: var(--obs-backdrop-tone);
+  transition: opacity 600ms var(--ed-ease-out);
+  pointer-events: none;
+}
+
+.ui-page-home::before {
+  opacity: var(--obs-backdrop-opacity-home);
+}
+
+/* With a script, both images wait for html.backdrop-ready (observatory-interactions.js, after the load event): Bennu
+   then fades in, the band's planets appear under its veil, which is there from the first paint. Without a script both
+   show at once. */
+@media (scripting: enabled) {
+  html:not(.backdrop-ready) body::before {
+    background-image: none;
+    opacity: 0;
+  }
+
+  html:not(.backdrop-ready) body::after {
+    background-image: var(--obs-band-veil);
+  }
+}
+
+html::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-backdrop);
+  background-image: var(--obs-graticule);
+  background-size: var(--obs-graticule-size);
+  opacity: var(--obs-graticule-opacity);
+  pointer-events: none;
+}
+
+@media (min-width: 761px) and (min-height: 600px) and (forced-colors: none) {
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: var(--z-header-band);
+    height: var(--header-clearance);
+    background: var(--obs-band-veil), url("../img/Solar_System_true_color-1600.webp") 50% 50% / cover no-repeat var(--obs-paper);
+    box-shadow: 0 1px 18px var(--obs-glow), inset 0 -1px var(--obs-header-line);
+    opacity: var(--obs-band-opacity);
+    filter: saturate(.85);
+    pointer-events: none;
+  }
+}
+
+/* Phones: the 800 px tier, the asteroid at the top of the window as the old site placed it. */
+@media (max-width: 760px) {
+  body::before {
+    background-image: url("../img/asteroid-bennu-800.webp");
+    background-position: 50% 0%;
+  }
+}
+
+/* Edge keeps fixed layers on their own compositing layer (components/ambient.css). */
+:where(html.is-edge-browser) body::before,
+:where(html.is-edge-browser) body::after,
+html.is-edge-browser::after {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+/* More contrast: no image under the text, and an opaque band. Forced colours and print: neither. */
+@media (prefers-contrast: more) {
+  body::before,
+  html::after {
+    display: none;
+  }
+
+  body::after {
+    opacity: 1;
+  }
+}
+
+@media (forced-colors: active), print {
+  body::before,
+  body::after,
+  html::after {
+    display: none;
+  }
+}

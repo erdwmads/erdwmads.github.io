@@ -6,16 +6,17 @@
 // raise its own budget. It fails when a file has no valid header, or one that differs from the pinned table; exceeds
 // its @budget (source bytes, LF line endings); uses !important outside 02-reset.css, 05-utilities.css,
 // states/motion.css and states/print.css, more often than its @important, or more than 30 times in all; contains
-// backdrop-filter, @layer, @import, a remote url() or address, or body#; names [data-theme outside 00-tokens.css;
+// backdrop-filter outside the allow-list of selectors where the old site's blur was live, @layer, @import, a remote
+// url() or address, or body#; names [data-theme outside 00-tokens.css;
 // nests a rule inside a style rule or uses &; breaks the specificity limits of spec §2.4 (no id outside :where(), at
 // most three classes, attributes or pseudo-classes in one compound selector, each :is(), :not() and :has() weighed
-// by its heaviest argument); or when the whitespace-minified bundle exceeds 145 KB. The rules themselves live in
+// by its heaviest argument); or when the whitespace-minified bundle exceeds 200 KB. The rules themselves live in
 // scripts/lib/css-lint.mjs, and scripts/audit-css.test.mjs holds them to known selectors.
 //   node scripts/audit-css.mjs           report every file against its budget
 //   node scripts/audit-css.mjs --check   fail on any violation (npm run audit:css:check)
 import fs from "node:fs";
 import { cssRules } from "./lib/css-rules.mjs";
-import { bans, countImportant, namesThemeSelector, nestedRules, pinnedHeaders, stripComments, weighComplex } from "./lib/css-lint.mjs";
+import { bans, blurOutsideAllowList, countImportant, namesThemeSelector, nestedRules, pinnedHeaders, stripComments, weighComplex } from "./lib/css-lint.mjs";
 import { bundleSources, minifiedBundle } from "./lib/read-bundle-source.mjs";
 import { abs, folioStylesDir, manifest } from "./lib/site-paths.mjs";
 
@@ -24,7 +25,7 @@ const headerPattern = /^\/\* @owner (WP[1-6]) · @budget (\d+(?:\.\d+)?)KB · @i
 const importantFiles = new Set(["02-reset.css", "05-utilities.css", "states/motion.css", "states/print.css"].map((file) => `${folioStylesDir}/${file}`));
 const tokensFile = `${folioStylesDir}/00-tokens.css`;
 const importantLimit = 30;
-const bundleLimit = 145 * 1024; // the rebuild planned 100 KB; the owner raised it on 2026-11-17 to keep the reviewed design (about 142 KB)
+const bundleLimit = 200 * 1024; // the rebuild planned 100 KB; the owner raised it to 145 KB on 2026-11-17 to keep the reviewed design, to 150 KB on 2026-11-18 for the effects, to 170 KB the same day for all of the old site's effects, and to 200 KB so that the size never removes one
 const compoundLimit = 3;
 
 const failures = [];
@@ -64,6 +65,7 @@ for (const file of listed) {
   if (Number(header[3]) > 0 && !importantFiles.has(file)) failures.push(`${file}: declares @important ${header[3]}, but only the reset, utilities, motion and print files may use !important`);
   if (important > Number(header[3])) failures.push(`${file}: ${important} !important, over its @important ${header[3]}`);
   for (const [pattern, name] of bans) if (pattern.test(css)) failures.push(`${file}: contains ${name}`);
+  for (const selector of blurOutsideAllowList(file.slice(folioStylesDir.length + 1), css)) failures.push(`${file}: "${selector}" uses backdrop-filter; only the selectors in blurAllowList (scripts/lib/css-lint.mjs) may`);
   if (file !== tokensFile && namesThemeSelector(css)) failures.push(`${file}: names [data-theme; theme selectors live only in 00-tokens.css (read the tokens instead)`);
   for (const prelude of nestedRules(css)) failures.push(`${file}: "${prelude}" is nested in a style rule or uses &; write each rule flat with its full selector`);
   for (const rule of cssRules(css)) {

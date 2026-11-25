@@ -1,7 +1,9 @@
 // Mission Log lightbox geometry (spec §4.11, §5 row 29, §6.5), with a synthetic encrypted archive only. On desktop
-// the open viewer sits on the screen ground in both themes with no backdrop blur; the image ends above the caption,
+// the open viewer sits on its theme's veil, nearly opaque (inventory E045: dark in Space, pale paper in Light), with
+// no backdrop blur; the image ends above the caption,
 // which stays inside the viewport and wraps even when long; the controls are 44 px targets in the viewport; the
-// ambient and orbit animations behind it are paused. On a phone the viewer never shows.
+// ambient and orbit animations behind it are paused; at 1440 px it lies over the floating header and its band. On a
+// phone the viewer never shows.
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {createCipheriv,pbkdf2Sync,randomBytes} from 'node:crypto';
@@ -33,16 +35,19 @@ const geometry=page=>page.evaluate(()=>{
   const img=q('.mission-lightbox__img'),bar=q('.mission-lightbox__captionbar'),caption=q('.mission-lightbox__caption');
   // The painted image: object-fit contain letterboxes the natural size inside the element box.
   const box=r(img),scale=Math.min(box.width/img.naturalWidth,box.height/img.naturalHeight),paintedBottom=box.top+(box.height+img.naturalHeight*scale)/2;
-  const probe=document.createElement('i');document.body.append(probe);probe.style.background='var(--obs-screen)';const screen=getComputedStyle(probe).backgroundColor;probe.remove();
+  const probe=document.createElement('i');document.body.append(probe);probe.style.background='var(--obs-lightbox-veil)';const screen=getComputedStyle(probe).backgroundColor;probe.remove();
   // Keyframe and scripted animations of the FX layers; a meteor already in flight only finishes its transition.
   const running=document.getAnimations().filter(a=>a.playState==='running'&&!(a instanceof CSSTransition)&&a.effect?.target?.closest?.('.ambient-space-layer, .ui2046-layer'));
   const spawned=[...document.querySelectorAll('.ambient-meteor')].filter(m=>!window.__meteorsBefore?.has(m)).length;
-  return {open:overlay.classList.contains('is-open'),ready:img.classList.contains('is-ready'),background:getComputedStyle(overlay).backgroundColor,screen,
+  const veil=getComputedStyle(overlay).backgroundColor.match(/[\d.]+/g).map(Number);
+  return {open:overlay.classList.contains('is-open'),ready:img.classList.contains('is-ready'),background:getComputedStyle(overlay).backgroundColor,screen,light:veil[0]>128,
     blur:getComputedStyle(overlay).backdropFilter,imageBottom:box.bottom,paintedBottom,captionTop:r(bar).top,captionBottom:r(bar).bottom,captionRight:r(bar).right,
     captionOverflow:caption.scrollWidth>caption.clientWidth+1,captionFixed:getComputedStyle(bar).position==='fixed',
     controls:[...overlay.querySelectorAll('button')].map(el=>{const b=r(el);return [b.width,b.height,b.left,b.top,b.right,b.bottom];}),
     ambientPaused:!q('.ambient-space-layer')||q('.ambient-space-layer').classList.contains('ambient-paused'),running:running.length,
-    spawned,locked:document.documentElement.classList.contains('mission-lightbox-open')};
+    spawned,locked:document.documentElement.classList.contains('mission-lightbox-open'),
+    // The floating header and its band lie under the viewer.
+    onTop:Boolean(document.elementsFromPoint(innerWidth/2,10)[0]?.closest('.mission-lightbox'))};
 });
 try{
   for(const theme of ['space','light']){
@@ -58,7 +63,10 @@ try{
         await page.waitForTimeout(index?400:2600);
         const g=await geometry(page),label=`${theme} ${width}x${height} figure ${index+1}`;
         assert.equal(g.open,true,label);
-        assert.equal(g.background,g.screen,label+': the viewer is not on the screen ground');
+        assert.equal(g.background,g.screen,label+': the viewer is not on its veil');
+        const alpha=Number((g.background.match(/rgba\([^)]*,\s*([\d.]+)\)/)||[0,1])[1]);
+        assert(alpha>=.95,label+': the veil lets the page show through ('+g.background+')');
+        assert.equal(g.light,theme==='light',label+': the veil does not follow the page theme ('+g.background+')');
         assert.equal(g.blur,'none',label+': backdrop blur');
         assert.equal(g.captionFixed,false,label+': the caption overlays the image');
         assert(g.imageBottom<=g.captionTop+0.5&&g.paintedBottom<=g.captionTop+0.5,label+`: image bottom ${g.imageBottom}/${g.paintedBottom} below caption top ${g.captionTop}`);
@@ -68,6 +76,7 @@ try{
         assert.equal(g.ambientPaused,true,label+': the ambient layer keeps running');
         assert.equal(g.running,0,label+': an ambient or orbit animation runs behind the viewer');
         assert.equal(g.spawned,0,label+': a meteor started behind the viewer');
+        if(width===1440) assert.equal(g.onTop,true,label+': the floating header or its band lies over the viewer');
         assert.equal(g.locked,true,label+': the page scroll is not locked');
         await page.keyboard.press('Escape');
         await page.waitForFunction(()=>!document.querySelector('.mission-lightbox.is-open'));

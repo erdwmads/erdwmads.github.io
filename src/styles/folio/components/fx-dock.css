@@ -1,5 +1,8 @@
-/* @owner WP2 · @budget 3.5KB · @important 0 · Visual effects dock, settings panel, FX toggle and the research coordinates readout */
-/* A 44 px button opens a level-2 panel of flat rows (no blur). Phones have no dock (R3). */
+/* @owner WP2 · @budget 7KB · @important 0 · Visual effects dock, settings panel, FX toggle and the research coordinates readout */
+/* A 44 px button opens a level-2 panel (no blur) with a soft glow around it and the old glass highlight band and
+   glint. On phones the same panel lies in the navigation sheet instead (R3, owner decision E136). The FX switch
+   keeps the old site's glazed face, and its dot glows gold while the field is on; the coordinates rest dimmed in
+   Space and brighten under the pointer (owner, 2026-11-18: "all of my previous effects"). */
 .obs-fx-dock {
   position: fixed;
   right: var(--ed-space-4);
@@ -20,13 +23,13 @@
   width: 44px;
   height: 44px;
   padding: 0;
-  background: var(--obs-surface);
+  background-color: var(--obs-surface);
 }
 
 .obs-fx-settings:hover,
 .obs-fx-settings[aria-expanded="true"],
 .ambient-fx-toggle:hover {
-  background: var(--obs-surface-hover);
+  background-color: var(--obs-surface-hover);
 }
 
 .obs-fx-settings svg {
@@ -45,7 +48,7 @@
   border: 1px solid var(--obs-hairline);
   border-radius: var(--radius-control);
   background: var(--obs-surface);
-  box-shadow: var(--obs-shadow-overlay);
+  box-shadow: 0 0 24px var(--obs-glow);
   font-size: var(--ed-small);
 }
 
@@ -93,6 +96,36 @@
   border-width: 5px;
 }
 
+/* Forced colours keep the rings above; elsewhere the switch and its dot carry light. */
+@media (forced-colors: none) {
+  .ambient-fx-toggle {
+    background-image: var(--obs-fx-face);
+    box-shadow: var(--obs-touch-shadow);
+    color: var(--obs-fx-text);
+    transition-property: background-color, color, box-shadow;
+    transition-duration: 160ms;
+  }
+
+  .ambient-fx-toggle.is-on {
+    background-image: var(--obs-fx-face-on);
+    box-shadow: var(--obs-fx-lift-on);
+    color: var(--obs-fx-text-on);
+  }
+
+  .ambient-fx-toggle__dot {
+    width: 7px;
+    height: 7px;
+    border: 0;
+    background: var(--obs-fx-dot);
+    box-shadow: var(--obs-fx-dot-glow);
+  }
+
+  .ambient-fx-toggle.is-on .ambient-fx-toggle__dot {
+    background: var(--obs-fx-dot-on);
+    box-shadow: var(--obs-fx-dot-on-glow);
+  }
+}
+
 .obs-fx-panel label {
   display: flex;
   align-items: center;
@@ -107,6 +140,14 @@
   color: var(--obs-muted);
   font-size: var(--ed-caption);
   font-variant-numeric: lining-nums tabular-nums;
+}
+
+.obs-fx-panel .research-coordinates {
+  opacity: var(--obs-coord-rest);
+}
+
+.obs-fx-panel .research-coordinates:hover {
+  opacity: 1;
 }
 
 .research-coordinates span {
@@ -140,10 +181,58 @@
   }
 }
 
+/* The old glass highlight on the docked panel (E097, look-alike without blur): a band fading down from the top edge
+   and a glint along it, 20 px in from each side. */
+@media (forced-colors: none) {
+  .obs-fx-dock > .obs-fx-panel {
+    background-image: var(--obs-glass-glint), var(--obs-glass-band);
+    background-position: 50% 0, 0 0;
+    background-size: calc(100% - 40px) 1px, auto;
+    background-repeat: no-repeat;
+  }
+}
+
+/* Phones (R3, owner decision E136): observatory-interactions.js moves the panel into the navigation sheet after the
+   theme toggle and hides the dock, as the old site did; a page without the header controller keeps the dock. In the
+   sheet the panel is a flat ruled block: the legend with the FX switch, the two intensities, then the coordinates. */
 @media (max-width: 760px) {
-  .obs-fx-dock,
-  .research-coordinates {
+  :where(html[data-nav-ready]) .obs-fx-dock {
     display: none;
+  }
+
+  .header-actions > .obs-fx-panel {
+    position: static;
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0 18px;
+    width: auto;
+    margin-block-start: var(--ed-space-3);
+    padding: 6px 2px 0;
+    border: 0;
+    border-top: 1px solid var(--obs-hairline);
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  .header-actions > .obs-fx-panel[hidden] {
+    display: none;
+  }
+
+  .header-actions > .obs-fx-panel legend {
+    width: auto;
+    margin: 0;
+  }
+
+  .header-actions > .obs-fx-panel .ambient-fx-toggle {
+    grid-column: 2 / -1;
+    justify-self: start;
+    width: auto;
+  }
+
+  .header-actions > .obs-fx-panel .research-coordinates {
+    grid-column: 1 / -1;
   }
 }
 

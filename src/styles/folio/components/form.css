@@ -20,8 +20,13 @@
   opacity: 1;
 }
 
-:where(input[type="radio"], input[type="checkbox"], input[type="range"]) {
+:where(input[type="radio"], input[type="checkbox"]) {
   accent-color: var(--obs-text);
+}
+
+/* Sliders: brass thumbs and filled tracks, as on the old site. */
+:where(input[type="range"]) {
+  accent-color: var(--obs-accent);
 }
 
 :where(input[type="radio"], input[type="checkbox"]) {

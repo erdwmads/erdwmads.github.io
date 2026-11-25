@@ -1,4 +1,4 @@
-/* @owner WP3 · @budget 5KB · @important 0 · Home, scoped under .ui-page-home */
+/* @owner WP3 · @budget 6.5KB · @important 0 · Home, scoped under .ui-page-home */
 .ui-page-home .home-title {
   padding-top: var(--ed-space-8);
 }
@@ -54,8 +54,60 @@
   font-size: var(--ed-small);
 }
 
-.ui-page-home .home-keywords strong {
+/* A timeline record under the pointer takes the old record glow (E105, as at 4e14512): a steel top light and a soft
+   depth. A hairline row: nothing moves. */
+@media (hover: hover) and (forced-colors: none) {
+  .ui-page-home .home-timeline-list > li:hover {
+    box-shadow: var(--obs-record-depth);
+  }
+}
+
+/* The Research button carries the old tinted arrow chip (c4, E053). */
+@media (forced-colors: none) {
+  .ui-page-home .home-actions .button::after {
+    content: "\2192" / "";
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--obs-icon-chip-edge);
+    border-radius: 50%;
+    background: var(--obs-icon-chip-face);
+    font-size: .75rem;
+    opacity: .78;
+  }
+}
+
+/* The keywords as the old site's pills (c4, E052): same words, same order; 12 px everywhere (the old 11 px on desktop
+   is under the 12 px floor for prose, evidence-status.browser), on the old 16.5 px line so a pill keeps its 29 px, and 8 px sides (old 9) so the larger words keep three rows in the
+   notes column and Current Focus stays in the first view (home-focus.browser). */
+.ui-page-home .home-keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 0;
+  list-style: none;
+}
+
+.ui-page-home .pill {
+  padding: 5px 8px;
+  border: 1px solid var(--obs-hairline);
+  border-radius: 999px;
+  background: var(--obs-surface);
   color: var(--obs-text);
+  font-size: .75rem;
+  font-weight: 600;
+  line-height: 1.375;
+  transition: color .16s, border-color .16s, box-shadow .16s, opacity .16s;
+}
+
+/* The old liquid-glass highlight on the pills (E097, look-alike without blur): a band fading from the top and a top
+   glint. */
+@media (forced-colors: none) {
+  .ui-page-home .pill {
+    background-image: var(--obs-glass-band);
+    box-shadow: var(--obs-chip-glint);
+  }
 }
 
 .ui-page-home .identity-links a {
@@ -205,6 +257,11 @@
 
   .ui-page-home .home-actions .button {
     flex: 1 1 100%;
+  }
+
+  .ui-page-home .home-actions .button::after {
+    width: 22px;
+    height: 22px;
   }
 
   .ui-page-home .home-timeline-list > li {

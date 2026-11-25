@@ -18,25 +18,33 @@ try{
   await page.addInitScript(()=>{
    sessionStorage.setItem('mads-cosmic-arrival-v1','done');
    localStorage.setItem('madsAmbientFxEnabled','1');
-   const live=new Set(),set=window.setInterval.bind(window),clear=window.clearInterval.bind(window);
-   window.setInterval=(fn,delay,...args)=>{const id=set(fn,delay,...args);if(delay===1900)live.add(id);return id;};
+   // Meteor timers: 1900 ms for the full field, 5200 ms for the phones' lite field (owner decision E103).
+   const live=new Map(),set=window.setInterval.bind(window),clear=window.clearInterval.bind(window);
+   window.setInterval=(fn,delay,...args)=>{const id=set(fn,delay,...args);if(delay===1900||delay===5200)live.set(id,delay);return id;};
    window.clearInterval=id=>{live.delete(id);return clear(id);};
-   window.ambientIntervalCount=()=>live.size;
+   window.ambientIntervalCount=()=>[...live.values()].filter(delay=>delay===1900).length;
+   window.liteIntervalCount=()=>[...live.values()].filter(delay=>delay===5200).length;
   });
   await page.goto(base+'/contact.html',{waitUntil:'networkidle'});
   await page.addStyleTag({content:'main { min-height:300vh!important; }'});
   async function check(width,expected,label){
    await page.setViewportSize({width,height:900});
    // Wait for the resize to settle instead of a fixed pause, which a busy machine can outrun (3 s cap, then report the state).
-   await page.waitForFunction(expected=>{const state={layers:document.querySelectorAll('.ambient-space-layer').length,rails:document.querySelectorAll('.ui2046-layer').length,progress:document.querySelectorAll('.ui2046-progress').length,intervals:window.ambientIntervalCount()};return Object.entries(expected).every(([key,value])=>state[key]===value);},expected,{timeout:3000}).catch(()=>{});
-   const state=await page.evaluate(()=>({layers:document.querySelectorAll('.ambient-space-layer').length,rails:document.querySelectorAll('.ui2046-layer').length,progress:document.querySelectorAll('.ui2046-progress').length,intervals:window.ambientIntervalCount()}));
+   await page.waitForFunction(expected=>{const state={layers:document.querySelectorAll('.ambient-space-layer').length,lite:document.querySelectorAll('.ambient-space-layer.is-lite').length,pebbles:document.querySelectorAll('.ambient-pebble').length,rails:document.querySelectorAll('.ui2046-layer').length,progress:document.querySelectorAll('.ui2046-progress').length,intervals:window.ambientIntervalCount(),liteIntervals:window.liteIntervalCount()};return Object.entries(expected).every(([key,value])=>state[key]===value);},expected,{timeout:3000}).catch(()=>{});
+   const state=await page.evaluate(()=>({layers:document.querySelectorAll('.ambient-space-layer').length,lite:document.querySelectorAll('.ambient-space-layer.is-lite').length,pebbles:document.querySelectorAll('.ambient-pebble').length,rails:document.querySelectorAll('.ui2046-layer').length,progress:document.querySelectorAll('.ui2046-progress').length,intervals:window.ambientIntervalCount(),liteIntervals:window.liteIntervalCount()}));
    for(const [key,value] of Object.entries(expected))if(state[key]!==value)failures.push(initialWidth+' '+label+' '+key+': expected '+value+', got '+state[key]);
   }
-  await check(1440,{layers:1,rails:1,progress:1,intervals:1},'desktop');
+  await check(1440,{layers:1,lite:0,rails:1,progress:1,intervals:1,liteIntervals:0},'desktop');
+  // Phones keep one layer, the lite field without pebbles, and no orrery, rail or spine (E103).
   for(let i=0;i<2;i++){
-   await check(390,{layers:0,rails:0,progress:0,intervals:0},'mobile '+i);
-   await check(1440,{layers:1,rails:1,progress:1,intervals:1},'desktop restored '+i);
+   await check(390,{layers:1,lite:1,pebbles:0,rails:0,progress:0,intervals:0,liteIntervals:1},'mobile '+i);
+   await check(1440,{layers:1,lite:0,rails:1,progress:1,intervals:1,liteIntervals:0},'desktop restored '+i);
   }
+  await page.setViewportSize({width:390,height:900});
+  await page.evaluate(()=>document.querySelector('.ambient-fx-toggle').click());
+  await check(390,{layers:0,intervals:0,liteIntervals:0},'mobile FX off');
+  await page.evaluate(()=>document.querySelector('.ambient-fx-toggle').click());
+  await check(390,{layers:1,lite:1,liteIntervals:1},'mobile FX on');
   await page.evaluate(()=>document.querySelector('.ambient-fx-toggle').click());
   await page.evaluate(()=>window.dispatchEvent(new CustomEvent('mads:power-state',{detail:window.__madsPowerState})));
   await check(1440,{layers:0,intervals:0},'FX off');
@@ -55,5 +63,5 @@ try{
   assert.deepEqual(errors,[]);await page.close();
  }
  assert.deepEqual(failures,[]);
- console.log('PASS ambient resize: mobile/desktop restoration, connected progress, singleton meteor timers and FX toggles.');
+ console.log('PASS ambient resize: the lite phone field and the full desktop field swap at 760 px, connected progress, singleton meteor timers and FX toggles at both widths.');
 }finally{await browser.close();}

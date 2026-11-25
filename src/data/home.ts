@@ -1,8 +1,8 @@
 // Home page source data (src/pages/index.astro). The research question and Current Focus come from
 // src/data/project.mjs; this file holds the rest of the page's text.
 //
-// - keywords: the words of the former interest pills, unchanged and in their order. Home sets them as one
-//   "Keywords: …" line; scripts/check-site/research.mjs holds the built line to this list.
+// - keywords: the words of the interest pills, unchanged and in their order. Home sets them as the old site's pills
+//   (owner, 2026-11-18); scripts/check-site/research.mjs holds the built pills to this list.
 // - explore: the onward routes, numbered in the hanging margin. A detail is text, with { struck } for a word set
 //   crossed out (Photography keeps its struck-through camera).
 // - timeline: the academic timeline, newest last; the full record is on the CV.

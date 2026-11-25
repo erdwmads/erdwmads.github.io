@@ -1,4 +1,4 @@
-/* @owner WP2 · @budget 3.5KB · @important 0 · Site footer colophon rows and the Replay entrance button */
+/* @owner WP2 · @budget 4KB · @important 0 · Site footer colophon rows and the Replay entrance button */
 /* The colophon, on a solid ground under a strong rule: the long-term question beneath its label in the serif italic;
    the owner, ORCID iD and page actions on a hairline; then the imprint line. Phones stack the rows and keep Replay
    entrance here, where it covers nothing. */
@@ -22,10 +22,12 @@
   pointer-events: none;
 }
 
+/* The colophon sits in the old site's soft white glow. */
 .footer-inner {
   display: grid;
   gap: var(--ed-space-5);
   padding-block: var(--ed-space-7) var(--ed-space-6);
+  text-shadow: var(--obs-footer-halo);
 }
 
 .footer-question {
@@ -98,13 +100,19 @@
   text-decoration-color: currentColor;
 }
 
-.footer-colophon {
+.footer-colophon,
+.footer-credits {
   font-size: var(--ed-label);
   line-height: 1.7;
   letter-spacing: .02em;
 }
 
 .footer-colophon > span {
+  white-space: nowrap;
+}
+
+/* A credit link never breaks, so its whole name is one target. */
+.footer-credits a {
   white-space: nowrap;
 }
 

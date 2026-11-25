@@ -70,11 +70,15 @@ test("home profile uses only the Mineralogy Laboratory logo", () => {
 });
 
 // Replay entrance moves to the footer on phones, where the fixed button and the effects dock are hidden
-// (style-contract/shell.mjs, arrival-focus, reading-ui); the effects panel stays in its dock, never in the sheet (R3).
+// (style-contract/shell.mjs, arrival-focus, reading-ui); the one effects panel moves into the sheet after the theme
+// toggle, as on the old site (R3 amended, owner decision E136), and never into a copy.
 test("phones keep floating controls off the reading column", () => {
   assert.match(shell, /<button class="footer-replay" type="button" data-arrival-replay hidden>Replay entrance<\/button>/);
   assert.match(read("../src/scripts/arrival/entry.js"), /document\.querySelectorAll\('\[data-arrival-replay\]'\)/);
   const observatory = read("../public/assets/js/observatory-interactions.js");
   assert.match(observatory, /<fieldset id="obs-fx-panel" class="obs-fx-panel" hidden>/);
-  assert.doesNotMatch(observatory, /\[data-mobile-nav\]|appendChild\(panel\)/);
+  assert.match(observatory, /const sheet = document\.querySelector\('\[data-mobile-nav\]'\);/);
+  assert.match(observatory, /themeToggle \? themeToggle\.after\(panel\) : sheet\.appendChild\(panel\)/);
+  assert.match(observatory, /root\.hasAttribute\('data-nav-ready'\)/, "a page without the header controller keeps the dock");
+  assert.doesNotMatch(observatory, /cloneNode/, "never a second panel");
 });

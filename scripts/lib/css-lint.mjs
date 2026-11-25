@@ -2,6 +2,8 @@
 // can hold them to known selectors: the specificity weight of a selector, nested rules, the bans, the !important
 // count, theme selectors and the pinned file headers.
 
+import { cssRules } from "./css-rules.mjs";
+
 export const stripComments = (css) => css.replace(/\/\*[\s\S]*?\*\//g, "");
 
 // Splits on top-level separators: commas inside :is() and friends, and characters inside [...], stay.
@@ -100,10 +102,9 @@ export function nestedRules(css) {
   return found;
 }
 
-// Text bans, case-insensitive as CSS keywords are: no live blur, cascade layers, imports, off-site resources (in url(),
+// Text bans, case-insensitive as CSS keywords are: no cascade layers, imports, off-site resources (in url(),
 // image-set() or any quoted string) or body ids.
 export const bans = [
-  [/backdrop-filter/i, "backdrop-filter"],
   [/@layer\b/i, "@layer"],
   [/@import\b/i, "@import"],
   [/url\(\s*["']?\s*(?:https?:)?\/\//i, "a remote url()"],
@@ -111,13 +112,28 @@ export const bans = [
   [/body#/i, "body#"]
 ];
 
-export const countImportant = (css) => (stripComments(css).match(/!\s*important/gi) || []).length;
+// Live blur only where Microsoft Edge rendered it on the old site (census of 2f20d7e, effects pass of 2026-11-18): the
+// CV education date chips. Everywhere else glass is a translucent face without blur. Keyed by the file under
+// src/styles/folio; a rule may use backdrop-filter only when every one of its selectors is listed for its file.
+export const blurAllowList = {
+  "pages/cv.css": [".ui-page-cv .cv-edu-card > .ledger__key"]
+};
+
+// The selectors of every rule in `file` that declares backdrop-filter (with or without a prefix) outside the list.
+export function blurOutsideAllowList(file, css) {
+  const allowed = blurAllowList[file] || [];
+  return cssRules(css)
+    .filter((rule) => rule.declarations.some((declaration) => /(^|-)backdrop-filter$/.test(declaration.property)))
+    .flatMap((rule) => rule.selectors.filter((selector) => !allowed.includes(selector)));
+}
+
+export const countImportant =(css) => (stripComments(css).match(/!\s*important/gi) || []).length;
 export const namesThemeSelector = (css) => /\[\s*data-theme/i.test(stripComments(css));
 
 // The file headers, pinned (spec §7.3 freezes them): owner, budget in KB and @important per manifest file. A package
 // that needs a larger budget asks for it in its handoff; the integration pass changes the header and this table.
 export const pinnedHeaders = {
-  "00-tokens.css": ["WP1", 8, 0],
+  "00-tokens.css": ["WP1", 20, 0],
   "01-fonts.css": ["WP1", 3, 0],
   "02-reset.css": ["WP1", 3, 1],
   "03-base.css": ["WP1", 6, 0],
@@ -132,37 +148,39 @@ export const pinnedHeaders = {
   "components/table.css": ["WP1", 2, 0],
   "components/disclosure.css": ["WP1", 2, 0],
   "components/form.css": ["WP1", 3, 0],
-  "components/header.css": ["WP2", 9, 0],
-  "components/footer.css": ["WP2", 3.5, 0],
-  "components/continue-reading.css": ["WP2", 2, 0],
-  "components/fx-dock.css": ["WP2", 3.5, 0],
-  "components/ambient.css": ["WP2", 4, 0],
-  "components/interface-2046.css": ["WP2", 5, 0],
-  "components/mineral-fx.css": ["WP2", 2, 0],
-  "components/arrival.css": ["WP2", 4.5, 0],
-  "components/research-guide.css": ["WP3", 4, 0],
+  "components/header.css": ["WP2", 12, 0],
+  "components/footer.css": ["WP2", 4, 0],
+  "components/continue-reading.css": ["WP2", 2.5, 0],
+  "components/fx-dock.css": ["WP2", 7, 0],
+  "components/backdrop.css": ["WP2", 4, 0],
+  "components/ambient.css": ["WP2", 5, 0],
+  "components/interface-2046.css": ["WP2", 7.5, 0],
+  "components/mineral-fx.css": ["WP2", 2.5, 0],
+  "components/arrival.css": ["WP2", 5, 0],
+  "components/research-guide.css": ["WP3", 5, 0],
   "components/pathway.css": ["WP3", 5, 0],
   "components/comparison.css": ["WP3", 2, 0],
   "components/image-inspector.css": ["WP4", 4, 0],
-  "components/research-scale.css": ["WP4", 3, 0],
+  "components/research-scale.css": ["WP4", 4.5, 0],
   "components/scene.css": ["WP4", 5, 0],
-  "components/planetary.css": ["WP4", 18, 0],
+  "components/planetary.css": ["WP4", 19.5, 0],
   "components/sample-missions.css": ["WP4", 20, 0],
   "components/origins.css": ["WP4", 20, 0],
-  "components/presentation.css": ["WP5", 4, 0],
-  "components/lightbox.css": ["WP6", 4, 0],
-  "components/atlas.css": ["WP6", 5, 0],
+  "components/presentation.css": ["WP5", 4.5, 0],
+  "components/lightbox.css": ["WP6", 6.5, 0],
+  "components/atlas.css": ["WP6", 6, 0],
   "components/mission-log.css": ["WP6", 14, 0],
-  "pages/home.css": ["WP3", 5, 0],
+  "components/surface-light.css": ["WP2", 7, 0],
+  "pages/home.css": ["WP3", 6.5, 0],
   "pages/research.css": ["WP3", 4, 0],
-  "pages/research-log.css": ["WP3", 2, 0],
+  "pages/research-log.css": ["WP3", 2.5, 0],
   "pages/ryugu-bennu.css": ["WP4", 2, 0],
   "pages/origins.css": ["WP4", 1, 0],
-  "pages/paper-shelf.css": ["WP5", 5.5, 0],
-  "pages/photography.css": ["WP5", 4, 0],
-  "pages/cv.css": ["WP5", 4.5, 0],
-  "pages/contact.css": ["WP5", 1, 0],
-  "pages/not-found.css": ["WP5", 1, 0],
+  "pages/paper-shelf.css": ["WP5", 7, 0],
+  "pages/photography.css": ["WP5", 5, 0],
+  "pages/cv.css": ["WP5", 5.5, 0],
+  "pages/contact.css": ["WP5", 1.5, 0],
+  "pages/not-found.css": ["WP5", 2, 0],
   "pages/graduation.css": ["WP6", 2, 0],
   "states/overlays.css": ["WP1", 1.5, 0],
   "states/motion.css": ["WP1", 2, 12],

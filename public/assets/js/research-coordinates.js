@@ -1,19 +1,11 @@
 (function () {
-  const MOBILE_COORDINATES_MEDIA = "(max-width: 760px)";
-  const mobileCoordinatesQuery = window.matchMedia
-    ? window.matchMedia(MOBILE_COORDINATES_MEDIA)
-    : null;
-
+  // The Target / Phase / Mode readout joins the Visual effects panel wherever that panel is: the dock, or the phone
+  // menu at 760 px and below (observatory-interactions.js, owner decision E136).
   function removeCoordinates() {
     document.querySelector(".research-coordinates")?.remove();
   }
 
   function initCoordinates() {
-    if (mobileCoordinatesQuery?.matches) {
-      removeCoordinates();
-      return;
-    }
-
     if (document.querySelector(".research-coordinates")) return;
 
     const isComparison = location.pathname.includes("ryugu-bennu");
@@ -66,12 +58,6 @@
   function syncCoordinates() {
     removeCoordinates();
     initCoordinates();
-  }
-
-  if (mobileCoordinatesQuery?.addEventListener) {
-    mobileCoordinatesQuery.addEventListener("change", syncCoordinates);
-  } else if (mobileCoordinatesQuery?.addListener) {
-    mobileCoordinatesQuery.addListener(syncCoordinates);
   }
 
   window.addEventListener("mads:soft-nav-ready", syncCoordinates);

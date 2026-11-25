@@ -130,7 +130,8 @@ const lines = [
   "",
   `- New Mission Log images publish display derivatives in \`public/assets/img/mission-log/\`: auto-oriented sRGB JPEG, at most ${MISSION_MAX_EDGE} px on the long edge and ${formatBytes(MISSION_MAX_BYTES)}, EXIF/XMP stripped. This audit fails otherwise.`,
   "- Instrument and camera originals live in `C:\\Users\\tsuku\\Desktop\\Grad Research\\Orgueil Grad Data\\事前準備` as `orgueil-mission-log-YYYYMMDD-figNN.jpg`; back up the original there before publishing its derivative.",
-  "- Keep Photography originals and other original files in `public/assets/img/` unless the owner explicitly approves destructive replacement; page display uses generated derivatives (`npm run images:derive`).",
+  "- Keep Photography originals and other original files in `public/assets/img/` unless the owner explicitly approves destructive replacement; page display uses generated derivatives (`npm run images:derive`, and `npm run images:backgrounds -- --only <file>` for the page backdrops).",
+  "- Page backdrops (`asteroid-bennu*`, `Solar_System_true_color*`) are restored from commit 2f20d7e; Bennu is a NASA/Goddard/University of Arizona photograph; the Solar System montage is \"Solar System true color\" by CactiStaccingCrane (Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Solar_System_true_color.jpg), CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/), cropped and toned. Both are credited in the footer colophon (`src/data/colophon.ts`).",
   "- Mission Log images should keep `loading=\"lazy\"` and `decoding=\"async\"`.",
   "- Scene posters in `public/assets/img/posters/` are stills of the site's own 3D scenes, made by `node scripts/capture-scene-posters.mjs` after a build (provenance and hashes in `posters/PROVENANCE.md`). Recapture them when a scene's first frame or its stage size changes.",
   "- Before replacing public or Mission Log images, run `npm run check`."

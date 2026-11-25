@@ -25,7 +25,7 @@ Everything here runs with Node 24 or later (`.nvmrc`) from the repository root. 
 | `npm run check:all` | every unit test (`npm run test:unit`, the suite CI runs) and `npm run check` |
 | `npm run test:unit` | every Node unit test (`run-unit-tests.mjs`): `scripts/*.test.mjs` and `src/**/*.test.mjs` |
 | `npm run test:browser` | every Playwright regression test (`run-browser-tests.mjs`) against the built `dist/`; see below |
-| `npm run audit:css:check` | the CSS lint: every stylesheet in `src/styles/folio` against the budget and `!important` allowance in its own header, the bans (`backdrop-filter`, `@layer`, `@import`, remote `url()`, `body#`, theme selectors outside the tokens), the specificity limits and the 145 KB bundle limit |
+| `npm run audit:css:check` | the CSS lint: every stylesheet in `src/styles/folio` against the budget and `!important` allowance in its own header, the bans (`@layer`, `@import`, remote `url()`, `body#`, theme selectors outside the tokens), `backdrop-filter` outside its allow-list of selectors, the specificity limits and the 200 KB bundle limit |
 | `npm run audit:images` | derivative counts, Mission Log display limits (2400 px, 1.5 MB, no EXIF/XMP) and `docs/image-inventory.md` |
 
 ## Maintenance tools
@@ -42,7 +42,7 @@ Everything here runs with Node 24 or later (`.nvmrc`) from the repository root. 
 | `audit-images.mjs` | image inventory, derivative counts and Mission Log display limits |
 | `generate-image-derivatives.mjs` | Photography 480w thumbnails and 640w/960w srcset tiers (1600w for the panorama), Mission Log WebP thumbnails (`npm run images:derive`; `-- photography` or `-- mission-log` regenerates one group) |
 | `capture-scene-posters.mjs` | the scene posters in `public/assets/img/posters/` (each 3D stage shows one until its scene is ready): every viewer captured from `dist/` in headless Edge at the desktop and the phone layout with the clock pinned, written as WebP at 1600 px (at most 140 KB) and 640 px (at most 60 KB), and `posters/PROVENANCE.md` rewritten with sizes and hashes. Run after `npm run build` when a scene's first frame or stage size changes; `audit-images.mjs` checks the files |
-| (retired) `generate-site-backgrounds.mjs` | removed in the Folio 2046 rebuild with the background images. The images it made stay committed: `profile*.webp`, `CV-*.webp`, `research-scale/bennu-whole.webp` and `og-cover.jpg`. To redraw one, run the script from `git show 2f20d7e:scripts/generate-site-backgrounds.mjs`; `og-cover.jpg` was drawn from `Solar_System_true_color.jpg`, which is in that commit too |
+| `generate-site-backgrounds.mjs` | the page backdrops (`asteroid-bennu-1280.webp` and the 800 px phone tier, grayscale; `Solar_System_true_color-1600.webp`) and, without `--only`, the portrait and CV WebP tiers, `research-scale/bennu-whole.webp` and `og-cover.jpg` (`npm run images:backgrounds`; `-- --only <file>` regenerates one) |
 | `shape-model-glb.mjs` | lossless OBJ → GLB re-encoding of measured shape models |
 | `spacecraft-model-simplify.mjs` | reproducible display simplification of NASA's OSIRIS-REx GLB (reads the unmodified NASA file from git history or a path; see `SPACECRAFT-CREDITS.md`) |
 | `draco-sequential-encoder.mjs` | minimal Draco mesh encoder used by the simplifier; output is checked with the site's own decoder |
@@ -89,18 +89,18 @@ The runner serves `dist/` on a free local port (`lib/static-server.mjs`, so runs
 
 | Area | Tests |
 |---|---|
-| Site guards (WP1, every page) | `typography`, `controls`, `theme-geometry`, `interaction-stability`, `evidence-status`, `layout-shift`, `first-paint`, `contrast`, `reduced-motion`, `focus-visibility`, `accessible-names`, `forced-colors`, `legibility-gate` |
-| Home arrival and display settings | `arrival`, `arrival-focus`, `arrival-performance`, `ambient-resize`, `orbital-motion`, `home-background`, `home-focus`, `fullscreen-paint` |
-| Header, navigation and soft navigation | `site-header`, `soft-nav-page-class`, `navigation-beam`, `navigation-intent`, `navigation-lifecycle`, `site-control-clearance`, `page-alignment` |
+| Site guards (WP1, every page) | `typography`, `controls`, `theme-geometry`, `interaction-stability`, `evidence-status`, `layout-shift`, `first-paint`, `contrast`, `reduced-motion`, `focus-visibility`, `accessible-names`, `forced-colors`, `legibility-gate`, `backdrop-contrast` |
+| Home arrival and display settings | `arrival`, `arrival-focus`, `arrival-performance`, `ambient-resize`, `orbital-motion`, `home-background`, `home-focus`, `fullscreen-paint`, `edge-light`, `shell-light` (the old site's shell light: orbit trace, lit navigation face, gate sweep, pressed shadow, Onward nudge, FX switch glow, deferred Bennu and the graticule, with their off states) |
+| Header, navigation and soft navigation | `site-header`, `soft-nav-page-class`, `navigation-beam`, `navigation-intent`, `navigation-lifecycle`, `site-control-clearance`, `page-alignment`, `header-float` |
 | Research page | `research-reading`, `research-flow-visual`, `research-workflow`, `research-hub`, `mineral-interactions`, `reading-ui`, `reading-tools` |
 | Ryugu & Bennu: sample-return missions | `sample-missions*`, `mission-*`, `physical-missions`, `earth-*`, `flight-frames`, `readable-motion`, `sample-camera`, `observation-workspaces` |
 | Ryugu & Bennu: planetary field guide | `planetary-*`, `research-navigation`, `research-review` |
 | Ryugu & Bennu: published microscopy | `research-scale`, `research-scale-mobile`, `experimental-folio`, `experimental-folio-access` |
 | Origins | `origins-*`, `porous-continuum` |
 | Paper Shelf | `paper-shelf` |
-| Photography, CV, Contact | `photo-flight`, `photo-wall`, `portrait-framing`, `progress-polish` |
+| Photography, CV, Contact | `photo-flight`, `photo-wall`, `portrait-framing`, `progress-polish`, `page-light` (the old site's light on the pages and records: Mission Log photographs, viewer and index with a synthetic archive, photo wall, layout switch, full-screen label, CV shadow and frost, Home chip, 404 card, Paper Shelf filter and search ring, with their off states) |
 | Protected Research Log | `research-passkey`, `research-passkey-virtual` (virtual authenticator: API flow only, not a real Windows Hello check) |
-| Whole site | `site-audit`, `site-refinement`, `whole-site-content`, `observatory`, `style-snapshot` |
+| Whole site | `site-audit`, `site-refinement`, `whole-site-content`, `observatory`, `style-snapshot`, `late-light` (the owner's late decisions: heading glow, glass band and glint, record glow, the effects button shadow by browser, the lite phone field and the effects panel in the phone menu, with their off states) |
 
 The site guards share `lib/guard.mjs`. Each loads the registry's pages (the eleven pages the shell renders, each with the package that rebuilds it) at its widths in both themes, and reports every page:
 - **Filters.** `--pages index,cv`, `--area research` (research, features, collections or archive; core and shell keep every page), `--widths` and `--themes`, as arguments when a guard runs on its own or through the runner, which passes them on as `GUARD_PAGES`, `GUARD_AREA`, `GUARD_WIDTHS`, `GUARD_THEMES` and `FOLIO_OWNER` (`--owner`).

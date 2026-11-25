@@ -1,4 +1,4 @@
-/* @owner WP5 · @budget 5.5KB · @important 0 · Paper Shelf, scoped under .ui-page-paper-shelf */
+/* @owner WP5 · @budget 7KB · @important 0 · Paper Shelf, scoped under .ui-page-paper-shelf */
 .ui-page-paper-shelf .masthead__meta {
   margin-block-start: var(--ed-space-3);
   color: var(--obs-text);
@@ -35,13 +35,18 @@
   text-underline-offset: .5em;
 }
 
+/* The filters are the old site's flat boxes (owner, 2026-11-18; c4, E056), which the edge light lights (E021). */
 .ui-page-paper-shelf .paper-filter-row {
-  gap: 0;
-  margin-inline-start: calc(-1 * var(--ed-space-3));
+  gap: var(--ed-space-2);
 }
 
 .ui-page-paper-shelf .paper-filter {
   padding-inline: var(--ed-space-3);
+  border: 1px solid var(--obs-control-border);
+  border-radius: var(--radius-control);
+  background: var(--obs-surface);
+  color: var(--obs-text);
+  transition: border-color .18s ease-out, box-shadow .14s ease-out, color .14s ease-out;
 }
 
 .ui-page-paper-shelf .paper-search::-webkit-search-cancel-button {
@@ -58,6 +63,31 @@
 
 .ui-page-paper-shelf :is(.paper-filter[aria-pressed="true"], .paper-copy:hover) {
   text-decoration-color: currentColor;
+}
+
+/* The old pressed filter: a highlight face behind a brass border, sinking into the pressed shadow while held; a brass
+   edge under the pointer; the search box rings in brass, 3 px out like every focus ring (old 4 px; controls.browser).
+   Forced colours keep the underline and the system ring. */
+@media (hover: hover) and (forced-colors: none) {
+  .ui-page-paper-shelf .paper-filter:hover {
+    border-color: var(--obs-accent);
+  }
+}
+
+@media (forced-colors: none) {
+  .ui-page-paper-shelf .paper-filter[aria-pressed="true"] {
+    border-color: var(--obs-accent);
+    background: var(--obs-highlight);
+    text-decoration-color: transparent;
+  }
+
+  .ui-page-paper-shelf .paper-filter:active {
+    box-shadow: var(--obs-control-pressed);
+  }
+
+  .ui-page-paper-shelf .paper-search:focus-visible {
+    outline-color: var(--obs-accent);
+  }
 }
 
 .ui-page-paper-shelf .paper-shelf {
@@ -89,6 +119,17 @@
 
 .ui-page-paper-shelf .paper-card:not([hidden]) ~ :where(.paper-card:not([hidden])) {
   border-top: 1px solid var(--obs-hairline);
+}
+
+/* A paper under the pointer takes the old record glow (E105, as at 4e14512): its rule turns to the glass edge and a
+   faint depth lies under it, easing in over 180 ms. After the rule above, so the edge wins. A hairline row: nothing
+   moves. */
+@media (hover: hover) and (forced-colors: none) {
+  .ui-page-paper-shelf .paper-card:hover {
+    border-top-color: var(--obs-glass-edge);
+    box-shadow: var(--obs-record-depth-hover);
+    transition: box-shadow .18s;
+  }
 }
 
 .ui-page-paper-shelf :is(.paper-card:target, .paper-card:has(> :target)) {

@@ -27,8 +27,11 @@ function enter() {
     const offset = Math.ceil(height + (mobile.matches ? 20 : 32));
     const value = offset + 'px';
     if (main.style.getPropertyValue('--research-guide-offset') !== value) main.style.setProperty('--research-guide-offset', value);
+    // Where the header floats, the root's scroll padding is its height (components/header.css): a section is current
+    // once it reaches the bar below the header.
+    const clearance = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
     let active = 0;
-    targets.forEach((target, index) => { if (target.getBoundingClientRect().top <= offset + 5) active = index; });
+    targets.forEach((target, index) => { if (target.getBoundingClientRect().top <= clearance + offset + 5) active = index; });
     if (scrollY > 0 && scrollY + innerHeight >= document.scrollingElement.scrollHeight - 2 && targets.at(-1).getBoundingClientRect().top < innerHeight) active = targets.length - 1;
     links.forEach((link, index) => {
       if (index === active) link.setAttribute('aria-current', 'location');

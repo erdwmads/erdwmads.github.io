@@ -134,7 +134,8 @@ export async function probe({ pages = defaultPages, widths = defaultWidths, runs
 }
 
 // Regressions of a probe against a baseline: LCP above the baseline by more than the tolerance, CLS above 0 or above
-// the baseline, whichever is larger. Pages missing from the baseline are reported, not failed.
+// the baseline, whichever is larger, or a page backdrop (components/backdrop.css) as the LCP element. Pages missing from
+// the baseline are reported, not failed.
 export function compare(current, baseline, tolerance = 0.1) {
   const lines = [], regressions = [];
   for (const result of current.results) {
@@ -144,6 +145,11 @@ export function compare(current, baseline, tolerance = 0.1) {
     const line = `${result.page} @${result.width}: LCP ${before.lcpMs} -> ${result.lcpMs} ms (limit ${lcpLimit}), CLS ${before.cls} -> ${result.cls}, fonts ${before.fontBytes} -> ${result.fontBytes} B`;
     lines.push(line);
     if (result.lcpMs > lcpLimit || result.cls > Math.max(0, before.cls)) regressions.push(line);
+    if (/asteroid-bennu|Solar_System_true_color/.test(result.lcpElement)) {
+      const backdrop = `${result.page} @${result.width}: a backdrop became the LCP element (${result.lcpElement})`;
+      lines.push(backdrop);
+      regressions.push(backdrop);
+    }
   }
   return { lines, regressions };
 }

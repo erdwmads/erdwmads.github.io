@@ -1,6 +1,7 @@
 /* @owner WP1 · @budget 3KB · @important 0 · Page masthead (Masthead.astro) and the kicker, with its brass rule */
 /* Kicker: muted capitals; on a masthead a 24 x 2 px brass rule leads it (one of the few brass marks). The rule is
-   a border, so forced colours keep it. */
+   a border, so forced colours keep it. Every kicker begins with the old site's signal star, a glowing brass bead,
+   and the label carries a faint gold glow (owner, 2026-11-18); forced colours drop both. */
 .kicker {
   display: flex;
   flex-wrap: wrap;
@@ -13,6 +14,35 @@
   line-height: 1.3;
   letter-spacing: .08em;
   text-transform: uppercase;
+  text-shadow: 0 0 14px var(--obs-gold-glow);
+}
+
+/* The bead hangs in the kicker's start padding, centred on its first line, so it never wraps away from the label. */
+.kicker {
+  position: relative;
+  padding-inline-start: calc(5.5px + var(--ed-space-2));
+}
+
+.kicker::before {
+  content: "";
+  position: absolute;
+  top: calc(.65em - 2.75px);
+  left: 0;
+  width: 5.5px;
+  height: 5.5px;
+  border-radius: 50%;
+  background: var(--obs-bead);
+  box-shadow: var(--obs-bead-glow);
+}
+
+@media (forced-colors: active) {
+  .kicker {
+    padding-inline-start: 0;
+  }
+
+  .kicker::before {
+    display: none;
+  }
 }
 
 .kicker__rule {

@@ -78,6 +78,60 @@
   new ResizeObserver(() => moveBeam(activeLink(), false)).observe(header);
   window.addEventListener('mads:fx-state', () => lightOrbit());
 
+  // Edge light (the owner's choice of 2026-11-18, after the old site's): under a mouse, the control beneath it gets
+  // [data-edge-active] and --edge-angle, the pointer's direction from its centre, and components/surface-light.css
+  // lights its border on that side. One pointermove handler and at most one style write per frame; the control's box
+  // is read once, when the pointer enters it, never per move. Off with FX off, reduced motion, low power, a hidden
+  // page, and while the entrance, lightbox, atlas or presentation is open. The old site also lit the planetary
+  // explorer's buttons (owner, 2026-11-18: "all of my previous effects").
+  const edgeMedia = matchMedia('(min-width: 761px) and (hover: hover) and (pointer: fine)');
+  const edgeSelector = '.button, .icon-button, .nav-log-gate, .theme-toggle, .obs-fx-settings, .planetary-materials button, .planetary-toolbar button, .planetary-mineral-tabs button, .paper-filter';
+  const edgeOff = '.ambient-fx-disabled, .mads-power-low, .mads-page-hidden, .cosmic-arrival-active, .mission-lightbox-open, .mineral-atlas-open, .obs-presenting';
+  let edgeTarget = null, edgeCentre = null, edgeFrame = 0, edgeX = 0, edgeY = 0;
+  function clearEdge() {
+    cancelAnimationFrame(edgeFrame);
+    edgeFrame = 0;
+    edgeTarget?.removeAttribute('data-edge-active');
+    edgeTarget?.style.removeProperty('--edge-angle');
+    edgeTarget = edgeCentre = null;
+  }
+  function paintEdge() {
+    edgeFrame = 0;
+    if (!edgeTarget?.isConnected) return clearEdge();
+    const angle = Math.atan2(edgeY - edgeCentre.y, edgeX - edgeCentre.x) * 180 / Math.PI + 90;
+    edgeTarget.style.setProperty('--edge-angle', `${angle.toFixed(1)}deg`);
+    if (!edgeTarget.hasAttribute('data-edge-active')) edgeTarget.setAttribute('data-edge-active', '');
+  }
+  document.addEventListener('pointermove', event => {
+    const on = event.pointerType === 'mouse' && edgeMedia.matches && !reduced.matches && !root.matches(edgeOff);
+    const target = on ? event.target.closest?.(edgeSelector) : null;
+    if (!target || target.matches(':disabled, [aria-disabled="true"]')) {
+      if (edgeTarget) clearEdge();
+      return;
+    }
+    if (target !== edgeTarget) {
+      clearEdge();
+      const box = target.getBoundingClientRect();
+      edgeTarget = target;
+      edgeCentre = { x: box.left + box.width / 2, y: box.top + box.height / 2 };
+    }
+    edgeX = event.clientX;
+    edgeY = event.clientY;
+    if (!edgeFrame) edgeFrame = requestAnimationFrame(paintEdge);
+  }, { passive: true });
+  document.addEventListener('pointerout', event => { if (!event.relatedTarget) clearEdge(); });
+  document.addEventListener('scroll', clearEdge, { capture: true, passive: true });
+  for (const name of ['resize', 'blur', 'pagehide', 'mads:soft-nav-start', 'mads:fx-state']) window.addEventListener(name, clearEdge);
+  window.addEventListener('mads:power-state', event => { if (event.detail?.idle || event.detail?.hidden || event.detail?.lowPower) clearEdge(); });
+  edgeMedia.addEventListener('change', clearEdge);
+  reduced.addEventListener('change', clearEdge);
+
+  // Backdrops (components/backdrop.css): Bennu waits until the page has loaded and the browser is idle, so its image
+  // never shares the first requests with the page's own largest image; then it fades in. Once per document.
+  const showBackdrop = () => (window.requestIdleCallback || setTimeout)(() => root.classList.add('backdrop-ready'), { timeout: 1200 });
+  if (document.readyState === 'complete') showBackdrop();
+  else window.addEventListener('load', showBackdrop, { once: true });
+
   let dock;
   if (fx) {
     dock = document.createElement('div');
@@ -93,20 +147,32 @@
     panel.querySelector('legend').after(fx);
     const coordinates = document.querySelector('.research-coordinates');
     if (coordinates) panel.appendChild(coordinates);
-    // The panel lives in the dock. At 760 px and below the dock is hidden (components/fx-dock.css): FX is forced off
-    // there, so a phone needs no effects panel (decision R3).
+    const compactDock = matchMedia('(max-width: 760px)');
+    const sheet = document.querySelector('[data-mobile-nav]');
+    const docked = () => panel.parentElement === dock;
+    // Open and close apply only to the floating dock; in the navigation sheet the panel is always shown.
     const closeSettings = () => {
+      if (!docked()) return;
       panel.hidden = true;
       settings.setAttribute('aria-expanded', 'false');
     };
-    // A window narrowing to a phone hides the dock: close the panel, and move a focus that was in the dock to the
-    // Menu button (or to main when the header controller is missing), so it never falls back to the body.
-    matchMedia('(max-width: 760px)').addEventListener('change', event => {
-      if (!event.matches) return;
-      const focused = dock.contains(document.activeElement);
-      closeSettings();
-      if (focused) (document.querySelector('html[data-nav-ready] [data-nav-toggle]') || document.querySelector('main'))?.focus({ preventScroll: true });
-    });
+    // Phones (760 px and below), as on the old site (owner decision E136, 2026-11-18): the one panel moves into the
+    // navigation sheet after the theme toggle and the dock is hidden (components/fx-dock.css), so the FX switch stays
+    // in reach and no floating control covers the reading column. Wider windows, and a page whose header controller
+    // failed (no data-nav-ready, the sheet cannot close), keep the dock. A focus inside the panel follows it: to the
+    // Menu button on a phone, to the settings button in the dock.
+    const placePanel = () => {
+      const restoreFocus = panel.contains(document.activeElement);
+      const inSheet = Boolean(compactDock.matches && sheet && root.hasAttribute('data-nav-ready'));
+      settings.setAttribute('aria-expanded', 'false');
+      const themeToggle = sheet?.querySelector('.theme-toggle');
+      if (inSheet && panel.parentElement !== sheet) themeToggle ? themeToggle.after(panel) : sheet.appendChild(panel);
+      if (!inSheet && !docked()) dock.appendChild(panel);
+      panel.hidden = !inSheet;
+      if (restoreFocus) (inSheet ? document.querySelector('[data-nav-toggle]') : settings)?.focus({ preventScroll: true });
+    };
+    compactDock.addEventListener('change', placePanel);
+    placePanel();
     panel.querySelector(`input[value="${intensity}"]`).checked = true;
     settings.addEventListener('click', () => {
       panel.hidden = !panel.hidden;
@@ -121,7 +187,7 @@
     window.addEventListener('pagehide', closeSettings);
     window.addEventListener('mads:soft-nav-start', closeSettings);
     document.addEventListener('keydown', event => {
-      if (event.key === 'Escape' && !panel.hidden) { closeSettings(); settings.focus(); }
+      if (event.key === 'Escape' && docked() && !panel.hidden) { closeSettings(); settings.focus(); }
     });
   }
 

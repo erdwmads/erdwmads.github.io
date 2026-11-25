@@ -1,4 +1,4 @@
-/* @owner WP5 · @budget 1KB · @important 0 · 404, scoped under .ui-page-not-found */
+/* @owner WP5 · @budget 2KB · @important 0 · 404, scoped under .ui-page-not-found */
 /* The masthead opens straight onto the archive index; the section rule divides them, a hairline heads the list. */
 .ui-page-not-found .masthead {
   margin-block-end: 0;
@@ -8,6 +8,33 @@
 
 .ui-page-not-found .archive-index {
   border-top-color: var(--obs-hairline);
+}
+
+/* The index lies on the old glazed card, drawn behind it so nothing moves; its depth softens
+   under the pointer as the old card's did (c4, E055). */
+@media screen and (forced-colors: none) {
+  .ui-page-not-found .archive-index {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .ui-page-not-found .archive-index::before {
+    content: "";
+    position: absolute;
+    inset: -24px;
+    z-index: -1;
+    border: 1px solid var(--obs-hairline);
+    border-radius: var(--radius-record);
+    background: var(--obs-glass-glint) 50% 0 / calc(100% - 40px) 1px no-repeat, var(--obs-glass-band), var(--obs-glass-face);
+    box-shadow: var(--obs-record-depth);
+    transition: box-shadow .18s;
+    pointer-events: none;
+  }
+
+  .ui-page-not-found .archive-index:hover::before {
+    border-color: var(--obs-glass-edge);
+    box-shadow: var(--obs-record-depth-hover);
+  }
 }
 
 /* The contents list: the address after the leader, in the small size. */
@@ -23,6 +50,10 @@
 
   .ui-page-not-found .ledger__leader {
     display: none;
+  }
+
+  .ui-page-not-found .archive-index::before {
+    inset: -18px;
   }
 
   .ui-page-not-found .ledger__detail {

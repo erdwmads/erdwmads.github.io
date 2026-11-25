@@ -1,4 +1,4 @@
-/* @owner WP2 · @budget 2KB · @important 0 · Onward links at the end of main (.continue-reading) */
+/* @owner WP2 · @budget 2.5KB · @important 0 · Onward links at the end of main (.continue-reading) */
 /* Ruled rows; the arrow ends on the text line, from 1200 px (100% + gap) / 3 short of the edge. */
 .continue-reading {
   margin-block-start: var(--section-gap);
@@ -46,6 +46,17 @@
 
 .continue-reading a:hover strong {
   text-decoration: underline 1px;
+}
+
+/* The arrow slides up and to the right and turns brass on hover; the row's box stays put. */
+.continue-reading-arrow {
+  color: var(--obs-muted);
+  transition: transform 200ms, color 200ms;
+}
+
+.continue-reading a:hover .continue-reading-arrow {
+  color: var(--obs-accent);
+  transform: translate(3px, -3px);
 }
 
 @media (min-width: 1200px) {

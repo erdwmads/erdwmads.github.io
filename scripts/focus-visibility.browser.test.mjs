@@ -4,12 +4,15 @@
 // draws a solid outline of at least 2 px; and no ancestor that clips its overflow (a plate's media box, an opening
 // disclosure, a scroll box) cuts that outline off. An obscured element is a finding for the owner of what covers it,
 // a cut-off outline for the owner of what clips it. The first 40 stops of each page are checked, with reduced motion
-// so the browser scrolls to each stop at once. Then WP1's stand-in fixture is inserted with a focusable link at the
-// edge of an open disclosure and inside a plate's media, and every stop in it is checked the same way. Filters and
-// the per-page report: scripts/lib/guard.mjs.
+// so the browser scrolls to each stop at once, then 20 stops backward (Shift+Tab) from the end of the page. Where the
+// header floats (R1), a focused element outside it whose top lies under the header's bottom is a finding for WP2. Then
+// WP1's stand-in fixture is inserted with a focusable link at the edge of an open disclosure and inside a plate's
+// media, and every stop in it is checked the same way. Widths 1440, 1024 (the two-row floating header) and 390.
+// Filters and the per-page report: scripts/lib/guard.mjs.
 import { gotoGuardPage, insertFixture, runGuard } from './lib/guard.mjs';
 
 const stops = 40;
+const backStops = 20;
 
 // Focusable content at the clipping edges WP1's primitives create, appended to the fixture for this guard only.
 const edgeProbes = `
@@ -40,6 +43,12 @@ function inspectStop(first) {
       return false;
     });
     if (!reached) out.push({ owner: cover ? window.__guardOwner(cover) : window.__guardOwner(el), message: `${name} is hidden under ${cover ? window.__guardName(cover) : 'another element'}` });
+    // The floating header covers the top of the window: a stop must land below it (html's scroll-padding-top).
+    const header = document.querySelector('.site-header');
+    if (header && getComputedStyle(header).position === 'sticky' && !header.contains(el) && !el.matches('.site-skip-link')) {
+      const headerBottom = header.getBoundingClientRect().bottom;
+      if (rect.top < headerBottom - 1) out.push({ owner: 'WP2', message: `${name} is under the floating header (top ${Math.round(rect.top)} above its bottom ${Math.round(headerBottom)})` });
+    }
   }
   if (style.outlineStyle === 'none' || parseFloat(style.outlineWidth) < 2) {
     out.push({ owner: window.__guardOwner(el), message: `${name} shows no 2 px focus outline (${style.outlineStyle} ${style.outlineWidth})` });
@@ -83,6 +92,16 @@ await runGuard('focus-visibility', async (page, { entry, base }) => {
     findings.push(...stop.out);
   }
   if (!seen.size) findings.push({ owner: 'WP1', message: 'Tab reaches nothing on the page' });
+  // Backward from the end of the page: the focus starting point moves to the end of body, then Shift+Tab.
+  await page.evaluate(() => { document.activeElement?.blur(); scrollTo(0, document.documentElement.scrollHeight); getSelection().collapse(document.body, document.body.childNodes.length); });
+  const seenBack = new Set();
+  for (let index = 0; index < backStops; index++) {
+    await page.keyboard.press('Shift+Tab');
+    const stop = await page.evaluate(inspectStop, false);
+    if (stop.done || seenBack.has(stop.key)) break;
+    seenBack.add(stop.key);
+    findings.push(...stop.out);
+  }
   // WP1's primitives: every stop in the fixture, from its first focusable element on.
   await insertFixture(page);
   const expected = await page.evaluate(html => {
@@ -103,4 +122,4 @@ await runGuard('focus-visibility', async (page, { entry, base }) => {
   }
   if (fixtureStops.size !== expected) findings.push({ owner: 'WP1', message: `Tab reached ${fixtureStops.size} of the ${expected} focusable elements in the stand-in fixture` });
   return findings;
-}, { contextOptions: { reducedMotion: 'reduce' } });
+}, { widths: [1440, 1024, 390], contextOptions: { reducedMotion: 'reduce' } });

@@ -28,7 +28,7 @@
 .scene-viewport > canvas:focus-visible { outline-offset: -5px; }
 canvas.study-dissolve { z-index: 1; pointer-events: none; }
 :is(.scene-hint, .section-locator, .fragment-guide, .scene-load-state) { position: absolute; z-index: 2; pointer-events: none; }
-.scene-hint { inset: auto var(--ed-space-6) var(--ed-space-4); width: fit-content; margin-inline: auto; padding: 2px var(--ed-space-2); text-align: center; text-wrap: balance; }
+.scene-hint { inset: auto var(--ed-space-6) var(--ed-space-4); width: fit-content; margin-inline: auto; padding: 2px var(--ed-space-2); text-align: center; text-wrap: balance; text-shadow: var(--obs-hint-shadow); }
 .scene-viewport .scene-explore { position: absolute; z-index: 2; top: var(--ed-space-4); right: var(--ed-space-4); display: none; background: var(--obs-surface); }
 .scene-load-state { z-index: 3; inset: 0; display: grid; place-content: center; justify-items: center; gap: var(--ed-space-4); padding: var(--ed-space-6); text-align: center; }
 .scene-load-state .button { pointer-events: auto; }
@@ -74,9 +74,12 @@ canvas.study-dissolve { z-index: 1; pointer-events: none; }
 .view-tools { display: contents; }
 .camera-tools { display: flex; grid-column: 4; gap: var(--ed-space-2); }
 .view-key { grid-column: 3; grid-row: 1; min-width: 0; }
-.segmented { display: flex; }
+/* The switch, as the old study's: a highlighted block slides under the chosen option in 220 ms (owner, 2026-11-18). */
+.segmented { position: relative; isolation: isolate; display: grid; grid-auto-columns: 1fr; grid-auto-flow: column; border-radius: var(--radius-control); background-color: var(--obs-paper); box-shadow: inset 0 0 0 1px var(--obs-hairline); }
+.segmented::before { content: ""; position: absolute; z-index: -1; inset: 0 auto 0 0; width: 50%; border: 1px solid color-mix(in srgb, var(--obs-accent) 30%, var(--obs-hairline)); border-radius: var(--radius-control); background: var(--obs-highlight); transition: transform 220ms cubic-bezier(.2, 0, .38, .9); }
+.segmented:has(> :last-child[aria-pressed="true"])::before { transform: translateX(100%); }
 .segmented button { padding: 0 var(--ed-space-3); font-weight: 600; text-decoration-thickness: 2px; text-underline-offset: .5em; }
-.segmented button[aria-pressed="true"] { color: var(--obs-text); text-decoration-line: underline; }
+.segmented button[aria-pressed="true"] { color: var(--obs-accent); text-decoration-line: underline; }
 .legend { display: flex; flex-wrap: wrap; column-gap: var(--ed-space-4); }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
 /* Colour keys: outlined bars, not marker shapes. */
@@ -88,6 +91,17 @@ canvas.study-dissolve { z-index: 1; pointer-events: none; }
 .transport-copy > span:last-child { min-height: 2.8em; line-height: 1.4; }
 .transport input { width: 100%; height: 44px; margin: 0; }
 .transport output { min-width: 3.5em; font-variant-numeric: tabular-nums; text-align: end; }
+/* Playback, as the old study's: the icon buttons take the metal face under a hovering pointer and ease their edge in
+   160 ms; the track fills with brass to the chapter's progress, and the thumb is a brass bead in a ring. */
+.observatory .icon-button { transition: color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease; }
+@media (hover: hover) and (forced-colors: none) {
+  .observatory .icon-button:hover:not(:disabled) { background-image: var(--obs-metal); }
+}
+@media (forced-colors: none) {
+  .transport input { appearance: none; background: linear-gradient(to right, var(--obs-accent) calc(var(--chapter-progress, 0) * 100%), var(--obs-hairline) 0) center / 100% 3px no-repeat; cursor: pointer; }
+  .transport input::-webkit-slider-thumb { appearance: none; width: 15px; height: 15px; border: 3px solid var(--obs-surface); border-radius: 50%; background: var(--obs-accent); box-shadow: 0 0 0 1px var(--obs-accent); }
+  .transport input::-moz-range-thumb { width: 10px; height: 10px; border: 3px solid var(--obs-surface); border-radius: 50%; background: var(--obs-accent); box-shadow: 0 0 0 1px var(--obs-accent); }
+}
 :is(.transport input, .segmented button, .reaction-sequence button):disabled { opacity: .55; cursor: not-allowed; }
 
 /* Chapter text: beside the scene on desktop, at the measure below. */
@@ -132,7 +146,8 @@ canvas.study-dissolve { z-index: 1; pointer-events: none; }
   padding: 0 var(--pad) var(--pad); overflow: auto; border: 1px solid var(--obs-hairline); border-radius: var(--radius-control);
   background: var(--obs-surface); color: var(--obs-text); box-shadow: var(--obs-shadow-overlay);
 }
-.sources-dialog::backdrop { background: var(--obs-scrim); }
+/* The old dark screen behind the sheet (#03060fb8); its 5 px blur is not on the blur list, so the screen alone. */
+.sources-dialog::backdrop { background: var(--obs-scrim-deep); }
 .sources-dialog__head { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; margin-inline: calc(-1 * var(--pad)); padding: var(--ed-space-3) var(--pad); border-bottom: 1px solid var(--obs-hairline); background: var(--obs-surface); }
 .sources-dialog h2 { margin-top: var(--ed-space-5); font-size: var(--ed-h3); line-height: 1.25; }
 .sources-dialog dt { margin-top: var(--ed-space-4); padding-top: var(--ed-space-3); }
@@ -182,7 +197,17 @@ canvas.study-dissolve { z-index: 1; pointer-events: none; }
 :where(.origins-study:not([data-render-state="ready"])) .scene-viewport .scene-explore { display: none; }
 /* A failed scene keeps the tool boxes (nothing moves) but not the icon buttons: their icons come with the scene module. */
 :where(.origins-study[data-render-state="error"]) .observatory .icon-button { visibility: hidden; }
+/* Phones and touch screens: Explore sits on the old soft drop shadow. */
+@media (max-width: 760px), (hover: none) and (pointer: coarse) {
+  .scene-viewport .scene-explore { box-shadow: var(--obs-touch-shadow); }
+}
 /* Forced colours paint every chapter rule in the system text colour, so the current one is heavier. */
 @media (forced-colors: active) {
   .chapters [aria-current]::before { border-top-width: 3px; }
+}
+/* Forced colours and print: no sliding block, metal face or shadow. */
+@media (forced-colors: active), print {
+  .segmented::before { display: none; }
+  .segmented, .scene-viewport .scene-explore { box-shadow: none; }
+  .scene-hint { text-shadow: none; }
 }

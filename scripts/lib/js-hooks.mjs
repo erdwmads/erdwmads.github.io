@@ -124,18 +124,20 @@ export const scripts = {
       ".obs-present-original", ".obs-present-prev", ".obs-present-retry", ".obs-presentation-caption",
       ".obs-presentation-counter", ".obs-presentation-feedback", ".obs-presentation-surface", ".photo-tile img", ".photo-wall",
       ".research-coordinates", ".research-note-body", ".site-header", ".ui2046-system-orbit", "[data-full-src]",
-      "[data-index]", "[data-mobile-full-src]", "[data-nav-ready]", "[data-nav-toggle]",
+      "[data-index]", "[data-mobile-full-src]", "[data-mobile-nav]", "[data-nav-ready]", "[data-nav-toggle]",
       "[data-photo-index]", "[data-present-mission]", "[data-present-photos]",
-      "[data-present-photos], [data-present-mission], [data-photo-index]"
+      "[data-present-photos], [data-present-mission], [data-photo-index]",
+      ".button, .icon-button, .nav-log-gate, .theme-toggle, .obs-fx-settings, .planetary-materials button, .planetary-toolbar button, .planetary-mineral-tabs button, .paper-filter",
+      ".ambient-fx-disabled, .mads-power-low, .mads-page-hidden, .cosmic-arrival-active, .mission-lightbox-open, .mineral-atlas-open, .obs-presenting"
     ],
     created: [
-      "#obs-fx-panel", ".button", ".is-route-active", ".mission-lightbox-open",
+      "#obs-fx-panel", ".backdrop-ready", ".button", ".is-route-active", ".mission-lightbox-open",
       ".obs-fullscreen-status", ".obs-fx-dock", ".obs-fx-panel", ".obs-fx-settings", ".obs-image-status",
       ".obs-nav-beam", ".obs-nav-ready", ".obs-photo-flight", ".obs-present-close", ".obs-present-fullscreen",
       ".obs-present-launch", ".obs-present-next", ".obs-present-original", ".obs-present-prev", ".obs-present-retry",
       ".obs-presentation", ".obs-presentation-caption", ".obs-presentation-counter", ".obs-presentation-feedback",
       ".obs-presentation-stage", ".obs-presentation-surface", ".obs-presentation-toolbar", ".obs-presenting",
-      ".secondary", "[data-fx-intensity]", "[data-orbit-route]", "[data-present-mission]"
+      ".secondary", "[data-edge-active]", "[data-fx-intensity]", "[data-orbit-route]", "[data-present-mission]"
     ]
   },
   "public/assets/js/paper-shelf.js": {

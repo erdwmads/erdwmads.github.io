@@ -1,8 +1,10 @@
 /* @owner WP1 · @budget 6KB · @important 0 · Base: ground, reading veil, type scale for headings and text, links, focus, selection */
+/* The scroll padding keeps anchor targets and keyboard focus clear of the floating header. */
 html {
   background: var(--obs-paper);
   color: var(--obs-text);
   interpolate-size: allow-keywords;
+  scroll-padding-top: var(--header-clearance);
 }
 
 /* No synthesised bold or italic: the serif has a real italic at 400 only, and nothing uses weights above 600. */
@@ -22,12 +24,19 @@ body {
 }
 
 /* The reading veil: the FX field shows through the opening view and is dimmed behind long reading. A static
-   gradient on a solid token, so text never rests on imagery. */
+   gradient on a solid token, so text never rests on imagery. It reaches full strength 440 px down (280 px on phones),
+   as on the old site. */
 :where(main) {
   position: relative;
   z-index: var(--z-content);
   flex: 1 0 auto;
-  background: linear-gradient(180deg, transparent, var(--obs-reading) 20rem);
+  background: linear-gradient(180deg, transparent, var(--obs-reading) 440px);
+}
+
+@media (max-width: 760px) {
+  :where(main) {
+    background-image: linear-gradient(180deg, transparent, var(--obs-reading) 280px);
+  }
 }
 
 :where(h1, h2, h3) {
@@ -51,6 +60,16 @@ body {
 :where(h3) {
   font-size: var(--ed-h3);
   line-height: 1.25;
+}
+
+/* Headings in main glow as the old site's did before its quiet pass (owner decision E116, 2026-11-18): a soft light
+   halo in Space, a white halo in Light. Body text never glows; forced colours and print drop text shadows. */
+:where(main) :where(h1) {
+  text-shadow: var(--obs-heading-glow);
+}
+
+:where(main) :where(h2, h3) {
+  text-shadow: var(--obs-subheading-glow);
 }
 
 :where(h4, h5, h6) {
@@ -141,8 +160,9 @@ body {
   outline-offset: -5px;
 }
 
+/* Selection: a translucent brass wash. */
 ::selection {
-  background: var(--obs-highlight);
+  background: var(--obs-selection);
   color: var(--obs-text);
 }
 

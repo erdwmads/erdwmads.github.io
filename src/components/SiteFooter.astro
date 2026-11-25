@@ -1,7 +1,7 @@
 ---
 // The site footer, a colophon in three rows (spec §3.2): the long-term question, then the owner, ORCID iD and the
-// page actions, then the imprint line. Rendered by SiteShell.astro after main. Styles:
-// src/styles/folio/components/footer.css.
+// page actions, then the imprint line, closed by the credit line for the page backdrops. Rendered by SiteShell.astro
+// after main. Styles: src/styles/folio/components/footer.css.
 import { colophon } from "../data/colophon";
 import { footerItems, orcid } from "../data/site";
 import { revisionDate } from "../lib/revision";
@@ -14,6 +14,8 @@ const footerNotes = notes.map((item) => {
   return split > 0 ? { label: item.slice(0, split), text: item.slice(split + 2) } : { label: "", text: item };
 });
 const revision = revisionDate();
+const { credits } = colophon;
+const { montage } = credits;
 ---
 <footer class="site-footer">
   <div class="footer-inner page">
@@ -25,5 +27,6 @@ const revision = revisionDate();
       <a class="footer-top" href="#main-content">Back to top ↑</a>
     </p>
     <p class="footer-colophon"><span>{colophon.imprint}</span>&nbsp;· <span>{colophon.edition}</span>&nbsp;· <span>{colophon.revisionLabel} <time datetime={revision}>{revision}</time></span>&nbsp;· <span>{colophon.type}</span>&nbsp;· <span>{colophon.build}</span></p>
+    <p class="footer-credits">{credits.label}: {credits.bennu}; {montage.lead} “<a href={montage.source.url}>{montage.title}</a>” by {montage.author}, {montage.source.label}, licensed <a href={montage.licence.url} rel="license">{montage.licence.label}</a>, {montage.changes}.</p>
   </div>
 </footer>

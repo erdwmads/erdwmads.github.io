@@ -105,12 +105,14 @@ export default async function checkResearch({ distDir, publicDir, fail, readDist
   if (actionNames.join("|") !== "research.html Research|cv.html CV" || !/<a class="button" href="research\.html">/.test(homeActions)) {
     fail(`index.html: the Home actions must be a primary Research button and a quiet CV link (found ${actionNames.join(", ") || "none"})`);
   }
-  if (/class="(pills?|hero|hero-card)"|Current question/.test(homePage)) fail("index.html: the interest pills, the hero card and the Current question row are retired (spec §4.1)");
-  // The Keywords line repeats the words of the former interest pills (src/data/home.ts), no more and no fewer. The
-  // word joiners after en dashes (no line break inside SEM–EDS or FIB–TEM) are not part of the words.
+  // The keyword pills are back as the old site drew them (owner, 2026-11-18, E052), checked below; the old pill wrapper,
+  // the hero card and the Current question row stay retired.
+  if (/class="(pills|hero|hero-card)"|Current question/.test(homePage)) fail("index.html: the old pill wrapper, the hero card and the Current question row are retired (spec §4.1)");
+  // The keyword pills (E052) carry the words of src/data/home.ts, no more and no fewer, in their order, in a named list.
   const { keywords } = await import("../../src/data/home.ts");
-  const keywordLine = visibleText(homePage.match(/<p class="home-keywords">([\s\S]*?)<\/p>/)?.[1] ?? "").replace(/⁠/g, "");
-  if (keywordLine !== `Keywords: ${keywords.join(" · ")}`) fail(`index.html: the Keywords line must read the pill words from src/data/home.ts (found "${keywordLine}")`);
+  const pillList = homePage.match(/<ul class="home-keywords" aria-label="Keywords">([\s\S]*?)<\/ul>/)?.[1] ?? "";
+  const pills = [...pillList.matchAll(/<li class="pill">([\s\S]*?)<\/li>/g)].map((match) => visibleText(match[1]));
+  if (pills.join(" | ") !== keywords.join(" | ")) fail(`index.html: the keyword pills must read the words from src/data/home.ts (found "${pills.join(" | ")}")`);
 
   // Research: the comparison table carries each material's catalogue designation (fact-checked in project.mjs), its
   // column and row headers, and the parent-body sentence across both materials.

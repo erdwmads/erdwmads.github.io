@@ -108,6 +108,17 @@
   background: var(--obs-highlight);
 }
 
+/* The old accents (owner, 2026-11-18): a hovered region edges in brass, the chosen one reads in brass. */
+.inspector-regions [aria-pressed="true"] {
+  color: var(--obs-accent);
+}
+
+@media (hover: hover) and (forced-colors: none) {
+  .inspector-regions button:hover {
+    box-shadow: inset 0 0 0 1px var(--obs-accent);
+  }
+}
+
 .inspector-status {
   margin-block-start: var(--ed-space-2);
 }

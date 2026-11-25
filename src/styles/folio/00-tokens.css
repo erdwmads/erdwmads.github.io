@@ -1,16 +1,15 @@
-/* @owner WP1 · @budget 8KB · @important 0 · Design tokens: colour for both themes, type, spacing, motion, layers and layout */
+/* @owner WP1 · @budget 20KB · @important 0 · Design tokens: colour for both themes, type, spacing, motion, layers and layout */
 /* The only file that may name [data-theme]. One attribute on html decides the theme: Space is the server default
    (data-theme="space" data-theme-space) and lives on :root; Light applies only when the preload or theme.js sets
    data-theme="light" without data-theme-space, mirroring the inline first-paint style in SiteShell.astro. The grounds
    #0f1625 and #f7f3eb must equal that style, both theme-color metas and theme-preload.js. Components read tokens
-   only. .on-night (night plates) and the two screens the scripts build without it (.obs-presentation, .mission-lightbox)
-   keep the Space colours in either theme. The Light rule is
+   only. .on-night (night plates) and the presentation screen the script builds without it (.obs-presentation) keep
+   the Space colours in either theme; the Mission Log viewer follows the page, as the old one did (c4, E045). The Light rule is
    wrapped in :where() so it weighs the same as :root and wins by order; states/contrast.css can then override a
    token for both themes. */
 :root,
 .on-night,
-.obs-presentation,
-.mission-lightbox {
+.obs-presentation {
   color-scheme: dark;
   --obs-paper: #0f1625;
   --obs-surface: #171d2c;
@@ -32,6 +31,75 @@
   --obs-primary-hover: color-mix(in srgb, var(--obs-primary-face) 94%, var(--obs-paper));
   --obs-toggle-face: #202735;
   --obs-shadow-overlay: 0 18px 48px rgba(0, 0, 0, .45);
+  /* Effects (owner, 2026-11-18): backdrops, the floating header's band and glow [A]; sheen, control glow and the
+     edge light [B]. Text keeps its contrast over all of them (backdrop-contrast.browser). */
+  --obs-header-surface: rgba(15, 22, 37, .9);
+  --obs-band-opacity: .96;
+  --obs-band-veil: linear-gradient(rgba(15, 22, 37, .72), rgba(15, 22, 37, .82));
+  --obs-backdrop-opacity: .16;
+  --obs-backdrop-opacity-home: .4;
+  --obs-backdrop-tone: none;
+  --obs-glow: rgba(232, 222, 202, .12);
+  --obs-gold-glow: rgba(210, 187, 143, .16);
+  --obs-edge-cool: #b3cce6;
+  --obs-sheen: linear-gradient(135deg, rgba(238, 233, 224, .14), rgba(238, 233, 224, 0) 42%, rgba(238, 233, 224, .04) 70%, rgba(238, 233, 224, .12));
+  --obs-sheen-card: linear-gradient(135deg, rgba(238, 233, 224, .07), rgba(238, 233, 224, 0) 42%, rgba(238, 233, 224, .02) 70%, rgba(238, 233, 224, .06));
+  --obs-sheen-primary: linear-gradient(135deg, rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 40%, rgba(15, 22, 37, .1) 72%, rgba(255, 255, 255, .28));
+  --obs-control-shadow: inset 0 1px rgba(240, 235, 226, .14), 0 2px 6px rgba(0, 0, 0, .28);
+  --obs-control-glow: inset 0 1px rgba(240, 235, 226, .2), 0 4px 12px rgba(0, 0, 0, .32), 0 0 0 1px color-mix(in srgb, var(--obs-accent) 45%, transparent), 0 0 18px var(--obs-gold-glow);
+  --obs-row-glow: rgba(210, 187, 143, .08);
+  /* The rest of the old site's light (owner, 2026-11-18: "all of my previous effects"), at its values of 2f20d7e:
+     faces, the graticule, halos, the FX switch. The Space graticule was screen-blended; these are the normal-blend
+     colours that paint the same pixels. */
+  --obs-control-face: linear-gradient(135deg, #242a39, #1b212e 58%, #1f2532);
+  --obs-control-secondary-face: linear-gradient(135deg, #262b38, #1c202b 58%, #202530);
+  --obs-control-active-face: linear-gradient(#2c3649, #242d3e);
+  --obs-control-pressed: inset 0 2px 5px rgba(0, 0, 0, .32), inset 0 0 0 3px rgba(7, 11, 22, .12);
+  --obs-metal: linear-gradient(135deg, #2d3547, #1f2636 58%, #272e3d);
+  --obs-glass-face: linear-gradient(135deg, rgba(214, 222, 236, .07), transparent 52%), linear-gradient(#1d2331, #111724);
+  --obs-glass-edge: rgba(224, 219, 210, .18);
+  --obs-selection: color-mix(in srgb, var(--obs-accent) 30%, transparent);
+  --obs-text-halo: none;
+  /* Headings and the site name (E116): the old Space glow, at the glow token of the current intensity. */
+  --obs-heading-glow: 0 0 2px rgba(255, 255, 255, .35), 0 0 18px var(--obs-glow), 0 0 42px rgba(216, 208, 193, .066);
+  --obs-subheading-glow: 0 0 12px rgba(221, 214, 198, .176);
+  /* The old liquid-glass highlight (E097) as a look-alike: a band fading from the top edge; the pills' top glint. */
+  --obs-glass-band: linear-gradient(rgba(255, 255, 255, .12), rgba(255, 255, 255, .04) 18%, rgba(255, 255, 255, .015) 42%, rgba(255, 255, 255, 0) 70%);
+  --obs-chip-glint: inset 0 1px rgba(255, 255, 255, .14);
+  --obs-bead: radial-gradient(circle, rgba(237, 220, 186, .96), rgba(217, 192, 144, .76) 48%, transparent 74%);
+  --obs-bead-glow: 0 0 9px rgba(217, 192, 144, .3), 0 0 18px rgba(217, 192, 144, .07);
+  --obs-graticule: linear-gradient(90deg, rgba(174, 203, 236, .045) 1px, transparent 1px), linear-gradient(rgba(174, 203, 236, .033) 1px, transparent 1px), radial-gradient(circle at 50% 48%, transparent 0, rgba(29, 42, 69, .26) 58%, rgba(29, 42, 69, .8) 100%), linear-gradient(118deg, transparent 0 43%, rgba(243, 214, 162, .054) 48%, transparent 56% 100%);
+  --obs-graticule-size: 92px 92px, 92px 92px, auto, auto;
+  --obs-graticule-opacity: .52;
+  --obs-photo-shadow: 0 18px 54px rgba(0, 0, 0, .36);
+  --obs-fx-face: linear-gradient(rgba(21, 28, 46, .78), rgba(9, 16, 33, .78));
+  --obs-fx-face-on: linear-gradient(rgba(26, 32, 46, .82), rgba(11, 18, 35, .8));
+  --obs-fx-text: rgba(232, 228, 218, .82);
+  --obs-fx-text-on: rgba(250, 234, 205, .92);
+  --obs-fx-lift-on: 0 7px 16px rgba(0, 0, 0, .16);
+  --obs-fx-dot: rgba(133, 141, 154, .86);
+  --obs-fx-dot-glow: 0 0 8px rgba(133, 141, 154, .28);
+  --obs-fx-dot-on: rgba(247, 225, 182, .94);
+  --obs-fx-dot-on-glow: 0 0 8px rgba(247, 225, 182, .7), 0 0 18px rgba(247, 225, 182, .153);
+  --obs-coord-rest: .72;
+  --obs-progress-beam: linear-gradient(90deg, rgba(174, 203, 236, .18), rgba(174, 203, 236, .76) 46%, rgba(217, 192, 144, .86) 78%, rgba(237, 220, 186, .7));
+  --obs-progress-glow: 0 0 12px rgba(216, 208, 193, .132), 0 0 18px rgba(217, 192, 144, .098);
+  --obs-atlas-grid: color-mix(in srgb, #323846 28%, transparent);
+  /* The Mission Log viewer: a dark veil (the old blur(5px) brightness(.64) folded into its alpha) and glass buttons. */
+  --obs-lightbox-veil: rgba(0, 0, 0, .96);
+  --obs-lightbox-button: linear-gradient(rgba(174, 203, 236, .14), rgba(255, 255, 255, .043));
+  --obs-lightbox-button-hover: linear-gradient(rgba(174, 203, 236, .2), rgba(255, 255, 255, .06));
+  --obs-lightbox-button-glow: 0 12px 30px rgba(0, 0, 0, .24), 0 0 22px rgba(216, 208, 193, .067), inset 0 1px rgba(255, 255, 255, .1);
+  /* The FX field: white dust, gold specks and gold meteors as the old Space field drew them (c2, E022-E024). */
+  --fx-dust-face: rgba(254, 251, 245, .96);
+  --fx-gold-face: rgba(247, 223, 178, .92);
+  --fx-gold-shine: var(--fx-gold-glow);
+  --fx-gold-halo-face: var(--fx-gold-halo);
+  --fx-gold-trail: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(224, 198, 148, .11) 18%, rgba(238, 217, 177, .58) 62%, rgba(252, 239, 213, .9));
+  --fx-gold-core: rgba(252, 240, 216, .92);
+  --fx-gold-trail-glow: var(--fx-gold-meteor-glow);
+  --fx-gold-core-glow: var(--fx-gold-meteor-head);
+  --obs-planet-opacity: .78;
 }
 
 :root:where([data-theme="light"]:not([data-theme-space])) {
@@ -56,12 +124,137 @@
   --obs-primary-hover: color-mix(in srgb, var(--obs-primary-face) 94%, var(--obs-paper));
   --obs-toggle-face: #f1e8d6;
   --obs-shadow-overlay: 0 18px 48px rgba(29, 36, 52, .16);
+  --obs-header-surface: rgba(247, 243, 235, .9);
+  --obs-band-opacity: .95;
+  --obs-band-veil: linear-gradient(rgba(250, 247, 240, .89), rgba(250, 247, 240, .92));
+  --obs-backdrop-opacity: .045;
+  --obs-backdrop-opacity-home: .1;
+  --obs-backdrop-tone: sepia(.35);
+  --obs-glow: rgba(92, 72, 40, .09);
+  --obs-gold-glow: rgba(118, 87, 37, .1);
+  --obs-edge-cool: #3d5d81;
+  --obs-sheen: linear-gradient(135deg, rgba(255, 255, 255, .9), rgba(255, 255, 255, 0) 45%, rgba(118, 87, 37, .06) 72%, rgba(255, 255, 255, .6));
+  --obs-sheen-card: linear-gradient(135deg, rgba(255, 255, 255, .7), rgba(255, 255, 255, 0) 45%, rgba(118, 87, 37, .05) 72%, rgba(255, 255, 255, .45));
+  --obs-sheen-primary: linear-gradient(135deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, 0) 42%, rgba(0, 0, 0, .12) 72%, rgba(255, 255, 255, .1));
+  --obs-control-shadow: inset 0 1px #fff, 0 1px 3px rgba(52, 42, 28, .12);
+  --obs-control-glow: inset 0 1px #fff, 0 3px 9px rgba(52, 42, 28, .16), 0 0 0 1px color-mix(in srgb, var(--obs-accent) 35%, transparent), 0 0 16px var(--obs-gold-glow);
+  --obs-row-glow: rgba(118, 87, 37, .06);
+  --obs-control-face: linear-gradient(135deg, #fffefb, #f9f6ef 58%, #fcfaf6);
+  --obs-control-secondary-face: linear-gradient(135deg, #fffefc, #f7f4ef 58%, #fbf9f5);
+  --obs-control-active-face: linear-gradient(#f6efe1, #efe6d3);
+  --obs-control-pressed: inset 0 2px 4px rgba(52, 42, 28, .14), inset 0 0 0 3px rgba(255, 255, 255, .2);
+  --obs-metal: linear-gradient(135deg, #fffdf9, #f0e9dc 58%, #ede7dd);
+  --obs-glass-face: linear-gradient(135deg, #fffdf9, #f8f4ec 62%, #f2ede4);
+  --obs-glass-edge: rgba(148, 139, 126, .4);
+  --obs-text-halo: 0 1px 0 rgba(255, 255, 255, .35), 0 0 12px rgba(255, 255, 255, .42);
+  --obs-heading-glow: 0 1px 0 #fff, 0 0 18px rgba(255, 255, 255, .7);
+  --obs-subheading-glow: var(--obs-heading-glow);
+  --obs-glass-band: linear-gradient(rgba(255, 255, 255, .16), rgba(255, 255, 255, .06) 16%, rgba(255, 255, 255, .02) 42%, rgba(255, 255, 255, 0) 70%);
+  --obs-chip-glint: inset 0 1px rgba(255, 255, 255, .3);
+  --obs-bead: radial-gradient(circle, rgba(211, 196, 167, .88), rgba(184, 165, 129, .58) 48%, transparent 74%);
+  --obs-bead-glow: none;
+  --obs-graticule: linear-gradient(90deg, rgba(56, 80, 117, .045) 1px, transparent 1px), linear-gradient(rgba(56, 80, 117, .04) 1px, transparent 1px);
+  --obs-graticule-size: 88px 88px;
+  --obs-graticule-opacity: .22;
+  --obs-photo-shadow: 0 18px 48px rgba(53, 81, 123, .1);
+  --obs-fx-face: linear-gradient(rgba(255, 255, 255, .78), rgba(247, 243, 235, .7));
+  --obs-fx-face-on: linear-gradient(rgba(255, 250, 239, .84), rgba(240, 233, 219, .74));
+  --obs-fx-text: rgba(55, 64, 84, .78);
+  --obs-fx-text-on: rgba(107, 86, 49, .92);
+  --obs-fx-lift-on: 0 14px 34px rgba(55, 63, 83, .14), 0 0 20px rgba(191, 172, 138, .125), inset 0 0 0 1px rgba(255, 255, 255, .62), inset 0 1px rgba(255, 255, 255, .94);
+  --obs-fx-dot: rgba(110, 122, 143, .58);
+  --obs-fx-dot-glow: inset 0 0 0 1px rgba(255, 255, 255, .62), 0 0 8px rgba(78, 95, 118, .16);
+  --obs-fx-dot-on: rgba(186, 160, 114, .92);
+  --obs-fx-dot-on-glow: inset 0 0 0 1px rgba(255, 255, 255, .72), 0 0 8px rgba(186, 160, 114, .46), 0 0 16px rgba(186, 160, 114, .114);
+  --obs-coord-rest: 1;
+  --obs-progress-beam: linear-gradient(90deg, rgba(61, 89, 130, .18), rgba(61, 89, 130, .7) 46%, rgba(184, 165, 129, .5) 78%, rgba(211, 196, 167, .36));
+  --obs-progress-glow: none;
+  --obs-atlas-grid: color-mix(in srgb, #dbd4c8 28%, transparent);
+  /* The old viewer was a pale paper screen in Light (its blur(4px) folded into the alpha), its buttons white glass. */
+  --obs-lightbox-veil: rgba(228, 223, 214, .98);
+  --obs-lightbox-button: rgba(255, 255, 255, .56);
+  --obs-lightbox-button-hover: rgba(255, 255, 255, .78);
+  --obs-lightbox-button-glow: var(--obs-touch-shadow);
+  /* In Light the old field was paper-white: gold specks and gold meteors drew as the white ones. */
+  --fx-dust-face: rgba(253, 249, 242, .88);
+  --fx-gold-face: rgba(253, 249, 242, .88);
+  --fx-gold-shine: var(--fx-dust-glow);
+  --fx-gold-halo-face: none;
+  --fx-gold-trail: var(--fx-meteor-trail);
+  --fx-gold-core: var(--fx-meteor-core);
+  --fx-gold-trail-glow: var(--fx-meteor-glow);
+  --fx-gold-core-glow: var(--fx-meteor-head);
+  --obs-planet-opacity: .54;
+}
+
+/* The two glow tokens at the default intensity, Immersive (observatory-interactions.js), as the old site set them.
+   Night boxes keep the Space values. */
+:root[data-fx-intensity="immersive"],
+:root[data-fx-intensity="immersive"] :is(.on-night, .obs-presentation) {
+  --obs-glow: rgba(236, 226, 206, .2);
+  --obs-gold-glow: rgba(222, 199, 152, .24);
+  --obs-glass-edge: rgba(228, 223, 214, .26);
+}
+
+:root:where([data-theme="light"]:not([data-theme-space]))[data-fx-intensity="immersive"] {
+  --obs-glow: rgba(92, 72, 40, .14);
+  --obs-gold-glow: rgba(118, 87, 37, .16);
+  /* Light keeps its own glass edge under Immersive, as at 2f20d7e (only Space's brightened). */
+  --obs-glass-edge: rgba(148, 139, 126, .4);
+}
+
+/* Theme-independent effect values: shadows and screens that read the same in both themes, the FX field's light
+   (it shows in Space only), the Mission Log photographs' chip, scan line and lift, records' depth. */
+:root {
+  --obs-header-line: rgba(201, 215, 232, .12);
+  --obs-nav-face-line: rgba(234, 230, 220, .1);
+  --obs-sweep: rgba(252, 235, 202, .28);
+  --obs-footer-halo: 0 1px 10px rgba(255, 255, 255, .78);
+  --obs-touch-shadow: 0 7px 16px rgba(0, 0, 0, .16);
+  --obs-fx-settings-shadow: 0 14px 32px rgba(0, 0, 0, .18), 0 0 16px rgba(217, 192, 144, .027), inset 0 0 0 1px rgba(217, 192, 144, .027), inset 0 1px rgba(255, 255, 255, .11), inset 0 -1px rgba(217, 192, 144, .043);
+  --obs-card-depth: inset 0 1px rgba(221, 232, 245, .2), 0 10px 30px rgba(0, 0, 0, .1);
+  --obs-hint-shadow: 0 1px 5px #000;
+  --obs-scrim-deep: rgba(3, 6, 15, .72);
+  --obs-atlas-shadow: 0 24px 100px rgba(0, 0, 0, .53);
+  --obs-atlas-scrim: rgba(6, 11, 24, .74);
+  --obs-arrival-shadow: 0 2px 12px #0f1625;
+  --obs-arrival-label-shadow: 0 1px 5px #0f1625;
+  --obs-chip-face: rgba(13, 20, 37, .44);
+  --obs-chip-edge: rgba(244, 239, 229, .24);
+  --obs-chip-text: rgba(250, 245, 236, .88);
+  --obs-scanline: linear-gradient(transparent, rgba(165, 196, 231, .08) 50%, transparent);
+  --obs-photo-hover-shadow: 0 16px 32px rgba(0, 0, 0, .2), inset 0 1px rgba(255, 255, 255, .12), 0 0 24px rgba(216, 208, 193, .055);
+  --obs-record-depth: inset 0 1px color-mix(in srgb, var(--obs-edge-cool) 12%, transparent), 0 4px 14px rgba(0, 0, 0, .1);
+  --obs-record-depth-hover: inset 0 1px rgba(255, 255, 255, .047), 0 6px 18px rgba(0, 0, 0, .04);
+  --obs-glass-glint: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .4), rgba(255, 255, 255, 0));
+  /* The Home button's chip kept these steel values in both themes. */
+  --obs-icon-chip-edge: rgba(174, 203, 236, .28);
+  --obs-icon-chip-face: rgba(174, 203, 236, .11);
+  --obs-sun-face: rgba(243, 220, 179, .74);
+  --obs-sun-glow: 0 0 14px rgba(243, 220, 179, .238), 0 0 32px rgba(243, 220, 179, .098);
+  --obs-kuiper-line: rgba(174, 203, 236, .12);
+  --obs-kuiper-glow: inset 0 0 28px rgba(174, 203, 236, .024), 0 0 28px rgba(216, 208, 193, .016);
+  --obs-orrery-glow: drop-shadow(0 0 18px rgba(216, 208, 193, .043));
+  --obs-planet-rim: inset 0 0 1px rgba(255, 255, 255, .46);
+  --obs-label-glow: 0 0 12px rgba(216, 208, 193, .055);
+  --obs-progress-track: rgba(174, 203, 236, .08);
+  --fx-dust-glow: 0 0 7px rgba(241, 236, 227, .78), 0 0 16px rgba(216, 208, 193, .187);
+  --fx-gold-glow: 0 0 8px rgba(248, 226, 184, .72), 0 0 18px rgba(230, 201, 148, .252), 0 0 30px rgba(218, 185, 128, .126);
+  --fx-gold-halo: radial-gradient(circle, rgba(252, 235, 203, .34), rgba(252, 235, 203, 0) 68%);
+  --fx-pebble-face: radial-gradient(circle at 35% 30%, rgba(245, 240, 232, .5), rgba(133, 141, 153, .52) 45%, rgba(57, 65, 85, .45));
+  --fx-pebble-edge: rgba(245, 240, 230, .4);
+  --fx-pebble-shade: inset -2px -2px 3px rgba(0, 0, 0, .18), 0 0 13px rgba(220, 212, 197, .121);
+  --fx-meteor-trail: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(181, 207, 236, .18) 18%, rgba(239, 234, 225, .84) 68%, #fff);
+  --fx-meteor-core: #fff;
+  --fx-meteor-glow: drop-shadow(0 0 8px rgba(230, 223, 207, .396));
+  --fx-meteor-head: 0 0 10px rgba(247, 242, 232, .95), 0 0 22px rgba(216, 208, 193, .303);
+  --fx-gold-meteor-glow: drop-shadow(0 0 7px rgba(238, 217, 177, .42));
+  --fx-gold-meteor-head: 0 0 10px rgba(252, 238, 211, .504), 0 0 20px rgba(224, 198, 148, .238);
 }
 
 /* Text inherits the colour the page computed, not the tokens, so a night box sets its own from the Space token. */
 .on-night,
-.obs-presentation,
-.mission-lightbox {
+.obs-presentation {
   color: var(--obs-text);
 }
 
@@ -71,7 +264,7 @@
   --obs-screen: #05070c;
   --obs-scrim: rgba(10, 13, 19, .6);
 
-  /* Visual effects density. data-fx-intensity (observatory-interactions.js) changes these and nothing else. */
+  /* Visual effects density. data-fx-intensity (observatory-interactions.js) changes these and the two glow tokens. */
   --fx-dust-opacity: .7;
   --fx-orbit-alpha: .72;
 
@@ -120,12 +313,15 @@
 
   /* Layers, in the stacking order the scripts rely on: fixed FX below the content, overlays above it, the skip
      link on top. Native dialogs sit in the top layer and need none. */
+  --z-backdrop: 0;
   --z-orbit: 0;
   --z-ambient: 1;
   --z-interface: 2;
   --z-rail: 3;
   --z-content: 3;
   --z-guide: 40;
+  --z-header-band: 49;
+  --z-header: 50;
   --z-float: 90;
   --z-dock: 180;
   --z-progress: 9998;
@@ -138,6 +334,21 @@
   --page-max-wide: 85rem;
   --page-pad: 2.5rem;
   --grid-gap: 1.5rem;
+  /* The floating header's exact height where it floats (components/header.css), else 0: sticky bars, the scroll
+     padding and the band read it. */
+  --header-clearance: 0px;
+}
+
+@media (min-width: 761px) and (min-height: 600px) and (forced-colors: none) {
+  :root {
+    --header-clearance: 101px;
+  }
+}
+
+@media (min-width: 1200px) and (min-height: 600px) and (forced-colors: none) {
+  :root {
+    --header-clearance: 73px;
+  }
 }
 
 :root[data-fx-intensity="immersive"] {

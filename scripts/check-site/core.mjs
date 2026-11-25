@@ -533,6 +533,13 @@ export default async function checkCore({ root, distDir, publicDir, assetsDir, p
       continue;
     }
     if (!/Interface 2046/i.test(visibleText(footer))) fail(`${file}: the footer colophon must name Interface 2046`);
+    // The backdrop credits (owner decision, 2026-11-18): Bennu's source, and the montage's author, source and licence.
+    const credits = footer.match(/<p class="footer-credits">([\s\S]*?)<\/p>/)?.[1] || "";
+    if (!/NASA\/Goddard\/University of Arizona/.test(credits) || !/CactiStaccingCrane/.test(credits) ||
+      !credits.includes('href="https://commons.wikimedia.org/wiki/File:Solar_System_true_color.jpg"') ||
+      !credits.includes('href="https://creativecommons.org/licenses/by-sa/4.0/"')) {
+      fail(`${file}: the footer must credit the backdrop images (src/data/colophon.ts), linking the source and the licence`);
+    }
     const revision = footer.match(/<time datetime="(\d{4}-\d{2}-\d{2})">([^<]*)<\/time>/);
     if (!revision || revision[1] !== revision[2]) fail(`${file}: the colophon revision must be a static ISO date, <time datetime="YYYY-MM-DD">YYYY-MM-DD</time>`);
   }

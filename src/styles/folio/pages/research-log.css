@@ -1,4 +1,9 @@
-/* @owner WP3 · @budget 2KB · @important 0 · Public Research Log, scoped under .ui-page-research-log:not(.ui-page-research-graduation) */
+/* @owner WP3 · @budget 2.5KB · @important 0 · Public Research Log, scoped under .ui-page-research-log:not(.ui-page-research-graduation) */
+/* The reading veil reaches full strength 380 px down here, as on the old site. */
+.ui-page-research-log .research-log-main {
+  background-image: linear-gradient(180deg, transparent, var(--obs-reading) 380px);
+}
+
 /* The accession record (.log-record) and the compact pathway; these block classes exist only on this page. */
 .log-record {
   padding-top: var(--ed-space-8);

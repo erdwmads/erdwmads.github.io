@@ -24,7 +24,7 @@ try {
   await page.keyboard.press('Escape');
   // FX has been on by default since b8ab393 (it was opt-in when this test was written); only switch it on if off.
   if (await page.locator('html').evaluate(el => el.classList.contains('ambient-fx-disabled'))) await toggleFx(page);
-  // The pointer edge light on buttons is retired (Folio 2046 decision R2), so this test no longer hovers for it.
+  // The pointer edge light on buttons (R2) is tested by edge-light.browser; this test hovers only for the orbit.
   await page.locator('.nav a[href="photography.html"]').hover();
   assert.equal(await page.locator('body').getAttribute('data-orbit-route'), 'photography');
   assert.equal(await page.locator('.ui2046-system-orbit.is-route-active').count(), 1);

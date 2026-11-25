@@ -35,7 +35,7 @@ const scriptHtml = getPageScripts("home");
         <span>{affiliations.map((line, index) => <Fragment>{index > 0 && <br />}{line}</Fragment>)}</span>
       </p>
       <p class="home-interests">{interests}</p>
-      <p class="home-keywords"><strong>Keywords:</strong> {keywords.map((word) => word.replaceAll(" ", "\u00a0").replaceAll("\u2013", "\u2013\u2060")).join("\u00a0· ")}</p>
+      <ul class="home-keywords" aria-label="Keywords">{keywords.map((word) => <li class="pill">{word}</li>)}</ul>
       <div class="home-actions cluster">
         <a class="button" href="research.html">Research</a>
         <a class="quiet-link" href="cv.html">CV <span aria-hidden="true">→</span></a>

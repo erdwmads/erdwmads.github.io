@@ -1,6 +1,7 @@
 // Forced colours and more contrast (spec §2.1 states/contrast.css, §6.5): under forced-colors: active the calibration
 // markers keep their own painting in the system text colour (outline, fill or corner brackets visible against the
-// page, at 3:1 or more, so no marker keeps a theme colour such as the brass "In progress"), chips, buttons and fields
+// page, at 3:1 or more, so no marker keeps a theme colour such as the brass "In progress"), the header does not float,
+// neither page backdrop is drawn, buttons and the theme toggle lose their sheen and draw no edge light, chips, buttons and fields
 // keep a visible border, section rules and hairlines stay drawn, and keyboard focus
 // draws a solid outline in a system colour, and pressed or current states stay distinct from their siblings; under prefers-contrast: more the decorative hairline token becomes 60%
 // of the text colour. Markers, chips and rules on the page are checked where a page has them (pathway chips, evidence
@@ -52,6 +53,15 @@ const inspect = () => {
     const pressed = new Set(buttons.filter(b => b.getAttribute('aria-pressed') === 'true').map(b => mark(b)));
     for (const button of buttons) if (button.getAttribute('aria-pressed') !== 'true' && pressed.has(mark(button))) out.push({ owner: window.__guardOwner(button), message: `${name(button)} looks pressed under forced colours (${mark(button)})` });
   }
+  // The effects step aside (owner, 2026-11-18): the header stays in the flow and neither backdrop is drawn.
+  const header = document.querySelector('.site-header');
+  if (header && getComputedStyle(header).position === 'sticky') out.push({ owner: 'WP2', message: 'the header floats under forced colours' });
+  const before = getComputedStyle(document.body, '::before'), after = getComputedStyle(document.body, '::after');
+  if (before.content !== 'none' && before.display !== 'none') out.push({ owner: 'WP2', message: `the Bennu backdrop (body::before) is drawn under forced colours (display ${before.display})` });
+  if (after.content !== 'none' && after.display !== 'none') out.push({ owner: 'WP2', message: `the header band (body::after) is drawn under forced colours (display ${after.display})` });
+  for (const el of document.querySelectorAll('.button, .theme-toggle')) {
+    if (shown(el) && getComputedStyle(el).backgroundImage !== 'none') out.push({ owner: 'WP2', message: `${name(el)} keeps its sheen under forced colours (${getComputedStyle(el).backgroundImage.slice(0, 60)})` });
+  }
   const current = document.querySelector('.chapters [aria-current]');
   if (current && shown(current)) for (const other of current.closest('.chapters').querySelectorAll('button:not([aria-current])')) {
     if (mark(other, '::before') === mark(current, '::before')) out.push({ owner: window.__guardOwner(current), message: `${name(current)} has the same rule as ${name(other)} under forced colours` });
@@ -64,6 +74,18 @@ await runGuard('forced-colors', async (page, { entry, base }) => {
   await insertFixture(page);
   await page.emulateMedia({ forcedColors: 'active' });
   const findings = await page.evaluate(inspect);
+  // The pointer edge light draws no ring under forced colours, even where the script lights the control.
+  const lit = page.locator('[data-guard-fixture] .button:not(:disabled)').first();
+  await lit.scrollIntoViewIfNeeded();
+  const litBox = await lit.boundingBox();
+  if (litBox) {
+    await page.mouse.move(litBox.x + 6, litBox.y + 6);
+    await page.mouse.move(litBox.x + litBox.width - 6, litBox.y + litBox.height - 6, { steps: 3 });
+    await page.waitForTimeout(80);
+    const ring = await lit.evaluate(el => { const s = getComputedStyle(el, '::before'); return s.content !== 'none' && s.display !== 'none'; });
+    if (ring) findings.push({ owner: 'WP2', message: 'the edge light draws its ring under forced colours' });
+    await page.mouse.move(1, 1);
+  }
   // Focus under forced colours: a solid outline in a system colour that differs from the page.
   const target = page.locator('[data-guard-fixture] .button').first();
   await page.keyboard.press('Tab');

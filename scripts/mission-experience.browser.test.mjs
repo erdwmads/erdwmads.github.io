@@ -32,8 +32,8 @@ async function swipe(page, selector, dx, dy=0) {
   await client.detach();
 }
 try {
-  // The pointer edge light (gold and blue gradient, data-edge-active) is retired by Folio 2046 decision R2, so the
-  // desktop part keeps only its layout check: moving the pointer across a primary action never moves it.
+  // The pointer edge light (R2, data-edge-active) lights the primary action under a moving mouse; moving the pointer
+  // across it never moves it.
   const desktop = await browser.newPage({viewport:{width:1440,height:1000}});
   await desktop.addInitScript(()=>{sessionStorage.setItem('mads-entry-gate-v1','done');sessionStorage.setItem('mads-cosmic-arrival-v1','done');});
   await desktop.goto(`${base}/index.html`);
@@ -48,6 +48,7 @@ try {
     await desktop.waitForTimeout(100);
     await desktop.mouse.move(box.x+box.width-8,box.y+box.height/2);
     await desktop.waitForTimeout(100);
+    assert.ok(await control.evaluate(el=>el.hasAttribute('data-edge-active')),'the edge light lights the primary action');
     assert.equal(await control.evaluate(el=>getComputedStyle(el,'::after').content),arrow);
     assert.deepEqual(await control.boundingBox(),box);
     await desktop.mouse.move(0,999);

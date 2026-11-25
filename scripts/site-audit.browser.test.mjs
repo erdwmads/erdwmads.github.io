@@ -61,14 +61,18 @@ try {
   await page.waitForTimeout(300);
   assert.ok(await progress.evaluate(el => el.hidden), 'a page that cannot scroll shows no position tick');
   // The spine (spec §4.0): a vertical running head "INTERFACE 2046 · {route}" beside a 1 px track at the right edge,
-  // and a 24 x 2 px ink tick (a border, so forced colours keep it; not brass, which content may already use up) that
-  // travels the track from top to bottom with the scroll; from 1200 px only.
+  // and a 24 x 2 px ink tick (the span's ::after, a border, so forced colours keep it; not brass, which content may
+  // already use up) that travels the track from top to bottom with the scroll; from 901 px, where the old site's
+  // rail showed (E134).
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(`${base}/research.html`, { waitUntil: 'networkidle' });
   const spineAt = () => page.evaluate(() => {
     const track = document.querySelector('.ui2046-rail-line').getBoundingClientRect();
+    // The tick is a pseudo-element: its box is the span's, moved by the ::after translate.
     const tick = document.querySelector('.ui2046-progress > span');
-    const box = tick.getBoundingClientRect();
+    const span = tick.getBoundingClientRect(), after = getComputedStyle(tick, '::after');
+    const shift = Number.parseFloat(after.translate.split(' ')[1] || '0');
+    const box = { top: span.top + shift, bottom: span.top + shift + Number.parseFloat(after.height), left: span.left, width: Number.parseFloat(after.borderLeftWidth), height: Number.parseFloat(after.height) };
     const probe = document.createElement('i');
     probe.style.color = 'var(--obs-rule)';
     document.body.append(probe);
@@ -78,7 +82,7 @@ try {
     const rail = document.querySelector('.ui2046-rail'), imprint = rail.querySelector('span'), route = rail.querySelector('[data-ui2046-route]');
     const head = imprint.getBoundingClientRect().bottom <= route.getBoundingClientRect().top
       ? `${imprint.innerText} ${getComputedStyle(route, '::before').content.replace(/"/g, '')} ${route.innerText}` : `${route.innerText} / ${imprint.innerText}`;
-    return { track: [track.top, track.bottom, track.left + track.width / 2], tick: [box.top, box.bottom, box.left + box.width / 2, box.width, box.height], colour: getComputedStyle(tick).borderLeftColor, ink, opacity: Number(getComputedStyle(tick).opacity), head, vertical: getComputedStyle(rail).writingMode };
+    return { track: [track.top, track.bottom, track.left + track.width / 2], tick: [box.top, box.bottom, box.left + box.width / 2, box.width, box.height], colour: after.borderLeftColor, ink, opacity: Number(after.opacity) * Number(getComputedStyle(tick).opacity), head, vertical: getComputedStyle(rail).writingMode };
   });
   const top = await spineAt();
   assert.deepEqual([top.tick[3], top.tick[4]], [2, 24], 'the tick is 2 x 24 px');
@@ -91,10 +95,14 @@ try {
   await page.waitForTimeout(200);
   const end = await spineAt();
   assert.ok(Math.abs(end.tick[1] - end.track[1]) <= 1 && end.opacity === 1, `at the end the tick reaches the foot of the track: ${JSON.stringify(end)}`);
-  for (const width of [1199, 1024]) {
+  // The spine shows from 901 px and the reading beam from 761 px, as on the old site (E134, E029).
+  const shown = () => page.evaluate(() => ({ rail: !!document.querySelector('.ui2046-rail')?.getClientRects().length,
+    tick: getComputedStyle(document.querySelector('.ui2046-progress > span'), '::after').display !== 'none',
+    beam: getComputedStyle(document.querySelector('.ui2046-progress > span'), '::before').display !== 'none' }));
+  for (const [width, want] of [[1199, { rail: true, tick: true, beam: true }], [1024, { rail: true, tick: true, beam: true }], [901, { rail: true, tick: true, beam: true }], [900, { rail: false, tick: false, beam: true }], [761, { rail: false, tick: false, beam: true }]]) {
     await page.setViewportSize({ width, height: 900 });
     await page.waitForTimeout(200);
-    assert.equal(await page.evaluate(() => [...document.querySelectorAll('.ui2046-rail, .ui2046-progress')].some(el => el.getClientRects().length)), false, `${width}px: no spine below 1200 px`);
+    assert.deepEqual(await shown(), want, `${width}px: spine from 901 px, reading beam from 761 px`);
   }
   // Sample Cabinet is explicitly retired and hidden by the existing site policy. Ryugu & Bennu holds material split from Research.
   const routes = ['index', 'research', 'ryugu-bennu', 'paper-shelf', 'cv', 'photography', 'contact', 'research-log', 'research-graduation'];

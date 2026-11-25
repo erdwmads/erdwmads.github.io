@@ -1,7 +1,9 @@
 
 (function () {
   const AMBIENT_STORAGE_KEY = "madsAmbientFxEnabled";
-  // Touch input also occurs in desktop WebViews; compact mode follows viewport width.
+  // Touch input also occurs in desktop WebViews; compact mode follows viewport width. At 760 px and below the field
+  // runs as a lite version (owner decision E103, 2026-11-18): fewer dust motes, no pebbles, rarer meteors, and the
+  // layer is built only once the page has loaded and the browser is idle, so it never competes with the first paint.
   const MOBILE_AMBIENT_MEDIA = "(max-width: 760px)";
   const mobileAmbientQuery = window.matchMedia ? window.matchMedia(MOBILE_AMBIENT_MEDIA) : null;
   let disposeAmbientLayer;
@@ -16,7 +18,6 @@
 
   function isAmbientEnabled() {
     if (prefersReducedMotion()) return false;
-    if (isMobileAmbientView()) return false;
     try { return window.localStorage.getItem(AMBIENT_STORAGE_KEY) !== "0"; }
     catch { return true; }
   }
@@ -98,15 +99,27 @@
   const GOLD_METEOR_RATIO = 0.07;
 
 
+  // A phone builds its lite layer after load, when the browser is idle; the switch and soft navigation call again.
+  let pendingLiteBuild = 0;
   function initAmbientSpace() {
-    const existing = document.querySelector(".ambient-space-layer");
-
-    if (isMobileAmbientView()) {
-      // mobile ambient disabled: the mobile lightweight interface should not
-      // create particle nodes even when the desktop FX preference is on.
-      removeAmbientLayer();
+    if (isMobileAmbientView() && isAmbientEnabled() && !document.querySelector(".ambient-space-layer") &&
+      document.readyState !== "complete") {
+      if (!pendingLiteBuild) {
+        pendingLiteBuild = 1;
+        window.addEventListener("load", function () {
+          (window.requestIdleCallback || window.setTimeout)(function () { pendingLiteBuild = 0; initAmbientSpace(); }, { timeout: 1600 });
+        }, { once: true });
+      }
+      document.documentElement.classList.remove("ambient-fx-disabled");
+      document.body.classList.remove("ambient-fx-disabled");
       return;
     }
+    buildAmbientSpace();
+  }
+
+  function buildAmbientSpace() {
+    const existing = document.querySelector(".ambient-space-layer");
+    const lite = isMobileAmbientView();
 
     if (!isAmbientEnabled()) {
       removeAmbientLayer();
@@ -119,14 +132,16 @@
     // Reuse a live layer when this script is re-entered by Edge or soft
     // navigation. Removing and rebuilding the full fixed layer causes a
     // visible one-frame blackout in Chromium compositing.
-    if (existing && existing.querySelector(".ambient-dust")) {
+    if (existing && existing.querySelector(".ambient-dust") && existing.classList.contains("is-lite") === lite) {
       return;
     }
+    disposeAmbientLayer?.();
+    disposeAmbientLayer = undefined;
 
     if (existing) existing.remove();
 
     const layer = document.createElement("div");
-    layer.className = "ambient-space-layer";
+    layer.className = lite ? "ambient-space-layer is-lite" : "ambient-space-layer";
     document.body.appendChild(layer);
     const controller = new AbortController();
     const timeouts = new Set();
@@ -281,14 +296,13 @@
       }, duration + 420);
     }
 
-    // Minimal power saver:
-    // keep the same visual language, but reduce always-on particle work.
-    const isMobileAmbient = window.matchMedia &&
-      window.matchMedia("(max-width: 760px)").matches;
+    // Minimal power saver: keep the same visual language, but reduce always-on particle work. The lite phone field
+    // has half the old phone site's dust (88 before b2b150b), no pebbles and half its meteor rate (one per 2.6 s).
+    const isMobileAmbient = lite;
 
-    const dustCount = isMobileAmbient ? 88 : 122;
-    const pebbleCount = isMobileAmbient ? 14 : 20;
-    const meteorInterval = isMobileAmbient ? 2600 : 1900;
+    const dustCount = isMobileAmbient ? 44 : 122;
+    const pebbleCount = isMobileAmbient ? 0 : 20;
+    const meteorInterval = isMobileAmbient ? 5200 : 1900;
 
     for (let i = 0; i < dustCount; i++) makeDust();
     for (let i = 0; i < pebbleCount; i++) makePebble();
@@ -362,10 +376,11 @@
     const button = document.querySelector(".ambient-fx-toggle");
     if (button) updateAmbientToggle(button);
 
-    if (isMobileAmbientView()) {
-      removeAmbientLayer();
-    } else if (isAmbientEnabled()) {
+    // Crossing 760 px rebuilds the field at the other density.
+    if (isAmbientEnabled()) {
       initAmbientSpace();
+    } else {
+      removeAmbientLayer();
     }
 
     emitAmbientState();

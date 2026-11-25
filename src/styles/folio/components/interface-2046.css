@@ -1,9 +1,10 @@
-/* @owner WP2 · @budget 5KB · @important 0 · Interface 2046 layer: orbit mechanics, the spine (.ui2046-rail) and its position tick (.ui2046-progress) */
-/* Interface 2046, the instrument layer (interface-2046.js; never created at 760 px and below): the orbit diagram
-   behind the content while FX is on (from 901 px, quieter to 1120 px), and from 1200 px the spine, a vertical
-   running head beside a 1 px track whose ink tick follows the scroll. Nothing here takes input. The layer has no
-   z-index and no transform, so it forms no stacking context: the diagram stays under main's veil, the spine above
-   it, and nothing can trap the fixed tick. */
+/* @owner WP2 · @budget 7.5KB · @important 0 · Interface 2046 layer: orbit mechanics, the spine (.ui2046-rail) and its position tick (.ui2046-progress) */
+/* Interface 2046, the instrument layer (interface-2046.js; never created at 760 px and below): the glowing orbit
+   diagram behind the content while FX is on (from 901 px; Immersive, the default, at .9 throughout, Standard quieter
+   to 1120 px), from 901 px the spine, a vertical running head beside a 1 px track whose ink tick follows the scroll,
+   and from 761 px the reading beam across the top of the window. Nothing here takes input. The layer has no z-index
+   and no transform, so it forms no stacking context: the diagram stays under main's veil, the spine above it, and
+   nothing can trap the fixed tick or beam. */
 .ui2046-layer {
   position: absolute;
   inset: 0;
@@ -18,6 +19,7 @@
   width: min(44vw, 660px);
   aspect-ratio: 1.72;
   opacity: calc(var(--fx-orbit-alpha) * .5);
+  filter: var(--obs-orrery-glow);
   transform: rotate(-7deg);
   pointer-events: none;
 }
@@ -27,7 +29,7 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  border: 1px dashed color-mix(in srgb, var(--obs-link) 22%, transparent);
+  border: 1px dashed var(--obs-kuiper-line);
   border-radius: 50%;
   transform: translate(-50%, -50%);
 }
@@ -35,6 +37,7 @@
 .ui2046-kuiper-belt {
   width: 98%;
   height: 81%;
+  box-shadow: var(--obs-kuiper-glow);
 }
 
 /* Each orbit is an ellipse sized by --w and --h; --alpha sets the strength of its line. */
@@ -42,17 +45,40 @@
   width: var(--w);
   height: var(--h);
   border-style: solid;
-  border-color: color-mix(in srgb, var(--obs-link) calc(var(--alpha, .12) * 200%), transparent);
-  transition: border-color var(--ed-dur-2) var(--ed-ease-out);
+  border-color: color-mix(in srgb, var(--obs-link) calc(var(--alpha, .12) * 100%), transparent);
+  transition: border-color var(--ed-dur-2) var(--ed-ease-out), box-shadow var(--ed-dur-2) var(--ed-ease-out);
 }
 
 .ui2046-system-orbit.dwarf {
   border-style: dashed;
 }
 
-/* A route under the pointer in the header lights its orbit and label (observatory-interactions.js). */
+/* A route under the pointer in the header lights its orbit, planet and label in steel (observatory-interactions.js);
+   Standard keeps the orbit at .65. On Research Log routes a dashed brass ring circles the diagram. */
 .ui2046-system-orbit.is-route-active {
-  border-color: color-mix(in srgb, var(--obs-link) 70%, transparent);
+  border-color: var(--obs-edge-cool);
+  box-shadow: 0 0 12px var(--obs-glow), inset 0 0 8px var(--obs-glow);
+}
+
+:where(html[data-fx-intensity="standard"]) .ui2046-system-orbit.is-route-active {
+  opacity: .65;
+}
+
+.is-route-active .ui2046-planet {
+  box-shadow: 0 0 8px var(--obs-edge-cool), 0 0 20px var(--obs-glow);
+}
+
+:where(body[data-orbit-route="research-log"]) .ui2046-solar-system::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 48%;
+  height: 34%;
+  border: 1px dashed var(--obs-accent);
+  border-radius: 50%;
+  box-shadow: 0 0 14px var(--obs-gold-glow);
+  transform: translate(-50%, -50%);
 }
 
 /* The script turns each track through its orbit with a compositor animation; the planet and its label sit at the
@@ -70,7 +96,13 @@
   height: var(--size, 3px);
   border-radius: 50%;
   background: var(--color, var(--obs-muted));
+  box-shadow: 0 0 calc(var(--size, 3px) * 2.8) color-mix(in srgb, var(--color, var(--obs-muted)) 58%, transparent), var(--obs-planet-rim);
+  opacity: var(--obs-planet-opacity);
   transform: translate(-50%, -50%);
+}
+
+.ui2046-planet.sun-marker {
+  box-shadow: var(--obs-sun-glow);
 }
 
 .ui2046-planet-label,
@@ -89,8 +121,9 @@
 }
 
 .ui2046-planet-label {
+  text-shadow: var(--obs-label-glow);
   opacity: 0;
-  transition: opacity var(--ed-dur-2) var(--ed-ease-out);
+  transition: opacity var(--ed-dur-2) var(--ed-ease-out), color var(--ed-dur-2) var(--ed-ease-out);
 }
 
 .ui2046-planet-label.is-major,
@@ -99,6 +132,7 @@
 }
 
 .is-route-active .ui2046-planet-label {
+  color: var(--obs-edge-cool);
   opacity: 1;
 }
 
@@ -135,8 +169,8 @@
   margin-inline-end: .6em;
 }
 
-/* Track and tick are borders, so forced colours keep them. The tick (2 x 24 px) is ink, not brass: content may
-   already show the three brass marks a viewport allows. */
+/* Track and tick are borders, so forced colours keep them. The tick (2 x 24 px, the span's ::after) is ink, not
+   brass: content may already show the three brass marks a viewport allows. */
 .ui2046-rail-line {
   position: absolute;
   top: 0;
@@ -157,30 +191,69 @@
 
 .ui2046-progress > span {
   display: block;
+}
+
+.ui2046-progress > span::after {
+  content: "";
+  display: block;
   height: 24px;
   border-left: 2px solid var(--obs-rule);
   translate: 0 calc(var(--scroll-progress, 0) * (100vh - 20rem - 24px));
+}
+
+/* The reading beam (old site, E029): a 2 px steel-to-brass line on a faint track across the top of the window,
+   scaled from the same --scroll-progress. The span itself is never transformed, so its fixed ::before is placed
+   against the window; the clip keeps the glow inside the 2 px line, as the old overflow did. */
+.ui2046-progress::before,
+.ui2046-progress > span::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 2px;
+  background: var(--obs-progress-track);
+}
+
+.ui2046-progress > span::before {
+  background: var(--obs-progress-beam);
+  box-shadow: var(--obs-progress-glow);
+  clip-path: inset(0 -100vw 0 0);
+  transform: scaleX(var(--scroll-progress, 0));
+  transform-origin: left center;
+  transition: transform 60ms linear;
 }
 
 :where(html.is-edge-page-exiting) :is(.ui2046-layer, .ui2046-progress, .is-edge-teardown) {
   visibility: hidden;
 }
 
-@media (max-width: 1199px) {
-  .ui2046-rail,
-  .ui2046-progress {
-    display: none;
+@media (max-width: 1120px) {
+  .ui2046-solar-system {
+    opacity: .25;
   }
 }
 
-@media (max-width: 1120px) {
-  .ui2046-solar-system {
-    opacity: calc(var(--fx-orbit-alpha) * .25);
-  }
+:where(html[data-fx-intensity="immersive"]) .ui2046-solar-system {
+  opacity: var(--fx-orbit-alpha);
 }
 
 @media (max-width: 900px), (forced-colors: active) {
   .ui2046-solar-system {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .ui2046-rail,
+  .ui2046-progress > span::after {
+    display: none;
+  }
+}
+
+@media (max-width: 760px), (forced-colors: active) {
+  .ui2046-progress::before,
+  .ui2046-progress > span::before {
     display: none;
   }
 }

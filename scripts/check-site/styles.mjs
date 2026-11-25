@@ -102,16 +102,40 @@ export default async function checkStyles({ root, distDir, publicDir, fail, read
   if (!rules.some((rule) => rule.selectors.some((selector) => /\.mads-soft-nav-active\b/.test(selector)))) {
     fail("assets/css/site.css: missing soft navigation stability styles (.mads-soft-nav-active)");
   }
-  // Text never rests on imagery: no background image on body or its pseudo-elements, whatever the theme. The body is
-  // reached as body, body.x, :where(body) or through its page class (.ui-page-*, which only body carries), with or
-  // without a state prefix.
+  // Text never rests on undimmed imagery: no background image on body or its pseudo-elements, whatever the theme,
+  // except the page backdrops of components/backdrop.css (owner, 2026-11-18), each held to its selector, media and
+  // images (the band's veil alone while its image waits for the page to load). The body is reached as body, body.x,
+  // :where(body) or through its page class (.ui-page-*, which only body carries), with or without a state prefix.
   const onBodyOrPage = (selector) => {
     const subject = selector.split(/\s*[\s>+~]\s*(?![^(]*\))/).pop();
     return /^(?:body\b|\.ui-page-|:where\(\s*(?:body\b|\.ui-page-))/.test(subject) && !/::(?!before\b|after\b)/.test(subject);
   };
+  const squeeze = (text) => text.replace(/\s+/g, "").replace(/["']/g, "").toLowerCase();
+  const floatMedia = "@media(min-width:761px)and(min-height:600px)and(forced-colors:none)";
+  const backdrops = [
+    { selector: "body::before", media: "", images: ["url(../img/asteroid-bennu-1280.webp)"] },
+    { selector: "body::before", media: "@media(max-width:760px)", images: ["url(../img/asteroid-bennu-800.webp)"] },
+    { selector: "body::after", media: floatMedia, images: ["var(--obs-band-veil)", "url(../img/solar_system_true_color-1600.webp)"] },
+    // Until html.backdrop-ready (after the load event, observatory-interactions.js) the band shows its veil alone.
+    { selector: "html:not(.backdrop-ready) body::after", media: "@media(scripting:enabled)", images: ["var(--obs-band-veil)"] }
+  ];
+  const imageOf = (value) => squeeze(value).match(/var\(--obs-band-veil\)|url\([^)]*\)|[a-z-]*gradient\(|image-set\(/g) ?? [];
+  const seen = new Set();
   for (const rule of rules) {
     const onBody = rule.selectors.some(onBodyOrPage);
-    const image = rule.declarations.find(({ property, value }) => (property === "background-image" || property === "background") && /url\(|gradient\(|image-set\(/.test(value));
-    if (onBody && image) fail(`assets/css/site.css: ${rule.selectors.join(", ")} gives the page a background image (${image.value.slice(0, 60)})`);
+    const image = rule.declarations.find(({ property, value }) => (property === "background-image" || property === "background") && /url\(|gradient\(|image-set\(|var\(--obs-band-veil\)/.test(value));
+    if (!onBody || !image) continue;
+    const media = rule.conditions.map(squeeze).join("");
+    const allowed = backdrops.findIndex((entry) => rule.selectors.length === 1 && rule.selectors[0] === entry.selector && media === entry.media && imageOf(image.value).join(" ") === entry.images.join(" "));
+    if (allowed < 0) fail(`assets/css/site.css: ${rule.selectors.join(", ")} gives the page a background image (${image.value.slice(0, 60)})`);
+    else seen.add(allowed);
   }
+  backdrops.forEach((entry, index) => {
+    if (!seen.has(index)) fail(`assets/css/site.css: the page backdrop ${entry.selector}${entry.media ? ` in ${entry.media}` : ""} with ${entry.images.join(", ")} is missing or changed (components/backdrop.css)`);
+  });
+  // Bennu is always dimmed and never takes input, so text never rests on an undimmed image.
+  const bennu = rules.filter((rule) => !rule.conditions.length && rule.selectors.includes("body::before"));
+  const declares = (property, value) => bennu.some((rule) => rule.declarations.some((have) => have.property === property && squeeze(have.value) === squeeze(value)));
+  if (!declares("opacity", "var(--obs-backdrop-opacity)")) fail("assets/css/site.css: body::before (the Bennu backdrop) must declare opacity: var(--obs-backdrop-opacity)");
+  if (!declares("pointer-events", "none")) fail("assets/css/site.css: body::before (the Bennu backdrop) must declare pointer-events: none");
 }

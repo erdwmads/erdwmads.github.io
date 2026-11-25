@@ -1,7 +1,8 @@
-/* @owner WP2 · @budget 4KB · @important 0 · Ambient FX layer: dust, pebbles, meteors, their keyframes, pauses and the Edge mount rule */
+/* @owner WP2 · @budget 5KB · @important 0 · Ambient FX layer: dust, pebbles, meteors, their keyframes, pauses and the Edge mount rule */
 /* The FX field (ambient-space.js) on a fixed layer below the content, never taking input; main's veil shows it in
    the opening view only. The script places each particle and picks the gold ones (18% of the dust, 7% of the
-   meteors). Faces follow color-scheme: paper glints, no brass, in Light. Keyframes alternate, so particles turn back. */
+   meteors). Each particle glows as on the old site (static shadows, rasterised once per layer; the meteor filter
+   rides its compositor layer); Light draws the gold ones white. Keyframes alternate, so particles turn back. */
 .ambient-space-layer {
   position: fixed;
   inset: 0;
@@ -10,9 +11,6 @@
   pointer-events: none;
   contain: layout style paint;
   opacity: var(--fx-dust-opacity);
-  --fx-dust-face: light-dark(var(--obs-surface), var(--obs-muted));
-  --fx-gold-face: light-dark(var(--obs-surface), var(--obs-accent));
-  --fx-meteor-face: light-dark(var(--obs-surface), var(--obs-text));
 }
 
 .ambient-dust,
@@ -27,6 +25,7 @@
   height: var(--dust-size, 3px);
   border-radius: 50%;
   background: var(--fx-dust-face);
+  box-shadow: var(--fx-dust-glow);
   opacity: var(--dust-opacity, .7);
   animation: ambientDustMove var(--dust-duration, 36s) linear infinite;
   animation-direction: alternate;
@@ -34,50 +33,64 @@
 
 .ambient-dust.is-gold-dust {
   background: var(--fx-gold-face);
+  box-shadow: var(--fx-gold-shine);
+}
+
+.ambient-dust.is-gold-dust::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: var(--fx-gold-halo-face);
 }
 
 .ambient-pebble {
   width: var(--pebble-w, 10px);
   height: var(--pebble-h, 8px);
-  border: 1px solid color-mix(in srgb, var(--fx-dust-face) 50%, transparent);
+  border: 1px solid var(--fx-pebble-edge);
   border-radius: 58% 42% 52% 47%;
-  background: color-mix(in srgb, var(--obs-muted) 40%, transparent);
+  background: var(--fx-pebble-face);
+  box-shadow: var(--fx-pebble-shade);
   opacity: var(--pebble-opacity, .6);
   animation: ambientPebbleMove var(--pebble-duration, 56s) linear infinite;
   animation-direction: alternate;
 }
 
-/* Meteors fly by a transition the script sets; here, the trail and its head. */
+/* Meteors fly by a transition the script sets; here, the glowing trail and its haloed 7 px head. */
 .ambient-meteor {
   width: var(--meteor-len, 140px);
-  height: 2px;
-  border-radius: 1px;
-  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--fx-meteor-face) 80%, transparent));
+  height: 3px;
+  border-radius: 2px;
+  background: var(--fx-meteor-trail);
   opacity: 0;
+  filter: var(--fx-meteor-glow);
   transform-origin: right center;
 }
 
 .ambient-meteor::after {
   content: "";
   position: absolute;
-  top: -1px;
-  right: -2px;
-  width: 4px;
-  height: 4px;
+  top: -2px;
+  right: -3px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: var(--fx-meteor-face);
+  background: var(--fx-meteor-core);
+  box-shadow: var(--fx-meteor-head);
 }
 
 .ambient-meteor.is-gold-meteor {
-  background: linear-gradient(90deg, transparent, var(--fx-gold-face));
+  background: var(--fx-gold-trail);
+  filter: var(--fx-gold-trail-glow);
 }
 
 .ambient-meteor.is-gold-meteor::after {
-  background: var(--fx-gold-face);
+  background: var(--fx-gold-core);
+  box-shadow: var(--fx-gold-core-glow);
 }
 
 .ambient-meteor.is-flying {
-  opacity: .9;
+  opacity: .95;
 }
 
 @keyframes ambientDustMove {

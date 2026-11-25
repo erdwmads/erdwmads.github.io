@@ -32,7 +32,7 @@ const state=page=>page.evaluate(()=>{
   const r=el=>el.getBoundingClientRect();
   const accent=(()=>{const probe=document.createElement('i');document.body.append(probe);probe.style.color='var(--obs-accent)';const value=getComputedStyle(probe).color;probe.remove();return value;})();
   return {open:ledger.open,summaryShown:summary.checkVisibility(),summaryHeight:r(summary).height,summaryText:summary.innerText.replace(/\s+/g,' ').trim(),
-    position:getComputedStyle(document.querySelector('.mission-index-section')).position,sectionTop:r(document.querySelector('.mission-index-section')).top,
+    position:getComputedStyle(document.querySelector('.mission-index-section')).position,sectionTop:r(document.querySelector('.mission-index-section')).top,headerBottom:r(document.querySelector('.site-header')).bottom,
     listScrolls:list.scrollHeight>list.clientHeight+1,listTop:r(list).top,listBottom:r(list).bottom,rowHeights:rows.map(row=>r(row).height),rowsShown:rows.filter(row=>row.checkVisibility()).length,
     current:current.length,currentId:current[0]?.dataset.missionTarget,currentTop:current[0]&&r(current[0]).top,currentBottom:current[0]&&r(current[0]).bottom,currentRule:current[0]&&getComputedStyle(current[0]).borderLeftColor,currentRuleWidth:current[0]&&getComputedStyle(current[0]).borderLeftWidth,accent,
     region:[list.getAttribute('role'),list.getAttribute('aria-label'),list.getAttribute('tabindex'),list.getAttribute('aria-live')].join('|'),
@@ -60,10 +60,10 @@ try{
       assert.equal(s.currentRule,s.accent,label+': the current row carries the brass rule');
       assert.equal(s.currentRuleWidth,'2px');
       assert.equal(s.overflow,false);
-      // Sticky: after a long scroll the ledger still sits at the top of the viewport and inside it.
+      // Sticky: after a long scroll the ledger still sits 24 px under the floating header and inside the viewport.
       await page.evaluate(()=>scrollTo(0,document.querySelector('.mission-log-entry').getBoundingClientRect().top+scrollY+400));
       s=await state(page);
-      assert(Math.abs(s.sectionTop-24)<=2,label+': the ledger is not sticky at 24 px ('+s.sectionTop+')');
+      assert(Math.abs(s.sectionTop-(s.headerBottom+24))<=2,label+': the ledger is not sticky 24 px under the header ('+s.sectionTop+', header '+s.headerBottom+')');
       assert(s.listBottom<=900+1,label+': the ledger runs past the viewport');
       // Choosing a row moves the brass rule and aria-current; the page scrolls to the entry, not the list's row.
       await page.locator('[data-mission-target="log-002"]').click();

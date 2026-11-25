@@ -1,4 +1,4 @@
-/* @owner WP5 · @budget 4.5KB · @important 0 · CV, scoped under .ui-page-cv, including the CV print rules */
+/* @owner WP5 · @budget 5.5KB · @important 0 · CV, scoped under .ui-page-cv, including the CV print rules */
 .ui-page-cv .masthead {
   margin-block-end: 0;
   padding-block-end: 0;
@@ -69,6 +69,28 @@
 
 .ui-page-cv .cv-photo {
   margin: 0;
+}
+
+/* The old light on screen (c4): the portrait floats on a deep soft shadow (E050); each education date sits on the
+   frosted glass Edge drew under it (E051), the one backdrop blur of 2f20d7e (blurAllowList, scripts/lib/css-lint.mjs). */
+@media screen and (forced-colors: none) {
+  .ui-page-cv .cv-photo .figure__media {
+    box-shadow: var(--obs-photo-shadow);
+  }
+
+  .ui-page-cv .cv-edu-card > .ledger__key {
+    align-self: start;
+    backdrop-filter: blur(12px) saturate(1.04);
+  }
+}
+
+/* An education record under the pointer takes the old record glow (E105, as at 4e14512): a faint depth easing in over
+   180 ms. A hairline row: nothing moves. */
+@media (hover: hover) and (forced-colors: none) {
+  .ui-page-cv .cv-edu-card:hover {
+    box-shadow: var(--obs-record-depth-hover);
+    transition: box-shadow .18s;
+  }
 }
 
 .ui-page-cv .cv-ledger > li {

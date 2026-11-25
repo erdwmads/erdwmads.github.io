@@ -21,7 +21,10 @@
 .mission-jump-grid { border-top: 1px solid var(--obs-rule); }
 .mission-jump-card { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); column-gap: var(--ed-space-3); align-content: center; min-height: 48px; padding: var(--ed-space-2) var(--ed-space-3); border-bottom: 1px solid var(--obs-hairline); border-left: 2px solid transparent; color: var(--obs-text); line-height: 1.4; text-decoration: none; }
 .mission-jump-card:hover { background: var(--obs-surface-hover); }
-.mission-jump-card[aria-current="true"] { border-left-color: var(--obs-accent); background: var(--obs-highlight); }
+/* The current record glows brass, with a glowing bead on its rule, as the old index card did (c4, E046); forced
+   colours paint neither. */
+.mission-jump-card[aria-current="true"] { position: relative; border-left-color: var(--obs-accent); background: var(--obs-highlight); box-shadow: 0 0 16px var(--obs-gold-glow); }
+.mission-jump-card[aria-current="true"]::before { content: ""; position: absolute; top: calc(50% - 4px); left: -2px; width: 8px; height: 8px; border-radius: 50%; background: var(--obs-accent); box-shadow: 0 0 10px var(--obs-accent); }
 .mission-jump-sol { grid-row: span 2; font-weight: 600; }
 .mission-log-label { margin: var(--ed-space-6) 0 var(--ed-space-4); }
 @media (max-width: 1199px) {
@@ -30,10 +33,10 @@
 }
 @media (min-width: 1200px) {
   .archive-edition { display: grid; grid-template-columns: 17.5rem minmax(0, 1fr); gap: var(--ed-space-7); align-items: start; }
-  .mission-index-section { position: sticky; top: var(--ed-space-5); }
+  .mission-index-section { position: sticky; top: calc(var(--header-clearance) + var(--ed-space-5)); }
   .mission-ledger__summary { display: none; }
-  .mission-index-panel { grid-template-rows: auto auto auto 1fr; max-height: calc(100vh - var(--ed-space-7)); }
-  .mission-jump-grid { overflow-y: auto; overscroll-behavior: contain; }
+  .mission-index-panel { grid-template-rows: auto auto auto 1fr; max-height: calc(100vh - var(--ed-space-7) - var(--header-clearance)); }
+  .mission-jump-grid { overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--obs-accent) var(--obs-paper); }
   .mission-jump-grid::before { content: ""; position: sticky; top: 0; display: block; height: var(--ed-space-5); background: linear-gradient(var(--obs-paper) 25%, #0000); pointer-events: none; }
   .mission-log-label { margin-top: 0; }
   .research-note-body:has(> .mission-record-header) { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); column-gap: var(--ed-space-5); align-items: start; }

@@ -52,6 +52,57 @@ export const contract = [
     has: [text(/\.paper-group:not\(\[hidden\]\) ~ :where\(\.paper-group:not\(\[hidden\]\)\)/), text(/\.paper-card:not\(\[hidden\]\) ~ :where\(\.paper-card:not\(\[hidden\]\)\)/)]
   },
   {
+    name: "Photography keeps the old light (owner, 2026-11-18): a brass inner bar marks the chosen layout, and a tile takes a steel outline and a soft glow under the pointer; forced colours keep the underline (E047, E048)",
+    has: [
+      rule(".ui-page-photography .photo-layout-switch [aria-pressed=\"true\"]", "text-decoration-color: transparent", "box-shadow: inset 0 -2px var(--obs-accent)", { media: "(forced-colors: none)" }),
+      rule(".ui-page-photography .photo-tile:is(:hover, :focus-visible)", "box-shadow: 0 0 18px var(--obs-glow)"),
+      rule(".ui-page-photography .photo-tile:hover", "outline: 2px solid var(--obs-edge-cool)", "outline-offset: 3px", { media: "(forced-colors: none)" })
+    ]
+  },
+  {
+    name: "the presentation's full-screen button names itself under the pointer or focus, as on the old site (E049)",
+    has: [
+      rule(".obs-present-fullscreen", "position: relative"),
+      rule(".obs-present-fullscreen::after", "content: attr(aria-label)", "opacity: 0", "pointer-events: none", { media: "(forced-colors: none)" }),
+      rule(".obs-present-fullscreen:is(:hover, :focus-visible)::after", "opacity: 1", { media: "(forced-colors: none)" })
+    ]
+  },
+  {
+    name: "on screen the CV portrait floats on the old shadow and the education dates on the one backdrop blur of 2f20d7e; neither prints (E050, E051)",
+    has: [
+      rule(".ui-page-cv .cv-photo .figure__media", "box-shadow: var(--obs-photo-shadow)", { media: "screen and (forced-colors: none)" }),
+      rule(".ui-page-cv .cv-edu-card > .ledger__key", "align-self: start", "backdrop-filter: blur(12px) saturate(1.04)", { media: "screen and (forced-colors: none)" })
+    ]
+  },
+  {
+    name: "the 404 index lies on the old glazed card under the old glass highlight band and glint (E097), drawn behind it so nothing moves, its depth softening under the pointer in 180 ms (E055)",
+    has: [
+      rule(".ui-page-not-found .archive-index", "position: relative", "isolation: isolate", { media: "screen and (forced-colors: none)" }),
+      rule(".ui-page-not-found .archive-index::before", "inset: -24px", "z-index: -1", "background: var(--obs-glass-glint) 50% 0 / calc(100% - 40px) 1px no-repeat, var(--obs-glass-band), var(--obs-glass-face)", "box-shadow: var(--obs-record-depth)", { media: "screen and (forced-colors: none)" }),
+      rule(".ui-page-not-found .archive-index::before", "transition: box-shadow .18s", "pointer-events: none", { media: "screen and (forced-colors: none)" }),
+      rule(".ui-page-not-found .archive-index:hover::before", "border-color: var(--obs-glass-edge)", "box-shadow: var(--obs-record-depth-hover)", { media: "screen and (forced-colors: none)" }),
+      rule(".ui-page-not-found .archive-index::before", "inset: -18px", { media: "(max-width: 760px)" })
+    ]
+  },
+  {
+    name: "the Paper Shelf filters are the old flat boxes: a brass edge under the pointer, the pressed one a highlight face behind a brass border that sinks while held, 140 and 180 ms; the search box rings in brass; forced colours keep the underline and the system ring (E056)",
+    has: [
+      rule(".ui-page-paper-shelf .paper-filter", "border: 1px solid var(--obs-control-border)", "border-radius: var(--radius-control)", "background: var(--obs-surface)", "transition: border-color .18s ease-out, box-shadow .14s ease-out, color .14s ease-out", { media: null }),
+      rule(".ui-page-paper-shelf .paper-filter:hover", "border-color: var(--obs-accent)", { media: "(hover: hover) and (forced-colors: none)" }),
+      rule(".ui-page-paper-shelf .paper-filter[aria-pressed=\"true\"]", "border-color: var(--obs-accent)", "background: var(--obs-highlight)", "text-decoration-color: transparent", { media: "(forced-colors: none)" }),
+      rule(".ui-page-paper-shelf .paper-filter:active", "box-shadow: var(--obs-control-pressed)", { media: "(forced-colors: none)" }),
+      rule(".ui-page-paper-shelf .paper-search:focus-visible", "outline-color: var(--obs-accent)", { media: "(forced-colors: none)" })
+    ]
+  },
+  {
+    name: "a CV or Paper Shelf record under a hovering pointer takes the old record glow, easing in over 180 ms; a paper's rule turns to the glass edge; nothing moves (E105)",
+    has: [
+      rule(".ui-page-paper-shelf .paper-card:hover", "border-top-color: var(--obs-glass-edge)", "box-shadow: var(--obs-record-depth-hover)", "transition: box-shadow .18s", { media: "(hover: hover) and (forced-colors: none)" }),
+      rule(".ui-page-cv .cv-edu-card:hover", "box-shadow: var(--obs-record-depth-hover)", "transition: box-shadow .18s", { media: "(hover: hover) and (forced-colors: none)" })
+    ],
+    lacks: [rule(/\.(paper-card|cv-edu-card):hover$/, "transform"), rule(/\.(paper-card|cv-edu-card):hover$/, "translate")]
+  },
+  {
     name: "the CV print identity appears only in print, and only main prints, on A4 with 20 mm margins",
     has: [
       rule(".cv-print-identity", "display: none", { media: null }),

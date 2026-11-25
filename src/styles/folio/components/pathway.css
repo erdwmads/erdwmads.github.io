@@ -69,6 +69,27 @@
   color: var(--obs-text);
 }
 
+/* The old chevron in place of the plus (owner, 2026-11-18): it points along the row and, opening, turns down with a
+   2 px nudge upward in 180 ms. */
+.pathway-detail > summary::after {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin-block-end: 3px;
+  margin-inline-end: 2px;
+  border-right: 1.5px solid;
+  border-bottom: 1.5px solid;
+  color: inherit;
+  transform: rotate(-45deg);
+  transition: transform 180ms ease;
+}
+
+.pathway-detail[open] > summary::after {
+  margin-block-end: 0;
+  transform: translateY(-2px) rotate(45deg);
+}
+
 .pathway-detail dl {
   display: grid;
   gap: var(--ed-space-4) var(--ed-space-5);

@@ -96,8 +96,8 @@ export default async function checkArchive({ root, publicDir, assetsDir, fail, r
   if (!lightboxCss.includes("Mobile Mission Log: Disable Large Image Lightbox") || !declares("html.mobile-mission-lightbox-disabled .mission-lightbox", "display: none")) {
     fail("components/lightbox.css: the Mobile Mission Log: Disable Large Image Lightbox block must keep phone figures inline and hide the viewer");
   }
-  if (!declares(".mission-lightbox", "visibility: hidden", "pointer-events: none", "background: var(--obs-screen)") || !declares(".mission-lightbox.is-open", "visibility: visible")) {
-    fail("components/lightbox.css: the viewer must stay invisible and inert until it opens, on the screen ground in both themes");
+  if (!declares(".mission-lightbox", "visibility: hidden", "pointer-events: none", "background: var(--obs-lightbox-veil)") || !declares(".mission-lightbox.is-open", "visibility: visible")) {
+    fail("components/lightbox.css: the viewer must stay invisible and inert until it opens, on the veil of the page's theme");
   }
   if (/backdrop-filter/i.test(lightboxCss)) {
     fail("components/lightbox.css: the Mission Log viewer must not use live backdrop blur");

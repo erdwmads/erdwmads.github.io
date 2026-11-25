@@ -15,10 +15,11 @@ try {
  await nav.locator('a[href="#research-methods-title"]').click();
  await page.waitForFunction(()=>document.querySelector('[data-research-guide] a[aria-current="location"]')?.hash==='#research-methods-title');
  assert.ok(page.url().endsWith('#research-methods-title'));
- // The section's whole opening lands below the bar: its rule, number and kicker as well as the heading.
- const opening=id=>page.evaluate(id=>{const n=document.querySelector('[data-research-guide]').getBoundingClientRect(),h=document.getElementById(id),s=h.closest('section');return {nav:n.top,bottom:n.bottom,heading:h.getBoundingClientRect().top,rule:s.getBoundingClientRect().top,kicker:s.querySelector('.kicker').getBoundingClientRect().top,number:s.querySelector('.folio-section__number').getBoundingClientRect().top};},id);
+ // The bar sticks flush under the floating header, and the section's whole opening lands below the bar: its rule,
+ // number and kicker as well as the heading.
+ const opening=id=>page.evaluate(id=>{const n=document.querySelector('[data-research-guide]').getBoundingClientRect(),h=document.getElementById(id),s=h.closest('section');return {header:document.querySelector('.site-header').getBoundingClientRect().bottom,nav:n.top,bottom:n.bottom,heading:h.getBoundingClientRect().top,rule:s.getBoundingClientRect().top,kicker:s.querySelector('.kicker').getBoundingClientRect().top,number:s.querySelector('.folio-section__number').getBoundingClientRect().top};},id);
  const aligned=await opening('research-methods-title');
- assert.ok(aligned.nav>=0&&aligned.nav<25,JSON.stringify(aligned));
+ assert.ok(Math.abs(aligned.nav-aligned.header)<=1,`the bar sticks flush under the floating header: ${JSON.stringify(aligned)}`);
  assert.ok(aligned.heading>=aligned.bottom&&aligned.heading<aligned.bottom+100,JSON.stringify(aligned));
  assert.ok(Math.min(aligned.rule,aligned.kicker,aligned.number)>=aligned.bottom,`the section rule, number and kicker land below the bar: ${JSON.stringify(aligned)}`);
  const hash=await page.evaluate(()=>location.hash);

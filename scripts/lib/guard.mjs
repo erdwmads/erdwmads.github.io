@@ -1,6 +1,6 @@
 // Shared harness for the site guards (spec §6.5): typography, controls, theme-geometry, interaction-stability,
 // evidence-status, layout-shift, first-paint, contrast, reduced-motion, focus-visibility, accessible-names,
-// forced-colors and (for its browser only) legibility-gate. It holds the page registry with each page's owner, the page, area, width and theme filters, the
+// forced-colors, backdrop-contrast and (for its browser only) legibility-gate. It holds the page registry with each page's owner, the page, area, width and theme filters, the
 // attribution of every finding to the package that owns the element, and a report per page.
 //
 // Filters (arguments when a guard runs on its own, environment variables through run-browser-tests.mjs):

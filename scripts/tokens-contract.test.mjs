@@ -63,8 +63,8 @@ test("text, links, focus, errors, brass and control borders meet WCAG contrast o
   const themeGrounds = ["--obs-paper", "--obs-surface", "--obs-surface-hover", "--obs-highlight", "--obs-plate"];
   measure("Space", space, themeGrounds);
   measure("Light", light, themeGrounds);
-  // Night plates, the presentation view and the lightbox carry .on-night, so the Space colours apply there in
-  // either theme.
+  // Night plates and the presentation view carry .on-night, so the Space colours apply there in either theme (the
+  // Mission Log viewer follows the page's theme, E045).
   measure(".on-night", night, ["--obs-plate-night", "--obs-screen"]);
   assert.deepEqual(failures, []);
   // Primary buttons: the face against its text.
@@ -74,7 +74,16 @@ test("text, links, focus, errors, brass and control borders meet WCAG contrast o
 });
 
 test("Light and Space differ where the invariants require two editions, not an inversion", () => {
-  for (const token of ["--obs-surface", "--obs-toggle-face", "--obs-control-border"]) {
+  // The effects (owner, 2026-11-18): Light carries them paler, never as Space's values.
+  const effects = ["--obs-header-surface", "--obs-band-veil", "--obs-backdrop-opacity", "--obs-backdrop-opacity-home", "--obs-backdrop-tone", "--obs-glow",
+    "--obs-gold-glow", "--obs-edge-cool", "--obs-sheen", "--obs-sheen-card", "--obs-sheen-primary", "--obs-control-shadow", "--obs-control-glow", "--obs-row-glow",
+    // The rest of the old site's light (second effects pass, 2026-11-18), each at its own old Light value.
+    "--obs-control-face", "--obs-control-secondary-face", "--obs-control-active-face", "--obs-control-pressed", "--obs-metal", "--obs-glass-face",
+    "--obs-glass-edge", "--obs-text-halo", "--obs-bead", "--obs-bead-glow", "--obs-graticule", "--obs-graticule-size", "--obs-graticule-opacity",
+    "--obs-photo-shadow", "--obs-fx-face", "--obs-fx-face-on", "--obs-fx-text", "--obs-fx-text-on", "--obs-fx-lift-on", "--obs-fx-dot",
+    "--obs-fx-dot-glow", "--obs-fx-dot-on", "--obs-fx-dot-on-glow", "--obs-coord-rest", "--obs-progress-beam", "--obs-progress-glow", "--obs-atlas-grid",
+    "--obs-lightbox-veil", "--obs-lightbox-button", "--obs-lightbox-button-hover", "--obs-lightbox-button-glow"];
+  for (const token of ["--obs-surface", "--obs-toggle-face", "--obs-control-border", ...effects]) {
     assert.ok(lightOnly[token] && lightOnly[token] !== space[token], `${token} must have its own Light value`);
   }
 });

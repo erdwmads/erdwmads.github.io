@@ -1,0 +1,181 @@
+/* @owner WP2 · @budget 7KB · @important 0 · Surface light: control sheen and glow, the lit rule of onward rows, the pointer edge light */
+/* The owner's choice of 2026-11-18, after the old site's metal controls and edge light (tokens.css and
+   observatory-experience.css at 2f20d7e). Controls carry a sheen over their own face and a soft shadow; under a
+   hovering pointer they glow (a brass ring and halo, a deeper shadow) without moving. Onward and ledger rows light
+   their rule. Under a fine pointer, observatory-interactions.js sets [data-edge-active] and --edge-angle on the
+   control beneath it, and ::before lights its border: steel on the pointer's side, brass opposite. No box changes.
+   Second pass (owner, 2026-11-18: "all of my previous effects"): secondary buttons, the effects button and the
+   Research Log card take back their old opaque faces; a hovered gate, toggle or icon button keeps a gradient face
+   (the prism hover of September) under a brass border; the gate sends a light sweep across itself; a pressed control
+   sinks into a short inner shadow. */
+.button,
+.icon-button,
+.nav-log-gate,
+.theme-toggle,
+.obs-fx-settings,
+.research-lock-card {
+  background-image: var(--obs-sheen);
+  box-shadow: var(--obs-control-shadow);
+}
+
+.button:not(.secondary) {
+  background-image: var(--obs-sheen-primary);
+}
+
+.button.secondary {
+  background-image: var(--obs-control-secondary-face);
+}
+
+/* The effects button: Chromium drew the old site's deep glazed shadow; Edge drew 0 7px 16px (its control rule at
+   2f20d7e). Both are kept, by browser (E139, census of the old site in both). */
+.obs-fx-settings {
+  background-image: var(--obs-glass-face);
+  box-shadow: var(--obs-fx-settings-shadow);
+}
+
+:where(html.is-edge-browser) .obs-fx-settings {
+  box-shadow: var(--obs-touch-shadow);
+}
+
+/* The card on the old glass face with its depth shadow. Over the face and under the text, the old highlight band and
+   its glint 20 px in from each side (E097, look-alike without blur), on a layer of their own as the old ::before was. */
+.research-lock-card {
+  position: relative;
+  isolation: isolate;
+  background-image: var(--obs-glass-face);
+  box-shadow: var(--obs-card-depth);
+}
+
+.research-lock-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--obs-glass-glint) 50% 0 / calc(100% - 40px) 1px no-repeat, var(--obs-glass-band);
+  pointer-events: none;
+}
+
+.button,
+.icon-button,
+.nav-log-gate,
+.theme-toggle,
+.obs-fx-settings {
+  transition-property: background-color, border-color, box-shadow;
+  transition-duration: var(--ed-dur-2);
+  transition-timing-function: var(--ed-ease-out);
+}
+
+/* The gate's sweep: hovered or focused, a pale band on a layer three times its width crosses it once in 580 ms, from
+   off its left edge to off its right, then rests unseen there. The layer exists only meanwhile, so no resting ground
+   carries it. */
+@keyframes gate-sweep {
+  from {
+    background-position: 100% 0;
+  }
+
+  to {
+    background-position: 0 0;
+  }
+}
+
+@media (forced-colors: none) {
+  .nav-log-gate:is(:hover, :focus-visible) {
+    background-image: linear-gradient(100deg, transparent 33.3%, var(--obs-sweep) 49.3%, transparent 66.7%), var(--obs-sheen);
+    background-size: 300% 100%, auto;
+    background-repeat: no-repeat;
+    animation: gate-sweep 580ms ease both;
+  }
+}
+
+@media (hover: hover) and (forced-colors: none) {
+  .button:hover:not(:disabled, [aria-disabled="true"]),
+  .icon-button:hover:not(:disabled),
+  .nav-log-gate:hover,
+  .theme-toggle:hover,
+  .obs-fx-settings:hover {
+    box-shadow: var(--obs-control-glow);
+  }
+
+  :where(.button.secondary):hover:not(:disabled, [aria-disabled="true"]),
+  .nav-log-gate:hover {
+    border-color: var(--obs-accent);
+  }
+
+  .theme-toggle:hover,
+  .icon-button:hover:not(:disabled) {
+    background-image: var(--obs-sheen), var(--obs-control-face);
+  }
+
+  .nav-log-gate:hover {
+    background-image: linear-gradient(100deg, transparent 33.3%, var(--obs-sweep) 49.3%, transparent 66.7%), var(--obs-sheen), var(--obs-control-face);
+    background-size: 300% 100%, auto, auto;
+  }
+
+  /* A row's rule turns into a brass-to-steel line, with a faint wash beside it. Colour only. */
+  .continue-reading a:hover {
+    border-top-color: transparent;
+    background: linear-gradient(90deg, var(--obs-accent), var(--obs-edge-cool) 38%, transparent 72%) 0 0 / 100% 1px no-repeat border-box, linear-gradient(var(--obs-row-glow), transparent 80%);
+  }
+
+  .ledger > li:has(> a:hover) {
+    border-bottom-color: transparent;
+    background: linear-gradient(90deg, var(--obs-accent), var(--obs-edge-cool) 38%, transparent 72%) 0 100% / 100% 1px no-repeat border-box, linear-gradient(0deg, var(--obs-row-glow), transparent 80%);
+  }
+}
+
+/* Pressed, on any pointer: a short inner shadow, no movement. After the hover glow, so it wins while held. */
+.button:active:not(:disabled, [aria-disabled="true"]),
+.nav-log-gate:active,
+.theme-toggle:active {
+  box-shadow: var(--obs-control-pressed);
+}
+
+/* The edge light: a 1 px conic ring just inside the border, masked to the ring, as the old site drew it. The lit
+   control becomes the ring's containing block; weightless, so a control that positions itself keeps its own position. */
+:where([data-edge-active]) {
+  position: relative;
+}
+
+[data-edge-active]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  padding: 1px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--edge-angle, 0deg), var(--obs-edge-cool), transparent 75deg 125deg, var(--obs-accent) 180deg, transparent 235deg 285deg, var(--obs-edge-cool));
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* The script already stops for these; the stylesheet never draws a stale ring either. */
+:where(html.ambient-fx-disabled, html.mads-power-low) [data-edge-active]::before {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce), (pointer: coarse) {
+  [data-edge-active]::before {
+    display: none;
+  }
+}
+
+/* Forced colours and print: plain faces and no ring (hover light is already limited to forced-colors: none). */
+@media (forced-colors: active), print {
+  .button,
+  .button:not(.secondary),
+  .icon-button,
+  .nav-log-gate,
+  .theme-toggle,
+  .obs-fx-settings,
+  .research-lock-card {
+    background-image: none;
+    box-shadow: none;
+  }
+
+  [data-edge-active]::before,
+  .research-lock-card::after {
+    display: none;
+  }
+}

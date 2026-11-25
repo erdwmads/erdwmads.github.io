@@ -68,8 +68,8 @@ try {
  }
  await page.evaluate(()=>study.select(2));await page.locator('#reaction-sequence button').last().click();
  await page.locator('.observatory').screenshot({path:fileURLToPath(new URL('origins-desktop.png',evidence))});
- // The header is static (decision R1): Playwright scrolls it into view to click the toggle, so the scene is compared in
- // document coordinates, where a theme switch must move nothing.
+ // Playwright scrolls the toggle into view, and the header may float, so the scene is compared in document
+ // coordinates, where a theme switch must move nothing.
  const box=()=>page.locator('#viewport').evaluate(e=>{const r=e.getBoundingClientRect();return {x:r.x,y:r.y+scrollY,width:r.width,height:r.height};});
  const before=await box();await page.locator('.theme-toggle').click();const after=await box();assert.deepEqual(after,before,'theme preserves model geometry');
  await page.locator('.observatory').screenshot({path:fileURLToPath(new URL('origins-light.png',evidence))});

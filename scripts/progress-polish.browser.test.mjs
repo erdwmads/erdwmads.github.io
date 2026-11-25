@@ -28,17 +28,21 @@ try {
     const appearance=()=>card.evaluate(el=>({shadow:getComputedStyle(el).boxShadow,border:getComputedStyle(el).borderColor,rect:JSON.stringify(el.getBoundingClientRect())}));
     const before=await appearance();
     await card.hover();await page.waitForTimeout(300);
-    assert.deepEqual(await appearance(),before,'Noninteractive education cards must not react like buttons');
+    // A record is not a button: it keeps its edge and box under the pointer and only takes the old record glow (E105).
+    const lit=await appearance();
+    assert.deepEqual({border:lit.border,rect:lit.rect},{border:before.border,rect:before.rect},'Noninteractive education cards must not react like buttons');
+    assert.equal(before.shadow,'none','an education card rests flat');
+    assert.match(lit.shadow,/0px 6px 18px/,'and glows faintly under the pointer, as the old record did (E105)');
     await card.screenshot({path:`.codex_tmp/progress-card-${theme}.png`});
     // Home now offers one primary button and a quiet link (WP3 Home design), so the face check reads Research, which
     // keeps both kinds: a.button "Research Log" and button.button.secondary "Research atlas".
     await page.goto(`${base}/research.html`);
     const primary=page.locator('main .button:not(.secondary):not(.atlas-launch)').first();
     const secondary=page.locator('main .button.secondary').first();
-    // Quiet controls carry no shadows (quiet-observatory.css), so the hierarchy lives in the face.
+    // Both faces carry a sheen; the hierarchy lives in the face and its sheen.
     const face=el=>el.evaluate(el=>{const s=getComputedStyle(el);return `${s.backgroundColor} ${s.backgroundImage}`;});
     assert.notEqual(await face(primary),await face(secondary),'primary actions keep a distinct face');
-    // The pointer edge light on primary actions is retired (Folio 2046 decision R2); nothing is asserted about it.
+    // The edge light is tested by edge-light.browser.
     await page.close();
     console.log(`PASS ${theme}: stable passive cards, primary hierarchy`);
   }

@@ -75,7 +75,7 @@ try {
       await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
       const footer = await clearTargets(page.locator(phone ? '.site-footer a' : '.site-footer a, .obs-fx-settings'));
       assert(footer.every(action => action.clear), `${where}: footer action obscured ${JSON.stringify(footer)}`);
-      // Phones have no fixed settings control at all: FX is off there (R3).
+      // Phones have no fixed settings control: the effects panel lies in the menu sheet (R3, E136).
       if (phone) assert.equal(await page.locator('.obs-fx-dock').isVisible(), false, `${where}: no fixed dock on phones`);
       else {
         // Every footer link (the ORCID iD and Back to top) stays clear of the fixed settings control.

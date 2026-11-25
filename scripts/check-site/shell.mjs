@@ -76,8 +76,10 @@ export default async function checkShell({ root, assetsDir, fail, readDistPage }
   }
 
   const researchCoordinates = fs.readFileSync(path.join(assetsDir, "js", "research-coordinates.js"), "utf8");
-  if (!researchCoordinates.includes("MOBILE_COORDINATES_MEDIA") || !researchCoordinates.includes("removeCoordinates")) {
-    fail("research-coordinates.js: mobile views must not create the supporting coordinates panel");
+  // Owner decision E136: the readout lives in the Visual effects panel at every width (the dock, or the phone menu),
+  // never loose in the page.
+  if (researchCoordinates.includes("MOBILE_COORDINATES_MEDIA") || !researchCoordinates.includes("getElementById('obs-fx-panel')") || !researchCoordinates.includes("removeCoordinates")) {
+    fail("research-coordinates.js: the coordinates readout must join the Visual effects panel at every width, phones included (E136)");
   }
   if (!researchCoordinates.includes('location.pathname.includes("ryugu-bennu")') || !researchCoordinates.includes('mode = "Comparison"') || researchCoordinates.includes('phase = "Dolomite"') || researchCoordinates.includes("sample-cabinet")) {
     fail("research-coordinates.js: HUD must label Ryugu & Bennu as a comparison, default to Ca–Mg carbonate and drop Sample Cabinet");
@@ -104,11 +106,21 @@ export default async function checkShell({ root, assetsDir, fail, readDistPage }
     if (sheet.some((rule) => rule.conditions.some((condition) => /pointer|hover/.test(condition)))) {
       fail("site.css: the header layout must follow the window width, not the pointer type");
     }
-    // The retired page backdrops (the Bennu image and the solar-system strip) leave no reference behind.
-    if (/asteroid-bennu|Solar_System_true_color/.test(bundle)) fail("site.css: the retired page backdrops must not be referenced");
+    // The page backdrops (owner, 2026-11-18; components/backdrop.css) are CSS backgrounds of the bundle: Bennu at
+    // 1280 px and the phone tier, and the solar-system band.
+    for (const name of ["asteroid-bennu-1280.webp", "asteroid-bennu-800.webp", "Solar_System_true_color-1600.webp"]) {
+      if (!["", '"', "'"].some((quote) => bundle.includes(`url(${quote}../img/${name}${quote})`))) fail(`site.css: the page backdrop url("../img/${name}") is missing`);
+    }
   }
-  for (const name of ["asteroid-bennu.jpg", "asteroid-bennu-1600.webp", "Solar_System_true_color.jpg", "Solar_System_true_color.webp"]) {
-    if (fs.existsSync(path.join(assetsDir, "img", name))) fail(`assets/img/${name}: the retired page backdrop must be deleted`);
+  for (const name of ["asteroid-bennu.jpg", "asteroid-bennu-1280.webp", "asteroid-bennu-800.webp", "Solar_System_true_color.jpg", "Solar_System_true_color-1600.webp"]) {
+    if (!fs.existsSync(path.join(assetsDir, "img", name))) fail(`assets/img/${name}: the page backdrop (or its source) is missing`);
+  }
+  // A backdrop is never preloaded and never an <img>: no built page names one. The footer's credit line links the
+  // montage's Commons page, whose address carries the file name (owner decision, 2026-11-18), so it is set aside.
+  const distDir = path.join(root, "dist");
+  for (const file of fs.readdirSync(distDir).filter((name) => name.endsWith(".html"))) {
+    const html = fs.readFileSync(path.join(distDir, file), "utf8").replace(/<p class="footer-credits">[\s\S]*?<\/p>/, "");
+    if (/asteroid-bennu(?:-\d+)?\.(?:webp|jpg)|Solar_System_true_color\./.test(html)) fail(`dist/${file}: names a page backdrop (backdrops are CSS backgrounds only, never preloaded)`);
   }
 
   const siteHeaderScript = fs.readFileSync(path.join(assetsDir, "js", "site-header.js"), "utf8");
@@ -120,8 +132,9 @@ export default async function checkShell({ root, assetsDir, fail, readDistPage }
   if (!ambientSpace.includes("mission-lightbox-open") || !fs.readFileSync(path.join(assetsDir, "js", "interface-2046.js"), "utf8").includes("mission-lightbox-open")) {
     fail("ambient/interface scripts: Mission Log lightbox must pause background animation loops while open");
   }
-  if (!ambientSpace.includes("MOBILE_AMBIENT_MEDIA") || !ambientSpace.includes("isMobileAmbientView") || !ambientSpace.includes("mobile ambient disabled")) {
-    fail("ambient-space.js: mobile lightweight mode must prevent ambient particle creation");
+  // Owner decision E103: phones run the lite field (no pebbles, built after load), never the full one.
+  if (!ambientSpace.includes("MOBILE_AMBIENT_MEDIA") || !ambientSpace.includes("isMobileAmbientView") || !ambientSpace.includes("const pebbleCount = isMobileAmbient ? 0 : 20;") || !ambientSpace.includes('"ambient-space-layer is-lite"')) {
+    fail("ambient-space.js: phones must run the lite ambient field (E103)");
   }
   const powerManager = fs.readFileSync(path.join(assetsDir, "js", "power-manager.js"), "utf8");
   const lowPowerBlock = powerManager.match(/const LOW_POWER_MEDIA = \[([\s\S]*?)\];/)?.[1] || "";

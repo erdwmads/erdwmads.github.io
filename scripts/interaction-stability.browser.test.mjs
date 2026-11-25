@@ -5,7 +5,8 @@
 // the planetary toolbar (Ryugu & Bennu) and the Origins chapters keep their place, and their visible controls fit
 // without overlapping, while the reader switches materials, views and chapters. Nothing overflows sideways. Every
 // page runs at 1440 and 390 px; Ryugu & Bennu and Origins also at 1024, 768 and 320 px. Filters and the per-page
-// report: scripts/lib/guard.mjs.
+// report: scripts/lib/guard.mjs. Hover here also lights the pointer edge light (R2) on the controls that carry it,
+// which must move nothing either.
 import { gotoGuardPage, insertFixture, runGuard } from './lib/guard.mjs';
 
 const geometry = locator => locator.evaluateAll(elements => elements.map(el => {
@@ -35,9 +36,9 @@ async function hoverEach(page, items, limit, findings) {
     await page.waitForTimeout(200);
     const moved = drift(before, await geometry(items));
     if (!moved) continue;
-    const { owner, name, edge } = await item.evaluate(el => ({ owner: window.__guardOwner(el), name: window.__guardName(el), edge: Boolean(el.querySelector('.obs-edge-light')) }));
-    // R2 retired the pointer edge light; should its hover span (span.obs-edge-light) come back, it is WP2's finding.
-    findings.push(edge ? { owner: 'WP2', message: `hovering ${name} inserts span.obs-edge-light, which R2 retires: ${moved}` } : { owner, message: `hovering ${name} moves geometry: ${moved}` });
+    const { owner, name, edge } = await item.evaluate(el => ({ owner: window.__guardOwner(el), name: window.__guardName(el), edge: el.hasAttribute('data-edge-active') }));
+    // The edge light (R2, components/surface-light.css) is WP2's: when the hovered item is lit, the move is its finding.
+    findings.push(edge ? { owner: 'WP2', message: `the edge light on ${name} moves geometry: ${moved}` } : { owner, message: `hovering ${name} moves geometry: ${moved}` });
   }
 }
 

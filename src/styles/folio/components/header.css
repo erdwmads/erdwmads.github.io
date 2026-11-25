@@ -1,10 +1,71 @@
-/* @owner WP2 · @budget 9KB · @important 0 · Site header: brand, navigation and its marker, Research Log gate, theme toggle, menu button, phone sheet, data-nav-ready fallback */
-/* Static (R1), opaque. Bands: a 56 px bar with Menu to 760 px (site-header.js), two rows to 1199 px, one row above. */
+/* @owner WP2 · @budget 12KB · @important 0 · Site header: brand, navigation and its marker, Research Log gate, theme toggle, menu button, phone sheet, data-nav-ready fallback */
+/* Bands: a 56 px bar with Menu to 760 px (site-header.js), two rows (101 px) to 1199 px, one row (73 px) above; the
+   last two are --header-clearance. From 761 x 600 px the header floats (owner, 2026-11-18): sticky, on the band of
+   components/backdrop.css. Phones, short windows and forced colours keep it in the flow on a translucent surface,
+   with the old site's glow below it and its steel line inside the bottom edge (the band carries both where it floats). */
 .site-header {
   position: relative;
   z-index: var(--z-content);
   border-bottom: 1px solid var(--obs-hairline);
-  background: var(--obs-paper);
+  background: var(--obs-header-surface);
+  box-shadow: 0 1px 18px var(--obs-glow), inset 0 -1px var(--obs-header-line);
+}
+
+@media (min-width: 761px) and (min-height: 600px) and (forced-colors: none) {
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    background: none;
+    box-shadow: none;
+  }
+}
+
+/* The orbit trace: a 160 px steel-to-brass streak glides along the header's bottom edge every 12 s (the old site's
+   observatory-orbit-trace). Fine pointers, FX on, motion allowed; it pauses with the power manager and the overlays.
+   Transform and opacity only; the header clips it sideways, so it never widens the page. */
+.site-header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 160px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--obs-edge-cool), var(--obs-accent), transparent);
+  box-shadow: 0 0 12px var(--obs-glow);
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes orbit-trace {
+  0% {
+    transform: translateX(-160px);
+    opacity: 0;
+  }
+
+  12%,
+  82% {
+    opacity: .85;
+  }
+
+  100% {
+    transform: translateX(100vw);
+    opacity: 0;
+  }
+}
+
+@media (min-width: 761px) and (pointer: fine) and (prefers-reduced-motion: no-preference) and (forced-colors: none) {
+  .site-header {
+    overflow-x: clip;
+  }
+
+  :where(html:not(.ambient-fx-disabled)) .site-header::after {
+    animation: orbit-trace 12s linear infinite;
+  }
+}
+
+:where(html.mads-page-hidden, html.mads-power-idle, html.mads-power-low, html.mission-lightbox-open, html.mineral-atlas-open, html.obs-presenting) .site-header::after {
+  animation-play-state: paused;
 }
 
 .header-inner {
@@ -32,14 +93,17 @@
   font-weight: 600;
   line-height: 1.1;
   white-space: nowrap;
+  text-shadow: var(--obs-heading-glow);
 }
 
+/* Light gives the line a faint white halo (the old site's, 2f20d7e); Space none. */
 .brand > strong + span {
   display: none;
   margin-top: 3px;
   color: var(--obs-muted);
   font-size: var(--ed-label);
   line-height: 1.3;
+  text-shadow: var(--obs-text-halo);
 }
 
 .nav-toggle,
@@ -110,10 +174,52 @@
   }
 }
 
+/* The lit pill: a 34 px face under the current link at rest, and under a hovered or focused one; a hovered link rises
+   1 px onto it (the old site's, 2f20d7e). Desktop only; the face sits behind the text (the header is a stacking
+   context) and changes no box. */
+@media (min-width: 761px) {
+  .nav__links a {
+    transition-property: color, transform;
+    transition-duration: var(--ed-dur-1), 180ms;
+  }
+
+  .nav__links a::after {
+    content: "";
+    position: absolute;
+    inset: 5px 0;
+    z-index: -1;
+    border-radius: 3px;
+    background: var(--obs-control-active-face);
+    box-shadow: inset 0 1px var(--obs-nav-face-line);
+    opacity: 0;
+    transition: opacity 180ms var(--ed-ease-out);
+    pointer-events: none;
+  }
+
+  .nav__links a:is([aria-current="page"], :focus-visible)::after {
+    opacity: 1;
+  }
+}
+
+@media (min-width: 761px) and (hover: hover) {
+  .nav__links a:hover::after {
+    opacity: 1;
+  }
+}
+
+@media (min-width: 761px) and (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .nav__links a:hover {
+    transform: translateY(-1px);
+  }
+}
+
+/* The beam carries a golden halo and glides in 300 ms. */
 .obs-nav-beam {
   top: 0;
   left: 0;
-  transition: transform var(--ed-dur-2) var(--ed-ease-out), width var(--ed-dur-2) var(--ed-ease-out);
+  border-radius: 2px;
+  box-shadow: 0 0 9px var(--obs-gold-glow), 0 0 3px var(--obs-accent);
+  transition: transform 300ms cubic-bezier(.22, 1, .36, 1), width 300ms cubic-bezier(.22, 1, .36, 1);
 }
 
 .nav__divider {
@@ -145,7 +251,7 @@
 }
 
 .nav-log-gate:hover {
-  background: var(--obs-surface-hover);
+  background-color: var(--obs-surface-hover);
 }
 
 /* The current gate: a rule-coloured border, the brass rule below. */
@@ -163,6 +269,7 @@
   height: 6px;
   border: 3px solid var(--obs-accent);
   border-radius: 50%;
+  box-shadow: 0 0 7px var(--obs-gold-glow);
 }
 
 .nav-log-gate__copy {
@@ -181,12 +288,12 @@
   justify-content: center;
   width: 112px;
   border: 0;
-  background: var(--obs-toggle-face);
+  background-color: var(--obs-toggle-face);
   font-weight: 600;
 }
 
 .theme-toggle:hover {
-  background: color-mix(in srgb, var(--obs-toggle-face) 86%, var(--obs-text));
+  background-color: color-mix(in srgb, var(--obs-toggle-face) 86%, var(--obs-text));
 }
 
 @media (min-width: 761px) and (max-width: 1359px) {
@@ -270,6 +377,13 @@
 
   .nav-toggle__icon {
     position: relative;
+  }
+
+  /* The three lines turn into a cross in 180 ms. */
+  .nav-toggle__icon,
+  .nav-toggle__icon::before,
+  .nav-toggle__icon::after {
+    transition: transform 180ms ease, opacity 180ms ease;
   }
 
   .nav-toggle__icon::before,

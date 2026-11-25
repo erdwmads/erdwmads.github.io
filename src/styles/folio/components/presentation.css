@@ -1,4 +1,4 @@
-/* @owner WP5 · @budget 4KB · @important 0 · Photo presentation dialog (dialog.obs-presentation) and the photo flight (img.obs-photo-flight) */
+/* @owner WP5 · @budget 4.5KB · @important 0 · Photo presentation dialog (dialog.obs-presentation) and the photo flight (img.obs-photo-flight) */
 /* A night screen in both themes: 00-tokens.css gives .obs-presentation the Space colours with .on-night. */
 
 /* A native modal filling the viewport; closed, it never displays (02-reset.css). */
@@ -121,6 +121,32 @@
   right: var(--ed-space-4);
   display: flex;
   gap: var(--ed-space-2);
+}
+
+/* The full-screen button names itself under the pointer or focus, as on the old site (c4, E049). */
+.obs-present-fullscreen {
+  position: relative;
+}
+
+@media (forced-colors: none) {
+  .obs-present-fullscreen::after {
+    content: attr(aria-label);
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    white-space: nowrap;
+    padding: 6px 10px;
+    border: 1px solid var(--obs-glass-edge);
+    border-radius: var(--radius-control);
+    background: var(--obs-surface);
+    font: 400 .75rem/1.4 var(--type-sans);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .obs-present-fullscreen:is(:hover, :focus-visible)::after {
+    opacity: 1;
+  }
 }
 
 .obs-fullscreen-status {

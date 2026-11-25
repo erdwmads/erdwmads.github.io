@@ -1,4 +1,4 @@
-/* @owner WP4 · @budget 18KB · @important 0 · Planetary explorer (.planetary-*) */
+/* @owner WP4 · @budget 19.5KB · @important 0 · Planetary explorer (.planetary-*) */
 /* Planetary field guide (planetary-explorer.js). */
 
 .planetary {
@@ -146,15 +146,42 @@
   white-space: nowrap;
 }
 
+/* Metal faces, as the old explorer's (owner, 2026-11-18): the buttons rest on the brushed control face, ease their
+   border in 180 ms and their shadow in 140 ms, edge in steel under a hovering pointer and sink when pressed. */
+.planetary :is(.planetary-materials, .planetary-toolbar, .planetary-mineral-tabs) :is(.button, .icon-button) {
+  background-image: var(--obs-control-face);
+  transition: border-color 180ms ease-out, box-shadow 140ms ease-out;
+}
+
+/* The chosen one: the darker active face under a brass border, still underlined. */
 .planetary .button[aria-pressed="true"],
 .planetary .icon-button[aria-pressed="true"] {
-  background: var(--obs-highlight);
+  border-color: var(--obs-accent);
+  background-color: var(--obs-highlight);
+  background-image: var(--obs-control-active-face);
   text-decoration: underline 2px;
   text-underline-offset: .35em;
 }
 
-.planetary .button[aria-pressed="true"]:hover {
-  background: color-mix(in srgb, var(--obs-highlight) 86%, var(--obs-text));
+@media (hover: hover) and (forced-colors: none) {
+  .planetary :is(.planetary-materials, .planetary-toolbar, .planetary-mineral-tabs) :is(.button, .icon-button):hover:not([aria-pressed="true"], :disabled) {
+    border-color: var(--obs-edge-cool);
+    background-image: var(--obs-control-face);
+  }
+}
+
+.planetary-toolbar .icon-button:active:not(:disabled) {
+  box-shadow: var(--obs-control-pressed);
+}
+
+/* With the effects on, the chosen body's label and mineral tab glow brass and steel. */
+.planetary[data-focus-fx="on"] .planetary-label[aria-pressed="true"] {
+  border-left-color: var(--obs-accent);
+  box-shadow: inset 1px 0 var(--obs-accent), 0 0 12px color-mix(in srgb, var(--obs-accent) 24%, transparent);
+}
+
+.planetary[data-focus-fx="on"] .planetary-mineral-tabs > [aria-pressed="true"] {
+  box-shadow: var(--obs-control-shadow), 0 0 14px color-mix(in srgb, var(--obs-edge-cool) 14%, transparent);
 }
 
 .planetary [data-icon] {
@@ -386,8 +413,9 @@ span.planetary-label {
   visibility: hidden;
 }
 
-/* Orgueil: a note on a stage-sized plate. */
+/* Orgueil: a note on a stage-sized plate, glazed as the old panel was (its night colours, as every plate). */
 .planetary-ci {
+  background-image: var(--obs-glass-face);
   display: grid;
   align-content: center;
   justify-items: start;
@@ -786,5 +814,18 @@ span.planetary-label {
     forced-color-adjust: none;
     background: SelectedItem;
     color: SelectedItemText;
+  }
+}
+
+/* Forced colours and print: plain faces, no glow. */
+@media (forced-colors: active), print {
+  .planetary :is(.planetary-materials, .planetary-toolbar, .planetary-mineral-tabs) :is(.button, .icon-button),
+  .planetary-ci {
+    background-image: none;
+  }
+
+  .planetary[data-focus-fx] .planetary-label[aria-pressed="true"],
+  .planetary[data-focus-fx] .planetary-mineral-tabs > [aria-pressed="true"] {
+    box-shadow: none;
   }
 }

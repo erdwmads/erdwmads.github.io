@@ -62,10 +62,11 @@ try{
   }
  }
  // WCAG AA: the computed text colour against every pixel painted behind the text (text hidden for the capture), so the
- // selected tab's gold glow and the notebook surface count. Launch-site link, trajectory source link, selected agency label.
+ // selected tab's gold glow and the notebook surface count; the kicker's star bead (inventory E015) is a mark beside the text, not
+ // its ground, so it is hidden with the text. Launch-site link, trajectory source link, selected agency label.
  const lum=c=>c.map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0);
  const contrast=async target=>{
-  const fg=lum(await target.evaluate(el=>{el.scrollIntoView({block:'center'});el.__style=el.getAttribute('style');el.style.setProperty('transition','none','important');const c=getComputedStyle(el).color.match(/[\d.]+/g).slice(0,3).map(Number);for(const p of ['color','text-decoration-color'])el.style.setProperty(p,'transparent','important');el.style.setProperty('text-shadow','none','important');return c;}));
+  const fg=lum(await target.evaluate(el=>{el.scrollIntoView({block:'center'});el.__style=el.getAttribute('style');el.style.setProperty('transition','none','important');const c=getComputedStyle(el).color.match(/[\d.]+/g).slice(0,3).map(Number);for(const p of ['color','text-decoration-color'])el.style.setProperty(p,'transparent','important');el.style.setProperty('text-shadow','none','important');el.style.setProperty('--obs-bead','none');el.style.setProperty('--obs-bead-glow','none');return c;}));
   const {data,info}=await sharp(await target.screenshot({animations:'disabled'})).raw().toBuffer({resolveWithObject:true});
   await target.evaluate(el=>{if(el.__style==null)el.removeAttribute('style');else el.setAttribute('style',el.__style);});
   let min=Infinity;for(let i=0;i<data.length;i+=info.channels){const b=lum([data[i],data[i+1],data[i+2]]);min=Math.min(min,(Math.max(fg,b)+.05)/(Math.min(fg,b)+.05));}

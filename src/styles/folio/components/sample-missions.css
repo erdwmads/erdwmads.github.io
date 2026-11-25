@@ -25,6 +25,33 @@
   background: var(--obs-highlight);
 }
 
+/* Glazed controls, as the old workspace's (owner, 2026-11-18): the tabs, the chapter steps, the player's secondary
+   buttons and the player itself on the glass face; their borders and shadows ease in 160 ms, a hovered control edges
+   in brass. Play stays the view's one primary. */
+.sample-missions :is(.mission-selector button, .mission-story li button, .mission-transport .icon-button, .mission-share .button) {
+  background-image: var(--obs-glass-face);
+  transition: color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+
+.mission-player {
+  background-image: var(--obs-glass-face);
+}
+
+/* The chosen mission: a brass wash over the glass, under a brass rule. */
+.sample-missions .mission-selector [aria-selected="true"] {
+  background-image: linear-gradient(115deg, var(--obs-gold-glow), transparent), var(--obs-glass-face);
+}
+
+@media (hover: hover) and (forced-colors: none) {
+  .sample-missions :is(.mission-selector, .mission-transport, .mission-share) button:hover:not(:disabled) {
+    border-color: var(--obs-accent);
+  }
+
+  .sample-missions .mission-transport .icon-button:hover:not(:disabled) {
+    background-image: var(--obs-glass-face);
+  }
+}
+
 .mission-selector {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -38,7 +65,7 @@
   justify-items: start;
   gap: var(--ed-space-1);
   min-width: 0;
-  padding: var(--ed-space-4) 0 var(--ed-space-5);
+  padding: var(--ed-space-4) var(--ed-space-4) var(--ed-space-5);
   border: 0;
   border-top: 1px solid var(--obs-control-border);
   background: none;
@@ -58,7 +85,7 @@
   content: "";
   position: absolute;
   inset: -1px 0 auto;
-  border-top: 2px solid var(--obs-text);
+  border-top: 2px solid var(--obs-accent);
 }
 
 .mission-selector strong {
@@ -184,8 +211,10 @@
   white-space: nowrap;
 }
 
+/* The current chapter: its ink rule over a faint brass wash, as on the old strip. */
 .mission-chapters [aria-current="step"] {
   border-bottom-color: var(--obs-text);
+  background-color: color-mix(in srgb, var(--obs-accent) 12%, transparent);
 }
 
 .mission-chapters button > span,
@@ -908,6 +937,15 @@
 
   .mission-story li :not([aria-current="step"]) {
     border-left-color: Canvas;
+  }
+}
+
+/* Forced colours and print: no glass. */
+@media (forced-colors: active), print {
+  .sample-missions :is(.mission-selector button, .mission-story li button, .mission-transport .icon-button, .mission-share .button),
+  .mission-player,
+  .sample-missions .mission-selector [aria-selected="true"] {
+    background-image: none;
   }
 }
 

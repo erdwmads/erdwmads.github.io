@@ -1,4 +1,4 @@
-/* @owner WP2 · @budget 4.5KB · @important 0 · Arrival title page (#cosmic-arrival, styled through .arrival) and #arrival-replay */
+/* @owner WP2 · @budget 5KB · @important 0 · Arrival title page (#cosmic-arrival, styled through .arrival) and #arrival-replay */
 /* Name over its rule, imprint, question (CSS order; the DOM puts the question first). entry.js writes opacities. */
 .arrival {
   width: 100%;
@@ -31,6 +31,7 @@
   color: var(--obs-muted);
   font-size: var(--ed-runhead);
   white-space: nowrap;
+  text-shadow: var(--obs-arrival-label-shadow);
   transform: translateX(-50%);
 }
 
@@ -43,6 +44,7 @@
   flex-direction: column;
   width: min(36rem, 86%);
   opacity: 0;
+  text-shadow: var(--obs-arrival-shadow);
 }
 
 /* Night ground under the text only, fading up and right, so the orrery shows. */
@@ -141,7 +143,12 @@
   color: var(--obs-text);
   font-size: .875rem;
   font-weight: 600;
-  transition: background-color var(--ed-dur-1) var(--ed-ease-out);
+  transition: background-color 160ms var(--ed-ease-out), border-color 160ms var(--ed-ease-out);
+}
+
+/* The Skip capsule on the canvas: the old glass face. */
+.arrival-skip {
+  background: color-mix(in srgb, var(--obs-surface) 80%, transparent);
 }
 
 :is(.arrival-skip, .arrival-replay):hover {
