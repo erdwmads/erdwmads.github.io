@@ -1,7 +1,8 @@
 // Reading UI (spec §6.3): on phones the navigation sheet holds the links, the Research Log gate, the theme toggle, the
-// one Visual effects panel right after it (FX switch, intensity and coordinates; R3 amended, owner decision E136) and
-// the tagline, with no fixed dock; the lite ambient field (E103) follows the switch there. Escape closes the sheet and
-// returns focus to Menu. The reading veil is a static gradient without blur in both themes. Wider windows keep one
+// one Visual effects panel right after it (FX switch, intensity and coordinates; R3 amended, owner decision E136), with
+// no fixed dock, its links two by two in version 1's 48 px rows while the tagline stays under the name in the bar; the lite ambient field (E103) follows the switch there. Escape closes the sheet and
+// returns focus to Menu. The reading sheet (main's own
+// background below its rise since 2026-11-26) is a static gradient without blur in both themes. Wider windows keep one
 // settings dock; narrowing to a phone moves its panel into the sheet and its focus to Menu, widening moves it back
 // closed; Escape and keyboard navigation dismiss it without losing focus, and every selection marker is brass.
 import assert from 'node:assert/strict';
@@ -33,7 +34,8 @@ try {
   await menu.click();
   assert.equal(await menu.getAttribute('aria-expanded'), 'true');
   assert.equal(await sheet.locator('.nav a').count(), 7, 'The sheet holds the seven links');
-  for (const part of ['.nav-log-gate', '.theme-toggle', '.obs-fx-panel', '.ambient-fx-toggle', '.research-coordinates', '.header-actions__tagline']) assert.ok(await sheet.locator(part).isVisible(), `The sheet shows ${part}`);
+  for (const part of ['.nav-log-gate', '.theme-toggle', '.obs-fx-panel', '.ambient-fx-toggle', '.research-coordinates']) assert.ok(await sheet.locator(part).isVisible(), `The sheet shows ${part}`);
+  assert.ok(await page.locator('.brand > strong + span').isVisible() && !(await sheet.locator('.header-actions__tagline').isVisible()), 'The tagline stays under the name, never twice');
   for (const label of await sheet.locator('.obs-fx-panel label').all()) assert.ok((await label.boundingBox()).height >= 44, 'Intensity choices are at least 44 px');
   // The switch works on a phone: off removes the field, on brings the lite field back.
   await sheet.locator('.ambient-fx-toggle').click();
@@ -42,7 +44,7 @@ try {
   await sheet.locator('.ambient-fx-toggle').click();
   await page.waitForSelector('.ambient-space-layer.is-lite > .ambient-dust', { state: 'attached', timeout: 5000 });
   assert.equal(await menu.getAttribute('aria-expanded'), 'true', 'Using the switch keeps the sheet open');
-  for (const link of await sheet.locator('.nav a').all()) assert.ok(Math.abs((await link.boundingBox()).height - 56) < 1.5, 'Navigation rows are 56 px');
+  for (const link of await sheet.locator('.nav a').all()) assert.ok(Math.abs((await link.boundingBox()).height - 48) < 1.5, 'Navigation rows are 48 px');
   for (const control of await sheet.locator('a, button').all()) assert.ok((await control.boundingBox()).height >= 44, 'Touch targets are at least 44 px');
   await page.keyboard.press('Escape');
   assert.equal(await menu.getAttribute('aria-expanded'), 'false');
@@ -52,9 +54,15 @@ try {
     for (const width of [320, 390, 760]) {
       await page.setViewportSize({ width, height: 844 });
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${theme} overflow at ${width}`);
-      const paint = await page.locator('main').evaluate(el => ({ background: getComputedStyle(el).backgroundImage, filter: getComputedStyle(el).backdropFilter }));
+      // On Home the sheet's middle lies on .page::before, so the opening's sky stays under it (the Home opening of
+      // 2026-11-28); elsewhere it is main's own background. Neither main nor the sheet may blur what lies behind.
+      const paint = await page.locator('main').evaluate(el => {
+        const sheet = document.body.classList.contains('ui-page-home') ? getComputedStyle(el.querySelector('.page'), '::before') : getComputedStyle(el);
+        return { background: sheet.backgroundImage, filter: getComputedStyle(el).backdropFilter, sheetFilter: sheet.backdropFilter };
+      });
       assert.match(paint.background, /linear-gradient/, 'Reading surface must be present');
       assert.equal(paint.filter, 'none', 'No live backdrop blur on the reading surface');
+      assert.equal(paint.sheetFilter, 'none', 'No live backdrop blur on the sheet');
       await menu.click();
       const box = await sheet.boundingBox();
       assert.ok(box.x >= 0 && box.x + box.width <= width && box.y >= 0, `${theme} ${width}: the sheet stays in the viewport`);
@@ -110,8 +118,9 @@ try {
   assert.ok(markers.length >= 2, 'Navigation marker and resting rule are present');
   assert.ok(markers.every(marker => marker.color === accent && marker.image === 'none'), `Selection markers are drawn in the brass token ${accent}: ${JSON.stringify(markers)}`);
   // Scrolling repaints nothing but the reading indicators: the spine tick and the old site's reading beam across the
-  // top of the window (E029), both drawn from --scroll-progress. Every other fixed layer and the reading surface keep
-  // their paint.
+  // top of the window (E029), both drawn from --scroll-progress, and, since 2026-11-26 (calmer chrome), the opacity of
+  // the spine itself, which comes in over the first 160 px of scroll. Every other fixed layer and the reading surface
+  // keep their paint.
   const paintOf = () => desktop.evaluate(() => {
     const out = {};
     const nodes = [document.querySelector('main'), ...[...document.querySelectorAll('body *')].filter(el => getComputedStyle(el).position === 'fixed'), ...document.querySelectorAll('.ui2046-progress > span')];
@@ -122,15 +131,19 @@ try {
     } });
     return out;
   });
-  // The soft navigation's fade of main settles first, so only the scroll can change what follows.
+  // The soft navigation's fade of main and its backdrop cross-fade (legacy-navigation.js, 2026-11-28: the old page's
+  // picture dissolves on a layer of its own for 760 ms) settle first, so only the scroll can change what follows.
   await desktop.waitForFunction(() => getComputedStyle(document.querySelector('main')).opacity === '1');
+  await desktop.waitForFunction(() => !document.querySelector('.backdrop-fade') && !document.documentElement.dataset.backdropFade, null, { timeout: 5000 });
   await desktop.waitForTimeout(300);
   const paintBefore = await paintOf();
   await desktop.evaluate(() => window.scrollTo(0, 650));
   await desktop.waitForTimeout(300);
   const paintAfter = await paintOf();
   const changed = Object.keys(paintBefore).filter(key => paintBefore[key] !== paintAfter[key]);
-  assert.ok(changed.every(key => /:reading-indicator::(before|after)$/.test(key)), `Only the reading indicators may change on scroll: ${JSON.stringify(changed.map(key => [key, paintBefore[key], paintAfter[key]]))}`);
+  // The spine may change its opacity (field 3) and nothing else.
+  const spineFade = key => /:ASIDE\.ui2046-rail$/.test(key) && paintBefore[key].split(' | ').every((value, i) => i === 3 || value === paintAfter[key].split(' | ')[i]);
+  assert.ok(changed.every(key => /:reading-indicator::(before|after)$/.test(key) || spineFade(key)),`Only the reading indicators may change on scroll: ${JSON.stringify(changed.map(key => [key, paintBefore[key], paintAfter[key]]))}`);
   const beam = await desktop.locator('.ui2046-progress > span').evaluate(el => getComputedStyle(el, '::before').transform);
   assert.notEqual(beam, 'matrix(0, 0, 0, 1, 0, 0)', 'The reading beam grows with the scroll (E029)');
   assert.ok(!changed.some(key => key.includes('MAIN')), 'Reading paint must not change on scroll');

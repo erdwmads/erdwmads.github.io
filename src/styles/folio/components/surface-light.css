@@ -1,49 +1,50 @@
-/* @owner WP2 · @budget 7KB · @important 0 · Surface light: control sheen and glow, the lit rule of onward rows, the pointer edge light */
-/* The owner's choice of 2026-11-18, after the old site's metal controls and edge light (tokens.css and
-   observatory-experience.css at 2f20d7e). Controls carry a sheen over their own face and a soft shadow; under a
-   hovering pointer they glow (a brass ring and halo, a deeper shadow) without moving. Onward and ledger rows light
-   their rule. Under a fine pointer, observatory-interactions.js sets [data-edge-active] and --edge-angle on the
-   control beneath it, and ::before lights its border: steel on the pointer's side, brass opposite. No box changes.
-   Second pass (owner, 2026-11-18: "all of my previous effects"): secondary buttons, the effects button and the
-   Research Log card take back their old opaque faces; a hovered gate, toggle or icon button keeps a gradient face
-   (the prism hover of September) under a brass border; the gate sends a light sweep across itself; a pressed control
-   sinks into a short inner shadow. */
+/* @owner WP2 · @budget 9KB · @important 0 · Surface light on text controls: resting pools, the lit beam and its glow, the press pool, the gate's sweep across its words, the lit rule of onward rows, the pointer edge light */
+/* The old site's control light (owner, 2026-11-18: "all of my previous effects"), carried by the text controls of
+   2026-11-26 (the lab site's language: no faces, capsules or boxed buttons). Each effect keeps its strength on the
+   new form: the opaque metal and glass faces of secondary buttons and the Research Log gate become a resting pool
+   (E063); the hover glow becomes the beam lit brass to steel over a warm pool with a soft gold glow under it (E062,
+   the prism hover tones of E104 in the pool); the pressed inner shadow becomes a 2 px beam over a press pool (E018);
+   the gate's light sweep crosses its words (E003); the pointer edge light lights the line just above the beam (E021,
+   E061). Onward and ledger rows light their rule. In Light the primary and icon faces' brass sheen stays as a faint
+   brass pool under the words (2026-11-28). No box changes; forced colours and print show none of it. */
+.button,
+.icon-button {
+  background-image: var(--obs-sheen-pool);
+}
+
+.button.secondary {
+  background-image: radial-gradient(closest-side, var(--obs-pool), transparent);
+}
+
 .button,
 .icon-button,
 .nav-log-gate,
 .theme-toggle,
-.obs-fx-settings,
-.research-lock-card {
-  background-image: var(--obs-sheen);
-  box-shadow: var(--obs-control-shadow);
-}
-
-.button:not(.secondary) {
-  background-image: var(--obs-sheen-primary);
-}
-
-.button.secondary {
-  background-image: var(--obs-control-secondary-face);
-}
-
-/* The effects button: Chromium drew the old site's deep glazed shadow; Edge drew 0 7px 16px (its control rule at
-   2f20d7e). Both are kept, by browser (E139, census of the old site in both). */
 .obs-fx-settings {
-  background-image: var(--obs-glass-face);
-  box-shadow: var(--obs-fx-settings-shadow);
+  transition-property: background-color, border-color, box-shadow, color;
+  transition-duration: var(--ed-dur-2);
+  transition-timing-function: var(--ed-ease-out);
 }
 
-:where(html.is-edge-browser) .obs-fx-settings {
-  box-shadow: var(--obs-touch-shadow);
-}
-
-/* The card on the old glass face with its depth shadow. Over the face and under the text, the old highlight band and
-   its glint 20 px in from each side (E097, look-alike without blur), on a layer of their own as the old ::before was. */
+/* The protected archive's lock card: a fragment of the sheet with the old glass face, its edges feathered instead of
+   framed; its depth a shade under it; over the face and under the text, the old highlight band as a top light rising
+   from nothing over 56 px (the face's top is feathered, so the light has no hard top line) and the glint as a head
+   hairline 18 px down, at its old peak, fading out over 30 % at each end (E066, E097, look-alike without blur). */
 .research-lock-card {
   position: relative;
   isolation: isolate;
-  background-image: var(--obs-glass-face);
-  box-shadow: var(--obs-card-depth);
+  background: radial-gradient(closest-side at 50% calc(50% + 12px), var(--obs-sheet-lift), transparent);
+  box-shadow: none;
+}
+
+.research-lock-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: var(--obs-glass-face);
+  mask-image: radial-gradient(closest-side, #000 82%, transparent);
+  pointer-events: none;
 }
 
 .research-lock-card::after {
@@ -51,24 +52,14 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  border-radius: inherit;
-  background: var(--obs-glass-glint) 50% 0 / calc(100% - 40px) 1px no-repeat, var(--obs-glass-band);
+  background: var(--obs-glass-glint-soft) 50% 18px / calc(100% - 40px) 1px no-repeat, var(--obs-glass-rise);
+  mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent);
   pointer-events: none;
 }
 
-.button,
-.icon-button,
-.nav-log-gate,
-.theme-toggle,
-.obs-fx-settings {
-  transition-property: background-color, border-color, box-shadow;
-  transition-duration: var(--ed-dur-2);
-  transition-timing-function: var(--ed-ease-out);
-}
-
-/* The gate's sweep: hovered or focused, a pale band on a layer three times its width crosses it once in 580 ms, from
-   off its left edge to off its right, then rests unseen there. The layer exists only meanwhile, so no resting ground
-   carries it. */
+/* The gate's sweep: hovered or focused, a pale light crosses the words "Research Log" once in 580 ms, from off their
+   left edge to off their right, on a layer three times their width clipped to the letters; every stop keeps the
+   text's contrast. It exists only meanwhile, so no resting ground carries it. */
 @keyframes gate-sweep {
   from {
     background-position: 100% 0;
@@ -80,59 +71,90 @@
 }
 
 @media (forced-colors: none) {
-  .nav-log-gate:is(:hover, :focus-visible) {
-    background-image: linear-gradient(100deg, transparent 33.3%, var(--obs-sweep) 49.3%, transparent 66.7%), var(--obs-sheen);
-    background-size: 300% 100%, auto;
-    background-repeat: no-repeat;
+  .nav-log-gate:is(:hover, :focus-visible) .nav-log-gate__copy > strong {
+    background: linear-gradient(100deg, var(--obs-text) 33.3%, var(--obs-accent) 45%, var(--obs-sweep-text) 49.3%, var(--obs-accent) 53%, var(--obs-text) 66.7%) 100% 0 / 300% 100% no-repeat;
+    background-clip: text;
+    color: transparent;
     animation: gate-sweep 580ms ease both;
+  }
+
+  /* Keyboard focus lights the beam (brass to steel, in the border's own slot) over a warm pool, with a soft gold glow
+     below it (E062); a hovering pointer does the same below (hover-capable pointers only, so a tap never leaves a
+     control lit). The gate and the toggle keep their header pools (components/header.css). A current, chosen or
+     pressed control keeps its own state. */
+  .button:focus-visible:not(:disabled, [aria-disabled="true"], [aria-pressed="true"], [aria-current="page"], [aria-selected="true"]),
+  .icon-button:focus-visible:not(:disabled, [aria-pressed="true"]) {
+    border-bottom-color: transparent;
+    background: var(--obs-beam-lit) 0 100% / 100% 1px no-repeat border-box, radial-gradient(closest-side, var(--obs-pool-warm), transparent);
+    box-shadow: var(--obs-beam-glow);
+  }
+
+  .nav-log-gate:focus-visible:not([aria-current="page"]),
+  .theme-toggle:focus-visible {
+    border-bottom-color: transparent;
+    box-shadow: var(--obs-beam-glow);
+  }
+
+  /* Current, chosen or pressed: brass words over a 2 px brass beam (the border and one inset line, so the height never
+     changes) on a warm pool. */
+  :is(.button, .icon-button):is([aria-current]:not([aria-current="false"]), [aria-pressed="true"], [aria-selected="true"]) {
+    border-bottom-color: var(--obs-accent);
+    background: radial-gradient(closest-side, var(--obs-pool-warm), transparent);
+    box-shadow: inset 0 -1px var(--obs-accent);
+    color: var(--obs-accent);
   }
 }
 
 @media (hover: hover) and (forced-colors: none) {
-  .button:hover:not(:disabled, [aria-disabled="true"]),
-  .icon-button:hover:not(:disabled),
-  .nav-log-gate:hover,
-  .theme-toggle:hover,
-  .obs-fx-settings:hover {
-    box-shadow: var(--obs-control-glow);
+  /* The hover light of the text controls: the same lit beam, warm pool and glow as keyboard focus (E062). */
+  .button:hover:not(:disabled, [aria-disabled="true"], [aria-pressed="true"], [aria-current="page"], [aria-selected="true"]),
+  .icon-button:hover:not(:disabled, [aria-pressed="true"]) {
+    border-bottom-color: transparent;
+    background: var(--obs-beam-lit) 0 100% / 100% 1px no-repeat border-box, radial-gradient(closest-side, var(--obs-pool-warm), transparent);
+    box-shadow: var(--obs-beam-glow);
   }
 
-  :where(.button.secondary):hover:not(:disabled, [aria-disabled="true"]),
-  .nav-log-gate:hover {
-    border-color: var(--obs-accent);
+  .nav-log-gate:hover:not([aria-current="page"]),
+  .theme-toggle:hover {
+    border-bottom-color: transparent;
+    box-shadow: var(--obs-beam-glow);
   }
 
-  .theme-toggle:hover,
-  .icon-button:hover:not(:disabled) {
-    background-image: var(--obs-sheen), var(--obs-control-face);
+  /* A pressed or chosen toggle still answers the pointer: its 2 px brass beam takes the soft gold glow and its warm
+     pool deepens, so the state and the hover both read. */
+  :is(.button, .icon-button):is([aria-pressed="true"], [aria-selected="true"]):hover {
+    background: radial-gradient(closest-side, var(--obs-pool-warm), transparent), radial-gradient(closest-side, var(--obs-pool-hover), transparent);
+    box-shadow: inset 0 -1px var(--obs-accent), var(--obs-beam-glow);
   }
 
-  .nav-log-gate:hover {
-    background-image: linear-gradient(100deg, transparent 33.3%, var(--obs-sweep) 49.3%, transparent 66.7%), var(--obs-sheen), var(--obs-control-face);
-    background-size: 300% 100%, auto, auto;
-  }
-
-  /* A row's rule turns into a brass-to-steel line, with a faint wash beside it. Colour only. */
+  /* A row's rule turns into a brass-to-steel line, with a faint wash rising from it that fades out toward its ends
+     and its top (no straight side). Colour only. */
   .continue-reading a:hover {
-    border-top-color: transparent;
-    background: linear-gradient(90deg, var(--obs-accent), var(--obs-edge-cool) 38%, transparent 72%) 0 0 / 100% 1px no-repeat border-box, linear-gradient(var(--obs-row-glow), transparent 80%);
+    background: linear-gradient(90deg, var(--obs-accent), var(--obs-edge-cool) 38%, transparent 72%) 0 100% / 100% 1px no-repeat, radial-gradient(farthest-side at 50% 100%, var(--obs-row-glow), transparent) 50% 100% / 100% 100% no-repeat;
   }
 
   .ledger > li:has(> a:hover) {
     border-bottom-color: transparent;
-    background: linear-gradient(90deg, var(--obs-accent), var(--obs-edge-cool) 38%, transparent 72%) 0 100% / 100% 1px no-repeat border-box, linear-gradient(0deg, var(--obs-row-glow), transparent 80%);
+    background: linear-gradient(90deg, var(--obs-accent), var(--obs-edge-cool) 38%, transparent 72%) 0 100% / 100% 1px no-repeat border-box, radial-gradient(farthest-side at 50% 100%, var(--obs-row-glow), transparent) 50% 100% / 100% 100% no-repeat border-box;
   }
 }
 
-/* Pressed, on any pointer: a short inner shadow, no movement. After the hover glow, so it wins while held. */
-.button:active:not(:disabled, [aria-disabled="true"]),
-.nav-log-gate:active,
-.theme-toggle:active {
-  box-shadow: var(--obs-control-pressed);
+/* Pressed, on any pointer (E018): the 2 px brass beam over a press pool while held; nothing moves. After the hover
+   light, so it wins while held. */
+@media (forced-colors: none) {
+  .button:active:not(:disabled, [aria-disabled="true"]),
+  .icon-button:active:not(:disabled),
+  .nav-log-gate:active,
+  .theme-toggle:active {
+    border-bottom-color: var(--obs-accent);
+    background: radial-gradient(closest-side, var(--obs-pool-press), transparent);
+    box-shadow: inset 0 -1px var(--obs-accent);
+  }
 }
 
-/* The edge light: a 1 px conic ring just inside the border, masked to the ring, as the old site drew it. The lit
-   control becomes the ring's containing block; weightless, so a control that positions itself keeps its own position. */
+/* The edge light (E021, E061): the old 1 px conic ring, steel on the pointer's side and brass opposite, masked to the
+   line just above the beam, so it lights the beam toward the pointer. The lit control becomes the ring's containing
+   block; weightless, so a control that positions itself keeps its own position. */
 :where([data-edge-active]) {
   position: relative;
 }
@@ -142,11 +164,8 @@
   position: absolute;
   inset: 0;
   z-index: 2;
-  padding: 1px;
-  border-radius: inherit;
   background: conic-gradient(from var(--edge-angle, 0deg), var(--obs-edge-cool), transparent 75deg 125deg, var(--obs-accent) 180deg, transparent 235deg 285deg, var(--obs-edge-cool));
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask-composite: exclude;
+  mask: linear-gradient(#000 0 0) bottom / 100% 1px no-repeat;
   pointer-events: none;
 }
 
@@ -161,20 +180,20 @@
   }
 }
 
-/* Forced colours and print: plain faces and no ring (hover light is already limited to forced-colors: none). */
+/* Forced colours and print: no pool, beam light or ring (the beam stays a border, components/button.css). */
 @media (forced-colors: active), print {
   .button,
-  .button:not(.secondary),
+  .button.secondary,
   .icon-button,
   .nav-log-gate,
   .theme-toggle,
-  .obs-fx-settings,
-  .research-lock-card {
+  .obs-fx-settings {
     background-image: none;
     box-shadow: none;
   }
 
   [data-edge-active]::before,
+  .research-lock-card::before,
   .research-lock-card::after {
     display: none;
   }

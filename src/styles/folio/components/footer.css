@@ -1,66 +1,58 @@
-/* @owner WP2 · @budget 4KB · @important 0 · Site footer colophon rows and the Replay entrance button */
-/* The colophon, on a solid ground under a strong rule: the long-term question beneath its label in the serif italic;
-   the owner, ORCID iD and page actions on a hairline; then the imprint line. Phones stack the rows and keep Replay
-   entrance here, where it covers nothing. */
+/* @owner WP2 · @budget 6KB · @important 0 · Site footer: version 1's row, the colophon and credit lines, the Replay entrance button */
+/* Version 1's footer (owner, 2026-11-25): one 12 px row under a fading line: the owner and ORCID iD, the long-term
+   question with its label, Back to top; version 3's imprint and credit lines follow beneath it in the same small type.
+   It ends the lifted sheet rather than starting a slab (2026-11-28): the sheet's column and its feathered sides run on
+   under the footer's words (the geometry of main's sheet, 03-base.css), and the desk with its grid patches shows in
+   the margins down to the page's end; phones keep the flat sheet. Replay entrance lives here at every width
+   (2026-11-26: one persistent control on screen, the effects icon), where it covers nothing. */
 .site-footer {
   position: relative;
   z-index: var(--z-content);
-  margin-block-start: var(--ed-space-8);
-  border-top: 1px solid var(--obs-rule);
-  background: var(--obs-paper);
+  background:
+    var(--obs-fade-line) 0 0 / 100% 1px no-repeat,
+    linear-gradient(var(--obs-sheet), var(--obs-sheet)) 50% 0 / max(0px, calc(min(100%, calc(2 * var(--sheet-half))) - 2 * var(--sheet-fade))) 100% no-repeat,
+    linear-gradient(90deg, transparent, var(--obs-sheet-lift) 45%, var(--obs-sheet)) max(0px, calc(50% - var(--sheet-half) + var(--sheet-fade) / 2)) 0 / var(--sheet-fade) 100% no-repeat,
+    linear-gradient(270deg, transparent, var(--obs-sheet-lift) 45%, var(--obs-sheet)) min(100%, calc(50% + var(--sheet-half) - var(--sheet-fade) / 2)) 0 / var(--sheet-fade) 100% no-repeat;
   color: var(--obs-muted);
-  font-size: var(--ed-caption);
-  line-height: 1.45;
+  font-size: var(--ed-label);
+  line-height: 1.7;
 }
 
-/* Main's veil carries over the gap above and stops at the rule, which a positioned ::before would otherwise cover. */
-.site-footer::before {
-  content: "";
-  position: absolute;
-  inset: calc(-1 * var(--ed-space-8) - 1px) 0 calc(100% + 1px);
-  background: var(--obs-reading);
-  pointer-events: none;
+@media (max-width: 760px) {
+  .site-footer {
+    background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat, var(--obs-sheet);
+  }
+}
+
+/* More contrast: the opaque sheet, as main's. */
+@media (prefers-contrast: more) {
+  .site-footer {
+    background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat, linear-gradient(var(--obs-sheet-solid), var(--obs-sheet-solid)) 50% 0 / min(100%, calc(2 * var(--sheet-half))) 100% no-repeat;
+  }
+}
+
+@media (forced-colors: active), print {
+  .site-footer {
+    border-top: 1px solid var(--obs-line);
+  }
 }
 
 /* The colophon sits in the old site's soft white glow. */
 .footer-inner {
   display: grid;
-  gap: var(--ed-space-5);
-  padding-block: var(--ed-space-7) var(--ed-space-6);
+  gap: var(--ed-space-2);
+  padding-block: var(--ed-space-5) 1.375rem;
   text-shadow: var(--obs-footer-halo);
 }
 
-.footer-question {
-  display: grid;
-  gap: var(--ed-space-2);
-  max-width: var(--measure-lead);
-}
-
-.footer-question__label {
-  font-size: var(--ed-label);
-  font-weight: 600;
-  line-height: 1.3;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-
-.footer-question__text {
-  color: var(--obs-text);
-  font-family: var(--type-serif);
-  font-size: var(--ed-lead);
-  font-style: italic;
-  font-weight: 400;
-  line-height: 1.4;
-  text-wrap: balance;
-}
-
+/* The row: from 761 px one line, spread across the page. Every footer line keeps clear of the fixed effects button on
+   the right (site-control-clearance.browser). */
 .footer-meta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0 var(--ed-space-5);
-  padding-block-start: var(--ed-space-2);
-  border-top: 1px solid var(--obs-hairline);
+  justify-content: space-between;
+  gap: 0 18px;
 }
 
 .footer-identity {
@@ -68,7 +60,23 @@
   flex-wrap: wrap;
   align-items: center;
   column-gap: var(--ed-space-3);
-  color: var(--obs-text);
+}
+
+.footer-question {
+  margin: 0;
+}
+
+/* The question's label in the accent, as in version 1 (owner, 2026-11-28). */
+.footer-question__label {
+  color: var(--obs-accent);
+  font-size: var(--label-size);
+  font-weight: var(--label-weight);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+}
+
+.footer-question__text {
+  color: var(--obs-muted);
 }
 
 .orcid-link--compact,
@@ -76,7 +84,7 @@
 .footer-replay {
   display: inline-flex;
   align-items: center;
-  gap: var(--ed-space-2);
+  gap: 6px;
   min-height: 44px;
 }
 
@@ -84,14 +92,15 @@
   font-variant-numeric: lining-nums tabular-nums;
 }
 
-/* Replay entrance (entry.js reveals it) serves phones only; wider windows have the fixed button. It comes after Back
-   to top in the row, so its arrival moves nothing. */
+/* Replay entrance (entry.js reveals it on Home) at every width, a link-styled text button. It comes after Back to top
+   in the row, so its arrival moves nothing. */
 .footer-replay {
   order: 1;
   padding: 0;
   border: 0;
   background: none;
   color: var(--obs-link);
+  font-size: inherit;
   text-decoration: underline 1px color-mix(in srgb, currentColor 40%, transparent);
   text-underline-offset: .18em;
 }
@@ -102,39 +111,75 @@
 
 .footer-colophon,
 .footer-credits {
-  font-size: var(--ed-label);
+  padding-block-start: var(--ed-space-2);
+  background: var(--obs-fade-start) 0 0 / 100% 1px no-repeat;
   line-height: 1.7;
-  letter-spacing: .02em;
+}
+
+.footer-credits {
+  padding-block-start: 0;
+  background: none;
 }
 
 .footer-colophon > span {
   white-space: nowrap;
 }
 
-/* A credit link never breaks, so its whole name is one target. */
+/* A credit link never breaks, so its whole name is one target. The credit links read in the line's muted ink over a
+   faint underline (the link colour under the pointer), so the long credit line stays quiet; the underline keeps them
+   links. */
 .footer-credits a {
+  color: inherit;
+  text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
   white-space: nowrap;
 }
 
+.footer-credits a:hover {
+  color: var(--obs-link);
+  text-decoration-color: currentColor;
+}
+
+/* The imprint in the one label style. */
 .footer-colophon > span:first-child {
-  color: var(--obs-text);
-  font-weight: 600;
-  letter-spacing: .08em;
+  color: var(--obs-muted);
+  font-size: var(--label-size);
+  font-weight: var(--label-weight);
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
 }
 
 @media (min-width: 761px) {
-  .footer-replay {
-    display: none;
+  .footer-inner {
+    padding-inline-end: calc(var(--page-pad) + 3.5rem);
   }
 }
 
+@media (forced-colors: active) {
+  .footer-colophon {
+    border-top: 1px solid CanvasText;
+  }
+}
+
+/* Phones: as in version 1, the owner with the ORCID iD and the long-term question stand centred; Back to top, Replay
+   entrance and the colophon keep to the left edge. */
 @media (max-width: 760px) {
-  .footer-inner {
-    padding-block: var(--ed-space-6) var(--ed-space-5);
+  .footer-meta {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .footer-identity {
-    flex-basis: 100%;
+    align-self: stretch;
+    justify-content: center;
+  }
+
+  .footer-question {
+    align-self: stretch;
+    padding-block: var(--ed-space-2);
+    text-align: center;
+  }
+
+  .footer-credits {
+    line-height: 1.55;
   }
 }

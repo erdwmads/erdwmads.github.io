@@ -309,7 +309,7 @@
 
     function shouldPauseAmbient() {
       const state = window.__madsPowerState || {};
-      return !layer.isConnected || !isAmbientEnabled() || document.hidden || state.hidden || state.idle || state.lowPower || document.body.classList.contains("mission-lightbox-open") || document.documentElement.classList.contains("mission-lightbox-open") || document.documentElement.classList.contains("mineral-atlas-open");
+      return !layer.isConnected || !isAmbientEnabled() || document.hidden || state.hidden || state.idle || state.covered || state.lowPower || document.body.classList.contains("mission-lightbox-open") || document.documentElement.classList.contains("mission-lightbox-open") || document.documentElement.classList.contains("mineral-atlas-open");
     }
 
     function spawnMeteorIfVisible() {

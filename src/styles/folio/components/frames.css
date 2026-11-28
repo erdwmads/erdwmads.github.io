@@ -1,0 +1,257 @@
+/* @owner WP1 · @budget 8KB · @important 0 · Groups without frames: panel, card grid, framed box and table, two-column section, section label */
+/* Version 1's groups (2f20d7e) keep their places, columns and rhythm, but no longer draw a box (2026-11-26, owner: "for
+   the boxes, borrow from the lab website; the bubbly AI feel is too strong"). A group that a frame made stays legible
+   through space, a fading hairline at its head and a light pool behind it, never an edge: the lab's language. Version
+   3's light stays on the new forms: the glass band becomes a pool of the same top light and the glint a head hairline
+   (E097); under a hovering pointer the pool warms to the record glow and the head lights brass to steel (E105).
+   Nothing moves or resizes on hover. Forced colours and print keep each head as a plain rule.
+   Markup: .panel (an aside: Project scope, a callout), .card-grid > .card-grid__cell (exhibits side by side, each under
+   its own head hairline; --card-columns sets the count from 1200 px, --card-columns-tablet from 761 px), .framed (a
+   group under a head; .framed--split divides two columns with a vertical fading line; a table inside takes rows on
+   fading hairlines), .two-col (version 1's label column beside the content; .two-col--eyebrow sets its heading as the
+   label with the kicker's bead) and .section-label (the label over a fading start line). */
+.panel,
+.card-grid,
+.framed {
+  position: relative;
+  isolation: isolate;
+  color: var(--obs-text);
+}
+
+/* Panel and framed group: a resting pool behind, the head hairline (a short brass head fading into the ink) above;
+   in Light the old card face's brass sheen as a faint brass pool (2026-11-28). The pools and the head are background
+   layers of the box itself, so they cost no element and move nothing. */
+.panel,
+.framed {
+  background: var(--obs-head-line) 0 0 / 100% 1px no-repeat, var(--obs-sheen-pool) 50% 50% / 100% 100% no-repeat, radial-gradient(closest-side, var(--obs-pool), transparent) 50% 50% / 100% 100% no-repeat;
+  transition: background-color .18s ease;
+}
+
+.panel {
+  padding: 1.375rem 0;
+}
+
+.panel > :first-child,
+.card-grid__cell > :first-child,
+.framed__cell > :first-child {
+  margin-block-start: 0;
+}
+
+/* Card grid: version 1's Analytical Pathway columns (three from 1200 px, two from 761 px, one on phones), as exhibits
+   on the sheet: no frame, gutter or cell face; each cell opens with a fading start line and its caption. */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--card-columns, 3), minmax(0, 1fr));
+  gap: 2.25rem 2.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card-grid__cell {
+  position: relative;
+  min-width: 0;
+  margin: 0;
+  padding: 1rem 0 0;
+  background: var(--obs-fade-start) 0 0 / 100% 1px no-repeat, var(--obs-sheen-pool);
+  transition: background-color .18s ease;
+}
+
+.card-grid__cell--wide {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 1199px) {
+  .card-grid {
+    grid-template-columns: repeat(var(--card-columns-tablet, 2), minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .card-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Framed group: version 1's comparison of Orgueil and the returned samples, a marks key, a callout. Two columns
+   divided by one vertical fading line; a table inside sets its rows on fading hairlines. */
+.framed__cell {
+  min-width: 0;
+  padding: 1.25rem 1.375rem;
+}
+
+.framed--split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.framed--split > .framed__cell + .framed__cell {
+  background: var(--obs-fade-line-v) 0 0 / 1px 100% no-repeat;
+}
+
+.framed table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.framed :is(th, td) {
+  padding: 1rem 1.375rem;
+  background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat;
+  text-align: start;
+  vertical-align: top;
+}
+
+.framed :is(thead, tr:first-child) > :is(th, td) {
+  background: none;
+}
+
+@media (max-width: 760px) {
+  .framed--split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .framed--split > .framed__cell + .framed__cell {
+    background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat;
+  }
+}
+
+/* Under a hovering pointer (E105): the pool warms to the record glow and the head lights brass to steel; a cell's
+   start line does the same over a soft pool that fades to nothing at the cell's edges (never cut by its box).
+   Colour only; no box moves. */
+@media (hover: hover) and (forced-colors: none) {
+  .card-grid__cell:hover {
+    background: linear-gradient(90deg, var(--obs-accent), var(--obs-edge-cool) 45%, transparent) 0 0 / 100% 1px no-repeat, radial-gradient(closest-side, var(--obs-row-glow), transparent) 50% 50% / 100% 100% no-repeat;
+  }
+
+  .panel:hover,
+  .framed:hover {
+    background: linear-gradient(90deg, var(--obs-accent), var(--obs-edge-cool) 45%, transparent) 0 0 / 100% 1px no-repeat, radial-gradient(closest-side, var(--obs-row-glow), transparent) 50% 50% / 100% 100% no-repeat;
+  }
+}
+
+/* Two columns: version 1's label column (172 px) beside the content, 32 px apart, from 761 px. Up to three heads (the
+   kicker, the heading, .two-col__head) stack in the first column; the content, wrapped as .two-col__body, stands
+   beside them from the top; anything else follows in the second column. */
+.two-col {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ed-space-4) var(--ed-space-6);
+}
+
+@media (min-width: 761px) {
+  .two-col {
+    grid-template-columns: 10.75rem minmax(0, 1fr);
+    grid-template-rows: repeat(3, auto) 1fr;
+    align-items: start;
+  }
+
+  .two-col > * {
+    grid-column: 2;
+    max-width: none;
+  }
+
+  .two-col > :is(.kicker, h2, h3, .two-col__head) {
+    grid-column: 1;
+  }
+
+  .two-col > .two-col__body {
+    grid-row: 1 / -1;
+  }
+}
+
+/* Section label: the small heading of a two-column section in the one label style, over a fading start line. */
+.section-label,
+.two-col > h2 {
+  padding-block-start: 7px;
+  background: var(--obs-fade-start) 0 0 / 100% 1px no-repeat;
+  color: var(--obs-muted);
+  font-family: var(--type-sans);
+  font-size: var(--label-size);
+  font-weight: var(--label-weight);
+  line-height: 1.6;
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+/* .two-col--eyebrow: the label where it is the section's only heading (CV, Contact, Photography, 404): in the accent
+   like the kicker (owner, 2026-11-28), with its glowing bead and faint gold glow before the words (E015). As in
+   version 1, these sections stack at 860 px and below, the label above the content without the start line. Forced
+   colours drop the bead. */
+.two-col--eyebrow > h2 {
+  position: relative;
+  padding-inline-start: calc(5.5px + var(--ed-space-2));
+  color: var(--obs-accent);
+  text-shadow: 0 0 14px var(--obs-gold-glow);
+}
+
+.two-col--eyebrow > h2::before {
+  content: "";
+  position: absolute;
+  top: calc(7px + .8em - 2.75px);
+  left: 0;
+  width: 5.5px;
+  height: 5.5px;
+  border-radius: 50%;
+  background: var(--obs-bead);
+  box-shadow: var(--obs-bead-glow);
+}
+
+@media (max-width: 860px) {
+  .two-col.two-col--eyebrow {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+  }
+
+  .two-col.two-col--eyebrow > * {
+    grid-column: 1;
+  }
+
+  .two-col.two-col--eyebrow > .two-col__body {
+    grid-row: auto;
+  }
+
+  .two-col--eyebrow > h2 {
+    padding-block-start: 0;
+    background: none;
+  }
+
+  .two-col--eyebrow > h2::before {
+    top: calc(.8em - 2.75px);
+  }
+}
+
+@media (forced-colors: active) {
+  .two-col--eyebrow > h2 {
+    padding-inline-start: 0;
+  }
+
+  .two-col--eyebrow > h2::before {
+    display: none;
+  }
+}
+
+/* Forced colours and print: no pool or gradient; every head is a plain 1 px rule. */
+@media (forced-colors: active), print {
+  .panel,
+  .framed,
+  .card-grid__cell,
+  .framed--split > .framed__cell + .framed__cell,
+  .framed :is(th, td),
+  .section-label,
+  .two-col > h2 {
+    background: none;
+  }
+
+  .panel,
+  .framed,
+  .card-grid__cell,
+  .section-label,
+  .two-col > h2 {
+    border-top: 1px solid var(--obs-line);
+  }
+
+  .framed :is(tbody, tfoot) :is(th, td) {
+    border-top: 1px solid var(--obs-line);
+  }
+}

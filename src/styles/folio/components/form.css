@@ -1,12 +1,14 @@
-/* @owner WP1 · @budget 3KB · @important 0 · Form controls: text and search inputs, select, range, radio and checkbox, the error state */
-/* 48 px fields with a 1 px control border on the surface tone. Zero-weight element defaults: a component styles
-   its own control with one class. */
+/* @owner WP1 · @budget 3KB · @important 0 · Form controls as underline fields: text and search inputs, select, range, radio and checkbox, the error state */
+/* Underline fields (2026-11-26, the lab site's language): 48 px, no box; the control-border line under the field is
+   its 3:1 boundary, a faint pool lies inside, the focus ring is the site's. Zero-weight element defaults: a component
+   styles its own control with one class. Forced colours: the line in the system field text. */
 :where(input:is([type="text"], [type="search"], [type="password"], [type="email"], [type="url"], [type="tel"], [type="number"], :not([type])), select, textarea) {
   min-height: 48px;
   padding: 0 var(--ed-space-3);
-  border: 1px solid var(--obs-control-border);
-  border-radius: var(--radius-control);
-  background: var(--obs-surface);
+  border: 1px solid transparent;
+  border-bottom-color: var(--obs-control-border);
+  border-radius: 0;
+  background: radial-gradient(closest-side, var(--obs-pool), transparent) 50% 50% / 100% 100% no-repeat;
   color: var(--obs-text);
 }
 
@@ -41,7 +43,13 @@
 
 /* Errors: the error colour on the field, and a message that starts with "!" and words (role="alert" in markup). */
 :where(input, select, textarea)[aria-invalid="true"] {
-  border-color: var(--obs-error);
+  border-bottom-color: var(--obs-error);
+}
+
+@media (forced-colors: active) {
+  :where(input:is([type="text"], [type="search"], [type="password"], [type="email"], [type="url"], [type="tel"], [type="number"], :not([type])), select, textarea) {
+    border-bottom-color: FieldText;
+  }
 }
 
 .form-error {

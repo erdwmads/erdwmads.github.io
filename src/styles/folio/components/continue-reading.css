@@ -1,56 +1,81 @@
-/* @owner WP2 · @budget 2.5KB · @important 0 · Onward links at the end of main (.continue-reading) */
-/* Ruled rows; the arrow ends on the text line, from 1200 px (100% + gap) / 3 short of the edge. */
+/* @owner WP2 · @budget 3KB · @important 0 · Onward links at the end of main (.continue-reading) in version 1's large two-column links */
+/* Version 1's "Continue exploring" (owner, 2026-11-25; its label and ↗ arrow back on 2026-11-26): a fading line, the
+   label, then two large links side by side, each a small number, a 34 px title (22 px on phones) set light over its
+   detail, and the arrow at the end, closed by a fading line. The arrow slides and turns brass on hover; the row lights
+   its line (components/surface-light.css). The opening line belongs to the label, so it spans the content width as in
+   version 1, not the page padding of .page. */
 .continue-reading {
   margin-block-start: var(--section-gap);
 }
 
 .continue-reading-label {
-  padding-block: var(--ed-space-3) var(--ed-space-4);
-  border-top: 1px solid var(--obs-rule);
+  margin: 0;
+  padding-block-start: 1.375rem;
+  background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat;
   color: var(--obs-muted);
-  font-size: var(--ed-label);
-  font-weight: 600;
-  letter-spacing: .08em;
+  font-size: var(--label-size);
+  font-weight: var(--label-weight);
+  line-height: 1.6;
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
+}
+
+.continue-reading__links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ed-space-2) 2.5rem;
+  margin-block-start: var(--ed-space-5);
 }
 
 .continue-reading a {
   display: grid;
-  grid-template-columns: 2.5rem minmax(0, 1fr) auto;
-  align-items: baseline;
-  column-gap: var(--grid-gap);
-  padding: var(--ed-space-4) calc(100% - var(--measure-body)) var(--ed-space-4) 0;
-  border-top: 1px solid var(--obs-hairline);
+  grid-template-columns: 1.5rem minmax(0, 1fr) 1.75rem;
+  align-items: start;
+  column-gap: var(--ed-space-4);
+  padding: 1.125rem 0 var(--ed-space-5);
+  background: var(--obs-fade-start) 0 100% / 100% 1px no-repeat;
   color: var(--obs-text);
-  line-height: 1.4;
   text-decoration: none;
 }
 
-.continue-reading a:last-child {
-  border-bottom: 1px solid var(--obs-hairline);
-}
-
 .continue-reading-number {
-  font: 1.125rem/1.4 var(--type-serif);
-}
-
-.continue-reading strong {
-  display: block;
-  font-size: var(--ed-h4);
-}
-
-.continue-reading small,
-.continue-reading-number {
+  padding-block-start: 7px;
   color: var(--obs-muted);
+  font-size: var(--ed-label);
+  line-height: 1.4;
+}
+
+.continue-reading__text {
+  display: grid;
+  min-width: 0;
+}
+
+/* Version 1's title: 34 px at 1440, 22 px from 916 px down (2.4 vw between). */
+.continue-reading strong {
+  font-size: clamp(1.375rem, 2.4vw, 2.125rem);
+  font-weight: 400;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+.continue-reading small {
+  margin-block-start: var(--ed-space-3);
+  color: var(--obs-muted);
+  font-size: var(--ed-label);
+  line-height: 1.7;
 }
 
 .continue-reading a:hover strong {
   text-decoration: underline 1px;
+  text-underline-offset: .15em;
 }
 
 /* The arrow slides up and to the right and turns brass on hover; the row's box stays put. */
 .continue-reading-arrow {
   color: var(--obs-muted);
+  font-size: 1.5rem;
+  line-height: 1.7;
+  text-align: end;
   transition: transform 200ms, color 200ms;
 }
 
@@ -59,13 +84,22 @@
   transform: translate(3px, -3px);
 }
 
-@media (min-width: 1200px) {
-  .continue-reading a {
-    grid-template-columns: calc((100% - 7 * var(--grid-gap)) / 4 + var(--grid-gap)) minmax(0, 1fr) auto;
-    padding-right: calc((100% + var(--grid-gap)) / 3);
+@media (max-width: 760px) {
+  .continue-reading__links {
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .continue-reading-number {
-    font-size: 1.25rem;
+  .continue-reading strong {
+    font-size: 1.375rem;
+  }
+}
+
+@media (forced-colors: active) {
+  .continue-reading-label {
+    border-top: 1px solid CanvasText;
+  }
+
+  .continue-reading a {
+    border-bottom: 1px solid CanvasText;
   }
 }

@@ -11,6 +11,10 @@
   let idleTimer = 0;
   let isIdle = false;
   let isHidden = document.hidden;
+  // An opaque layer covers the whole window (Home's opening plate, home-path.js): the effects under it (the FX field
+  // and the orrery) pause as when the page is idle, and resume as soon as any of the window shows past it. Nothing
+  // drawn over the cover pauses, so mads-power-covered is its own class, not mads-power-idle.
+  let isCovered = false;
 
   const mediaQueries = LOW_POWER_MEDIA
     .filter(function () { return !!window.matchMedia; })
@@ -37,6 +41,7 @@
     const state = {
       hidden: isHidden,
       idle: isIdle,
+      covered: isCovered,
       lowPower: lowPower,
       mobile: mediaMobile()
     };
@@ -45,12 +50,14 @@
 
     root.classList.toggle("mads-page-hidden", state.hidden);
     root.classList.toggle("mads-power-idle", state.idle);
+    root.classList.toggle("mads-power-covered", state.covered);
     root.classList.toggle("mads-power-low", state.lowPower);
     root.classList.toggle("mads-power-mobile", state.mobile);
 
     if (body) {
       body.classList.toggle("mads-page-hidden", state.hidden);
       body.classList.toggle("mads-power-idle", state.idle);
+      body.classList.toggle("mads-power-covered", state.covered);
       body.classList.toggle("mads-power-low", state.lowPower);
       body.classList.toggle("mads-power-mobile", state.mobile);
     }
@@ -95,6 +102,12 @@
   });
 
   document.addEventListener("visibilitychange", handleVisibility, { passive: true });
+  window.addEventListener("mads:cover", function (event) {
+    const covered = !!(event.detail && event.detail.covered);
+    if (covered === isCovered) return;
+    isCovered = covered;
+    publish();
+  });
   window.addEventListener("pagehide", function () {
     isHidden = true;
     isIdle = true;

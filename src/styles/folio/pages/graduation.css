@@ -1,9 +1,16 @@
-/* @owner WP6 · @budget 2KB · @important 0 · Graduation Research Log page frame, scoped under .ui-page-research-graduation */
+/* @owner WP6 · @budget 5.5KB · @important 0 · Graduation Research Log page frame, scoped under .ui-page-research-graduation */
 .ui-page-research-graduation .archive-edition { margin-top: var(--ed-space-7); }
-.ui-page-research-graduation .masthead > .in-notes { align-self: start; }
+/* Locked, in version 1's shape (owner, 2026-11-25) and the lab site's language (2026-11-26): the title across 960 px
+   (at most 70.4 px from 1200 px, so it keeps version 1's one line in the 960 px measure); Research Log overview as a
+   text control under the lead; the lock card, a feathered fragment of the sheet (components/mission-log.css), centred
+   in a section under version 1's line, fading at both ends. */
+.ui-page-research-graduation .masthead > .in-notes { align-self: start; margin-top: 2px; }
+.ui-page-research-graduation .masthead > h1 { text-wrap: balance; }
+.ui-page-research-graduation .research-lock-section { display: block; margin-top: var(--section-gap); padding-top: var(--section-pad); background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat; }
+.ui-page-research-graduation .research-lock-card { margin-inline: auto; }
 .ui-page-research-graduation .research-unlocked-session { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--ed-space-3) var(--ed-space-5); padding-bottom: var(--ed-space-3); }
 .ui-page-research-graduation .research-unlocked-session > p { flex: 1 1 20rem; margin: 0; color: var(--obs-muted); font-size: var(--ed-small); }
-.ui-page-research-graduation .research-formal-title { max-width: var(--measure-lead); font-family: var(--type-serif); font-size: var(--ed-lead); font-style: italic; line-height: 1.45; }
+.ui-page-research-graduation .research-formal-title { max-width: var(--measure-lead); font-family: var(--type-heading); font-size: var(--ed-lead); font-style: italic; line-height: 1.45; }
 .ui-page-research-graduation .graduation-facts { margin: 0; border-top: 1px solid var(--obs-rule); }
 .ui-page-research-graduation .graduation-facts > div { padding-block: var(--ed-space-3); border-bottom: 1px solid var(--obs-hairline); }
 .ui-page-research-graduation .graduation-facts dt { color: var(--obs-text); }
@@ -11,10 +18,33 @@
 .ui-page-research-graduation :is(.graduation-facts__lab, .graduation-facts small) { display: block; }
 .ui-page-research-graduation .graduation-note { color: var(--obs-muted); font-size: var(--ed-small); }
 @media (max-width: 760px) {
-  .ui-page-research-graduation .research-lock-card { padding: var(--ed-space-5) var(--ed-space-4); }
+  .ui-page-research-graduation .research-lock-section { margin-top: var(--ed-space-5); padding-top: var(--ed-space-5); }
 }
 @media (min-width: 1200px) {
-  .ui-page-research-graduation .masthead > .in-notes { margin-top: calc(var(--ed-space-3) * -1); }
-  .ui-page-research-graduation .research-unlocked-session { border-bottom: 1px solid var(--obs-hairline); }
+  .ui-page-research-graduation .masthead { grid-template-rows: none; }
+  .ui-page-research-graduation .masthead > h1 { grid-column: wide; font-size: min(var(--ed-display), 4.4rem); }
+  /* The title spans 960 px, so its shade pool reaches past it (components/masthead.css ends it at the text column). */
+  .ui-page-research-graduation .masthead::after { inset-inline-end: calc(100% - min(100%, 60rem) - 80px); }
+  .ui-page-research-graduation .masthead > .in-notes { grid-column: text; grid-row: auto; }
   .ui-page-research-graduation .graduation-facts { grid-row: span 3; align-self: start; }
+}
+/* Unlocked, in version 1's order (owner, 2026-11-25) on the sheet (2026-11-26): the session line between two fading
+   lines; the project context and the pathway each a section under a head hairline (a short brass head fading into
+   the ink) with a resting light pool behind it (in Light with the old face's faint brass sheen), no frame, its words
+   on the column's edge; under a hovering pointer the pool warms to the record glow and the head lights brass to steel
+   (E105, as components/frames.css); the formal title in version 1's small muted line. Forced colours and print keep
+   plain rules. */
+.ui-page-research-graduation .research-unlocked-session { padding-block: var(--ed-space-3); background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat, var(--obs-fade-line) 0 100% / 100% 1px no-repeat; }
+.ui-page-research-graduation :is(.graduation-context, .graduation-pathway) { padding: 22px 0; background: var(--obs-head-line) 0 0 / 100% 1px no-repeat, var(--obs-sheen-pool) 50% 50% / 100% 100% no-repeat, radial-gradient(closest-side, var(--obs-pool), transparent) 50% 50% / 100% 100% no-repeat; }
+@media (hover: hover) and (forced-colors: none) {
+  .ui-page-research-graduation :is(.graduation-context, .graduation-pathway):hover { background: linear-gradient(90deg, var(--obs-accent), var(--obs-edge-cool) 45%, transparent) 0 0 / 100% 1px no-repeat, radial-gradient(closest-side, var(--obs-row-glow), transparent) 50% 50% / 100% 100% no-repeat; }
+}
+.ui-page-research-graduation .graduation-context .research-formal-title { color: var(--obs-muted); font-size: var(--ed-caption); font-style: normal; line-height: 1.7; }
+.ui-page-research-graduation .graduation-context > p:not(.research-formal-title) { font-size: var(--ed-small); line-height: 1.75; }
+@media (max-width: 760px) {
+  .ui-page-research-graduation :is(.graduation-context, .graduation-pathway) { padding: 18px 0; }
+}
+@media (forced-colors: active), print {
+  .ui-page-research-graduation :is(.research-lock-section, .graduation-context, .graduation-pathway) { border-top: 1px solid var(--obs-line); background: none; }
+  .ui-page-research-graduation .research-unlocked-session { border-block: 1px solid var(--obs-line); background: none; }
 }

@@ -25,14 +25,17 @@ try {
     await card.scrollIntoViewIfNeeded();
     await page.mouse.move(0,0);
     await page.waitForTimeout(250);
-    const appearance=()=>card.evaluate(el=>({shadow:getComputedStyle(el).boxShadow,border:getComputedStyle(el).borderColor,rect:JSON.stringify(el.getBoundingClientRect())}));
+    const appearance=()=>card.evaluate(el=>({shadow:getComputedStyle(el).boxShadow,border:getComputedStyle(el).borderColor,rect:JSON.stringify(el.getBoundingClientRect()),glow:getComputedStyle(el,'::after').opacity}));
     const before=await appearance();
     await card.hover();await page.waitForTimeout(300);
-    // A record is not a button: it keeps its edge and box under the pointer and only takes the old record glow (E105).
+    // A record is not a button: it keeps its edge and box under the pointer and only takes the old record glow (E105),
+    // since 2026-11-26 its rule lit brass to steel over a glow pool on a layer behind the text, with no depth shadow.
     const lit=await appearance();
     assert.deepEqual({border:lit.border,rect:lit.rect},{border:before.border,rect:before.rect},'Noninteractive education cards must not react like buttons');
     assert.equal(before.shadow,'none','an education card rests flat');
-    assert.match(lit.shadow,/0px 6px 18px/,'and glows faintly under the pointer, as the old record did (E105)');
+    assert.equal(before.glow,'0','its glow waits unseen');
+    assert.equal(lit.glow,'1','and glows faintly under the pointer, as the old record did (E105)');
+    assert.equal(lit.shadow,'none','without a depth shadow, which would draw a box');
     await card.screenshot({path:`.codex_tmp/progress-card-${theme}.png`});
     // Home now offers one primary button and a quiet link (WP3 Home design), so the face check reads Research, which
     // keeps both kinds: a.button "Research Log" and button.button.secondary "Research atlas".

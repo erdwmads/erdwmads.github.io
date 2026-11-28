@@ -1,8 +1,13 @@
-/* @owner WP2 · @budget 12KB · @important 0 · Site header: brand, navigation and its marker, Research Log gate, theme toggle, menu button, phone sheet, data-nav-ready fallback */
-/* Bands: a 56 px bar with Menu to 760 px (site-header.js), two rows (101 px) to 1199 px, one row (73 px) above; the
-   last two are --header-clearance. From 761 x 600 px the header floats (owner, 2026-11-18): sticky, on the band of
-   components/backdrop.css. Phones, short windows and forced colours keep it in the flow on a translucent surface,
-   with the old site's glow below it and its steel line inside the bottom edge (the band carries both where it floats). */
+/* @owner WP2 · @budget 18KB · @important 0 · Site header: brand, navigation words, Research Log gate and theme as text controls, their pools on the band, menu button, phone sheet, data-nav-ready fallback */
+/* Version 1's header layout (owner, 2026-11-25), in the lab site's language (2026-11-26: no pill group, card or boxed
+   buttons): the Georgia name over its tagline, the links as words on the band, the Research Log gate and the theme
+   button as text controls over their beam, each text cluster on a soft pool so the band's planets never sit behind
+   the words (the band keeps its strength in the gaps). Bands: one 108 px row from 1200 px, two rows (brand, gate and
+   button over the links, 119 px) from 761 px, both plus the hairline as --header-clearance; on phones the brand and
+   tagline beside the Menu control, the actions opening as a sheet in the page flow (site-header.js). From 761 x 600 px
+   the header floats (owner, 2026-11-18): sticky, on the band of components/backdrop.css. Phones, short windows and
+   forced colours keep it in the flow on a translucent surface, with the old site's glow below it and its steel line
+   inside the bottom edge (the band carries both where it floats). */
 .site-header {
   position: relative;
   z-index: var(--z-content);
@@ -68,6 +73,33 @@
   animation-play-state: paused;
 }
 
+/* Home (2026-11-28): the trace waits over the opening (to 80 % of its height, --open-h in pages/home-opening.css) and
+   runs after it; without scroll-driven animations home-path.js sets html[data-home-opening] while the name is in view. */
+@keyframes trace-hold {
+  from,
+  to {
+    visibility: hidden;
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (min-width: 761px) and (pointer: fine) and (prefers-reduced-motion: no-preference) and (forced-colors: none) {
+    :where(html:not(.ambient-fx-disabled)) .ui-page-home .site-header::after {
+      animation: orbit-trace 12s linear infinite, trace-hold linear backwards;
+      animation-timeline: auto, scroll(root);
+      animation-range: normal, 0 calc(var(--open-h) * .8);
+    }
+
+    :where(html.mads-page-hidden, html.mads-power-idle, html.mads-power-low, html.mission-lightbox-open, html.mineral-atlas-open, html.obs-presenting) .ui-page-home .site-header::after {
+      animation-play-state: paused, running;
+    }
+  }
+}
+
+html[data-home-opening="in"] .ui-page-home .site-header::after {
+  visibility: hidden;
+}
+
 .header-inner {
   display: flex;
   flex-wrap: wrap;
@@ -77,32 +109,33 @@
   min-height: 56px;
 }
 
+/* The brand: version 1's Georgia name, set lighter (23 px at 400), over the 11 px tagline. */
 .brand {
   display: flex;
   flex-direction: column;
   justify-content: center;
   justify-self: start;
+  min-width: 0;
   min-height: 44px;
   color: var(--obs-text);
   text-decoration: none;
 }
 
 .brand > strong {
-  font-family: var(--type-serif);
-  font-size: 1.25rem;
-  font-weight: 600;
-  line-height: 1.1;
+  font-family: var(--type-name);
+  font-size: 1.4375rem;
+  font-weight: 400;
+  line-height: 1.2;
   white-space: nowrap;
   text-shadow: var(--obs-heading-glow);
 }
 
 /* Light gives the line a faint white halo (the old site's, 2f20d7e); Space none. */
 .brand > strong + span {
-  display: none;
-  margin-top: 3px;
+  margin-top: 4px;
   color: var(--obs-muted);
-  font-size: var(--ed-label);
-  line-height: 1.3;
+  font-size: .6875rem;
+  line-height: 1.55;
   text-shadow: var(--obs-text-halo);
 }
 
@@ -111,44 +144,44 @@
   display: none;
 }
 
-.header-actions,
-.nav__links {
+.header-actions {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: var(--ed-space-3);
 }
 
+/* The links as words on the band: no box, edge or face; 44 px tall as the row. */
 .nav {
   position: relative;
+  display: flex;
+  min-height: 44px;
 }
 
 .nav__links {
-  gap: var(--ed-space-2);
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
 .nav__links a {
   position: relative;
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
+  min-height: 42px;
   padding: 0 10px;
-  color: var(--obs-muted);
-  font-size: var(--ed-small);
-  font-weight: 500;
+  color: var(--obs-text);
+  font-size: .75rem;
+  font-weight: 600;
+  line-height: 1;
   text-decoration: none;
   white-space: nowrap;
   transition: color var(--ed-dur-1) var(--ed-ease-out);
 }
 
-.nav__links a:hover,
-.nav__links a[aria-current="page"] {
-  color: var(--obs-text);
-}
-
 /* The current page's brass rule rests under its link, script or not, and fades on a page change (100 ms with reduced
    motion). Borders survive forced colours. */
 .nav__links a::before,
-.nav-log-gate[aria-current="page"]::after,
 .obs-nav-beam {
   position: absolute;
   border-top: 2px solid var(--obs-accent);
@@ -158,7 +191,7 @@
 .nav__links a::before {
   --motion-fade: .1s;
   content: "";
-  inset: auto 10px 3px;
+  inset: auto 10px 6px;
   opacity: 0;
   transition: opacity var(--ed-dur-2) var(--ed-ease-out);
 }
@@ -174,9 +207,9 @@
   }
 }
 
-/* The lit pill: a 34 px face under the current link at rest, and under a hovered or focused one; a hovered link rises
-   1 px onto it (the old site's, 2f20d7e). Desktop only; the face sits behind the text (the header is a stacking
-   context) and changes no box. */
+/* The lit face (E002) as a light pool: a soft pool under the current link at rest, and under a hovered or focused one,
+   reaching 6 px past the word each side, without an edge; a hovered link rises 1 px onto it (the old site's,
+   2f20d7e). Desktop only; the pool sits behind the text (the header is a stacking context) and changes no box. */
 @media (min-width: 761px) {
   .nav__links a {
     transition-property: color, transform;
@@ -186,11 +219,9 @@
   .nav__links a::after {
     content: "";
     position: absolute;
-    inset: 5px 0;
+    inset: 4px -6px;
     z-index: -1;
-    border-radius: 3px;
-    background: var(--obs-control-active-face);
-    box-shadow: inset 0 1px var(--obs-nav-face-line);
+    background: radial-gradient(closest-side, var(--obs-pool-hover), transparent);
     opacity: 0;
     transition: opacity 180ms var(--ed-ease-out);
     pointer-events: none;
@@ -222,78 +253,143 @@
   transition: transform 300ms cubic-bezier(.22, 1, .36, 1), width 300ms cubic-bezier(.22, 1, .36, 1);
 }
 
+/* A quiet divider between the research pages and the personal ones: a vertical hairline fading at both ends. */
 .nav__divider {
-  height: 14px;
-  margin-inline: var(--ed-space-1);
-  border-left: 1px solid var(--obs-control-border);
+  width: 1px;
+  height: 18px;
+  margin-inline: 4px;
+  background: var(--obs-fade-line-v);
 }
 
-/* The gate (the one box) and the theme toggle. */
+/* The Research Log gate and the theme button: text controls (components/button.css) in the 44 px row, the words over
+   the beam, 8 px of beam past them. The gate rests on the old metal face's pool (E063); in Light both keep the face's
+   brass sheen as a faint brass pool (2026-11-28). */
 .nav-log-gate,
 .theme-toggle {
   display: inline-flex;
   align-items: center;
-  gap: var(--ed-space-2);
-  min-height: 36px;
-  padding: 0 var(--ed-space-3);
-  border-radius: var(--radius-control);
+  gap: 9px;
+  min-height: 44px;
+  padding: var(--ed-space-1) .5rem;
+  border: 1px solid transparent;
+  border-bottom-color: var(--obs-control-border);
+  border-radius: 0;
+  background: var(--obs-sheen-pool);
   color: var(--obs-text);
-  font-size: .875rem;
+  font-size: .75rem;
+  font-weight: 600;
   line-height: 1.2;
   white-space: nowrap;
-  transition: background-color var(--ed-dur-1) var(--ed-ease-out);
 }
 
 .nav-log-gate {
   position: relative;
-  border: 1px solid var(--obs-control-border);
+  background: var(--obs-sheen-pool), radial-gradient(closest-side, var(--obs-pool), transparent);
   text-decoration: none;
 }
 
-.nav-log-gate:hover {
-  background-color: var(--obs-surface-hover);
-}
-
-/* The current gate: a rule-coloured border, the brass rule below. */
+/* The current gate: a 2 px brass beam (the border and one inset line; the height never changes). */
 .nav-log-gate[aria-current="page"] {
-  border-color: var(--obs-rule);
-}
-
-.nav-log-gate[aria-current="page"]::after {
-  content: "";
-  inset: auto var(--ed-space-3) -7px;
+  border-bottom-color: var(--obs-accent);
+  box-shadow: inset 0 -1px var(--obs-accent);
 }
 
 .nav-log-gate__signal {
-  width: 6px;
-  height: 6px;
-  border: 3px solid var(--obs-accent);
+  flex: none;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
+  background: var(--obs-accent);
   box-shadow: 0 0 7px var(--obs-gold-glow);
 }
 
+/* "Research Log" over version 1's 9 px "Active Archive" in spaced brass capitals. */
 .nav-log-gate__copy {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  column-gap: var(--ed-space-2);
+  display: grid;
+  gap: 2px;
+  line-height: 1;
 }
 
+/* The gate's second line keeps its small size inside the 44 px control and its brass (the Research Log signal, one
+   of the three resting brass kinds), in the label's weight and tracking. */
 .nav-log-gate__copy > small {
-  color: var(--obs-muted);
-  font-size: var(--ed-label);
+  color: var(--obs-accent);
+  font-size: .5625rem;
+  font-weight: var(--label-weight);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
 }
 
+/* One width for both labels, centred, so switching themes moves nothing. */
 .theme-toggle {
   justify-content: center;
-  width: 112px;
-  border: 0;
-  background-color: var(--obs-toggle-face);
-  font-weight: 600;
+  min-width: 6.75rem;
 }
 
-.theme-toggle:hover {
-  background-color: color-mix(in srgb, var(--obs-toggle-face) 86%, var(--obs-text));
+/* From 761 px each text cluster lies on a soft pool of the band's own ground (dark in Space, paper in Light), so the
+   band's planets never pass behind the words; the band keeps its full strength in the gaps, above and below (E058).
+   Hovered or focused, the gate's and the toggle's pool warms with brass (E062, the prism hover tones of E104) and their
+   beam lights brass to steel (the glow below it in components/surface-light.css). */
+@media (forced-colors: none) {
+  .nav-log-gate:focus-visible,
+  .theme-toggle:focus-visible {
+    background: var(--obs-beam-lit) 0 100% / 100% 1px no-repeat border-box, radial-gradient(closest-side, var(--obs-pool-warm), transparent);
+  }
+}
+
+@media (hover: hover) and (forced-colors: none) {
+  .nav-log-gate:hover,
+  .theme-toggle:hover {
+    background: var(--obs-beam-lit) 0 100% / 100% 1px no-repeat border-box, radial-gradient(closest-side, var(--obs-pool-warm), transparent);
+  }
+}
+
+/* The pools lie on a layer of their own behind each cluster, reaching past it on every side and feathered there (a
+   soft-edged field, never a box edge): the brand, the gate and the toggle on oval pools that fade on every side, the
+   long row of links on a field feathered 40 px at its ends and 18 px above and below; .nav::after is the
+   polarisation line (components/mineral-fx.css), and the gate's and the toggle's ::before the edge light. */
+@media (min-width: 761px) and (forced-colors: none) {
+  .brand,
+  .theme-toggle {
+    position: relative;
+  }
+
+  .brand::after,
+  .nav::before,
+  .nav-log-gate::after,
+  .theme-toggle::after {
+    content: "";
+    position: absolute;
+    inset: -12px -40px;
+    z-index: -1;
+    background: var(--obs-band-pool);
+    mask-image: radial-gradient(closest-side, #000 52%, transparent);
+    transition: background-color var(--ed-dur-2) var(--ed-ease-out);
+    pointer-events: none;
+  }
+
+  .brand::after {
+    inset: -16px -48px;
+    mask-image: radial-gradient(closest-side, #000 70%, transparent);
+  }
+
+  .nav::before {
+    inset: -14px -40px;
+    mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent), linear-gradient(transparent, #000 18px, #000 calc(100% - 18px), transparent);
+    mask-composite: intersect;
+  }
+
+  .nav-log-gate:focus-visible::after,
+  .theme-toggle:focus-visible::after {
+    background: color-mix(in srgb, var(--obs-accent) 14%, var(--obs-band-pool));
+  }
+}
+
+@media (min-width: 761px) and (hover: hover) and (forced-colors: none) {
+  .nav-log-gate:hover::after,
+  .theme-toggle:hover::after {
+    background: color-mix(in srgb, var(--obs-accent) 14%, var(--obs-band-pool));
+  }
 }
 
 @media (min-width: 761px) and (max-width: 1359px) {
@@ -302,13 +398,14 @@
   }
 }
 
-/* Tablet: brand, gate and theme above the links (clear of the hairline). */
+/* Tablet: version 1's two rows: the brand, the card and the button above the links. */
 @media (min-width: 761px) and (max-width: 1199px) {
   .header-inner {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto auto;
-    grid-template-rows: 52px 48px;
-    column-gap: var(--ed-space-3);
+    grid-template-rows: 47px 44px;
+    gap: 6px var(--ed-space-3);
+    padding-block: 12px 10px;
   }
 
   .header-actions {
@@ -317,55 +414,68 @@
 
   .nav {
     grid-area: 2 / 1 / 3 / -1;
-    align-self: start;
-    margin-inline-start: -10px;
+    justify-self: start;
   }
 
   .nav-log-gate {
     grid-area: 1 / 2;
+  }
+
+  .theme-toggle {
+    grid-area: 1 / 3;
   }
 }
 
 @media (min-width: 1200px) {
   .header-inner {
     flex-wrap: nowrap;
-    min-height: 72px;
+    min-height: 108px;
+    column-gap: var(--ed-space-5);
+  }
+}
+
+/* Phones: version 1's bar: the brand over its tagline beside the Menu control (the word and the three lines over the
+   beam; open, a brass beam); open (html.mobile-nav-open), the sheet in the page flow under a fading line: the links two
+   by two, each row on a fading foot, the gate and the theme button side by side as text controls, then the effects
+   panel. No box. */
+@media (max-width: 760px) {
+  .header-inner {
+    flex-wrap: nowrap;
+    padding-block: var(--ed-space-4);
+  }
+
+  .brand {
+    flex: 1 1 0;
   }
 
   .brand > strong {
-    font-size: 1.375rem;
+    font-size: 1.25rem;
   }
 
-  .nav {
-    margin-inline-end: var(--ed-space-3);
-  }
-}
-
-@media (min-width: 1360px) {
   .brand > strong + span {
-    display: block;
-  }
-}
-
-/* Phones: a 56 px bar; open (html.mobile-nav-open), the sheet in the page flow: 56 px rows, a rule, gate, toggle and
-   tagline. */
-@media (max-width: 760px) {
-  .brand {
-    min-height: 56px;
+    font-size: var(--ed-label);
   }
 
   .nav-toggle {
     display: inline-flex;
+    flex: none;
     align-items: center;
+    align-self: flex-start;
     gap: var(--ed-space-2);
     min-height: 44px;
-    margin-inline-end: calc(-1 * var(--ed-space-2));
-    padding: 0 var(--ed-space-2);
-    border: 0;
+    padding: 0 .5rem;
+    border: 1px solid transparent;
+    border-bottom-color: var(--obs-control-border);
+    border-radius: 0;
     background: none;
     color: var(--obs-text);
-    font-size: var(--ed-small);
+    font-size: .8125rem;
     font-weight: 600;
+  }
+
+  .nav-toggle[aria-expanded="true"] {
+    border-bottom-color: var(--obs-accent);
+    box-shadow: inset 0 -1px var(--obs-accent);
   }
 
   .nav-toggle__icon,
@@ -410,71 +520,82 @@
     transform: translateY(-5px) rotate(90deg);
   }
 
+  /* The sheet wraps below the bar. */
+  :where(html.mobile-nav-open, html:not([data-nav-ready])) .header-inner {
+    flex-wrap: wrap;
+  }
+
   .header-actions {
     display: none;
     flex: 1 0 100%;
-    padding-block-end: var(--ed-space-5);
+    padding-block: var(--ed-space-4) var(--ed-space-5);
+    background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat;
+    margin-block-start: var(--ed-space-4);
   }
 
-  :where(html.mobile-nav-open, html:not([data-nav-ready])) .header-actions,
-  .nav__links {
+  :where(html.mobile-nav-open, html:not([data-nav-ready])) .header-actions {
     display: block;
+  }
+
+  .nav {
+    display: block;
+    min-height: 0;
+  }
+
+  .nav__links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 var(--ed-space-4);
   }
 
   .nav__links a {
     display: flex;
-    min-height: 56px;
+    min-height: 48px;
     padding: 0;
-    font-size: var(--ed-body);
+    background: var(--obs-fade-line) 0 100% / 100% 1px no-repeat;
+    font-size: .8125rem;
     white-space: normal;
   }
 
-  .nav__links a:first-child,
-  .nav__links a + a {
-    border-top: 1px solid var(--obs-hairline);
-  }
-
   .nav__links a::before {
-    inset: auto auto 12px 0;
-    width: 24px;
-  }
-
-  .nav-log-gate[aria-current="page"]::after {
-    inset: auto auto -7px -1px;
+    inset: auto auto 10px 0;
     width: 24px;
   }
 
   .nav__divider {
-    display: block;
-    height: 0;
-    margin: var(--ed-space-4) 0;
-    border-left: 0;
-    border-top: 1px solid var(--obs-rule);
+    grid-column: 1 / -1;
+    width: auto;
+    height: var(--ed-space-2);
+    margin: 0;
+    background: none;
   }
 
+  /* The gate and the theme button side by side under the links, 10 px apart, each a text control over its beam; what
+     follows clears them. */
   .nav-log-gate,
   .theme-toggle {
-    display: flex;
-    min-height: 44px;
-    margin-block-start: var(--ed-space-3);
-  }
-
-  .nav-log-gate {
-    width: 100%;
+    float: left;
+    width: calc(50% - 5px);
     min-height: 48px;
-    margin-block-start: var(--ed-space-4);
-    padding-block: var(--ed-space-2);
+    margin-block-start: 10px;
     white-space: normal;
   }
 
-  .header-actions__tagline {
-    display: block;
-    margin-block-start: var(--ed-space-5);
-    color: var(--obs-muted);
-    font-size: var(--ed-caption);
+  .theme-toggle {
+    float: right;
   }
 
-  /* No controller (no script, or it failed): no Menu; the sheet stays open, links in two columns. */
+  .header-actions > :not(.nav, .nav-log-gate, .theme-toggle) {
+    clear: both;
+  }
+
+  .header-actions::after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+
+  /* No controller (no script, or it failed): no Menu; the sheet stays open. */
   :where(html:not([data-nav-ready])) .nav-toggle {
     display: none;
   }
@@ -483,24 +604,38 @@
     flex-grow: 1;
   }
 
-  :where(html:not([data-nav-ready])) .nav__links {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0 var(--ed-space-4);
-  }
-
   :where(html:not([data-nav-ready])) .nav__links a {
     min-height: 44px;
-    border-top: 1px solid var(--obs-hairline);
+  }
+}
+
+/* Forced colours: the fading lines of the sheet are plain rules; the controls' beams are borders already. */
+@media (max-width: 760px) and (forced-colors: active) {
+  .header-actions {
+    border-top: 1px solid CanvasText;
   }
 
-  :where(html:not([data-nav-ready])) .nav__links a::before {
-    bottom: 5px;
+  .nav__links a {
+    border-bottom: 1px solid CanvasText;
+  }
+}
+
+@media (min-width: 761px) and (forced-colors: active) {
+  .nav__divider {
+    border-left: 1px solid CanvasText;
+  }
+}
+
+@media (forced-colors: active) {
+  .nav-log-gate,
+  .theme-toggle,
+  .nav-toggle {
+    border-color: transparent;
+    border-bottom-color: ButtonText;
   }
 
-  :where(html:not([data-nav-ready])) .nav__divider {
-    grid-column: 1 / -1;
-    margin-block: var(--ed-space-2);
-    border: 0;
+  .nav-log-gate[aria-current="page"],
+  .nav-toggle[aria-expanded="true"] {
+    border-bottom: 3px double Highlight;
   }
 }

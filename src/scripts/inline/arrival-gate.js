@@ -4,7 +4,8 @@
   let played=false,disabled=false;
   try{played=sessionStorage.getItem('mads-cosmic-arrival-v1')==='done';disabled=localStorage.getItem('madsAmbientFxEnabled')==='0';}catch{}
   if(gate.dataset.home!=='true'||location.hash||played||disabled||navigator.connection?.saveData||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  gate.showModal();gate.dataset.state='preparing';document.documentElement.classList.add('cosmic-arrival-active');window.cosmicArrivalOpened=performance.now();
+  // Skip takes the focus without the ring until the visitor uses the keyboard (entry.js does the same when it reopens).
+  gate.showModal();const skip=document.querySelector('#arrival-skip');skip?.blur();skip?.focus({preventScroll:true,focusVisible:false});gate.dataset.state='preparing';document.documentElement.classList.add('cosmic-arrival-active');window.cosmicArrivalOpened=performance.now();
   // A failed or slow module must never leave the page behind a modal or a scroll lock; entry.js uses the same 3 s cap.
   window.cosmicArrivalFallback=setTimeout(()=>{gate.close();gate.dataset.state='complete';document.documentElement.classList.remove('cosmic-arrival-active');},3000);
   // However the dialog closes (Skip or Back before the module has loaded), release the scroll lock at once.

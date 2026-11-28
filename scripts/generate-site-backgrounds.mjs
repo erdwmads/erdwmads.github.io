@@ -10,9 +10,9 @@ const sharp = requireFromAstro("sharp");
 
 // Display derivatives for site-wide backgrounds and the portrait. The JPEG
 // originals stay in place as the archival source and the <picture> fallback.
-// The Bennu page backdrop is shown in grayscale at low opacity
-// (src/styles/folio/components/backdrop.css), so it ships pre-grayscaled: 1280w at low quality (it is never seen
-// undimmed, and its bytes share the link with each page's LCP image), and 800w for phones. The solar-system band is
+// The Bennu backdrop (the Research page's picture since 2026-11-28) is drawn as a greyscale luminance mask at low
+// strength (src/styles/folio/components/backdrop.css), so it ships pre-grayscaled: 1280w at low quality (it is never
+// seen undimmed, and its bytes share the link with the page's LCP image), and 800w for phones. The solar-system band is
 // at most 101 px tall, so 1600w at low quality is enough.
 const webpJobs = [
   { source: "Solar_System_true_color.jpg", output: "Solar_System_true_color-1600.webp", width: 1600, quality: 50 },

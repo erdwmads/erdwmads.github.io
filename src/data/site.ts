@@ -11,7 +11,6 @@ export const siteMetadata = {
   title: "I. Mads Lieu Academic Website",
   author: "I. Mads Lieu",
   description: "Academic website of I. Mads Lieu, focused on astromineralogy, planetology, meteoritics, and primitive Solar System materials.",
-  image: "assets/img/og-cover.jpg",
   locale: "en_US"
 } as const;
 
@@ -136,6 +135,7 @@ export const stylesheets = [
   "src/styles/folio/components/table.css",
   "src/styles/folio/components/disclosure.css",
   "src/styles/folio/components/form.css",
+  "src/styles/folio/components/frames.css",
   "src/styles/folio/components/header.css",
   "src/styles/folio/components/footer.css",
   "src/styles/folio/components/continue-reading.css",
@@ -160,6 +160,7 @@ export const stylesheets = [
   "src/styles/folio/components/mission-log.css",
   "src/styles/folio/components/surface-light.css",
   "src/styles/folio/pages/home.css",
+  "src/styles/folio/pages/home-opening.css",
   "src/styles/folio/pages/research.css",
   "src/styles/folio/pages/research-log.css",
   "src/styles/folio/pages/ryugu-bennu.css",
@@ -213,6 +214,8 @@ const navigationScript: ScriptSpec = { file: "legacy-navigation.js", defer: true
 const pageScripts: Record<string, ScriptSpec[]> = {
   contact: [{ file: "contact.js", defer: true }],
   cv: [{ file: "cv.js", defer: true }],
+  // The Home opening (2026-11-28): the path's set-ins and the band hold-back without scroll-driven animations.
+  home: [{ file: "home-path.js", defer: true }],
   "paper-shelf": [{ file: "paper-shelf.js", defer: true }],
   // Password-gated public page; keep it out of sitemap contentPages.
   "research-graduation": [

@@ -1,7 +1,10 @@
 // The owner's late decisions on the old site's light (2026-11-18, stage c5): the headings in main and the site name
-// glow (E116), with body text never glowing; the pills, the 404 card and the docked effects panel carry the old glass
-// band and glint without blur (E097); CV, Paper Shelf and Home timeline records glow under a hovering pointer and never
-// move (E105); the effects button keeps the shadow its browser drew on the old site (E139); phones run the lite field
+// glow (E116), with body text never glowing; the Home keywords (a glint hairline and a pool each since 2026-11-26), the
+// 404 card (a pool under a glint hairline since 2026-11-26) and the docked effects panel carry the old glass band and
+// glint without blur (E097); CV, Paper Shelf and Home timeline records glow under a hovering pointer and never move
+// (E105; on the CV and the Paper Shelf since 2026-11-26 the record's rule lights brass to steel over a glow pool on a
+// layer behind the text, easing in over 180 ms); the effects button keeps the shadow its
+// browser drew on the old site as a shade pool under its borderless icon (E139, E130); phones run the lite field
 // and reach the FX switch in the menu (E103, E136; reading-ui and ambient-resize check the switch and the resize). Each
 // is checked where it must not show: forced colours, print, reduced motion, touch. Both themes.
 import assert from 'node:assert/strict';
@@ -48,53 +51,91 @@ try {
       const glow = (await style(home.page, selector, ['text-shadow']))['text-shadow'];
       assert.equal(glow, 'none', t(`${selector} never glows (${glow})`));
     }
-    const pill = await style(home.page, '.pill', ['background-image', 'box-shadow', 'backdrop-filter']);
-    assert.match(pill['background-image'], /^linear-gradient\(rgba\(255, 255, 255, 0\.1[26]\)/, t(`the pills carry the glass band: ${pill['background-image']}`));
-    assert.match(pill['box-shadow'], /inset/, t('and their top glint'));
+    // The keywords (no capsules since 2026-11-26): the glint as a hairline above each word, the band as a pool behind it.
+    const pill = await style(home.page, '.pill', ['background-image', 'box-shadow', 'backdrop-filter', 'border-top-width', 'border-radius']);
+    assert.match(pill['background-image'], /^linear-gradient\(90deg, rgba\(255, 255, 255, 0\), rgba\(255, 255, 255, 0\.4\), rgba\(255, 255, 255, 0\)\), radial-gradient\(/, t(`the keywords carry the glint hairline and the pool: ${pill['background-image']}`));
+    assert.equal(pill['box-shadow'], 'none', t('no capsule glint'));
+    assert.deepEqual([pill['border-top-width'], pill['border-radius']], ['0px', '0px'], t('and no capsule'));
     assert.equal(pill['backdrop-filter'], 'none', t('without blur'));
     const row = home.page.locator('.home-timeline-list > li').first();
     await row.scrollIntoViewIfNeeded();
+    // Reaching the timeline sets it in once (home-path.js, the Home opening of 2026-11-28); measure once it has settled.
+    // The set-in starts from an IntersectionObserver callback after the scroll, so let it run first (two frames and
+    // 100 ms, as in mission-experience), then wait for the animations it started.
+    await row.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(resolve, 100)))));
+    await row.evaluate(el => Promise.all(el.getAnimations({ subtree: true }).map(animation => animation.finished)));
     const before = await row.boundingBox();
     await row.hover();
     await home.page.waitForTimeout(250);
     assert.match(await row.evaluate(el => getComputedStyle(el).boxShadow), /0px 4px 14px/, t('a hovered timeline record glows'));
     assert.deepEqual(await row.boundingBox(), before, t('and does not move'));
-    // E139: the effects button keeps its browser's old shadow.
+    // E139, E130: the effects button keeps its browser's old shadow, as a shade pool under the borderless icon (a
+    // box-shadow would draw the old disc again): the same offset, reach and alpha.
     const edge = await home.page.evaluate(() => document.documentElement.classList.contains('is-edge-browser'));
-    const settings = (await style(home.page, '.obs-fx-settings', ['box-shadow']))['box-shadow'];
-    if (edge) assert.equal(settings, 'rgba(0, 0, 0, 0.16) 0px 7px 16px 0px', t(`Edge: the effects button casts 0 7px 16px (${settings})`));
-    else assert.match(settings, /0px 14px 32px/, t(`Chromium: the deep glazed shadow (${settings})`));
-    // E097: the docked panel's band and glint.
+    const settings = await style(home.page, '.obs-fx-settings', ['box-shadow', 'border-top-width']);
+    assert.deepEqual([settings['box-shadow'], settings['border-top-width']], ['none', '0px'], t(`the effects button is a borderless icon (${JSON.stringify(settings)})`));
+    const shade = await style(home.page, '.obs-fx-settings', ['top', 'background-image'], '::after');
+    if (edge) {
+      assert.equal(shade.top, '-16px', t(`Edge: the shade reaches 16 px (${shade.top})`));
+      assert.match(shade['background-image'], /^radial-gradient\(closest-side at 50% calc\(50% \+ 7px\), rgba\(0, 0, 0, 0\.16\)/, t(`Edge: offset 7 px at .16 (${shade['background-image']})`));
+    } else {
+      assert.equal(shade.top, '-32px', t(`Chromium: the shade reaches 32 px (${shade.top})`));
+      assert.match(shade['background-image'], /^radial-gradient\(closest-side at 50% calc\(50% \+ 14px\), rgba\(0, 0, 0, 0\.18\)/, t(`Chromium: offset 14 px at .18 (${shade['background-image']})`));
+    }
+    // E097: the docked panel's band and glint, on its feathered face (2026-11-28): the glint at its old .4 peak fading
+    // out over 30 % at each end, as the hairline under the legend; the band at its old peak, rising from nothing over
+    // 56 px, so neither draws the panel's top edge. The panel itself has no corner or box halo.
     await home.page.locator('.obs-fx-settings').click();
-    const panel = await style(home.page, '.obs-fx-dock > .obs-fx-panel', ['background-image', 'background-size']);
-    assert.match(panel['background-image'], /linear-gradient\(90deg.*linear-gradient\(rgba\(255, 255, 255/, t(`the docked panel: glint and band (${panel['background-image']})`));
-    assert.match(panel['background-size'], /^calc\(100% - 40px\) 1px/, t('the glint stops 20 px from each side'));
+    const panel = await style(home.page, '.obs-fx-dock > .obs-fx-panel', ['background-image', 'background-size', 'background-position'], '::before');
+    assert.match(panel['background-image'], /^linear-gradient\(90deg, rgba\(255, 255, 255, 0\), rgba\(255, 255, 255, 0\.4\) 30%, rgba\(255, 255, 255, 0\.4\) 70%, rgba\(255, 255, 255, 0\)\)/, t(`the docked panel: glint (${panel['background-image']})`));
+    assert.match(panel['background-image'], /linear-gradient\(rgba\(255, 255, 255, 0\), rgba\(255, 255, 255, 0\.1[26]\) 56px/, t(`the docked panel: band rising from nothing (${panel['background-image']})`));
+    assert.match(panel['background-size'], /^calc\(100% - 32px\) 1px/, t('the glint stops 16 px from each side'));
+    assert.match(panel['background-position'], /^50% 42px/, t('the glint lies under the legend'));
+    const frame = await style(home.page, '.obs-fx-dock > .obs-fx-panel', ['box-shadow', 'border-top-left-radius']);
+    assert.deepEqual([frame['box-shadow'], frame['border-top-left-radius']], ['none', '0px'], t(`the panel draws no box halo or corner (${JSON.stringify(frame)})`));
     await home.close();
 
-    // E105 on the Paper Shelf and the CV: a glow, no move, the old 180 ms ease-in.
-    for (const [path, selector, rule] of [['paper-shelf.html', '.paper-card:not([hidden]) ~ .paper-card:not([hidden])', true], ['cv.html', '.cv-edu-card', false]]) {
+    // E105 on the Paper Shelf and the CV (2026-11-26): on a layer behind the record, its rule (the paper's top rule, the
+    // entry's foot rule) lights brass to steel over a glow pool, easing in over 180 ms; no depth shadow, no move, and the
+    // text stays above the layer.
+    for (const [path, selector, edge] of [['paper-shelf.html', '.paper-card:not([hidden]) ~ .paper-card:not([hidden])', 'top'], ['cv.html', '.cv-edu-card', 'bottom']]) {
       const { page, close } = await open(theme, path);
       const record = page.locator(selector).first();
       await record.scrollIntoViewIfNeeded();
       await page.mouse.move(2, 2);
-      await page.waitForTimeout(250);
-      const rest = await record.evaluate(el => ({ shadow: getComputedStyle(el).boxShadow, top: getComputedStyle(el).borderTopColor }));
+      await page.waitForTimeout(300);
+      const read = () => record.evaluate(el => { const a = getComputedStyle(el, '::after'); return { shadow: getComputedStyle(el).boxShadow, opacity: a.opacity, image: a.backgroundImage, size: a.backgroundSize, position: a.backgroundPosition, z: a.zIndex, transition: a.transition }; });
+      const rest = await read();
       const box = await record.boundingBox();
-      await record.hover({ position: { x: 40, y: 12 } });
-      await page.waitForTimeout(400);
-      const lit = await record.evaluate(el => ({ shadow: getComputedStyle(el).boxShadow, top: getComputedStyle(el).borderTopColor, transition: getComputedStyle(el).transition }));
+      await record.hover({ position: { x: 40, y: 24 } });
+      await page.waitForTimeout(450);
+      const lit = await read();
       assert.equal(rest.shadow, 'none', t(`${path}: a record rests flat`));
-      assert.match(lit.shadow, /0px 6px 18px/, t(`${path}: a hovered record takes the old glow (${lit.shadow})`));
-      assert.match(lit.transition, /box-shadow 0\.18s/, t(`${path}: easing in over 180 ms`));
-      if (rule) assert.notEqual(lit.top, rest.top, t(`${path}: the paper's rule turns to the glass edge`));
+      assert.equal(rest.opacity, '0', t(`${path}: the glow waits unseen`));
+      assert.equal(lit.opacity, '1', t(`${path}: a hovered record takes the glow`));
+      assert.equal(lit.shadow, 'none', t(`${path}: and no depth shadow, which would draw a box`));
+      assert.match(lit.image, /^linear-gradient\(90deg, rgb.*radial-gradient/, t(`${path}: a brass-to-steel rule over a glow pool (${lit.image.slice(0, 70)})`));
+      assert.match(lit.size, /^100% 1px/, t(`${path}: the lit rule is 1 px`));
+      assert.match(lit.position, edge === 'top' ? /^0(px|%) 0(px|%),/ : /^0(px|%) 100%,/, t(`${path}: on the record's ${edge} rule (${lit.position})`));
+      assert.equal(lit.z, '-1', t(`${path}: behind the text`));
+      assert.match(lit.transition, /opacity 0\.18s/, t(`${path}: easing in over 180 ms`));
+      const text = await record.locator(edge === 'top' ? '.paper-summary' : '.cv-edu-body > p').first().boundingBox();
+      assert.equal(await page.evaluate(([x, y, sel]) => Boolean(document.elementFromPoint(x, y)?.closest(sel)), [text.x + 10, text.y + text.height / 2, selector.split(' ~ ').at(-1)]), true, t(`${path}: the text stays on top`));
       assert.deepEqual(await record.boundingBox(), box, t(`${path}: the record does not move`));
       await close();
     }
 
-    // The 404 card under the glass band and glint (E097).
+    // The 404 card (E097) since 2026-11-26: the glint a head hairline 20 px in from each side, the band a light pool.
     const notFound = await open(theme, '404.html');
     const card = await style(notFound.page, '.archive-index', ['background-image', 'background-size'], '::before');
-    assert.match(card['background-image'], /linear-gradient\(90deg.*linear-gradient\(rgba\(255, 255, 255/, t(`the 404 card: glint and band (${card['background-image']})`));
+    assert.match(card['background-image'], /linear-gradient\(90deg.*radial-gradient/, t(`the 404 card: glint and pool (${card['background-image']})`));
+    assert.match(card['background-size'], /^calc\(100% - 40px\) 1px/, t('the glint stops 20 px from each side'));
+    // Since 2026-11-28 the glint lies on the section's own line (one rule opens the section, none 32 px under it).
+    const onRule = await notFound.page.evaluate(() => {
+      const list = document.querySelector('.archive-index'), section = list.closest('.folio-section');
+      return { glint: list.getBoundingClientRect().top + parseFloat(getComputedStyle(list, '::before').top), rule: section.getBoundingClientRect().top };
+    });
+    assert.ok(Math.abs(onRule.glint - onRule.rule) <= 1, t(`the 404 glint lies on the section's line (${JSON.stringify(onRule)})`));
     await notFound.close();
 
     // Forced colours and print: no heading glow, no band, no record glow.
@@ -106,7 +147,7 @@ try {
       assert.equal((await style(page, 'main h1', ['text-shadow']))['text-shadow'], 'none', t(`${label}: no heading glow`));
       assert.equal((await style(page, '.brand > strong', ['text-shadow']))['text-shadow'], 'none', t(`${label}: no site-name glow`));
       if (label === 'forced colours') {
-        assert.equal((await style(page, '.pill', ['background-image']))['background-image'], 'none', t(`${label}: no glass band on the pills`));
+        assert.equal((await style(page, '.pill', ['background-image']))['background-image'], 'none', t(`${label}: no glint or pool on the keywords`));
         assert.equal(await page.locator('.ambient-space-layer').evaluate(el => getComputedStyle(el).display).catch(() => 'none'), 'none', t(`${label}: no ambient field`));
       }
       await close();
@@ -121,7 +162,7 @@ try {
     assert.equal(await phone.page.locator('[data-mobile-nav] > .obs-fx-panel').count(), 1, t('phones: the effects panel lies in the menu'));
     await phone.page.locator('[data-nav-toggle]').click();
     const sheetPanel = await style(phone.page, '[data-mobile-nav] > .obs-fx-panel', ['position', 'background-image', 'box-shadow', 'backdrop-filter']);
-    assert.deepEqual(sheetPanel, { position: 'static', 'background-image': 'none', 'box-shadow': 'none', 'backdrop-filter': 'none' }, t('phones: a flat ruled block in the sheet, as on the old site'));
+    assert.deepEqual({ ...sheetPanel, 'background-image': /^linear-gradient\(90deg, (rgba\(0, 0, 0, 0\)|transparent)/.test(sheetPanel['background-image']) }, { position: 'static', 'background-image': true, 'box-shadow': 'none', 'backdrop-filter': 'none' }, t(`phones: a flat block under a fading rule in the sheet (${JSON.stringify(sheetPanel)})`));
     await phone.close();
     const still = await open(theme, 'index.html', { width: 390, height: 844, reducedMotion: 'reduce' });
     await still.page.waitForTimeout(1500);

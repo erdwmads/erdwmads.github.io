@@ -1,4 +1,4 @@
-/* @owner WP1 · @budget 6KB · @important 0 · Base: ground, reading veil, type scale for headings and text, links, focus, selection */
+/* @owner WP1 · @budget 11.5KB · @important 0 · Base: ground, reading veil, type scale for headings and text, links, focus, selection */
 /* The scroll padding keeps anchor targets and keyboard focus clear of the floating header. */
 html {
   background: var(--obs-paper);
@@ -7,7 +7,8 @@ html {
   scroll-padding-top: var(--header-clearance);
 }
 
-/* No synthesised bold or italic: the serif has a real italic at 400 only, and nothing uses weights above 600. */
+/* Version 1's text: Montserrat 16 px on a 1.7 line (15.5 px on phones). No synthesised bold or italic: Montserrat has
+   weights 400 to 800 and no italic file, so italic text is drawn upright. */
 body {
   display: flex;
   flex-direction: column;
@@ -17,49 +18,147 @@ body {
   font-family: var(--type-sans);
   font-size: var(--ed-body);
   font-weight: 400;
-  line-height: 1.6;
+  line-height: 1.7;
   font-kerning: normal;
   font-synthesis-weight: none;
   font-synthesis-style: none;
 }
 
-/* The reading veil: the FX field shows through the opening view and is dimmed behind long reading. A static
-   gradient on a solid token, so text never rests on imagery. It reaches full strength 440 px down (280 px on phones),
-   as on the old site. */
+/* The reading column lies on the lab's lifted sheet (2026-11-26, owner: "borrow from the lab website"): the column, a
+   side pad and a feathered fade (a soft shade under the lifted edge, then the sheet), never a border, corner or drop
+   shadow. It rises to full strength --sheet-rise down (E020: the opening view keeps the far plane, 440 px, 280 px on
+   phones, 380 px on the Research Log), so the backdrop, orrery and FX field show around the opening words and are
+   dimmed behind long reading. Three static layers draw it: main's own background the middle of the sheet with its rise
+   (a vertical gradient, as the old veil), ::before the feathered edges over the rise (the only masked part, 440 px
+   tall) and ::after the feathered edges below it. No page-tall layer is masked (a page-tall mask slowed the
+   soft-navigation swap and the header beam's glide), and the shade under the edges lies on the pseudo-elements, never
+   on an ancestor of the text. Phones: flat, edge to edge, as the lab's. Version 1's page padding: 56 px above the first
+   block and 72 px below the last (24 and 44 px on phones). */
 :where(main) {
+  --sheet-colour: var(--obs-sheet);
+  --sheet-edges: linear-gradient(90deg, transparent, var(--obs-sheet-lift) 45%, var(--sheet-colour)) 0 0 / var(--sheet-fade) 100% no-repeat, linear-gradient(270deg, transparent, var(--obs-sheet-lift) 45%, var(--sheet-colour)) 100% 0 / var(--sheet-fade) 100% no-repeat;
   position: relative;
   z-index: var(--z-content);
+  isolation: isolate;
   flex: 1 0 auto;
-  background: linear-gradient(180deg, transparent, var(--obs-reading) 440px);
+  padding-block: 3.5rem 4.5rem;
+  background: linear-gradient(180deg, transparent, var(--sheet-colour) var(--sheet-rise)) 50% 0 / max(0px, calc(min(100%, calc(2 * var(--sheet-half))) - 2 * var(--sheet-fade))) 100% no-repeat;
+}
+
+:where(main)::before,
+:where(main)::after {
+  content: "";
+  position: absolute;
+  right: max(0px, calc(50% - var(--sheet-half)));
+  left: max(0px, calc(50% - var(--sheet-half)));
+  z-index: -1;
+  background: var(--sheet-edges);
+  pointer-events: none;
+}
+
+:where(main)::before {
+  top: 0;
+  height: var(--sheet-rise);
+  mask-image: linear-gradient(180deg, transparent, #000);
+}
+
+:where(main)::after {
+  top: var(--sheet-rise);
+  bottom: 0;
 }
 
 @media (max-width: 760px) {
   :where(main) {
-    background-image: linear-gradient(180deg, transparent, var(--obs-reading) 280px);
+    padding-block: 1.5rem 2.75rem;
+    background-size: 100% 100%;
+  }
+
+  :where(main)::before,
+  :where(main)::after {
+    display: none;
   }
 }
 
+/* Wide windows: the lab's archive grid on the desk, in the margins only (a band that stops 30 px short of the sheet
+   and fades out 120 px in, its lines drawn only up to there), and only in soft patches that repeat every 1,100 px. It
+   joins the masked layer of the edges' rise, which then spans the window: one mask adds the rise of the edges to the
+   grid's band and patches. Static, under the sheet's edges. */
+@media (min-width: 1600px) {
+  :where(main)::before {
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: auto;
+    background:
+      linear-gradient(90deg, transparent, var(--obs-sheet-lift) 45%, var(--sheet-colour)) max(0px, calc(50% - var(--sheet-half) + var(--sheet-fade) / 2)) 0 / var(--sheet-fade) var(--sheet-rise) no-repeat,
+      linear-gradient(270deg, transparent, var(--obs-sheet-lift) 45%, var(--sheet-colour)) min(100%, calc(50% + var(--sheet-half) - var(--sheet-fade) / 2)) 0 / var(--sheet-fade) var(--sheet-rise) no-repeat,
+      repeating-linear-gradient(180deg, var(--obs-grid-major) 0 1px, transparent 1px 60px) 0 0 / max(0px, calc(50% - var(--sheet-half) + 120px)) 100% no-repeat,
+      repeating-linear-gradient(90deg, var(--obs-grid-major) 0 1px, transparent 1px 60px) 0 0 / max(0px, calc(50% - var(--sheet-half) + 120px)) 100% no-repeat,
+      repeating-linear-gradient(180deg, var(--obs-grid-minor) 0 1px, transparent 1px 12px) 0 0 / max(0px, calc(50% - var(--sheet-half) + 120px)) 100% no-repeat,
+      repeating-linear-gradient(90deg, var(--obs-grid-minor) 0 1px, transparent 1px 12px) 0 0 / max(0px, calc(50% - var(--sheet-half) + 120px)) 100% no-repeat,
+      repeating-linear-gradient(180deg, var(--obs-grid-major) 0 1px, transparent 1px 60px) 100% 0 / max(0px, calc(50% - var(--sheet-half) + 120px)) 100% no-repeat,
+      repeating-linear-gradient(90deg, var(--obs-grid-major) 0 1px, transparent 1px 60px) 100% 0 / max(0px, calc(50% - var(--sheet-half) + 120px)) 100% no-repeat,
+      repeating-linear-gradient(180deg, var(--obs-grid-minor) 0 1px, transparent 1px 12px) 100% 0 / max(0px, calc(50% - var(--sheet-half) + 120px)) 100% no-repeat,
+      repeating-linear-gradient(90deg, var(--obs-grid-minor) 0 1px, transparent 1px 12px) 100% 0 / max(0px, calc(50% - var(--sheet-half) + 120px)) 100% no-repeat;
+    mask-image:
+      linear-gradient(180deg, transparent, #000),
+      linear-gradient(90deg, #000, #000 calc(50% - var(--sheet-half) + 30px), transparent calc(50% - var(--sheet-half) + 120px), transparent calc(50% + var(--sheet-half) - 120px), #000 calc(50% + var(--sheet-half) - 30px)),
+      radial-gradient(ellipse 34% 380px at 6% 300px, #000, transparent),
+      radial-gradient(ellipse 34% 360px at 94% 820px, rgba(0, 0, 0, .85), transparent);
+    mask-position: 50% 0, 0 0, 0 0, 0 0;
+    mask-size: min(100%, calc(2 * var(--sheet-half))) var(--sheet-rise), 100% 100%, 100% 1100px, 100% 1100px;
+    mask-repeat: no-repeat, no-repeat, repeat-y, repeat-y;
+    mask-composite: add, intersect, add;
+  }
+}
+
+/* More contrast: an opaque sheet, no rise and no grid. Forced colours and print: neither (states/print.css). */
+@media (prefers-contrast: more) {
+  :where(main) {
+    background: linear-gradient(var(--obs-sheet-solid), var(--obs-sheet-solid)) 50% 0 / min(100%, calc(2 * var(--sheet-half))) 100% no-repeat;
+  }
+
+  :where(main)::before,
+  :where(main)::after {
+    display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :where(main) {
+    background: none;
+  }
+
+  :where(main)::before,
+  :where(main)::after {
+    display: none;
+  }
+}
+
+/* Quiet headings (2026-11-26): Montserrat at its lightest bundled weight, 400, for the page title and sections, a
+   little larger and with more leading than version 1's 700 (titles up to 73.6 px on a 1.1 line, sections 30 px, 24 px
+   on phones, on a 1.35 line); h3 at 600. Balanced lines. */
 :where(h1, h2, h3) {
-  font-family: var(--type-serif);
-  font-weight: 500;
+  font-family: var(--type-heading);
+  font-weight: 400;
   text-wrap: balance;
 }
 
 :where(h1) {
   font-size: var(--ed-display);
-  line-height: 1.04;
-  letter-spacing: -.015em;
+  line-height: 1.1;
+  letter-spacing: -.02em;
 }
 
 :where(h2) {
   font-size: var(--ed-h2);
-  line-height: 1.12;
-  letter-spacing: -.01em;
+  line-height: 1.35;
 }
 
 :where(h3) {
   font-size: var(--ed-h3);
-  line-height: 1.25;
+  font-weight: 600;
+  line-height: 1.35;
 }
 
 /* Headings in main glow as the old site's did before its quiet pass (owner decision E116, 2026-11-18): a soft light
@@ -76,7 +175,7 @@ body {
   font-family: var(--type-sans);
   font-size: var(--ed-h4);
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.4;
 }
 
 :where(h5, h6) {
@@ -106,7 +205,7 @@ body {
 }
 
 :where(strong, b) {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 :where(small) {
@@ -171,7 +270,8 @@ body {
   scroll-margin-top: var(--research-guide-offset, 1rem);
 }
 
-/* The skip link waits above the viewport and drops in on focus, above every layer. */
+/* The skip link waits above the viewport and drops in on focus, above every layer: the one box kept in the shell,
+   since it must read over anything (2 px corners). */
 .site-skip-link {
   position: fixed;
   z-index: var(--z-skip);
@@ -179,7 +279,7 @@ body {
   left: var(--ed-space-3);
   padding: var(--ed-space-3) var(--ed-space-4);
   border: 1px solid var(--obs-rule);
-  border-radius: var(--radius-control);
+  border-radius: var(--radius-record);
   background: var(--obs-surface);
   color: var(--obs-text);
   font-weight: 600;

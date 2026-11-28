@@ -1,13 +1,18 @@
 ---
-// Home "Current focus", set like an article abstract and rendered from src/data/project.mjs. No props.
+// Home "Current focus", set like an article abstract and rendered from src/data/project.mjs. One optional prop, number:
+// the museum caption number before the kicker (Home sets 02, 2026-11-28).
 // The text column holds the project label, the summary, the full research title and the onward link; the
-// article-information list beside it (the notes column on desktop) holds the material, the methods with their status
-// markers, the broader context and the status date. The question itself opens the Home title page above.
+// article-information list beside it (the notes column on desktop) holds the current question (version 1's first row,
+// back on 2026-11-26 now that the line under the name shows the affiliations again), the material, the methods with
+// their status markers, the broader context and the status date.
 // Keeps the hooks other checks read: current-focus-section, research-title-detail and focus-list.
 // Styles: src/styles/folio/pages/home.css.
 import Section from './Section.astro';
 import Marker from './Marker.astro';
-import { questionShort, formalTitle, focusSummary, targetMaterial, broaderContext, pathway, pathwayStatuses, methodsSummary, statusAsOf } from '../data/project.mjs';
+import { questionShort, question, formalTitle, focusSummary, targetMaterial, broaderContext, pathway, pathwayStatuses, methodsSummary, statusAsOf } from '../data/project.mjs';
+
+interface Props { number?: string; }
+const { number } = Astro.props;
 
 // The methods grouped by status in the words of methodsSummary ("SEM–EDS and EPMA in progress"), each led by its
 // status marker. The build stops if the list and methodsSummary ever drift apart.
@@ -18,11 +23,12 @@ const methods = pathwayStatuses
   .map(group => ({ value: statusSlug(group.status), text: `${group.labels.join(' and ')} ${group.status.toLowerCase()}` }));
 if (methods.map(group => group.text).join(' · ') !== methodsSummary) throw new Error('CurrentFocus: the methods list no longer matches methodsSummary in project.mjs');
 ---
-<Section id="current-focus-title" kicker="Current focus" title={questionShort} class="current-focus-section">
+<Section id="current-focus-title" number={number} kicker="Current focus" title={questionShort} class="current-focus-section">
   <p class="focus-summary">{focusSummary}</p>
   <details class="research-title-detail"><summary>Full research title</summary><p><cite>{formalTitle}</cite></p></details>
   <p class="focus-next"><a class="quiet-link" href="research.html#research-focus-title">Read the Orgueil research overview <span aria-hidden="true">→</span></a></p>
   <dl class="focus-list in-notes">
+    <div><dt class="kicker">Current question</dt><dd>{question}</dd></div>
     <div><dt class="kicker">Target material</dt><dd>{targetMaterial}</dd></div>
     <div>
       <dt class="kicker">Methods</dt>

@@ -1,8 +1,10 @@
-/* @owner WP2 · @budget 7KB · @important 0 · Visual effects dock, settings panel, FX toggle and the research coordinates readout */
-/* A 44 px button opens a level-2 panel (no blur) with a soft glow around it and the old glass highlight band and
-   glint. On phones the same panel lies in the navigation sheet instead (R3, owner decision E136). The FX switch
-   keeps the old site's glazed face, and its dot glows gold while the field is on; the coordinates rest dimmed in
-   Space and brighten under the pointer (owner, 2026-11-18: "all of my previous effects"). */
+/* @owner WP2 · @budget 11KB · @important 0 · Visual effects dock, settings panel, FX toggle and the research coordinates readout */
+/* The one persistent control: a borderless 18 px icon in a round 44 px hit area, on a soft lens, casting its
+   browser's old shadow as a shade pool under it (E139, E130); it opens a fragment of the sheet (no border, no blur)
+   with a soft glow around it and the old glass highlight as a top light and a glint hairline. On phones the same panel
+   lies in the navigation sheet instead (R3, owner decision E136). The FX switch is a row with its dot: the old glazed
+   face became a pool (warm while on) and the dot glows gold while the field is on; the coordinates rest dimmed in
+   Space and brighten under the pointer (owner, 2026-11-18: "all of my previous effects"; 2026-11-26: no boxes). */
 .obs-fx-dock {
   position: fixed;
   right: var(--ed-space-4);
@@ -10,58 +12,102 @@
   z-index: var(--z-dock);
 }
 
-.obs-fx-settings,
-.ambient-fx-toggle {
-  border: 1px solid var(--obs-control-border);
-  border-radius: var(--radius-control);
-  transition: background-color var(--ed-dur-1) var(--ed-ease-out);
-}
-
+/* The lens: the old glass face as a pool of the page ground, with a faint brass edge tone (the old gold inner
+   lines). Hovered, focused or open, a warm pool and a brass icon with a soft gold glow. */
 .obs-fx-settings {
+  position: relative;
   display: grid;
   place-items: center;
   width: 44px;
   height: 44px;
   padding: 0;
-  background-color: var(--obs-surface);
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--obs-paper) 80%, transparent) 30%, color-mix(in srgb, var(--obs-accent) 3%, transparent) 80%, transparent);
+  color: var(--obs-text);
 }
 
-.obs-fx-settings:hover,
-.obs-fx-settings[aria-expanded="true"],
-.ambient-fx-toggle:hover {
-  background-color: var(--obs-surface-hover);
+/* The shade pool under the icon: Chromium's 0 14px 32px at .18 (E139), Edge's 0 7px 16px at .16 (E130). */
+.obs-fx-settings::after {
+  content: "";
+  position: absolute;
+  inset: -32px;
+  z-index: -1;
+  background: radial-gradient(closest-side at 50% calc(50% + 14px), var(--obs-fx-shade), transparent);
+  pointer-events: none;
+}
+
+:where(html.is-edge-browser) .obs-fx-settings::after {
+  inset: -16px;
+  background: radial-gradient(closest-side at 50% calc(50% + 7px), var(--obs-fx-shade-edge), transparent);
 }
 
 .obs-fx-settings svg {
   width: 18px;
   height: 18px;
   stroke-width: 1.5;
+  transition: color var(--ed-dur-2) var(--ed-ease-out), filter var(--ed-dur-2) var(--ed-ease-out);
 }
 
+@media (forced-colors: none) {
+  .obs-fx-settings:is(:hover, :focus-visible, [aria-expanded="true"]) {
+    background: radial-gradient(closest-side, var(--obs-pool-warm), transparent);
+  }
+
+  .obs-fx-settings:is(:hover, :focus-visible, [aria-expanded="true"]) svg {
+    color: var(--obs-accent);
+    filter: drop-shadow(0 0 6px var(--obs-gold-glow));
+  }
+}
+
+/* The panel: a fragment of the sheet with no edge or corner; its face lies on its own layer, feathered 12 px on every
+   side, and its old soft glow (E010, 0 0 24px) is a light pool reaching 24 px past it, an oval rather than a box's
+   halo, so it never reads as a popover card. */
 .obs-fx-panel {
   position: absolute;
   right: 0;
   bottom: calc(100% + var(--ed-space-2));
+  isolation: isolate;
   width: 280px;
   margin: 0;
   padding: var(--ed-space-4);
-  border: 1px solid var(--obs-hairline);
-  border-radius: var(--radius-control);
-  background: var(--obs-surface);
-  box-shadow: 0 0 24px var(--obs-glow);
+  border: 0;
+  border-radius: 0;
+  background: none;
   font-size: var(--ed-small);
 }
 
-/* Floated, the legend sets as a row. */
+.obs-fx-dock > .obs-fx-panel::before,
+.obs-fx-dock > .obs-fx-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.obs-fx-dock > .obs-fx-panel::before {
+  background: var(--obs-surface);
+  mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent), linear-gradient(transparent, #000 12px, #000 calc(100% - 12px), transparent);
+  mask-composite: intersect;
+}
+
+.obs-fx-dock > .obs-fx-panel::after {
+  inset: -24px;
+  z-index: -2;
+  background: radial-gradient(closest-side, var(--obs-glow) 70%, transparent);
+}
+
+/* Floated, the legend sets as a row, in the one label style. */
 .obs-fx-panel legend {
   float: left;
   width: 100%;
   margin-block-end: var(--ed-space-3);
   padding: 0;
   color: var(--obs-muted);
-  font-size: var(--ed-label);
-  font-weight: 600;
-  letter-spacing: .08em;
+  font-size: var(--label-size);
+  font-weight: var(--label-weight);
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
 }
 
@@ -73,6 +119,9 @@
   width: 100%;
   min-height: 44px;
   padding: 0 var(--ed-space-3);
+  border: 1px solid transparent;
+  border-bottom-color: var(--obs-control-border);
+  border-radius: 0;
   background: transparent;
   font-weight: 600;
 }
@@ -96,20 +145,33 @@
   border-width: 5px;
 }
 
-/* Forced colours keep the rings above; elsewhere the switch and its dot carry light. */
+/* The switch is a text control (components/button.css): its words and dot over a 1 px beam, a 2 px brass beam while
+   the field is on. Forced colours keep the rings above and a system border; elsewhere the switch and its dot carry
+   light (E009): the old glazed face as a pool behind the words (not the whole row), warm while the field is on or
+   under the pointer, where the beam also lights brass to steel with its soft gold glow. */
 @media (forced-colors: none) {
   .ambient-fx-toggle {
-    background-image: var(--obs-fx-face);
-    box-shadow: var(--obs-touch-shadow);
+    background: radial-gradient(closest-side, var(--obs-pool), transparent) 0 50% / 8rem 100% no-repeat;
     color: var(--obs-fx-text);
-    transition-property: background-color, color, box-shadow;
+    transition-property: background-color, border-color, color, box-shadow;
     transition-duration: 160ms;
   }
 
   .ambient-fx-toggle.is-on {
-    background-image: var(--obs-fx-face-on);
-    box-shadow: var(--obs-fx-lift-on);
+    border-bottom-color: var(--obs-accent);
+    background: radial-gradient(closest-side, var(--obs-pool-warm), transparent) 0 50% / 8rem 100% no-repeat;
+    box-shadow: inset 0 -1px var(--obs-accent);
     color: var(--obs-fx-text-on);
+  }
+
+  .ambient-fx-toggle:is(:hover, :focus-visible):not(.is-on) {
+    border-bottom-color: transparent;
+    background: var(--obs-beam-lit) 0 100% / 100% 1px no-repeat border-box, radial-gradient(closest-side, var(--obs-pool-warm), transparent) 0 50% / 8rem 100% no-repeat;
+    box-shadow: var(--obs-beam-glow);
+  }
+
+  .ambient-fx-toggle.is-on:is(:hover, :focus-visible) {
+    box-shadow: inset 0 -1px var(--obs-accent), var(--obs-beam-glow);
   }
 
   .ambient-fx-toggle__dot {
@@ -136,7 +198,7 @@
 .research-coordinates {
   display: grid;
   margin-block-start: var(--ed-space-3);
-  border-top: 1px solid var(--obs-hairline);
+  background: var(--obs-fade-start) 0 0 / 100% 1px no-repeat;
   color: var(--obs-muted);
   font-size: var(--ed-caption);
   font-variant-numeric: lining-nums tabular-nums;
@@ -152,7 +214,45 @@
 
 .research-coordinates span {
   padding-block: var(--ed-space-2);
-  border-bottom: 1px solid var(--obs-hairline);
+  background: var(--obs-fade-start) 0 100% / 100% 1px no-repeat;
+}
+
+@media (forced-colors: active) {
+  .ambient-fx-toggle {
+    border-color: transparent;
+    border-bottom-color: ButtonText;
+  }
+
+  .ambient-fx-toggle.is-on {
+    border-bottom: 3px double Highlight;
+    margin-block-end: -2px;
+  }
+
+  .obs-fx-dock > .obs-fx-panel {
+    border: 1px solid CanvasText;
+    background: Canvas;
+  }
+
+  .obs-fx-dock > .obs-fx-panel::before,
+  .obs-fx-dock > .obs-fx-panel::after {
+    display: none;
+  }
+
+  .research-coordinates {
+    border-top: 1px solid CanvasText;
+  }
+
+  .research-coordinates span {
+    border-bottom: 1px solid CanvasText;
+  }
+
+  .obs-fx-settings {
+    border: 1px solid ButtonText;
+  }
+
+  .obs-fx-settings::after {
+    display: none;
+  }
 }
 
 /* Unseen and out of flow until docked. */
@@ -173,7 +273,10 @@
     max-width: calc(var(--page-max) + 2 * var(--page-pad));
     margin-inline: auto;
     padding: 0 var(--page-pad) var(--ed-space-6);
-    background: var(--obs-paper);
+    background:
+      linear-gradient(var(--obs-sheet), var(--obs-sheet)) 50% 0 / max(0px, calc(min(100%, calc(2 * var(--sheet-half))) - 2 * var(--sheet-fade))) 100% no-repeat,
+      linear-gradient(90deg, transparent, var(--obs-sheet-lift) 45%, var(--obs-sheet)) max(0px, calc(50% - var(--sheet-half) + var(--sheet-fade) / 2)) 0 / var(--sheet-fade) 100% no-repeat,
+      linear-gradient(270deg, transparent, var(--obs-sheet-lift) 45%, var(--obs-sheet)) min(100%, calc(50% + var(--sheet-half) - var(--sheet-fade) / 2)) 0 / var(--sheet-fade) 100% no-repeat;
   }
 
   .obs-fx-panel {
@@ -181,20 +284,19 @@
   }
 }
 
-/* The old glass highlight on the docked panel (E097, look-alike without blur): a band fading down from the top edge
-   and a glint along it, 20 px in from each side. */
+/* The old glass highlight on the docked panel (E097, look-alike without blur): a top light rising from nothing over
+   the feathered face, and the glint as the hairline under the legend (a caption's rule, not the panel's top edge),
+   fading out over 30 % at each end, on the face's layer. */
 @media (forced-colors: none) {
-  .obs-fx-dock > .obs-fx-panel {
-    background-image: var(--obs-glass-glint), var(--obs-glass-band);
-    background-position: 50% 0, 0 0;
-    background-size: calc(100% - 40px) 1px, auto;
-    background-repeat: no-repeat;
+  .obs-fx-dock > .obs-fx-panel::before {
+    background: var(--obs-glass-glint-soft) 50% 42px / calc(100% - 32px) 1px no-repeat, var(--obs-glass-rise), var(--obs-surface);
   }
 }
 
 /* Phones (R3, owner decision E136): observatory-interactions.js moves the panel into the navigation sheet after the
    theme toggle and hides the dock, as the old site did; a page without the header controller keeps the dock. In the
-   sheet the panel is a flat ruled block: the legend with the FX switch, the two intensities, then the coordinates. */
+   sheet the panel is a flat block under a fading rule: the legend with the FX switch, the two intensities, then the
+   coordinates. */
 @media (max-width: 760px) {
   :where(html[data-nav-ready]) .obs-fx-dock {
     display: none;
@@ -210,9 +312,8 @@
     margin-block-start: var(--ed-space-3);
     padding: 6px 2px 0;
     border: 0;
-    border-top: 1px solid var(--obs-hairline);
     border-radius: 0;
-    background: none;
+    background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat;
     box-shadow: none;
   }
 

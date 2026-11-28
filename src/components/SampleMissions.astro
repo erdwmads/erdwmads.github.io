@@ -6,8 +6,7 @@ import ScenePoster from './ScenePoster.astro';
 const first=missions.hayabusa2,stage=first.stages[0];
 ---
 <section class="sample-missions folio" data-sample-missions aria-labelledby="missions-title">
-  <span class="folio-section__number in-margin">01</span>
-  <p class="kicker">Sample-return missions</p>
+  <p class="kicker"><span class="folio-section__number tabular">01</span> Sample-return missions</p>
   <h2 id="missions-title">How asteroid samples reach Earth</h2>
   <EvidenceStatus kind="model">Illustrative reconstruction from published mission records: solar-system paths use heliocentric navigation vectors with enlarged bodies and spacecraft; launch and return paths interpolate published events, and local sampling scenes are illustrative.</EvidenceStatus>
   <p class="mission-intro">Two journeys, one question: what can returned material tell us about an asteroid? Follow the flight and sampling, then compare the mineral record with Orgueil.</p>
@@ -32,13 +31,14 @@ const first=missions.hayabusa2,stage=first.stages[0];
       </div>
       <span class="mission-chapter-position" data-mission-chapter-position aria-hidden="true">01 / {String(first.stages.length).padStart(2,'0')}</span>
     </div>
+    {/* Version 1's player: the chapter heading across the whole frame, then the scene beside the notebook. */}
+    <header class="mission-stage-heading">
+      <div><span class="mission-stage-number" data-mission-number>01 / {String(first.stages.length).padStart(2,'0')}</span><time data-mission-date>{stage.date}</time></div>
+      <h3 data-mission-title>{stage.title}</h3>
+      <p class="mission-purpose" data-mission-purpose></p>
+    </header>
     <div class="mission-body mission-workspace">
       <div class="mission-visual">
-        <header class="mission-stage-heading">
-          <div><span class="mission-stage-number" data-mission-number>01 / {String(first.stages.length).padStart(2,'0')}</span><time data-mission-date>{stage.date}</time></div>
-          <h3 data-mission-title>{stage.title}</h3>
-          <p class="mission-purpose" data-mission-purpose></p>
-        </header>
         <div class="mission-scene on-night">
           <div class="mission-scene-bar"><span data-mission-scene>Launch sequence</span><span>3D mission study</span></div>
           <div class="mission-viewport" data-mission-viewport tabindex="0" role="group" aria-label="Interactive mission model. Arrow keys rotate; Space plays or pauses; Escape stops playback.">

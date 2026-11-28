@@ -72,11 +72,14 @@ const sizesFor = (ratio: number) => [
     </div>
   </section>
 
-  <Section id="camera-title" title="Camera" class="photo-camera">
-    <h3><span class="kicker">Current setup</span></h3>
-    <p>
-      <s class="del">Hasselblad X2D</s><span class="visually-hidden"> (crossed out)</span> Pentax 6x7, SMC Pentax 67 90mm F2.8 Lens,
-      and Samsung Galaxy series smartphones.
-    </p>
+  {/* Version 1's two-column section (components/frames.css): the label beside the setup. */}
+  <Section id="camera-title" title="Camera" class="photo-camera two-col two-col--eyebrow">
+    <div class="photo-camera__setup two-col__body">
+      <h3>Current setup</h3>
+      <p>
+        <s class="del">Hasselblad X2D</s><span class="visually-hidden"> (crossed out)</span> Pentax 6x7, SMC Pentax 67 90mm F2.8 Lens,
+        and Samsung Galaxy series smartphones.
+      </p>
+    </div>
   </Section>
 </div>

@@ -94,20 +94,26 @@ export default async function checkResearch({ distDir, publicDir, fail, readDist
     fail("research.html: Analytical Pathway must show the planned EBSD-guided FIB step and the not-completed caveat");
   }
 
-  // Home: the title page states the canonical question straight after the masthead, so the full name and its
-  // pronunciation are read before it, as they are seen; the two ways onward are named Research and CV (the arrow
-  // after CV is hidden from assistive technology); the interest pills, hero glyphs and question row are retired.
-  if (!new RegExp(`</header>\\s*<p class="home-question">\\s*${escape(projectFacts.question)}\\s*</p>`).test(homePage)) {
-    fail("index.html: the title page must set the canonical research question from project.mjs right after the masthead");
+  // Home ((g) revert to version 1, 2026-11-26): the title page sets version 1's lead straight after the masthead, the
+  // department and the affiliation of src/data/home.ts on two lines, so the full name and its pronunciation are read
+  // before it, as they are seen; the canonical question opens the Current Focus facts as version 1's "Current
+  // question" row; the two ways onward are text controls named Research and CV (their glyphs are drawn by CSS and
+  // hidden from assistive technology); the hero glyphs are retired.
+  const { affiliations } = await import("../../src/data/home.ts");
+  if (!new RegExp(`</header>\\s*<p class="home-lead">\\s*${affiliations.map(escape).join("\\s*<br>\\s*")}\\s*</p>`).test(homePage)) {
+    fail("index.html: the title page must set version 1's lead (the two affiliation lines of src/data/home.ts) right after the masthead");
+  }
+  if (!new RegExp(`<dt class="kicker">Current question</dt><dd>\\s*${escape(projectFacts.question)}\\s*</dd>`).test(homePage)) {
+    fail("index.html: Current Focus must open with version 1's Current question row, the canonical question from project.mjs");
   }
   const homeActions = homePage.match(/<div class="home-actions[^"]*">([\s\S]*?)<\/div>/)?.[1] ?? "";
   const actionNames = [...homeActions.matchAll(/<a\b[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g)].map((match) => `${match[1]} ${visibleText(match[2])}`);
-  if (actionNames.join("|") !== "research.html Research|cv.html CV" || !/<a class="button" href="research\.html">/.test(homeActions)) {
-    fail(`index.html: the Home actions must be a primary Research button and a quiet CV link (found ${actionNames.join(", ") || "none"})`);
+  if (actionNames.join("|") !== "research.html Research|cv.html CV" || !/<a class="button" href="research\.html">/.test(homeActions) || !/<a class="button secondary" href="cv\.html">/.test(homeActions)) {
+    fail(`index.html: the Home actions must be a Research control and a secondary CV control (found ${actionNames.join(", ") || "none"})`);
   }
-  // The keyword pills are back as the old site drew them (owner, 2026-11-18, E052), checked below; the old pill wrapper,
-  // the hero card and the Current question row stay retired.
-  if (/class="(pills|hero|hero-card)"|Current question/.test(homePage)) fail("index.html: the old pill wrapper, the hero card and the Current question row are retired (spec §4.1)");
+  // The keywords (E052; small words since 2026-11-26) are checked below; the old pill wrapper and the hero card stay
+  // retired.
+  if (/class="(pills|hero|hero-card)"/.test(homePage)) fail("index.html: the old pill wrapper and the hero card are retired (spec §4.1)");
   // The keyword pills (E052) carry the words of src/data/home.ts, no more and no fewer, in their order, in a named list.
   const { keywords } = await import("../../src/data/home.ts");
   const pillList = homePage.match(/<ul class="home-keywords" aria-label="Keywords">([\s\S]*?)<\/ul>/)?.[1] ?? "";

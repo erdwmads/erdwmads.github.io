@@ -85,7 +85,8 @@
   min-height: 44px;
 }
 
-/* 44 px controls: the toolbar top right, previous and next at the sides. */
+/* 44 px controls: the toolbar top right, previous and next at the sides. Controls over the photographs keep a face,
+   the one place boxes stay (2026-11-26), with 2 px corners. */
 .obs-presentation button {
   display: inline-grid;
   place-items: center;
@@ -93,7 +94,7 @@
   min-height: 44px;
   padding: 0 var(--ed-space-3);
   border: 1px solid var(--obs-control-border);
-  border-radius: var(--radius-control);
+  border-radius: var(--radius-record);
   background: var(--obs-screen);
   color: var(--obs-text);
   font-weight: 600;
@@ -137,7 +138,7 @@
     white-space: nowrap;
     padding: 6px 10px;
     border: 1px solid var(--obs-glass-edge);
-    border-radius: var(--radius-control);
+    border-radius: var(--radius-record);
     background: var(--obs-surface);
     font: 400 .75rem/1.4 var(--type-sans);
     opacity: 0;

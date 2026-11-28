@@ -106,11 +106,18 @@ export default async function checkShell({ root, assetsDir, fail, readDistPage }
     if (sheet.some((rule) => rule.conditions.some((condition) => /pointer|hover/.test(condition)))) {
       fail("site.css: the header layout must follow the window width, not the pointer type");
     }
-    // The page backdrops (owner, 2026-11-18; components/backdrop.css) are CSS backgrounds of the bundle: Bennu at
-    // 1280 px and the phone tier, and the solar-system band.
+    // The page backdrops (components/backdrop.css) are named by the bundle only: Bennu's two tiers (the Research page's
+    // picture since 2026-11-28) and the solar-system band.
     for (const name of ["asteroid-bennu-1280.webp", "asteroid-bennu-800.webp", "Solar_System_true_color-1600.webp"]) {
       if (!["", '"', "'"].some((quote) => bundle.includes(`url(${quote}../img/${name}${quote})`))) fail(`site.css: the page backdrop url("../img/${name}") is missing`);
     }
+    // Each page's picture (2026-11-28, components/backdrop.css) is a luminance mask: every mask the bundle names exists
+    // (ten pictures at 1600 and 800 px), and none is ever a background image (a picture painted as one would be text's
+    // ground and an LCP candidate).
+    const masks = [...new Set([...bundle.matchAll(/url\(["']?\.\.\/img\/(backdrops\/[\w-]+-mask-\d+\.webp)["']?\)/g)].map((match) => match[1]))];
+    if (masks.length < 20) fail(`site.css: expected ten page pictures at two widths each, found ${masks.length} mask urls`);
+    for (const mask of masks) if (!fs.existsSync(path.join(assetsDir, "img", mask))) fail(`site.css: the page picture mask assets/img/${mask} is missing`);
+    if (/background(?:-image)?\s*:[^;}]*(?:backdrops\/|asteroid-bennu)/.test(bundle)) fail("site.css: a page picture is used as a background image; each page draws its picture as a mask only");
   }
   for (const name of ["asteroid-bennu.jpg", "asteroid-bennu-1280.webp", "asteroid-bennu-800.webp", "Solar_System_true_color.jpg", "Solar_System_true_color-1600.webp"]) {
     if (!fs.existsSync(path.join(assetsDir, "img", name))) fail(`assets/img/${name}: the page backdrop (or its source) is missing`);
@@ -119,8 +126,8 @@ export default async function checkShell({ root, assetsDir, fail, readDistPage }
   // montage's Commons page, whose address carries the file name (owner decision, 2026-11-18), so it is set aside.
   const distDir = path.join(root, "dist");
   for (const file of fs.readdirSync(distDir).filter((name) => name.endsWith(".html"))) {
-    const html = fs.readFileSync(path.join(distDir, file), "utf8").replace(/<p class="footer-credits">[\s\S]*?<\/p>/, "");
-    if (/asteroid-bennu(?:-\d+)?\.(?:webp|jpg)|Solar_System_true_color\./.test(html)) fail(`dist/${file}: names a page backdrop (backdrops are CSS backgrounds only, never preloaded)`);
+    const html = fs.readFileSync(path.join(distDir, file), "utf8").replace(/<p class="footer-credits"[^>]*>[\s\S]*?<\/p>/, "");
+    if (/asteroid-bennu(?:-\d+)?\.(?:webp|jpg)|Solar_System_true_color\.|backdrops\/[\w-]+-mask-/.test(html)) fail(`dist/${file}: names a page backdrop or a far plate mask (both are CSS only, never preloaded)`);
   }
 
   const siteHeaderScript = fs.readFileSync(path.join(assetsDir, "js", "site-header.js"), "utf8");

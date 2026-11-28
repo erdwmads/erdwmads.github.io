@@ -1,10 +1,10 @@
-/* @owner WP2 · @budget 2.5KB · @important 0 · Mineral cleavage overlay and html[data-polarising] effects */
+/* @owner WP2 · @budget 3.5KB · @important 0 · Mineral cleavage overlay and html[data-polarising] effects */
 /* Short effects that answer input (mineral-interactions.js; fine pointers with FX on). The cleavage is a brass
    fracture with a steel glow that the script draws once, in 620 ms, from the current page's link down the page edge.
    Polarising: while the reader turns the Home emblem, a ring takes the interference colour and fades at extinction,
-   every 90 degrees, as a grain does between crossed polars; the navigation marker follows it where there is one, and
-   the navigation and the page's buttons are outlined in that colour with a glow. Under keyboard focus the ring moves
-   inside the focus outline, which never fades. */
+   every 90 degrees, as a grain does between crossed polars; the navigation marker follows it where there is one, a
+   line under the navigation glows in that colour, and the page's buttons take it on their beams (E030). Under keyboard
+   focus the ring moves inside the focus outline, which never fades. */
 .mineral-cleavage {
   position: fixed;
   inset: 0;
@@ -43,14 +43,30 @@
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--mineral-colour) calc(var(--mineral-extinction) * 100%), transparent);
 }
 
-.header-actions .nav {
-  transition: outline-color 180ms var(--ed-ease-out), box-shadow 180ms var(--ed-ease-out);
+/* The navigation and the buttons carry no outline since 2026-11-26 (no boxes): while polarising, a 1 px line in the
+   interference colour runs under the navigation with the old 18 px glow, and each button's beam takes that colour
+   over a pool of it. */
+.header-actions .nav::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: var(--mineral-colour, transparent);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--mineral-colour, transparent) 26%, transparent);
+  opacity: 0;
+  transition: opacity 180ms var(--ed-ease-out);
+  pointer-events: none;
 }
 
-:where(html[data-polarising]) :is(.header-actions .nav, main .button) {
-  outline: 1px solid var(--mineral-colour);
-  outline-offset: 2px;
-  box-shadow: 0 0 18px color-mix(in srgb, var(--mineral-colour) 26%, transparent);
+:where(html[data-polarising]) .header-actions .nav::after {
+  opacity: 1;
+}
+
+:where(html[data-polarising]) main :is(.button, .button.secondary) {
+  border-bottom-color: var(--mineral-colour);
+  background-image: radial-gradient(closest-side, color-mix(in srgb, var(--mineral-colour) 26%, transparent), transparent);
 }
 
 :where(html[data-polarising]) .obs-nav-beam {

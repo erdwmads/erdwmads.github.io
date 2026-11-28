@@ -1,9 +1,12 @@
 // Research hub: the project facts from src/data/project.mjs on Research, Research Log and the graduation page.
-// Covers the Analytical Pathway (status chips as text, keyboard disclosure, ruled rows whose rails repeat the
-// status), the sub-questions, the key to the marks (a caption set apart from the steps), the comparison table (three
-// columns on desktop, labelled stacked cells on phones, and on phones the same table model, so every cell keeps its
-// own material's column header), the hanging lists on the section kicker's line on tablets, the Research Log
-// accession record and the trimmed archive hero.
+// Covers the Analytical Pathway (status chips as text, keyboard disclosure, version 1's columns as exhibits whose
+// marker shapes repeat the status), the sub-questions, the key to the marks (a caption set apart from the steps), the comparison
+// table (version 1's two framed columns on desktop with the row heads read but taking no width, labelled stacked cells
+// on phones, and the same table model at every width, so every cell keeps its own material's column header), the
+// question labels on tablets, the kickers at the column's edge, the Research Log dashboard with its strip of steps and
+// the trimmed archive hero. The layout pins follow the fusion of version 1's layouts with version 3 (2026-11-25) and,
+// since 2026-11-26, the lab site's language: the steps keep version 1's columns and geometry but no frame, gutter
+// ground or face.
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import * as project from '../src/data/project.mjs';
@@ -16,18 +19,22 @@ const statuses = project.pathway.map(step => step.status);
 // The chip text a sighted reader sees (the hidden 'Status: ' prefix is for screen readers).
 const chipText = locator => locator.evaluateAll(chips => chips.map(chip => [...chip.childNodes].filter(node => !node.classList?.contains('visually-hidden')).map(node => node.textContent).join('').trim()));
 
-// Ruled rows: every step has a 1 px rule under it, and in the full pathway a rail under its number whose line style
-// repeats the status (solid for in progress and next, dashed for planned work and the interpretation, which also
-// stands at least 32 px apart from the planned steps).
-const ruledRows = locator => locator.evaluate(list => [...list.children].map(item => {
-  const rail = getComputedStyle(item, '::before');
-  return { status: item.dataset.status, rule: getComputedStyle(item).borderBottomStyle + ' ' + parseFloat(getComputedStyle(item).borderBottomWidth), rail: rail.content === 'none' ? 'none' : rail.borderLeftStyle, gap: item.getBoundingClientRect().top - (item.previousElementSibling?.getBoundingClientRect().bottom ?? item.getBoundingClientRect().top) };
+// Version 1's columns as exhibits (2026-11-26): the steps stand in its grid with open gutters, no ground between
+// them and no face of their own (each opens under its fading start line); the status is small text after a marker
+// whose shape repeats it, never the colour alone: filled for in progress, open for next, dashed for planned work,
+// half-filled for the interpretation. The chip itself has no edge or wash.
+const cards = locator => locator.evaluate(list => [...list.children].map(item => {
+  const box = item.getBoundingClientRect(), chip = item.querySelector('.pathway-chip');
+  const chipStyle = getComputedStyle(chip), mark = getComputedStyle(chip, '::before');
+  const shape = mark.backgroundImage.includes('gradient') ? 'half' : mark.backgroundColor !== 'rgba(0, 0, 0, 0)' ? 'filled' : mark.borderTopStyle === 'dashed' ? 'dashed' : 'open';
+  return { status: item.dataset.status, top: Math.round(box.top), left: Math.round(box.left), width: Math.round(box.width), face: getComputedStyle(item).backgroundColor,
+    chipBox: chipStyle.borderTopStyle !== 'none' || chipStyle.backgroundColor !== 'rgba(0, 0, 0, 0)', round: mark.borderTopLeftRadius === '50%', shape };
 }));
-// From 761 px a compact row is one line: number, title and chip share a baseline row, with the dotted leader between
-// them.
-const oneLineRows = locator => locator.evaluate(list => [...list.children].every(item => {
-  const tops = [item.querySelector('.research-step-number'), item.querySelector('h3'), item.querySelector('.pathway-chip')].map(el => el.getBoundingClientRect());
-  return Math.abs(tops[0].bottom - tops[1].bottom) < 8 && Math.abs(tops[1].bottom - tops[2].bottom) < 8 && tops[1].right <= tops[2].left && getComputedStyle(item, '::after').borderBottomStyle === 'dotted';
+const gridOf = locator => locator.evaluate(list => ({ gap: getComputedStyle(list).columnGap, ground: getComputedStyle(list).backgroundColor, columns: getComputedStyle(list).gridTemplateColumns.split(' ').length, width: Math.round(list.getBoundingClientRect().width) }));
+// The compact strip (Research Log): rows of steps, each with its number and chip above its title.
+const cardRows = locator => locator.evaluate(list => [...list.children].map(item => {
+  const [number, title, chip] = [item.querySelector('.research-step-number'), item.querySelector('h3'), item.querySelector('.pathway-chip')].map(el => el.getBoundingClientRect());
+  return { top: Math.round(item.getBoundingClientRect().top), titleBelow: title.top >= Math.max(number.bottom, chip.bottom) - 1 };
 }));
 
 try {
@@ -52,17 +59,21 @@ try {
   await page.keyboard.press('Enter');
   assert.equal(await sem.locator('details').evaluate(details => details.open), true);
   assert.match(await sem.locator('dl').innerText(), /What it can answer[\s\S]*What it cannot establish[\s\S]*Brightness alone cannot identify dolomite/i);
-  const columns = await sem.locator('dl > div').evaluateAll(items => items.map(item => Math.round(item.getBoundingClientRect().top)));
-  assert.equal(columns[0], columns[1], 'the opened scope sets its two answers side by side');
+  const answers = await sem.locator('dl > div').evaluateAll(items => items.map(item => item.getBoundingClientRect()).map(box => ({ top: Math.round(box.top), bottom: Math.round(box.bottom), left: Math.round(box.left) })));
+  assert.ok(answers[1].top >= answers[0].bottom && answers[0].left === answers[1].left, 'the opened scope stacks its two answers inside the card, as version 1 did');
   await page.keyboard.press('Space');
   assert.equal(await sem.locator('details').evaluate(details => details.open), false);
-  const rows = await ruledRows(pathway);
-  assert.ok(rows.every(row => row.rule === 'solid 1'), JSON.stringify(rows));
-  assert.deepEqual(rows.map(row => row.rail), rows.map(row => (['planned', 'interpretation'].includes(row.status) ? 'dashed' : 'solid')), 'rails repeat the status');
-  assert.ok(rows.at(-1).status === 'interpretation' && rows.at(-1).gap >= 31, 'the interpretation stands apart');
-  // The number hangs in the margin column, left of the title; the chip sits in the notes column, right of it.
+  const grid = await gridOf(pathway), steps = await cards(pathway);
+  assert.ok(grid.columns === 3 && parseFloat(grid.gap) >= 32 && grid.ground === 'rgba(0, 0, 0, 0)', `three exhibits a row in open gutters with no ground between them: ${JSON.stringify(grid)}`);
+  assert.ok(steps.every(step => step.face === 'rgba(0, 0, 0, 0)' && !step.chipBox), 'no step and no status chip draws a face or an edge');
+  assert.ok(steps[0].top === steps[1].top && steps[1].top === steps[2].top && steps[3].top > steps[0].top, 'three exhibits a row');
+  assert.ok(steps.every(step => step.round), 'every status marker is a circle (a pathway status, not an evidence square)');
+  assert.deepEqual(steps.map(step => step.shape), steps.map(step => ({ 'in-progress': 'filled', next: 'open', planned: 'dashed', interpretation: 'half' })[step.status]), 'the marker shape repeats the status');
+  assert.ok(steps.at(-1).status === 'interpretation' && steps.at(-1).width >= grid.width - 3, 'the interpretation, alone on its row, spans it');
+  // In a step the number and the chip share its first line, the number at the left and the chip at the right; the
+  // title stands under them.
   const geometry = await pathway.locator('> li').first().evaluate(item => ['.research-step-number', 'h3', '.pathway-chip'].map(selector => item.querySelector(selector).getBoundingClientRect()));
-  assert.ok(geometry[0].right < geometry[1].left && geometry[1].right < geometry[2].left, 'number, title and chip in that order across the row');
+  assert.ok(Math.abs(geometry[0].top + geometry[0].height / 2 - (geometry[2].top + geometry[2].height / 2)) < 4 && geometry[0].right < geometry[2].left && geometry[1].top >= geometry[2].bottom - 1, 'number and chip on the first line, the title under them');
   // The key to the marks: a caption (label capitals, not a step heading) at least 40 px below the last step, then five
   // rows, each mark followed by its word.
   const key = page.locator('.marks-key');
@@ -79,11 +90,14 @@ try {
   assert.match(await table.innerText(), /Ryugu and Bennu returned samples[\s\S]*do not establish that Orgueil came from Ryugu, Bennu[\s\S]*do not establish Orgueil’s parent body/);
   const cells = await table.locator('tbody tr').first().evaluate(row => [...row.children].map(cell => cell.getBoundingClientRect()).map(box => ({ left: Math.round(box.left), top: Math.round(box.top), width: Math.round(box.width) })));
   assert.equal(cells.length, 3);
-  assert.ok(cells[0].top === cells[1].top && cells[1].top === cells[2].top && cells[0].left < cells[1].left && cells[1].left < cells[2].left, 'three columns on desktop');
+  // Version 1's two framed columns: the row head stays in the table (read by assistive technology) but takes no width;
+  // the two materials stand side by side and share the width equally, each cell repeating its row's label.
+  assert.ok(cells[0].width <= 1 && cells[1].top === cells[2].top && cells[1].left < cells[2].left, `two columns on desktop, the row head taking no width: ${JSON.stringify(cells)}`);
   assert.ok(Math.abs(cells[1].width - cells[2].width) <= 2, 'the two materials share the width equally');
+  assert.deepEqual(await table.locator('tbody tr').first().locator('.comparison-table__row-label').allInnerTexts(), ['WHAT IT CAN SHOW', 'WHAT IT CAN SHOW'], 'each cell shows its row label');
   assert.equal(await table.locator('.comparison-table__cell-label:visible').count(), 0, 'cell labels only on phones');
   assert.equal(await page.locator('a[href="ryugu-bennu.html"]').count() > 0, true);
-  console.log('PASS Research: canonical question, sub-questions, seven status chips, keyboard disclosure, ruled rows with status rails, key, comparison table');
+  console.log('PASS Research: canonical question, sub-questions, seven status chips, keyboard disclosure, exhibits with status marker shapes, key, two-column comparison table');
 
   await page.goto(`${base}/research-log.html`, { waitUntil: 'networkidle' });
   assert.equal(await page.locator('h1').innerText(), project.displayTitle);
@@ -101,21 +115,25 @@ try {
   const archive = await page.locator('.research-log-archive').textContent();
   for (const term of ['Mission Log', 'Mission Index', 'SOL', 'Figures']) assert.ok(archive.includes(term), term);
   assert.doesNotMatch(await page.locator('main').innerText(), /\bSOL\s*\d|Mission Log \d{2,}|\b20\d\d[-/]\d\d[-/]\d\d\b|\bLOG\s*\d{3}\b/, 'no archive metadata on the public page');
-  for (const [width, height] of [[1440, 1000], [1024, 900], [820, 1000]]) {
+  // Version 1's strip of steps: seven a row from 1200 px, four from 761 px; in each step the title stands under its
+  // number and chip.
+  for (const [width, height, perRow] of [[1440, 1000, 7], [1024, 900, 4], [820, 1000, 4]]) {
     await page.setViewportSize({ width, height });
-    assert.ok(await oneLineRows(compact), `compact pathway rows are one line with a leader at ${width}`);
+    const rows = await cardRows(compact);
+    assert.ok(rows.slice(0, perRow).every(row => row.top === rows[0].top) && (rows.length <= perRow || rows[perRow].top > rows[0].top) && rows.every(row => row.titleBelow), `compact pathway at ${width}: ${perRow} steps a row, titles under number and chip (${JSON.stringify(rows)})`);
   }
-  // Phones: the title starts on the narrow 40 px hang and keeps its whole width; the chip moves under it.
+  // Phones, as version 1: one row per step, the number on the narrow hang, the title keeping its box and the chip at the
+  // right on the title's line.
   for (const width of [390, 320]) {
     await page.setViewportSize({ width, height: 900 });
     const rows = await compact.evaluate(list => [...list.children].map(item => {
       const title = item.querySelector('h3');
-      const box = title.getBoundingClientRect();
-      return { hang: box.left - list.getBoundingClientRect().left, fits: title.scrollWidth <= title.clientWidth + 1 && box.right <= list.getBoundingClientRect().right + 1, chipBelow: item.querySelector('.pathway-chip').getBoundingClientRect().top >= box.bottom - 1 };
+      const box = title.getBoundingClientRect(), chip = item.querySelector('.pathway-chip').getBoundingClientRect();
+      return { hang: box.left - list.getBoundingClientRect().left, fits: title.scrollWidth <= title.clientWidth + 1 && box.right <= list.getBoundingClientRect().right + 1, chipRight: chip.left >= box.right - 1 && chip.top < box.bottom && chip.bottom > box.top };
     }));
-    assert.ok(rows.every(row => row.hang <= 56 && row.fits && row.chipBelow), `compact pathway at ${width}: titles on the 40 px hang, inside their box, chips below (${JSON.stringify(rows)})`);
+    assert.ok(rows.every(row => row.hang <= 56 && row.fits && row.chipRight), `compact pathway at ${width}: titles on the narrow hang, inside their box, chips at the right (${JSON.stringify(rows)})`);
   }
-  console.log('PASS Research Log: display title, accession facts, unmarked project status, compact pathway on one line per step, archive description without metadata, two archive links');
+  console.log('PASS Research Log: display title, accession facts, unmarked project status, compact pathway as a strip of steps, archive description without metadata, two archive links');
 
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(`${base}/research-graduation.html`, { waitUntil: 'networkidle' });
@@ -163,11 +181,13 @@ try {
         // The table model is the same at every width: the empty corner cell stays (hidden with display: none it would
         // shift the column headers one column left), so each cell keeps its own material's header.
         assert.match(await view.locator('table.comparison-table').ariaSnapshot(), /- row "[^"\n]*":\n\s*- cell\n\s*- columnheader "Research material[^\n]*\n\s*- columnheader "Comparison materials/, `${theme} ${width}: the comparison header row keeps its corner cell before the two material headers`);
-        // Tablets: the Q labels, step numbers and section kickers share one hanging line, the folio's second column.
-        // Phones: the labels hang in a narrow 40 px column, so the text keeps a reading measure.
+        // Tablets: the section kickers start at the column's edge, the number inside them as version 1's eyebrows set
+        // it (2026-11-25); the questions hang after their Q labels, and the step titles stand on the exhibit's edge
+        // under its start line (no card inset since 2026-11-26). Phones: the labels hang in a narrow 40 px column, so
+        // the text keeps a reading measure.
         if (width > 760 && width < 1200) {
-          const lines = await view.evaluate(() => ['.research-question > .kicker', '.research-pathway > .kicker', '.research-subquestions h3', '.analytical-pathway--full h3'].map(selector => Math.round(document.querySelector(selector).getBoundingClientRect().left)));
-          assert.ok(Math.max(...lines) - Math.min(...lines) <= 1, `${theme} ${width}: kickers, questions and step titles start on one line (${lines.join(', ')})`);
+          const lines = await view.evaluate(() => ['.research-question > .kicker', '.research-pathway > .kicker', '.research-subquestions', '.research-subquestions h3', '.analytical-pathway--full > li', '.analytical-pathway--full h3'].map(selector => Math.round(document.querySelector(selector).getBoundingClientRect().left)));
+          assert.ok(Math.abs(lines[0] - lines[1]) <= 1 && lines[3] - lines[2] >= 32 && lines[3] - lines[2] <= 48 && Math.abs(lines[5] - lines[4]) <= 1 && lines[0] <= lines[2], `${theme} ${width}: kickers start at the column's edge, questions hang after their labels, step titles stand on the exhibit's edge (${lines.join(', ')})`);
         } else if (width <= 760) {
           const hangs = await view.evaluate(() => ['.research-subquestions', '.analytical-pathway--full'].map(selector => { const list = document.querySelector(selector); return Math.round(list.querySelector('h3').getBoundingClientRect().left - list.getBoundingClientRect().left); }));
           assert.ok(hangs.every(hang => hang <= 56), `${theme} ${width}: phone labels hang at most 56 px (${hangs.join(', ')})`);
@@ -177,7 +197,7 @@ try {
     }
   }
   assert.deepEqual(errors, []);
-  console.log('PASS layout: no sideways scroll or overflow at 390, 820, 1024 and 1440 in both themes, 12px chip floor, labelled stacked comparison cells with their own column headers on phones, one hanging line on tablets, a narrow hang on phones');
+  console.log('PASS layout: no sideways scroll or overflow at 390, 820, 1024 and 1440 in both themes, 12px chip floor, labelled stacked comparison cells with their own column headers on phones, question labels and step titles on the exhibit edge on tablets, a narrow hang on phones');
 } finally {
   await browser.close();
 }

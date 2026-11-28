@@ -42,7 +42,7 @@ export const question = 'What controlled dolomite formation in the Orgueil CI1 c
 export const displayTitle = 'Dolomite in the Orgueil CI1 Chondrite';
 
 /** Formal research title. */
-export const formalTitle = 'Astromineralogical Study of Ca–Mg Carbonates Reported as Dolomite in the Orgueil CI1 Chondrite: Crystallographic Identification and Implications for Parent-Body Aqueous Alteration';
+export const formalTitle = 'Ordered Dolomite in the Orgueil CI1 Chondrite: An Astromineralogical Study of Its Composition, Structure and Low-Temperature Formation during Parent-Body Aqueous Alteration';
 
 export const period = '2026/04 – present';
 export const projectStatus = 'Ongoing';

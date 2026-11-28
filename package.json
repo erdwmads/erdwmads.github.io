@@ -15,6 +15,8 @@
     "check:site": "node scripts/check-site.mjs",
     "images:derive": "node scripts/generate-image-derivatives.mjs",
     "images:backgrounds": "node scripts/generate-site-backgrounds.mjs",
+    "images:imagery": "node scripts/derive-imagery.mjs",
+    "images:verify": "node scripts/derive-imagery.mjs verify",
     "audit:images": "node scripts/audit-images.mjs",
     "audit:css": "node scripts/audit-css.mjs",
     "audit:css:check": "node scripts/audit-css.mjs --check",

@@ -183,50 +183,58 @@ export const contract = [
   },
   // The second effects pass (owner, 2026-11-18: "all of my previous effects"): the workspaces' light at 2f20d7e.
   {
-    name: "the planetary buttons rest on the old metal face, ease their edge in 180 ms and shadow in 140 ms, edge in steel under the pointer and take the darker active face under brass when chosen (E033)",
+    name: "the planetary text controls rest on a pool in the old metal face's tones, ease their beam in 180 ms and glow in 140 ms, light brass to steel under the pointer and hold a 2 px brass beam over a warm pool when chosen (E033, 2026-11-26)",
     has: [
-      rule(".planetary :is(.planetary-materials, .planetary-toolbar, .planetary-mineral-tabs) :is(.button, .icon-button)", "background-image: var(--obs-control-face)", "transition: border-color 180ms ease-out, box-shadow 140ms ease-out"),
-      rule('.planetary .button[aria-pressed="true"]', "border-color: var(--obs-accent)", "background-image: var(--obs-control-active-face)", "text-decoration: underline 2px"),
-      rule(/:is\(\.button, \.icon-button\):hover:not\(\[aria-pressed="true"\], :disabled\)$/, "border-color: var(--obs-edge-cool)", { media: "(hover: hover) and (forced-colors: none)" }),
-      rule(".planetary-toolbar .icon-button:active:not(:disabled)", "box-shadow: var(--obs-control-pressed)"),
+      rule(".planetary :is(.planetary-materials, .planetary-toolbar, .planetary-mineral-tabs) :is(.button, .icon-button)", "background-image: radial-gradient(closest-side, var(--obs-pool), transparent)", "transition: border-color 180ms ease-out, box-shadow 140ms ease-out, background-color 180ms ease-out"),
+      rule('.planetary .button[aria-pressed="true"]', "border-bottom-color: var(--obs-accent)", "background-image: radial-gradient(closest-side, var(--obs-pool-warm), transparent)", "box-shadow: inset 0 -1px var(--obs-accent)", "color: var(--obs-accent)"),
+      rule(/^\.button:hover:not\(:disabled, \[aria-disabled="true"\], \[aria-pressed="true"\], \[aria-current="page"\], \[aria-selected="true"\]\)$/, "background: var(--obs-beam-lit) 0 100% / 100% 1px no-repeat border-box, radial-gradient(closest-side, var(--obs-pool-warm), transparent)", { media: "(hover: hover) and (forced-colors: none)" }),
       rule(".planetary-ci", "background-image: none", { media: "(forced-colors: active), print" })
-    ]
-  },
-  {
-    name: "with the effects on, the chosen planetary label glows brass and the chosen mineral tab steel; the Planetary CI panel is glazed (E034, E042)",
-    has: [
-      rule('.planetary[data-focus-fx="on"] .planetary-label[aria-pressed="true"]', "border-left-color: var(--obs-accent)", "box-shadow: inset 1px 0 var(--obs-accent), 0 0 12px color-mix(in srgb, var(--obs-accent) 24%, transparent)"),
-      rule('.planetary[data-focus-fx="on"] .planetary-mineral-tabs > [aria-pressed="true"]', "box-shadow: var(--obs-control-shadow), 0 0 14px color-mix(in srgb, var(--obs-edge-cool) 14%, transparent)"),
-      rule(".planetary-ci", "background-image: var(--obs-glass-face)", { media: null })
-    ]
-  },
-  {
-    name: "the sample missions' tabs, steps, player and secondary controls sit on glass; the chosen mission carries a brass wash under a brass rule, the current chapter a faint brass wash; Play stays the primary (E035)",
-    has: [
-      rule(".mission-player", "background-image: var(--obs-glass-face)", { media: null }),
-      rule(".sample-missions .mission-selector [aria-selected=\"true\"]", "background-image: linear-gradient(115deg, var(--obs-gold-glow), transparent), var(--obs-glass-face)", { media: null }),
-      rule(".mission-selector [aria-selected=\"true\"]::before", "border-top: 2px solid var(--obs-accent)"),
-      rule(".mission-chapters [aria-current=\"step\"]", "background-color: color-mix(in srgb, var(--obs-accent) 12%, transparent)"),
-      rule(".mission-player", "background-image: none", { media: "(forced-colors: active), print" })
     ],
+    lacks: [rule(".planetary .button", "border-radius: var(--radius-control)")]
+  },
+  {
+    name: "with the effects on, the chosen planetary label glows brass under its 2 px brass beam (no frame since 2026-11-28) and the chosen mineral tab's beam glows steel; the Planetary CI panel keeps its glaze on a layer feathered 40 px in from every edge, with a glint hairline and no border (E034, E042, 2026-11-26)",
+    has: [
+      rule(".planetary-label[aria-pressed=\"true\"]", "border-bottom-color: var(--obs-accent)", "box-shadow: inset 0 -1px var(--obs-accent)", "color: var(--obs-accent)", { media: null }),
+      rule('.planetary[data-focus-fx="on"] .planetary-label[aria-pressed="true"]', "box-shadow: inset 0 -1px var(--obs-accent), 0 6px 12px -4px color-mix(in srgb, var(--obs-accent) 40%, transparent)"),
+      rule('.planetary[data-focus-fx="on"] .planetary-mineral-tabs > [aria-pressed="true"]', "box-shadow: inset 0 -1px var(--obs-accent), 0 7px 14px -7px color-mix(in srgb, var(--obs-edge-cool) 40%, transparent)"),
+      rule(".planetary-ci::before", "background: var(--obs-glass-face), var(--obs-plate-night)", "mask-composite: intersect", { media: null }),
+      rule(".planetary-ci::after", "background: var(--obs-glass-glint) 50% 0 / calc(100% - 80px) 1px no-repeat", { media: null }),
+      rule(".planetary-ci::before", "display: none", { media: "(forced-colors: active), print" })
+    ],
+    lacks: [rule(".planetary-ci", "border: 1px solid var(--obs-hairline)", { media: null }), rule(".planetary-stage", "border-radius: var(--radius-cell)"), rule(".planetary-label[aria-pressed=\"true\"]", "border-color: var(--obs-text)", { media: null })]
+  },
+  {
+    // The lab site's language (2026-11-26): the old glass face is a resting pool on each control, the chosen mission's
+    // brass wash a warm pool and its full brass edge a 2 px brass beam; the player has no frame and its plate is a print.
+    name: "the sample missions' tabs, steps and secondary controls rest on pools in the glass tones; the chosen mission carries a warm pool over a 2 px brass beam, the current chapter a warm pool over its ink rule; the scene is a mounted print; Play stays the primary (E035)",
+    has: [
+      rule(".sample-missions .mission-selector [aria-selected=\"true\"]", "border-bottom-color: var(--obs-accent)", "background-image: radial-gradient(closest-side, var(--obs-pool-warm), transparent)", "box-shadow: inset 0 -1px var(--obs-accent)", { media: null }),
+      rule(".mission-selector button", "border-bottom-color: var(--obs-control-border)", "border-radius: 0", "transition: color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease"),
+      rule(".mission-chapters [aria-current=\"step\"]", "background: radial-gradient(closest-side, var(--obs-pool-warm), transparent)", "box-shadow: inset 0 -2px var(--obs-text)"),
+      rule(".mission-scene", "box-shadow: var(--obs-print-drop)", { media: null }),
+      text("--obs-print-drop: var(--obs-print-shadow)"),
+      rule(".sample-missions .mission-selector [aria-selected=\"true\"]", "background-image: none", { media: "(forced-colors: active), print" })
+    ],
+    lacks: [rule(".mission-player", "border"), rule(".mission-player", "background-image")],
     check(source) {
-      assert.match(source, /\.sample-missions :is\(\.mission-selector button, \.mission-story li button, \.mission-transport \.icon-button, \.mission-share \.button\)\s*\{[^}]*background-image: var\(--obs-glass-face\);[^}]*transition: color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease/, "the glazed controls ease in 160 ms");
+      assert.match(source, /\.sample-missions :is\(\.mission-selector button, \.mission-story li button, \.mission-transport \.icon-button, \.mission-share \.button\)\s*\{[^}]*background-image: radial-gradient\(closest-side, var\(--obs-pool\), transparent\);[^}]*transition: color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease/, "the controls' pools ease in 160 ms");
     }
   },
   {
-    name: "the Origins switch slides its highlighted block in 220 ms over two equal options; the icon buttons take the metal face under the pointer; the track fills with brass to the chapter's progress (E036, E037)",
+    name: "the Origins switch slides its old highlighted block as a 2 px brass beam with its glow in 220 ms under two equal text options; the icon buttons ease their beam and glow in 160 ms (the old metal hover face is the warm pool of surface-light); the track fills with brass to the chapter's progress (E036, E037, 2026-11-26)",
     has: [
-      rule(".segmented", "position: relative", "isolation: isolate", "display: grid", "grid-auto-columns: 1fr"),
-      rule(".segmented::before", "position: absolute", "z-index: -1", "width: 50%", "background: var(--obs-highlight)", "transition: transform 220ms cubic-bezier(.2, 0, .38, .9)", { media: null }),
+      rule(".segmented", "position: relative", "isolation: isolate", "display: grid", "grid-auto-columns: 1fr", "background: linear-gradient(var(--obs-control-border), var(--obs-control-border)) 0 100% / 100% 1px no-repeat"),
+      rule(".segmented::before", "position: absolute", "inset: auto auto 0 0", "width: 50%", "height: 2px", "background: var(--obs-accent)", "box-shadow: 0 0 9px var(--obs-gold-glow)", "transition: transform 220ms cubic-bezier(.2, 0, .38, .9)", { media: null }),
       rule(".segmented:has(> :last-child[aria-pressed=\"true\"])::before", "transform: translateX(100%)"),
-      rule(".observatory .icon-button:hover:not(:disabled)", "background-image: var(--obs-metal)", { media: "(hover: hover) and (forced-colors: none)" }),
+      rule(".observatory .icon-button", "transition: color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease, background-color 160ms ease"),
       rule(".transport input", "appearance: none", "background: linear-gradient(to right, var(--obs-accent) calc(var(--chapter-progress, 0) * 100%), var(--obs-hairline) 0) center / 100% 3px no-repeat", { media: "(forced-colors: none)" }),
       rule(".transport input::-webkit-slider-thumb", "background: var(--obs-accent)", "box-shadow: 0 0 0 1px var(--obs-accent)", { media: "(forced-colors: none)" }),
       // Firefox draws the same brass bead (restored once the size limit stopped removing effects, owner 2026-11-18).
       rule(".transport input::-moz-range-thumb", "width: 10px", "height: 10px", "background: var(--obs-accent)", "box-shadow: 0 0 0 1px var(--obs-accent)", { media: "(forced-colors: none)" }),
       rule(".segmented::before", "display: none", { media: "(forced-colors: active), print" })
     ],
-    lacks: [rule(".observatory .icon-button:active", "transform")]
+    lacks: [rule(".observatory .icon-button:active", "transform"), rule(".segmented", "border-radius")]
   },
   {
     name: "the Origins sources open over the old dark screen (no blur: not on the blur list), the scene hint keeps its legibility shadow, and Explore sits on the old soft shadow on phones and touch screens (E038, E135, E043)",
@@ -239,10 +247,10 @@ export const contract = [
     lacks: [rule(".sources-dialog::backdrop", "backdrop-filter")]
   },
   {
-    name: "the image inspector's chosen region reads in brass and a hovered one edges in brass; a gold beam stands at the chosen region and slides in 240 ms only with the effects on, motion allowed and from 761 px (E041, E108)",
+    name: "the image inspector's chosen region reads in brass on a warm pool and a hovered one lights a pool (its old brass edge, 2026-11-26); a gold beam stands at the chosen region and slides in 240 ms only with the effects on, motion allowed and from 761 px (E041, E108)",
     has: [
       rule('.inspector-regions [aria-pressed="true"]', "color: var(--obs-accent)"),
-      rule(".inspector-regions button:hover", "box-shadow: inset 0 0 0 1px var(--obs-accent)", { media: "(hover: hover) and (forced-colors: none)" }),
+      rule('.inspector-regions button:hover:not([aria-pressed="true"])', "background: var(--obs-fade-start) 0 100% / 100% 1px no-repeat, radial-gradient(closest-side, var(--obs-pool-hover), transparent) 0 50% / min(100%, 8rem) 100% no-repeat", { media: "(hover: hover) and (forced-colors: none)" }),
       rule(".research-scale .inspector-regions::after", "position: absolute", "top: calc(var(--i) * 44px)", "width: 2px", "background: var(--obs-accent)", "box-shadow: 0 0 9px var(--obs-gold-glow)", "pointer-events: none", { media: null }),
       rule(".research-scale .inspector-regions::after", "transition: top 240ms cubic-bezier(.2, .7, .2, 1), left 240ms cubic-bezier(.2, .7, .2, 1)", { media: "(prefers-reduced-motion: no-preference) and (min-width: 761px)" }),
       rule(".research-scale .inspector-regions::after", "display: none", { media: "(forced-colors: active), print" })
@@ -250,5 +258,14 @@ export const contract = [
     check(source) {
       assert.match(source, /:where\(html:not\(\.ambient-fx-disabled, \.mads-power-low\)\) \.research-scale \.inspector-regions::after/, "the beam slides only with the effects on and outside low power");
     }
+  },
+  {
+    name: "the 3-D mission scene's caption lies in the print's top margin on the night ground, with no rule or face under it (not a title bar; 2026-11-28)",
+    has: [rule(".mission-scene-bar", "display: flex", "color: var(--obs-muted)", { media: null })],
+    lacks: [rule(".mission-scene-bar", "border-bottom: 1px solid var(--obs-hairline)")]
+  },
+  {
+    name: "a mission tab's agency stays muted under the kicker's restored accent (2026-11-28)",
+    has: [rule(".mission-selector .mission-agency", "color: var(--obs-muted)", { media: null })]
   }
 ];

@@ -1,4 +1,4 @@
-/* @owner WP2 · @budget 7.5KB · @important 0 · Interface 2046 layer: orbit mechanics, the spine (.ui2046-rail) and its position tick (.ui2046-progress) */
+/* @owner WP2 · @budget 11KB · @important 0 · Interface 2046 layer: orbit mechanics, the spine (.ui2046-rail) and its position tick (.ui2046-progress) */
 /* Interface 2046, the instrument layer (interface-2046.js; never created at 760 px and below): the glowing orbit
    diagram behind the content while FX is on (from 901 px; Immersive, the default, at .9 throughout, Standard quieter
    to 1120 px), from 901 px the spine, a vertical running head beside a 1 px track whose ink tick follows the scroll,
@@ -147,9 +147,9 @@
   gap: .6em;
   padding-right: var(--ed-space-2);
   color: var(--obs-muted);
-  font-size: var(--ed-runhead);
-  font-weight: 600;
-  letter-spacing: .16em;
+  font-size: var(--label-size);
+  font-weight: var(--label-weight);
+  letter-spacing: var(--label-track);
   line-height: 1;
   text-transform: uppercase;
   writing-mode: vertical-rl;
@@ -226,6 +226,96 @@
 
 :where(html.is-edge-page-exiting) :is(.ui2046-layer, .ui2046-progress, .is-edge-teardown) {
   visibility: hidden;
+}
+
+/* The far plane keeps out of the reading column (2026-11-26): from 1200 px the orrery stands at the right edge of the
+   window, beside the headline and lead rather than behind them, at its own size from 1650 px (up to 9 % smaller
+   between); its strength, glow and parts are unchanged. */
+@media (min-width: 1200px) {
+  .ui2046-solar-system {
+    right: clamp(.5rem, 2vw, 2rem);
+    width: min(40vw, 660px);
+  }
+}
+
+/* Calmer chrome (2026-11-26): the spine and its tick come in over the first 160 px of scroll, so the opening view
+   shows the page and the one persistent control; a page too short to scroll keeps them at rest. Browsers without
+   scroll-driven animations, and reduced motion (states/motion.css), show them at rest. */
+@keyframes rail-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  .ui2046-rail,
+  .ui2046-progress > span::after {
+    animation: rail-in linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 160px;
+  }
+}
+
+/* Home (2026-11-28): the spine, its tick and the reading beam join after the opening, from 85 % of its height
+   (--open-h, pages/home-opening.css) to 160 px past it. Under reduced motion (states/motion.css) and without
+   scroll-driven animations, home-path.js sets html[data-home-opening] and they wait while the name is in view. */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .ui-page-home .ui2046-rail,
+    .ui-page-home .ui2046-progress,
+    .ui-page-home .ui2046-progress > span::after {
+      animation: rail-in linear both;
+      animation-timeline: scroll(root);
+      animation-range: calc(var(--open-h) * .85) calc(var(--open-h) + 160px);
+    }
+  }
+}
+
+html[data-home-opening="in"] .ui-page-home :is(.ui2046-rail, .ui2046-progress) {
+  opacity: 0;
+}
+
+/* The orrery settles out of the reading column after the opening view (2026-11-28): over the scroll from 35 to 95 %
+   of the window height, the part of the diagram over the text column (--orrery-column, measured from the diagram's
+   own left edge) fades to 30 % of its strength behind a 64 px feather, while the part in the margin keeps its full
+   strength. The opening view, the route light and the glows are unchanged (E025-E028); no line of scrolled text lies
+   on the orbits or their labels. Without scroll-driven animations, and under reduced motion (states/motion.css), it
+   stays as it is. */
+@property --orrery-settle {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
+@keyframes orrery-settle {
+  to {
+    --orrery-settle: .3;
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  .ui2046-solar-system {
+    --orrery-column: calc(min(100vw - var(--page-pad), 50vw + var(--page-max) / 2) - 100vw + clamp(2rem, 5vw, 6rem) + min(44vw, 660px));
+    mask-image: linear-gradient(90deg, rgb(0 0 0 / var(--orrery-settle)) var(--orrery-column), #000 calc(var(--orrery-column) + 64px));
+    animation: orrery-settle linear both;
+    animation-timeline: scroll(root);
+    animation-range: 35vh 95vh;
+  }
+
+  @media (min-width: 1200px) {
+    .ui2046-solar-system {
+      --orrery-column: calc(min(100vw - var(--page-pad), 50vw + var(--page-max) / 2) - 100vw + clamp(.5rem, 2vw, 2rem) + min(40vw, 660px));
+    }
+  }
+}
+
+/* Like the field's, the settle holds still behind a viewer and on a hidden, idle or low-power page. */
+:where(html.mission-lightbox-open, html.mineral-atlas-open, html.obs-presenting, html.mads-page-hidden, html.mads-power-idle, html.mads-power-low) .ui2046-solar-system {
+  animation-play-state: paused;
 }
 
 @media (max-width: 1120px) {

@@ -1,5 +1,6 @@
 /* @owner WP6 · @budget 6KB · @important 0 · Evidence atlas dialog (dialog.evidence-atlas), public and private */
-.evidence-atlas { width: min(72rem, calc(100vw - 3rem)); height: min(50rem, calc(100dvh - 3rem)); max-width: none; max-height: none; padding: 0; overflow: hidden; border: 1px solid var(--obs-hairline); border-radius: var(--radius-record); background: var(--obs-surface); color: var(--obs-text); box-shadow: var(--obs-atlas-shadow); }
+.evidence-atlas { width: min(72rem, calc(100vw - 3rem)); height: min(50rem, calc(100dvh - 3rem)); max-width: none; max-height: none; padding: 0; overflow: hidden; border: 0; border-radius: var(--radius-record); background: var(--obs-surface); color: var(--obs-text); box-shadow: var(--obs-atlas-shadow); }
+@media (forced-colors: active) { .evidence-atlas { border: 1px solid CanvasText; } }
 .evidence-atlas::backdrop { background: var(--obs-atlas-scrim); }
 .evidence-atlas[open] { display: grid; grid-template: auto minmax(0, 1fr) auto / minmax(0, 1fr); }
 .atlas-header { display: flex; align-items: center; justify-content: space-between; gap: var(--ed-space-5); padding: var(--ed-space-4) var(--ed-space-6); border-bottom: 1px solid var(--obs-hairline); }

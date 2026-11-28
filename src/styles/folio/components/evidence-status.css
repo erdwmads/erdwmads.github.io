@@ -1,30 +1,59 @@
 /* @owner WP1 · @budget 2KB · @important 0 · Evidence status line (EvidenceStatus.astro): tag, then one muted sentence */
-/* No box and no left border. The tag names the kind of evidence in capitals behind its square marker
-   (components/marker.css); the sentence follows in 14.5 px muted text. Never collapsed, never in a tooltip. */
+/* Version 1's evidence line (owner, 2026-11-25): a 2 px accent rule at the left, 14 px in; the tag in the one label
+   style after its marker (components/marker.css), with no box since 2026-11-26, and the sentence running on after it
+   in 14.5 px muted text. Models take the cool accent, every other kind the brass one. Never collapsed, never in a
+   tooltip. */
 .evidence-status {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--ed-space-1) var(--ed-space-3);
-  max-width: var(--measure-caption);
+  --evidence-accent: var(--obs-accent);
+  max-width: 48rem;
+  padding: 2px 0 2px 14px;
+  border-left: 2px solid var(--evidence-accent);
   color: var(--obs-muted);
   font-size: .90625rem;
-  line-height: 1.45;
+  line-height: 1.6;
+}
+
+.evidence-status[data-evidence-status="model"] {
+  --evidence-accent: var(--obs-edge-cool);
 }
 
 .evidence-status__tag {
   display: inline-flex;
   align-items: center;
-  gap: var(--ed-space-2);
-  color: var(--obs-text);
-  font-size: var(--ed-label);
-  font-weight: 600;
-  line-height: 1.3;
-  letter-spacing: .08em;
+  gap: 7px;
+  margin: 0 10px 0 0;
+  padding: 0;
+  color: var(--obs-muted);
+  font-size: var(--label-size);
+  font-weight: var(--label-weight);
+  line-height: 1.6;
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
   white-space: nowrap;
+  vertical-align: 1px;
 }
 
-.evidence-status__text {
-  flex: 1 1 16rem;
+/* A brass kind's tag (owner, 2026-11-28): the old capsule's brass outline as the gold word with its mark, its 9 % wash
+   as a pool behind the word that fades out at the word's ends. A model's tag stays muted (its capsule was steel). */
+.evidence-status:not([data-evidence-status="model"]) > .evidence-status__tag {
+  background: radial-gradient(closest-side, var(--obs-pool-tag), transparent);
+  color: var(--evidence-accent);
 }
+
+@media (forced-colors: active), print {
+  .evidence-status:not([data-evidence-status="model"]) > .evidence-status__tag {
+    background: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .evidence-status {
+    padding-left: 12px;
+  }
+
+  .evidence-status__tag {
+    margin-right: 8px;
+  }
+}
+
+

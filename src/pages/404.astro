@@ -3,6 +3,7 @@ import SiteShell from "../components/SiteShell.astro";
 import Masthead from "../components/Masthead.astro";
 import Section from "../components/Section.astro";
 import Ledger from "../components/Ledger.astro";
+import Figure from "../components/Figure.astro";
 import { contentPages, getPageScripts } from "../data/site";
 
 const scriptHtml = getPageScripts("home");
@@ -29,8 +30,16 @@ const archiveIndex = contentPages.map((page, index) => ({
     <Masthead kicker="Signal lost · 404" title="This page is not in the archive">
       The address may have changed, or the page was never catalogued. The sections below are current.
     </Masthead>
-    <Section id="archive-index-title" title="Archive index">
-      <Ledger ordered leaders items={archiveIndex} class="archive-index" />
+    {/* Version 1's two-column section (components/frames.css): the label beside the index, which lies on a light pool under a glint hairline
+        (src/styles/folio/pages/not-found.css). */}
+    <Section id="archive-index-title" title="Archive index" class="two-col two-col--eyebrow">
+      <div class="archive-card two-col__body">
+        <Ledger ordered leaders items={archiveIndex} class="archive-index" />
+      </div>
+      {/* A context plate (components/plate.css) in the label column from 861 px, after the index on narrower screens. */}
+      <Figure class="figure--context two-col__head lost-comet" caption="Comet Hale-Bopp, 14 March 1997." credit="Photograph: ESO/E. Slawik, CC BY 4.0, cropped">
+        <img src="/assets/img/plates/comet-hale-bopp-320.webp" srcset="/assets/img/plates/comet-hale-bopp-320.webp 320w, /assets/img/plates/comet-hale-bopp-640.webp 640w" sizes="(max-width: 760px) 7.5rem, (max-width: 860px) 10rem, 10.75rem" width="640" height="673" loading="lazy" decoding="async" alt="A bright comet head at lower left, with a blue ion tail and a paler dust tail rising across a field of stars.">
+      </Figure>
     </Section>
   </div>
 </SiteShell>

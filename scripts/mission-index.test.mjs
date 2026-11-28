@@ -359,11 +359,12 @@ test("ledger rows read SOL, date and title, the summary states the count, and th
   await flush();
   const { indexList, list, ledger, count } = page.missionNodes;
   const rows = indexList.innerHTML.split("</a>").slice(0, 3);
-  // SOL first, then the date (with a machine-readable datetime), then the title; the LOG label stays as hidden text.
-  assert.match(rows[0], /mission-jump-sol tabular">SOL 003<[\s\S]*datetime="2026-04-12">2026\/04\/12<[\s\S]*mission-jump-title">Stored title<[\s\S]*mission-jump-log visually-hidden">LOG 001</);
-  assert.match(rows[1], /SOL 021[\s\S]*mission-jump-title">First record heading</);
+  // SOL first, then the date (with a machine-readable datetime), then the title, whose tooltip holds the whole title
+  // (it shows two lines at most); the LOG label stays as hidden text.
+  assert.match(rows[0], /mission-jump-sol tabular">SOL 003<[\s\S]*datetime="2026-04-12">2026\/04\/12<[\s\S]*mission-jump-title" title="Stored title">Stored title<[\s\S]*mission-jump-log visually-hidden">LOG 001</);
+  assert.match(rows[1], /SOL 021[\s\S]*mission-jump-title" title="First record heading">First record heading</);
   // Without a SOL the LOG label takes its place and is not repeated; without a heading the stage is the title.
-  assert.match(rows[2], /mission-jump-sol tabular">LOG 003<[\s\S]*mission-jump-title">Stage &lt;only&gt;</);
+  assert.match(rows[2], /mission-jump-sol tabular">LOG 003<[\s\S]*mission-jump-title" title="Stage &lt;only&gt;">Stage &lt;only&gt;</);
   assert.doesNotMatch(rows[2], /mission-jump-log/);
   assert.equal(count.textContent, "3 records");
   assert.equal(ledger.open, true);

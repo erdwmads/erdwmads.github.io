@@ -1,5 +1,7 @@
-/* @owner WP4 · @budget 19.5KB · @important 0 · Planetary explorer (.planetary-*) */
-/* Planetary field guide (planetary-explorer.js). */
+/* @owner WP4 · @budget 21KB · @important 0 · Planetary explorer (.planetary-*) */
+/* Planetary field guide (planetary-explorer.js) in version 1's shape (owner, 2026-11-25), in the lab site's language
+   (2026-11-26): the evidence line under the heading, the scale tabs and the three material controls on one ruled row,
+   the scene on a night plate mounted as a print beside a 280 px reading set off by a vertical fading line. */
 
 .planetary {
   --planetary-plate: 460px;
@@ -47,18 +49,18 @@
   max-width: var(--measure-body);
 }
 
-/* Label capitals, then muted readouts. */
+/* Label capitals in the one label style (components/masthead.css), then muted readouts. */
 .planetary-steps span,
 .planetary-date,
 .planetary-evidence,
 .planetary-summary dt,
 .planetary-questions h4 {
   color: var(--obs-muted);
-  font-size: var(--ed-label);
-  font-weight: 600;
+  font-size: var(--label-size);
+  font-weight: var(--label-weight);
   line-height: 1.3;
   font-variant-numeric: lining-nums tabular-nums;
-  letter-spacing: .08em;
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
 }
 
@@ -90,11 +92,15 @@
   gap: var(--ed-space-5);
 }
 
+.planetary-steps > button {
+  font-size: .8125rem;
+}
+
 .planetary-steps > button,
 .planetary-question-tabs > button,
 .planetary-question-footer > button {
   min-height: 44px;
-  padding: var(--ed-space-3) 0;
+  padding: 10px 0;
   border: 0 solid transparent;
   background: none;
   color: var(--obs-muted);
@@ -146,42 +152,31 @@
   white-space: nowrap;
 }
 
-/* Metal faces, as the old explorer's (owner, 2026-11-18): the buttons rest on the brushed control face, ease their
-   border in 180 ms and their shadow in 140 ms, edge in steel under a hovering pointer and sink when pressed. */
+/* The old explorer's metal faces (owner, 2026-11-18; E033) as text controls: each rests on a pool in the face's tones,
+   eases its beam in 180 ms and its glow in 140 ms; under a hovering pointer the beam lights brass to steel and the pool
+   warms, and a pressed control holds a 2 px beam over a press pool (components/surface-light.css). */
 .planetary :is(.planetary-materials, .planetary-toolbar, .planetary-mineral-tabs) :is(.button, .icon-button) {
-  background-image: var(--obs-control-face);
-  transition: border-color 180ms ease-out, box-shadow 140ms ease-out;
+  background-image: radial-gradient(closest-side, var(--obs-pool), transparent);
+  transition: border-color 180ms ease-out, box-shadow 140ms ease-out, background-color 180ms ease-out;
 }
 
-/* The chosen one: the darker active face under a brass border, still underlined. */
+/* The chosen one (the old active face under a brass border): brass words over the 2 px brass beam on a warm pool. */
 .planetary .button[aria-pressed="true"],
 .planetary .icon-button[aria-pressed="true"] {
-  border-color: var(--obs-accent);
-  background-color: var(--obs-highlight);
-  background-image: var(--obs-control-active-face);
-  text-decoration: underline 2px;
-  text-underline-offset: .35em;
+  border-bottom-color: var(--obs-accent);
+  background-image: radial-gradient(closest-side, var(--obs-pool-warm), transparent);
+  box-shadow: inset 0 -1px var(--obs-accent);
+  color: var(--obs-accent);
 }
 
-@media (hover: hover) and (forced-colors: none) {
-  .planetary :is(.planetary-materials, .planetary-toolbar, .planetary-mineral-tabs) :is(.button, .icon-button):hover:not([aria-pressed="true"], :disabled) {
-    border-color: var(--obs-edge-cool);
-    background-image: var(--obs-control-face);
-  }
-}
-
-.planetary-toolbar .icon-button:active:not(:disabled) {
-  box-shadow: var(--obs-control-pressed);
-}
-
-/* With the effects on, the chosen body's label and mineral tab glow brass and steel. */
+/* With the effects on, the chosen body's label glows brass under its beam and the chosen mineral tab's beam glows
+   steel. */
 .planetary[data-focus-fx="on"] .planetary-label[aria-pressed="true"] {
-  border-left-color: var(--obs-accent);
-  box-shadow: inset 1px 0 var(--obs-accent), 0 0 12px color-mix(in srgb, var(--obs-accent) 24%, transparent);
+  box-shadow: inset 0 -1px var(--obs-accent), 0 6px 12px -4px color-mix(in srgb, var(--obs-accent) 40%, transparent);
 }
 
 .planetary[data-focus-fx="on"] .planetary-mineral-tabs > [aria-pressed="true"] {
-  box-shadow: var(--obs-control-shadow), 0 0 14px color-mix(in srgb, var(--obs-edge-cool) 14%, transparent);
+  box-shadow: inset 0 -1px var(--obs-accent), 0 7px 14px -7px color-mix(in srgb, var(--obs-edge-cool) 40%, transparent);
 }
 
 .planetary [data-icon] {
@@ -198,9 +193,10 @@
   min-height: 44px;
   max-width: 100%;
   padding-inline: var(--ed-space-3);
-  border: 1px solid var(--obs-control-border);
-  border-radius: var(--radius-control);
-  background: var(--obs-surface);
+  border: 1px solid transparent;
+  border-bottom-color: var(--obs-control-border);
+  border-radius: 0;
+  background-color: transparent;
   color: var(--obs-text);
   font-size: var(--ed-small);
   font-weight: 400;
@@ -280,12 +276,17 @@
   display: none;
 }
 
-/* Night plates: Space colours in both themes. */
+/* Night plates: Space colours in both themes, mounted as prints (2 px corners, the contact shade and the long soft
+   drop; no line border). */
 .planetary-stage,
 .planetary-ci {
   height: var(--planetary-plate);
-  border: 1px solid var(--obs-hairline);
+  border-radius: var(--radius-record);
   background: var(--obs-plate-night);
+}
+
+.planetary-stage {
+  box-shadow: var(--obs-print-drop);
 }
 
 .planetary-stage {
@@ -357,9 +358,18 @@
   cursor: pointer;
 }
 
+/* The chosen body: the face all labels share, no frame, its words in brass over the site's 2 px brass beam. Under a
+   hovering pointer a label takes a warm pool over its face. */
 .planetary-label[aria-pressed="true"] {
-  border-color: var(--obs-text);
-  background: var(--obs-highlight);
+  border-bottom-color: var(--obs-accent);
+  box-shadow: inset 0 -1px var(--obs-accent);
+  color: var(--obs-accent);
+}
+
+@media (hover: hover) and (forced-colors: none) {
+  button.planetary-label:hover {
+    background: radial-gradient(closest-side, var(--obs-pool-warm), transparent), var(--obs-surface);
+  }
 }
 
 .planetary-label:focus-visible {
@@ -382,8 +392,7 @@ span.planetary-label {
   min-height: 44px;
   padding: var(--ed-space-1) var(--ed-space-3);
   align-content: center;
-  border: 1px solid var(--obs-hairline);
-  background: var(--obs-surface);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--obs-plate-night) 92%, transparent) 70%, transparent);
   font-size: var(--ed-caption);
   line-height: 1.45;
   text-wrap: balance;
@@ -413,22 +422,45 @@ span.planetary-label {
   visibility: hidden;
 }
 
-/* Orgueil: a note on a stage-sized plate, glazed as the old panel was (its night colours, as every plate). */
+/* Orgueil: a note on a stage-sized plate, glazed as the old panel was (its night colours, as every plate; E042), with
+   no border: the glaze lies on a layer feathered 40 px in from every edge, the glint a hairline along its head. */
 .planetary-ci {
-  background-image: var(--obs-glass-face);
+  position: relative;
+  isolation: isolate;
   display: grid;
   align-content: center;
   justify-items: start;
   gap: var(--ed-space-3);
   padding: var(--ed-space-6) var(--ed-space-7);
+  background: none;
+}
+
+.planetary-ci::before,
+.planetary-ci::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.planetary-ci::before {
+  background: var(--obs-glass-face), var(--obs-plate-night);
+  mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent), linear-gradient(transparent, #000 40px, #000 calc(100% - 40px), transparent);
+  mask-composite: intersect;
+}
+
+.planetary-ci::after {
+  background: var(--obs-glass-glint) 50% 0 / calc(100% - 80px) 1px no-repeat;
 }
 
 /* Specimen plates, never cropped. */
 .planetary-sample > :is(img, [data-sample-error]) {
   width: 100%;
   height: var(--planetary-plate);
-  border: 1px solid var(--obs-hairline);
+  border-radius: var(--radius-record);
   background: var(--obs-plate);
+  box-shadow: var(--obs-print-shadow);
 }
 
 .planetary-sample > img {
@@ -478,15 +510,27 @@ span.planetary-label {
   margin: 0;
 }
 
-.planetary-summary > dl {
-  border-top: 1px solid var(--obs-hairline);
+/* Version 1's reading: the source line in brass, a 24 px title, the facts as small muted labels over their values. */
+.planetary-summary .planetary-evidence {
+  color: var(--obs-accent);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.planetary-summary > h3 {
+  font-size: 1.5rem;
+}
+
+.planetary-summary dt {
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .planetary-summary dl > div {
   display: grid;
   gap: 2px;
   padding-block: var(--ed-space-2);
-  border-bottom: 1px solid var(--obs-hairline);
 }
 
 .planetary-summary dd {
@@ -655,48 +699,32 @@ span.planetary-label {
     grid-column: text;
   }
 
-  .planetary-heading > .evidence-status {
-    grid-column: notes;
-    grid-row: 1 / span 2;
-    align-self: start;
-    padding-block-start: var(--ed-space-2);
-  }
-
   .planetary-questions {
     grid-column: wide;
   }
 
-  .planetary-navigation {
-    display: grid;
-    grid-template-columns: subgrid;
-    column-gap: var(--grid-gap);
-    align-items: end;
-  }
-
-  .planetary-steps {
-    grid-column: text-start / notes-start;
-  }
-
-  .planetary-materials {
-    grid-column: notes;
-    gap: var(--ed-space-1);
-  }
-
   .planetary-materials > .button {
-    flex: 1;
-    padding-inline: var(--ed-space-2);
+    padding-inline: 12px;
   }
 
   .planetary-panel > :is(.planetary-layout, .planetary-sources) {
     grid-column: text-start / notes-end;
   }
 
+  .planetary-layout {
+    grid-template-columns: minmax(0, 1fr) 17.5rem;
+    column-gap: 28px;
+  }
+
   .planetary__instrument {
-    grid-column: text-start / notes-start;
+    grid-column: 1;
   }
 
   .planetary-summary {
-    grid-column: notes;
+    grid-column: 2;
+    align-self: stretch;
+    padding: var(--ed-space-2) 0 0 22px;
+    background: var(--obs-fade-line-v) 0 0 / 1px 100% no-repeat;
   }
 }
 
@@ -812,16 +840,30 @@ span.planetary-label {
   .planetary :is(.button, .icon-button, .planetary-label)[aria-pressed="true"],
   :is(.planetary-steps, .planetary-question-tabs) > [aria-selected="true"] {
     forced-color-adjust: none;
+    border-color: SelectedItem;
     background: SelectedItem;
     color: SelectedItemText;
+    transition: none;
   }
 }
 
-/* Forced colours and print: plain faces, no glow. */
+/* Forced colours and print: plain faces, no glow or glaze; the plates framed. */
 @media (forced-colors: active), print {
   .planetary :is(.planetary-materials, .planetary-toolbar, .planetary-mineral-tabs) :is(.button, .icon-button),
   .planetary-ci {
     background-image: none;
+  }
+
+  .planetary-ci::before,
+  .planetary-ci::after {
+    display: none;
+  }
+
+  .planetary-stage,
+  .planetary-ci,
+  .planetary-sample > :is(img, [data-sample-error]) {
+    border: 1px solid var(--obs-hairline);
+    box-shadow: none;
   }
 
   .planetary[data-focus-fx] .planetary-label[aria-pressed="true"],

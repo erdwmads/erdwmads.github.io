@@ -41,6 +41,11 @@ try {
   if (await desktop.locator('html').evaluate(el=>el.classList.contains('ambient-fx-disabled'))) await toggleFx(desktop);
   const control = desktop.locator('main .button').first();
   await control.scrollIntoViewIfNeeded();
+  // Reaching the who block sets it in once (home-path.js, the Home opening of 2026-11-28): let its observer run, then
+  // measure once the set-in has finished. Moving the pointer must still move nothing.
+  await desktop.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  await desktop.waitForTimeout(100);
+  await desktop.evaluate(()=>Promise.all(document.getAnimations().filter(animation=>animation.timeline instanceof DocumentTimeline&&Number.isFinite(animation.effect?.getComputedTiming().endTime)&&animation.effect?.target?.closest?.('main')).map(animation=>animation.finished.catch(()=>{}))));
   await check('pointer movement across a primary action leaves its layout unchanged',async()=>{
     const box = await control.boundingBox();
     const arrow = await control.evaluate(el=>getComputedStyle(el,'::after').content);

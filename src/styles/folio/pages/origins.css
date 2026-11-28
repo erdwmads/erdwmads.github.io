@@ -1,18 +1,32 @@
-/* @owner WP4 · @budget 1KB · @important 0 · Origins, scoped under .ui-page-origins */
-/* A tight masthead; a notes column from 961 px. */
-.ui-page-origins .study-intro { padding-block-end: var(--ed-space-5); margin-block-end: var(--ed-space-6); }
+/* @owner WP4 · @budget 2.5KB · @important 0 · Origins, scoped under .ui-page-origins */
+/* Version 1's intro: eyebrow, title, lead, the evidence line and the context in the text column; Scientific context
+   at the top right from 1200 px, under the context on narrower screens. */
+.ui-page-origins .study-intro { padding-block-end: 0; margin-block-end: var(--ed-space-6); }
 .ui-page-origins .study-intro > .button { place-self: start; }
+.ui-page-origins .study-project-context { max-width: 48rem; font-size: .9375rem; line-height: 1.7; }
 @media (max-width: 760px) {
-  .ui-page-origins .study-intro { row-gap: var(--ed-space-3); padding-block-start: var(--ed-space-5); }
-}
-@media (min-width: 961px) {
-  .ui-page-origins .study-intro > :is(.lead, .study-project-context) { grid-column: 1 / -4; }
-  .ui-page-origins .study-intro > :is(.evidence-status, .button) { grid-column: -4 / -1; grid-row: 3; }
-  .ui-page-origins .study-intro > .button { grid-row: 4; }
+  .ui-page-origins .study-intro { row-gap: var(--ed-space-3); }
 }
 @media (min-width: 1200px) {
-  .ui-page-origins .study-intro > :is(.lead, .study-project-context) { grid-column: text; }
+  .ui-page-origins .study-intro > .button { grid-column: notes; grid-row: 1 / span 2; justify-self: end; }
+}
+/* The lighter, larger title keeps version 1's one line where the column stops growing (1200 to 1599 px). */
+@media (min-width: 1200px) and (max-width: 1599px) {
+  .ui-page-origins .study-intro > h1 { font-size: min(var(--ed-display), 4.4rem); }
 }
 @media print {
   .ui-page-origins :is(.transport, .scene-controls, .scene-load-state, .scene-hint, .scene-explore, .study-intro > .button) { display: none; }
+}
+
+/* The HL Tauri disc (a context plate, components/plate.css): beside the intro from 761 px (its own column to 1199 px,
+   under Scientific context in the notes column from 1200 px), on a flexible last row so the intro's lines keep their
+   spacing; under the button on phones. */
+@media (min-width: 761px) and (max-width: 1199px) {
+  .ui-page-origins .study-intro { grid-template-columns: minmax(0, 1fr) 10rem; grid-template-rows: repeat(6, auto) 1fr; }
+  .ui-page-origins .study-intro > * { grid-column: 1; }
+  .ui-page-origins .study-disc { grid-column: 2; grid-row: 2 / span 6; grid-template-columns: minmax(0, 1fr); align-self: start; margin: 0; }
+}
+@media (min-width: 1200px) {
+  .ui-page-origins .study-intro { grid-template-rows: repeat(5, auto) 1fr; }
+  .ui-page-origins .study-disc { grid-column: notes; grid-row: 3 / span 4; align-self: start; margin: 0; }
 }

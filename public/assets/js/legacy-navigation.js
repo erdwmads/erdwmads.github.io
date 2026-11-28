@@ -48,6 +48,97 @@
       contentAnimation = undefined;
     }
   }
+  // Backdrop cross-fade (owner, 2026-11-28): every page has its own picture (body::before, components/backdrop.css) and
+  // Home its opening plate. On a soft navigation the old picture moves onto one layer of its own (.backdrop-fade),
+  // which dissolves while the new page's picture develops; the sheet and the text swap as before. Only opacity
+  // changes, nothing moves, and nothing waits for it. Reduced motion, FX off, low power, more contrast and forced
+  // colours swap at once.
+  const FADE_MS = 760, FADE_EASE = 'cubic-bezier(.4,0,.2,1)';
+  const root = document.documentElement;
+  let fade = null;
+  const instantBackdrop = () => reducedMotion.matches || root.classList.contains('ambient-fx-disabled') ||
+    root.classList.contains('mads-power-low') || !root.classList.contains('backdrop-ready') ||
+    matchMedia('(prefers-contrast: more), (forced-colors: active)').matches || typeof Element.prototype.animate !== 'function';
+  function endFade() {
+    if (!fade) return;
+    const ended = fade;
+    fade = null;
+    // One frame with the page's picture at rest and no transition, so it does not ease back in on its own.
+    root.dataset.backdropFade = 'run';
+    ended.animations.forEach(animation => animation.cancel());
+    ended.layer.remove();
+    requestAnimationFrame(() => { if (!fade) delete root.dataset.backdropFade; });
+    dispatchSoftNavEvent('mads:backdrop-fade-end', {});
+  }
+  // The old picture: Home's opening plate while any of it shows, else the page's backdrop.
+  function captureBackdrop(main) {
+    endFade();
+    if (instantBackdrop()) return;
+    const layer = document.createElement('div');
+    layer.className = 'backdrop-fade';
+    layer.setAttribute('aria-hidden', 'true');
+    const style = layer.style;
+    const sky = main.querySelector('.home-opening__sky');
+    const box = sky && sky.getBoundingClientRect();
+    const skyStyle = sky && getComputedStyle(sky);
+    let from;
+    if (sky && skyStyle.display !== 'none' && box.bottom > 0 && box.top < innerHeight && parseFloat(skyStyle.opacity) > 0) {
+      const print = getComputedStyle(sky, '::before');
+      const layers = print.backgroundImage !== 'none' && parseFloat(print.opacity) >= .5 ? [print, skyStyle] : [skyStyle];
+      layer.classList.add('backdrop-fade--plate');
+      for (const property of ['backgroundImage', 'backgroundPosition', 'backgroundSize', 'backgroundRepeat']) style[property] = layers.map(item => item[property]).join(', ');
+      style.backgroundColor = skyStyle.backgroundColor;
+      style.maskImage = skyStyle.maskImage;
+      if (skyStyle.position === 'fixed') {
+        style.translate = skyStyle.translate;
+        style.scale = skyStyle.scale;
+        style.transformOrigin = skyStyle.transformOrigin;
+      } else {
+        style.inset = `${box.top}px auto auto ${box.left}px`;
+        style.width = `${box.width}px`;
+        style.height = `${box.height}px`;
+      }
+      from = parseFloat(skyStyle.opacity);
+      main.before(layer);
+    } else {
+      const picture = getComputedStyle(document.body, '::before');
+      if (picture.display === 'none' || picture.visibility !== 'visible' || picture.maskImage === 'none') return;
+      style.maskImage = picture.maskImage;
+      style.maskPosition = picture.maskPosition;
+      from = parseFloat(picture.opacity);
+      document.body.prepend(layer);
+    }
+    style.opacity = String(from);
+    root.dataset.backdropFade = 'hold';
+    fade = { layer, animations: [] };
+  }
+  // After the swap: the new page's picture (and Home's plate) develops from nothing while the old layer dissolves. All
+  // three start paused at their first frame and run once the new picture has decoded (at most 400 ms later).
+  async function developBackdrop(main) {
+    const current = fade;
+    if (!current) return;
+    root.dataset.backdropFade = 'run';
+    const timing = { duration: FADE_MS, easing: FADE_EASE };
+    const sky = main.querySelector('.home-opening__sky');
+    try {
+      current.animations.push(document.body.animate([{ opacity: 0, offset: 0 }], { ...timing, pseudoElement: '::before' }));
+      if (sky) current.animations.push(sky.animate([{ opacity: 0, offset: 0 }], timing));
+    } catch {}
+    const out = current.layer.animate([{ opacity: 0 }], { ...timing, fill: 'forwards' });
+    current.animations.push(out);
+    current.animations.forEach(animation => animation.pause());
+    const url = (getComputedStyle(document.body, '::before').maskImage.match(/url\("?([^")]+)"?\)/) || [])[1];
+    if (url) {
+      const image = new Image();
+      image.src = url;
+      await Promise.race([image.decode().catch(() => {}), new Promise(resolve => setTimeout(resolve, 400))]);
+    }
+    if (fade !== current) return;
+    current.animations.forEach(animation => animation.play());
+    await out.finished.catch(() => {});
+    if (fade === current) endFade();
+  }
+
   const documentKey = url => {
     const parsed = new URL(url, window.location.href);
     return parsed.pathname + parsed.search;
@@ -95,6 +186,7 @@
   function cancelPendingNavigation() {
     softNavToken += 1;
     stopContentAnimation();
+    endFade();
     const main = document.querySelector('main');
     if (main) { main.style.opacity = '1'; main.removeAttribute('aria-busy'); }
     document.documentElement.classList.remove('mads-soft-nav-active');
@@ -204,6 +296,7 @@
         return;
       }
 
+      captureBackdrop(currentMain);
       await fadeContent(currentMain, 0, 140);
       if (token !== softNavToken) return;
       document.title = nextDoc.title || document.title;
@@ -220,10 +313,15 @@
       const scripts = pageScripts(nextDoc);
       nextMain.style.opacity = "0";
       currentMain.replaceWith(nextMain);
+      // The footer credits the pictures of its own page (SiteFooter.astro): swap the line with main.
+      const nextCredits = nextDoc.querySelector("[data-footer-credits]");
+      const currentCredits = document.querySelector("[data-footer-credits]");
+      if (nextCredits && currentCredits) currentCredits.replaceWith(nextCredits);
       renderedDocument = documentKey(url);
       pageName = pageNameFromUrl(url);
       setCurrentNav(nextDoc);
       setBodyPageClass(nextDoc);
+      developBackdrop(nextMain);
       if (pushState) {
         history.pushState({ madsSoftNav: true }, "", url);
       }

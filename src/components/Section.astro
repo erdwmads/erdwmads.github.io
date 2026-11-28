@@ -1,7 +1,7 @@
 ---
-// A section on the .folio grid, labelled by its heading: an optional number in the hanging margin, the kicker, the
-// heading, a lead (slot "lead"), the body (default slot, each child a grid item in the text column), margin items
-// (slot "margin") and notes (slot "notes", placed after the body). A note that belongs beside one paragraph goes
+// A section on the .folio grid, labelled by its heading: the kicker, led by an optional number as version 1's
+// eyebrows were ("01 / The research question"), the heading, a lead (slot "lead"), the body (default slot, each child
+// a grid item in the text column), margin items (slot "margin") and notes (slot "notes", placed after the body). A note that belongs beside one paragraph goes
 // straight after it in the default slot, as an element with class in-notes. Styles: src/styles/folio/04-layout.css.
 import Kicker from "./Kicker.astro";
 import { sectionProps } from "./section.js";
@@ -21,8 +21,7 @@ const { class: className } = Astro.props;
 const Heading = `h${level}`;
 ---
 <section class:list={["folio-section", "folio", className]} aria-labelledby={labelledby}>
-  {number && <span class="folio-section__number in-margin">{number}</span>}
-  {kicker && <Kicker>{kicker}</Kicker>}
+  {(number || kicker) && <Kicker>{number && <span class="folio-section__number tabular">{number}</span>}{number && kicker && " "}{kicker}</Kicker>}
   <Heading id={id}>{title}</Heading>
   {Astro.slots.has("lead") && <div class="folio-section__lead"><slot name="lead" /></div>}
   {Astro.slots.has("margin") && <div class="in-margin"><slot name="margin" /></div>}

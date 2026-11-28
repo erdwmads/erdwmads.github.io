@@ -246,11 +246,11 @@
 
   const shouldPausePlanetMotion = () => {
     const state = window.__madsPowerState || {};
-    return !isOrbitalFxEnabled() || document.hidden || state.hidden || state.idle || state.lowPower || document.body.classList.contains("mission-lightbox-open") || document.documentElement.classList.contains("mission-lightbox-open") || document.documentElement.classList.contains("mineral-atlas-open");
+    return !isOrbitalFxEnabled() || document.hidden || state.hidden || state.idle || state.covered || state.lowPower || document.body.classList.contains("mission-lightbox-open") || document.documentElement.classList.contains("mission-lightbox-open") || document.documentElement.classList.contains("mineral-atlas-open");
   };
 
   // Runs on every power, visibility, FX and soft-navigation change: pauses the orbits in place while
-  // the page is hidden, idle, low-power or behind the lightbox/atlas, and otherwise (re)starts them at
+  // the page is hidden, idle, covered (Home's opening plate over the whole window), low-power or behind the lightbox/atlas, and otherwise (re)starts them at
   // the phase for the current page time.
   const startPlanetAnimation = () => {
     if (reduceMotion || !orbitMotion.length || typeof Element.prototype.animate !== 'function') return;

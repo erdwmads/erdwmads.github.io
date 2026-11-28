@@ -1,8 +1,9 @@
-/* @owner WP1 · @budget 3KB · @important 0 · Calibration markers (status circles, evidence squares, model brackets) and chips */
+/* @owner WP1 · @budget 3.5KB · @important 0 · Calibration markers (status circles, evidence squares, model brackets) and status words */
 /* One grammar for status and evidence. A marker is 7 px, drawn in currentColor (so forced colours keep it) and
    always followed by its text label; shape only repeats the words. Filled: in hand now. Open: established
    elsewhere or queued. Dashed circle, dotted square: not yet done. Half-filled: inference. Corner brackets:
-   illustrative model. Brass marks only "In progress". No "Completed" style exists. The same shapes draw the tag marker of EvidenceStatus and
+   illustrative model. Among status marks brass marks only "In progress" (an evidence tag's mark takes its word's
+   colour, gold for the brass kinds since 2026-11-28). No "Completed" style exists. The same shapes draw the tag marker of EvidenceStatus and
    the status chip of the Analytical Pathway, which keep their markup. */
 .marker,
 .evidence-status__tag::before,
@@ -65,20 +66,28 @@
   background-repeat: no-repeat;
 }
 
-/* Chips: 22 px tall, a 1 px control border and no fill; the label is the meaning. */
+/* Status words (2026-11-26: no capsule, wash or border): small 12 px text at 500 in the muted colour after its marker;
+   the label is the meaning and the marker's shape repeats it. .chip--accent (In progress) sets the words in brass,
+   its filled marker with a soft gold glow. */
 .chip,
 .pathway-chip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   min-height: 22px;
-  padding: 0 var(--ed-space-2);
-  border: 1px solid var(--obs-control-border);
-  border-radius: var(--radius-record);
-  color: var(--obs-text);
+  padding: 0;
+  color: var(--obs-muted);
   font-size: var(--ed-label);
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.2;
-  letter-spacing: .04em;
   white-space: nowrap;
+}
+
+.chip--accent {
+  color: var(--obs-accent);
+}
+
+.chip--accent::before,
+.pathway-chip[data-status="in-progress"]::before {
+  box-shadow: 0 0 7px var(--obs-gold-glow);
 }

@@ -6,7 +6,7 @@
 export const owner = "WP6";
 export const pages = ["research-graduation.html"];
 export const selectors = [
-  ".ui-page-research-graduation .masthead", ".ui-page-research-graduation .masthead__lead", ".ui-page-research-graduation .masthead .quiet-link",
+  ".ui-page-research-graduation .masthead", ".ui-page-research-graduation .masthead__lead", ".ui-page-research-graduation .masthead .button",
   ".research-lock-section", ".research-lock-card", ".research-lock-card > .kicker", ".research-lock-card > h2", ".research-lock-form label",
   "[data-research-lock-input]", "[data-research-lock-form] button[type=\"submit\"]", "[data-passkey-controls]", "[data-passkey-status]",
   ".research-passkey-actions", "[data-passkey-setup]", ".research-passkey-help", ".research-passkey-help summary"

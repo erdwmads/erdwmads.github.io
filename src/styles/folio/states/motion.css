@@ -50,4 +50,12 @@ body.mads-soft-nav-active {
     transition-duration: 0s !important;
     transition-delay: 0s !important;
   }
+
+  /* The spine's scroll-driven entry and the orrery's settle (components/interface-2046.css) do not run: they show at
+     rest. */
+  .ui2046-rail,
+  .ui2046-progress > span::after,
+  .ui2046-solar-system {
+    animation: none;
+  }
 }

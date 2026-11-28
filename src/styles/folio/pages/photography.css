@@ -1,7 +1,33 @@
-/* @owner WP5 · @budget 5KB · @important 0 · Photography wall and contact sheet, scoped under .ui-page-photography */
+/* @owner WP5 · @budget 10.5KB · @important 0 · Photography wall and contact sheet, scoped under .ui-page-photography */
+/* Version 1's Photography (2f20d7e; owner, 2026-11-25) in the lab site's language (2026-11-26): the wall in a section
+   under a fading line, the layout switch as two words over their beams beside the Present button, the photographs as
+   mounted prints 16 px apart (2 px corners, the contact shade and the long soft drop), never drawn wider than their
+   files at 1x (the wall stays within 72rem, so no justified row grows past the 270 px of the thumbnails), and the
+   camera as a two-column section (components/frames.css). Version 3's light stays on the new forms: the chosen layout's
+   brass beam (E048), the steel outline and glow on a tile (E047), the text controls' lit beam and glow. */
 .ui-page-photography .masthead {
-  margin-block-end: var(--ed-space-5);
-  padding-block-end: var(--ed-space-6);
+  margin-block-end: 0;
+  padding-block-end: 0;
+}
+
+.ui-page-photography .photo-experience {
+  max-width: 72rem;
+  margin-block-start: 1.75rem;
+  padding-block-start: 1.25rem;
+  background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat;
+}
+
+/* From 1600 px the column is wider than the wall may grow (72rem keeps every tile at or under its file's size), so
+   the Camera section and Onward keep the wall's width too: the page's blocks share one right edge, left-aligned in the
+   column. */
+@media (min-width: 1600px) {
+  .ui-page-photography .photo-camera {
+    max-width: 72rem;
+  }
+
+  .ui-page-photography .continue-reading {
+    padding-inline-end: calc(var(--page-pad) + var(--page-max) - 72rem);
+  }
 }
 
 .ui-page-photography .obs-photo-tools {
@@ -13,38 +39,70 @@
   margin-block-end: var(--ed-space-4);
 }
 
+/* The layout switch: two text controls (components/button.css), words low in a 44 px box over a 1 px beam in the
+   control-border token, no group box. */
 .ui-page-photography .photo-layout-switch {
   display: flex;
-  gap: var(--ed-space-5);
+  gap: var(--ed-space-3);
 }
 
 .ui-page-photography .photo-layout-switch button {
+  display: inline-flex;
+  align-items: flex-end;
   min-height: 44px;
-  padding: 0;
-  border: 0;
+  padding: 0 .5rem 6px;
+  border: 1px solid transparent;
+  border-bottom-color: var(--obs-control-border);
+  border-radius: 0;
   background: none;
-  color: var(--obs-muted);
-  font-size: var(--ed-small);
+  color: var(--obs-text);
+  font-size: var(--ed-label);
   font-weight: 600;
+  line-height: 1.4;
   text-decoration: underline 2px transparent;
   text-underline-offset: .5em;
-  transition: box-shadow .16s;
-}
-
-.ui-page-photography .photo-layout-switch :is(button:hover, [aria-pressed="true"]) {
-  color: var(--obs-text);
+  transition: background-color .16s, border-color .16s, box-shadow .16s, color .16s;
 }
 
 .ui-page-photography .photo-layout-switch [aria-pressed="true"] {
   text-decoration-color: currentColor;
 }
 
-/* The old light (c4): a brass inner bar marks the chosen layout (E048); a tile takes a steel outline and a soft glow
-   under the pointer (E047). Forced colours keep the underline and the focus ring alone. */
+/* The old light (c4) on the new forms: under the pointer or keyboard focus a layout's beam lights brass to steel over
+   a warm pool with the soft gold glow; the chosen layout reads in brass over a 2 px brass beam on a warm pool (the old
+   brass inner bar, E048); a tile takes a steel outline and a soft glow under the pointer (E047). Forced colours keep
+   the underline, a double border and the focus ring alone. */
+@media (hover: hover) and (forced-colors: none) {
+  .ui-page-photography .photo-layout-switch button:hover:not([aria-pressed="true"]) {
+    border-bottom-color: transparent;
+    background: var(--obs-beam-lit) 0 100% / 100% 1px no-repeat border-box, radial-gradient(closest-side, var(--obs-pool-warm), transparent);
+    box-shadow: var(--obs-beam-glow);
+  }
+
+  /* The chosen layout still answers the pointer: the gold glow under its brass beam and a deeper pool. */
+  .ui-page-photography .photo-layout-switch [aria-pressed="true"]:hover {
+    background: radial-gradient(closest-side, var(--obs-pool-warm), transparent), radial-gradient(closest-side, var(--obs-pool-hover), transparent);
+    box-shadow: inset 0 -1px var(--obs-accent), var(--obs-beam-glow);
+  }
+}
+
 @media (forced-colors: none) {
+  .ui-page-photography .photo-layout-switch button:focus-visible:not([aria-pressed="true"]) {
+    border-bottom-color: transparent;
+    background: var(--obs-beam-lit) 0 100% / 100% 1px no-repeat border-box, radial-gradient(closest-side, var(--obs-pool-warm), transparent);
+    box-shadow: var(--obs-beam-glow);
+  }
+
   .ui-page-photography .photo-layout-switch [aria-pressed="true"] {
+    border-bottom-color: var(--obs-accent);
+    background: radial-gradient(closest-side, var(--obs-pool-warm), transparent);
+    box-shadow: inset 0 -1px var(--obs-accent);
+    color: var(--obs-accent);
     text-decoration-color: transparent;
-    box-shadow: inset 0 -2px var(--obs-accent);
+  }
+
+  .ui-page-photography .photo-tile {
+    box-shadow: var(--obs-print-shadow);
   }
 
   .ui-page-photography .photo-tile:is(:hover, :focus-visible) {
@@ -63,14 +121,25 @@
 }
 
 .ui-page-photography .obs-present-launch:not(:has(svg)) {
-  padding-inline-start: calc(1.25rem + 18px + var(--ed-space-2));
+  padding-inline-start: calc(.5rem + 18px + var(--ed-space-2));
 }
 
-@media (max-width: 760px) {
-  .ui-page-photography .obs-present-launch {
-    flex: 1 0 100%;
-  }
+/* The camera: version 1's setup card, a 20 px title over the muted line. */
+.ui-page-photography .photo-camera__setup {
+  max-width: var(--measure-body);
 }
+
+.ui-page-photography .photo-camera__setup > h3 {
+  margin-block-end: var(--ed-space-2);
+  font-size: var(--ed-h3);
+  line-height: 1.35;
+}
+
+.ui-page-photography .photo-camera__setup > p {
+  margin-block-start: var(--ed-space-4);
+  color: var(--obs-muted);
+}
+
 
 /* Justified rows (src/lib/photo-rows.js) in the section container. */
 .ui-page-photography .photo-experience {
@@ -88,10 +157,12 @@
 .ui-page-photography .photo-tile {
   --photo-target-h: 21.5cqw;
   --photo-grow: var(--photo-grow-wide);
-  --photo-row-h: calc((100cqw - 1px - var(--photo-gaps-wide) * var(--photo-gap)) / var(--photo-sum-wide));
+  --photo-row-h: min(calc((100cqw - 1px - var(--photo-gaps-wide) * var(--photo-gap)) / var(--photo-sum-wide)), 270px);
   display: block;
   flex: var(--photo-grow, var(--photo-ratio)) 1 calc(var(--photo-ratio) * var(--photo-row-h, var(--photo-target-h)));
   min-width: 0;
+  overflow: hidden;
+  border-radius: var(--radius-record);
   background: var(--obs-plate);
   text-decoration: none;
   cursor: zoom-in;
@@ -105,7 +176,7 @@
   .ui-page-photography .photo-tile {
     --photo-target-h: 26cqw;
     --photo-grow: var(--photo-grow-medium);
-    --photo-row-h: calc((100cqw - 1px - var(--photo-gaps-medium) * var(--photo-gap)) / var(--photo-sum-medium));
+    --photo-row-h: min(calc((100cqw - 1px - var(--photo-gaps-medium) * var(--photo-gap)) / var(--photo-sum-medium)), 270px);
   }
 }
 
@@ -117,7 +188,7 @@
   .ui-page-photography .photo-tile {
     --photo-target-h: 36cqw;
     --photo-grow: var(--photo-grow-narrow);
-    --photo-row-h: calc((100cqw - 1px - var(--photo-gaps-narrow) * var(--photo-gap)) / var(--photo-sum-narrow));
+    --photo-row-h: min(calc((100cqw - 1px - var(--photo-gaps-narrow) * var(--photo-gap)) / var(--photo-sum-narrow)), 270px);
   }
 }
 
@@ -146,15 +217,22 @@
   gap: var(--ed-space-6) var(--ed-space-4);
 }
 
+/* Each frame a night plate mounted as a print, its plate number below. */
 .ui-page-photography [data-photo-layout="contact"] .photo-tile {
+  overflow: visible;
   background: none;
+}
+
+.ui-page-photography [data-photo-layout="contact"] .photo-tile:not(:hover, :focus-visible) {
+  box-shadow: none;
 }
 
 .ui-page-photography [data-photo-layout="contact"] img {
   aspect-ratio: 4 / 3;
   object-fit: contain;
-  border: 1px solid var(--obs-hairline);
+  border-radius: var(--radius-record);
   background: var(--obs-plate);
+  box-shadow: var(--obs-print-shadow);
 }
 
 .ui-page-photography [data-photo-layout="contact"] .photo-index-label {
@@ -164,9 +242,58 @@
   font-size: var(--ed-caption);
 }
 
-@media (min-width: 1200px) {
-  .ui-page-photography .photo-camera > h3 {
-    grid-column: margin;
-    align-self: baseline;
+@media (forced-colors: active) {
+  .ui-page-photography .photo-layout-switch button {
+    border-color: transparent;
+    border-bottom-color: ButtonText;
+  }
+
+  .ui-page-photography .photo-layout-switch [aria-pressed="true"] {
+    border-bottom: 3px double Highlight;
+  }
+}
+
+/* Forced colours and print: the section line a plain rule; a contact-sheet frame a hairline, no shadow. */
+@media (forced-colors: active), print {
+  .ui-page-photography .photo-experience {
+    border-top: 1px solid var(--obs-line);
+    background: none;
+  }
+
+  .ui-page-photography .photo-tile {
+    box-shadow: none;
+  }
+
+  .ui-page-photography [data-photo-layout="contact"] img {
+    border: 1px solid var(--obs-hairline);
+    box-shadow: none;
+  }
+}
+
+/* The layout switch and Present lie in the opening view, where the sheet is still rising over the far plane and the old
+   switch box and button face hid Bennu. A soft shade pool (Space dark, Light paper) lies under it, feathered on all
+   four sides, below its lines, pools and words: the far plane keeps its strength around it. Forced colours and print:
+   none. */
+@media screen and (forced-colors: none) {
+  .ui-page-photography .obs-photo-tools {
+    position: relative;
+  }
+
+  .ui-page-photography .obs-photo-tools::before {
+    content: "";
+    position: absolute;
+    inset: -20px -48px;
+    z-index: -1;
+    background: var(--obs-pool-shade);
+    mask-image: linear-gradient(90deg, transparent, #000 48px, #000 calc(100% - 48px), transparent), linear-gradient(transparent, #000 20px, #000 calc(100% - 20px), transparent);
+    mask-composite: intersect;
+    pointer-events: none;
+  }
+}
+
+@media screen and (forced-colors: none) and (max-width: 760px) {
+  .ui-page-photography .obs-photo-tools::before {
+    inset: -20px calc(-1 * var(--page-pad));
+    mask-image: linear-gradient(90deg, transparent, #000 18px, #000 calc(100% - 18px), transparent), linear-gradient(transparent, #000 20px, #000 calc(100% - 20px), transparent);
   }
 }

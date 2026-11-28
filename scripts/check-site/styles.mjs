@@ -103,8 +103,8 @@ export default async function checkStyles({ root, distDir, publicDir, fail, read
     fail("assets/css/site.css: missing soft navigation stability styles (.mads-soft-nav-active)");
   }
   // Text never rests on undimmed imagery: no background image on body or its pseudo-elements, whatever the theme,
-  // except the page backdrops of components/backdrop.css (owner, 2026-11-18), each held to its selector, media and
-  // images (the band's veil alone while its image waits for the page to load). The body is reached as body, body.x,
+  // except the band of components/backdrop.css (owner, 2026-11-18), held to its selector, media and images (its veil
+  // alone while its image waits for the page to load). Each page's picture (2026-11-28) is a mask, never a background. The body is reached as body, body.x,
   // :where(body) or through its page class (.ui-page-*, which only body carries), with or without a state prefix.
   const onBodyOrPage = (selector) => {
     const subject = selector.split(/\s*[\s>+~]\s*(?![^(]*\))/).pop();
@@ -113,8 +113,6 @@ export default async function checkStyles({ root, distDir, publicDir, fail, read
   const squeeze = (text) => text.replace(/\s+/g, "").replace(/["']/g, "").toLowerCase();
   const floatMedia = "@media(min-width:761px)and(min-height:600px)and(forced-colors:none)";
   const backdrops = [
-    { selector: "body::before", media: "", images: ["url(../img/asteroid-bennu-1280.webp)"] },
-    { selector: "body::before", media: "@media(max-width:760px)", images: ["url(../img/asteroid-bennu-800.webp)"] },
     { selector: "body::after", media: floatMedia, images: ["var(--obs-band-veil)", "url(../img/solar_system_true_color-1600.webp)"] },
     // Until html.backdrop-ready (after the load event, observatory-interactions.js) the band shows its veil alone.
     { selector: "html:not(.backdrop-ready) body::after", media: "@media(scripting:enabled)", images: ["var(--obs-band-veil)"] }
@@ -133,9 +131,29 @@ export default async function checkStyles({ root, distDir, publicDir, fail, read
   backdrops.forEach((entry, index) => {
     if (!seen.has(index)) fail(`assets/css/site.css: the page backdrop ${entry.selector}${entry.media ? ` in ${entry.media}` : ""} with ${entry.images.join(", ")} is missing or changed (components/backdrop.css)`);
   });
-  // Bennu is always dimmed and never takes input, so text never rests on an undimmed image.
-  const bennu = rules.filter((rule) => !rule.conditions.length && rule.selectors.includes("body::before"));
-  const declares = (property, value) => bennu.some((rule) => rule.declarations.some((have) => have.property === property && squeeze(have.value) === squeeze(value)));
-  if (!declares("opacity", "var(--obs-backdrop-opacity)")) fail("assets/css/site.css: body::before (the Bennu backdrop) must declare opacity: var(--obs-backdrop-opacity)");
-  if (!declares("pointer-events", "none")) fail("assets/css/site.css: body::before (the Bennu backdrop) must declare pointer-events: none");
+  // Each page's picture (2026-11-28) is always dimmed, drawn as a luminance mask in the far ink and never takes input,
+  // so text never rests on an undimmed image; every page names a picture, and every picture is a mask file.
+  const backdrop = rules.filter((rule) => !rule.conditions.length && rule.selectors.includes("body::before"));
+  const declares = (property, value) => backdrop.some((rule) => rule.declarations.some((have) => have.property === property && squeeze(have.value) === squeeze(value)));
+  for (const [property, value] of [["opacity", "calc(var(--obs-far-opacity) * var(--bd-k, 1))"], ["background", "var(--obs-far-ink)"], ["mask-mode", "luminance"], ["pointer-events", "none"]]) {
+    if (!declares(property, value)) fail(`assets/css/site.css: body::before (the page backdrop) must declare ${property}: ${value}`);
+  }
+  const pictures = new Map();
+  for (const rule of rules) {
+    const mask = rule.declarations.find(({ property }) => property === "--bd-mask");
+    if (!mask) continue;
+    const media = rule.conditions.map(squeeze).join("");
+    for (const selector of rule.selectors) pictures.set(`${selector}${media}`, squeeze(mask.value));
+    if (!/^url\(\.\.\/img\/(?:backdrops\/[a-z0-9-]+-mask-(?:1600|800)|asteroid-bennu-(?:1280|800))\.webp\)$/.test(squeeze(mask.value))) fail(`assets/css/site.css: ${rule.selectors.join(", ")} names a page picture that is not a backdrop mask (${mask.value})`);
+  }
+  // Home shows two comets (owner, 2026-11-28): Comet McNaught in the opening (pages/home-opening.css) and Comet West
+  // behind the sheet; the McNaught mask that was the opening's after-image is retired.
+  for (const [key, file] of [[".ui-page-home", "comet-west-mask-1600"], [".ui-page-home@media(max-width:760px)", "comet-west-mask-800"]]) {
+    if (pictures.has(key) && pictures.get(key) !== `url(../img/backdrops/${file}.webp)`) fail(`assets/css/site.css: Home's far-plane picture must be Comet West (${file}.webp), found ${pictures.get(key)}`);
+  }
+  if ([...pictures.values()].some((value) => value.includes("comet-mcnaught-mask"))) fail("assets/css/site.css: the retired McNaught backdrop mask is still named");
+  for (const page of ["home", "research", "ryugu-bennu", "origins", "research-log", "paper-shelf", "cv", "photography", "contact", "not-found", "research-graduation"]) {
+    if (!pictures.has(`.ui-page-${page}`)) fail(`assets/css/site.css: .ui-page-${page} names no page picture (--bd-mask, components/backdrop.css)`);
+    if (!pictures.has(`.ui-page-${page}@media(max-width:760px)`)) fail(`assets/css/site.css: .ui-page-${page} names no phone picture (--bd-mask in @media (max-width: 760px))`);
+  }
 }

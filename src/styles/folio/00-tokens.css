@@ -1,4 +1,4 @@
-/* @owner WP1 · @budget 20KB · @important 0 · Design tokens: colour for both themes, type, spacing, motion, layers and layout */
+/* @owner WP1 · @budget 31KB · @important 0 · Design tokens: colour for both themes, type, spacing, motion, layers and layout */
 /* The only file that may name [data-theme]. One attribute on html decides the theme: Space is the server default
    (data-theme="space" data-theme-space) and lives on :root; Light applies only when the preload or theme.js sets
    data-theme="light" without data-theme-space, mirroring the inline first-paint style in SiteShell.astro. The grounds
@@ -20,6 +20,8 @@
   --obs-muted: #afb6c2;
   --obs-hairline: rgba(238, 233, 224, .12);
   --obs-rule: rgba(238, 233, 224, .6);
+  /* Version 1's line: section rules, panel and card frames, the card grid's gutters (not a control boundary). */
+  --obs-line: #323846;
   --obs-control-border: #727a87;
   --obs-accent: #d2bb8f;
   --obs-link: #a6c1df;
@@ -36,9 +38,21 @@
   --obs-header-surface: rgba(15, 22, 37, .9);
   --obs-band-opacity: .96;
   --obs-band-veil: linear-gradient(rgba(15, 22, 37, .72), rgba(15, 22, 37, .82));
-  --obs-backdrop-opacity: .16;
-  --obs-backdrop-opacity-home: .4;
-  --obs-backdrop-tone: none;
+  /* Page backdrops (components/backdrop.css, 2026-11-28: one picture per page): a greyscale light mask drawn in this
+     ink at this strength, lighter on phones; the sheet dims it behind the reading column. */
+  --obs-far-ink: color-mix(in srgb, var(--obs-edge-cool) 45%, var(--obs-text));
+  --obs-far-opacity: .42;
+  --obs-far-opacity-phone: .26;
+  /* The Home opening (pages/home-opening.css, 2026-11-28): Comet McNaught as a night print on a ground sampled from the
+     photograph's own left edge (navy sky, the twilight band, the horizon, the sea), so its feather is seamless. The
+     print files carry their margins and feathers, so the painted picture always covers the window (never the LCP).
+     Under the entrance the night print is already there; the Earth dissolves into it. */
+  --obs-open-ground: linear-gradient(180deg, #0b111a 0%, #0d1823 30%, #11202e 50%, #152738 63%, #1a2c3e 72%, #222f3b 79%, #2c3036 84%, #3a3530 87.5%, #322d27 89.4%, #0c1219 89.8%, #0a0e15 100%);
+  --obs-open-ground-phone: linear-gradient(180deg, #0b111a 0%, #11202e 35%, #1a2c3e 50.4%, #2c3036 58.8%, #322d27 62.6%, #0c1219 62.9%, #0a0e15 70%, #0d1320 100%);
+  --obs-open-print: url("../img/opening/comet-mcnaught-opening-wide-1000.webp");
+  --obs-open-print-hi: url("../img/opening/comet-mcnaught-opening-wide-1600.webp");
+  --obs-open-print-phone: url("../img/opening/comet-mcnaught-opening-phone-1500.webp");
+  --obs-open-print-entrance: 1;
   --obs-glow: rgba(232, 222, 202, .12);
   --obs-gold-glow: rgba(210, 187, 143, .16);
   --obs-edge-cool: #b3cce6;
@@ -47,7 +61,7 @@
   --obs-sheen-primary: linear-gradient(135deg, rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 40%, rgba(15, 22, 37, .1) 72%, rgba(255, 255, 255, .28));
   --obs-control-shadow: inset 0 1px rgba(240, 235, 226, .14), 0 2px 6px rgba(0, 0, 0, .28);
   --obs-control-glow: inset 0 1px rgba(240, 235, 226, .2), 0 4px 12px rgba(0, 0, 0, .32), 0 0 0 1px color-mix(in srgb, var(--obs-accent) 45%, transparent), 0 0 18px var(--obs-gold-glow);
-  --obs-row-glow: rgba(210, 187, 143, .08);
+  --obs-row-glow: rgba(210, 187, 143, .12);
   /* The rest of the old site's light (owner, 2026-11-18: "all of my previous effects"), at its values of 2f20d7e:
      faces, the graticule, halos, the FX switch. The Space graticule was screen-blended; these are the normal-blend
      colours that paint the same pixels. */
@@ -65,6 +79,8 @@
   --obs-subheading-glow: 0 0 12px rgba(221, 214, 198, .176);
   /* The old liquid-glass highlight (E097) as a look-alike: a band fading from the top edge; the pills' top glint. */
   --obs-glass-band: linear-gradient(rgba(255, 255, 255, .12), rgba(255, 255, 255, .04) 18%, rgba(255, 255, 255, .015) 42%, rgba(255, 255, 255, 0) 70%);
+  /* The same top light rising from nothing over 56 px, for a face whose top edge is feathered (no hard top line). */
+  --obs-glass-rise: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, .12) 56px, rgba(255, 255, 255, .04) 110px, rgba(255, 255, 255, .015) 180px, rgba(255, 255, 255, 0) 280px);
   --obs-chip-glint: inset 0 1px rgba(255, 255, 255, .14);
   --obs-bead: radial-gradient(circle, rgba(237, 220, 186, .96), rgba(217, 192, 144, .76) 48%, transparent 74%);
   --obs-bead-glow: 0 0 9px rgba(217, 192, 144, .3), 0 0 18px rgba(217, 192, 144, .07);
@@ -100,6 +116,51 @@
   --fx-gold-trail-glow: var(--fx-gold-meteor-glow);
   --fx-gold-core-glow: var(--fx-gold-meteor-head);
   --obs-planet-opacity: .78;
+  /* The lab site's language (owner, 2026-11-26: "for the boxes, borrow from the lab website"): the reading column on a
+     lifted sheet with feathered sides, groups as light pools under fading hairlines, controls as words over a beam,
+     photographs as mounted prints. No box: every value here is a pool, a line or a shade. */
+  --obs-sheet: rgba(17, 25, 41, .88);
+  --obs-sheet-solid: #111929;
+  --obs-sheet-lift: rgba(3, 6, 13, .5);
+  --obs-pool: rgba(238, 233, 224, .035);
+  --obs-pool-hover: rgba(236, 226, 206, .12);
+  --obs-pool-warm: rgba(210, 187, 143, .12);
+  --obs-pool-press: rgba(0, 0, 0, .26);
+  --obs-pool-shade: rgba(14, 21, 35, .9);
+  /* The gold the old faces carried, on the new forms (owner, 2026-11-28): Light's metal and glass sheen had a 5 to 6 %
+     brass stop, now a faint brass pool under a control's or group's words, and on the contents band a flat tint feathered
+     like the band, so the ground under its words stays even (Space's sheen had none); a brass evidence tag's 9 % wash,
+     now a pool behind its gold word. */
+  --obs-sheen-pool: none;
+  --obs-sheen-band: none;
+  --obs-pool-tag: color-mix(in srgb, var(--obs-accent) 9%, transparent);
+  /* The Home hero's shade (lighter, so Bennu keeps more of its strength around the name; E020, E057), and how far an
+     opening pool reaches left of its words and fades in there: Space past the sheet's side, Light inside the solid
+     paper, so the pale pool never paints over the sheet's feathered side shade. */
+  --obs-pool-shade-hero: rgba(14, 21, 35, .74);
+  --obs-hero-pool-inset: -22px -44px -18px -48px;
+  --obs-hero-pool-mask: linear-gradient(90deg, transparent, #000 48px, #000 calc(100% - 40px), transparent), linear-gradient(transparent, #000 20px, #000 calc(100% - 16px), transparent);
+  --obs-emblem-tone: brightness(.9);
+  --obs-pool-shade-reach: -140px;
+  --obs-pool-shade-feather: 120px;
+  --obs-guide-reach: 64px;
+  --obs-pool-shade-note: rgba(14, 21, 35, .9);
+  --obs-band-pool: rgba(12, 18, 31, .66);
+  --obs-band-shade: rgba(0, 0, 0, .16);
+  --obs-fade-line: linear-gradient(90deg, transparent, rgba(238, 233, 224, .16) 10% 90%, transparent);
+  --obs-fade-line-v: linear-gradient(180deg, transparent, rgba(238, 233, 224, .14) 12% 88%, transparent);
+  --obs-fade-start: linear-gradient(90deg, rgba(238, 233, 224, .2), rgba(238, 233, 224, .12) 60%, transparent);
+  --obs-head-line: linear-gradient(90deg, var(--obs-accent), rgba(238, 233, 224, .16) 64px, rgba(238, 233, 224, .1) 60%, transparent);
+  --obs-print-shadow: 0 1px 2px rgba(0, 0, 0, .38), 0 6px 14px -6px rgba(0, 0, 0, .42), 0 26px 48px -22px rgba(0, 0, 0, .62);
+  --obs-grid-minor: rgba(174, 203, 236, .03);
+  --obs-grid-major: rgba(174, 203, 236, .07);
+  /* The brightest stop of the gate's sweep across its words (E003): white on the dark band, brass on paper. */
+  --obs-sweep-text: #fff;
+  /* Brass marks that follow each box's own accent: the 28 px hairline of a numbered caption, the lit beam of a control
+     (brass to steel, as the edge light) and its glow. */
+  --obs-caption-rule: linear-gradient(90deg, var(--obs-accent), color-mix(in srgb, var(--obs-accent) 30%, transparent));
+  --obs-beam-lit: linear-gradient(90deg, var(--obs-accent), var(--obs-edge-cool));
+  --obs-beam-glow: 0 6px 10px -6px var(--obs-gold-glow);
 }
 
 :root:where([data-theme="light"]:not([data-theme-space])) {
@@ -113,6 +174,7 @@
   --obs-muted: #555c6a;
   --obs-hairline: rgba(29, 36, 52, .14);
   --obs-rule: #1d2434;
+  --obs-line: #dbd4c8;
   --obs-control-border: #857c6f;
   --obs-accent: #765725;
   --obs-link: #355781;
@@ -127,9 +189,18 @@
   --obs-header-surface: rgba(247, 243, 235, .9);
   --obs-band-opacity: .95;
   --obs-band-veil: linear-gradient(rgba(250, 247, 240, .89), rgba(250, 247, 240, .92));
-  --obs-backdrop-opacity: .045;
-  --obs-backdrop-opacity-home: .1;
-  --obs-backdrop-tone: sepia(.35);
+  --obs-far-ink: color-mix(in srgb, var(--obs-accent) 55%, var(--obs-text));
+  --obs-far-opacity: .3;
+  --obs-far-opacity-phone: .18;
+  /* The opening in Light: the same plate as a sepia ink impression on the paper (ink and paper baked into the files:
+     public/assets/img/opening/PROVENANCE.md); after the entrance the night dissolves into blank paper, then the print
+     develops. */
+  --obs-open-ground: linear-gradient(var(--obs-paper), var(--obs-paper));
+  --obs-open-ground-phone: linear-gradient(var(--obs-paper), var(--obs-paper));
+  --obs-open-print: url("../img/opening/comet-mcnaught-ink-wide-1000.webp");
+  --obs-open-print-hi: url("../img/opening/comet-mcnaught-ink-wide-1600.webp");
+  --obs-open-print-phone: url("../img/opening/comet-mcnaught-ink-phone-1500.webp");
+  --obs-open-print-entrance: 0;
   --obs-glow: rgba(92, 72, 40, .09);
   --obs-gold-glow: rgba(118, 87, 37, .1);
   --obs-edge-cool: #3d5d81;
@@ -138,7 +209,7 @@
   --obs-sheen-primary: linear-gradient(135deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, 0) 42%, rgba(0, 0, 0, .12) 72%, rgba(255, 255, 255, .1));
   --obs-control-shadow: inset 0 1px #fff, 0 1px 3px rgba(52, 42, 28, .12);
   --obs-control-glow: inset 0 1px #fff, 0 3px 9px rgba(52, 42, 28, .16), 0 0 0 1px color-mix(in srgb, var(--obs-accent) 35%, transparent), 0 0 16px var(--obs-gold-glow);
-  --obs-row-glow: rgba(118, 87, 37, .06);
+  --obs-row-glow: rgba(118, 87, 37, .13);
   --obs-control-face: linear-gradient(135deg, #fffefb, #f9f6ef 58%, #fcfaf6);
   --obs-control-secondary-face: linear-gradient(135deg, #fffefc, #f7f4ef 58%, #fbf9f5);
   --obs-control-active-face: linear-gradient(#f6efe1, #efe6d3);
@@ -150,6 +221,7 @@
   --obs-heading-glow: 0 1px 0 #fff, 0 0 18px rgba(255, 255, 255, .7);
   --obs-subheading-glow: var(--obs-heading-glow);
   --obs-glass-band: linear-gradient(rgba(255, 255, 255, .16), rgba(255, 255, 255, .06) 16%, rgba(255, 255, 255, .02) 42%, rgba(255, 255, 255, 0) 70%);
+  --obs-glass-rise: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, .16) 56px, rgba(255, 255, 255, .06) 110px, rgba(255, 255, 255, .02) 180px, rgba(255, 255, 255, 0) 280px);
   --obs-chip-glint: inset 0 1px rgba(255, 255, 255, .3);
   --obs-bead: radial-gradient(circle, rgba(211, 196, 167, .88), rgba(184, 165, 129, .58) 48%, transparent 74%);
   --obs-bead-glow: none;
@@ -160,7 +232,7 @@
   --obs-fx-face: linear-gradient(rgba(255, 255, 255, .78), rgba(247, 243, 235, .7));
   --obs-fx-face-on: linear-gradient(rgba(255, 250, 239, .84), rgba(240, 233, 219, .74));
   --obs-fx-text: rgba(55, 64, 84, .78);
-  --obs-fx-text-on: rgba(107, 86, 49, .92);
+  --obs-fx-text-on: rgb(98, 78, 44);
   --obs-fx-lift-on: 0 14px 34px rgba(55, 63, 83, .14), 0 0 20px rgba(191, 172, 138, .125), inset 0 0 0 1px rgba(255, 255, 255, .62), inset 0 1px rgba(255, 255, 255, .94);
   --obs-fx-dot: rgba(110, 122, 143, .58);
   --obs-fx-dot-glow: inset 0 0 0 1px rgba(255, 255, 255, .62), 0 0 8px rgba(78, 95, 118, .16);
@@ -185,6 +257,35 @@
   --fx-gold-trail-glow: var(--fx-meteor-glow);
   --fx-gold-core-glow: var(--fx-meteor-head);
   --obs-planet-opacity: .54;
+  /* The lab's paper sheet and its shades (its paper.css), in this site's ivory and ink. */
+  --obs-sheet: rgba(252, 250, 246, .94);
+  --obs-sheet-solid: #fcfaf6;
+  --obs-sheet-lift: rgba(70, 52, 24, .1);
+  --obs-pool: rgba(255, 255, 255, .5);
+  --obs-pool-hover: rgba(118, 87, 37, .13);
+  --obs-pool-warm: rgba(118, 87, 37, .16);
+  --obs-pool-press: rgba(52, 42, 28, .12);
+  --obs-pool-shade: rgba(252, 250, 246, .9);
+  --obs-sheen-pool: radial-gradient(closest-side, rgba(118, 87, 37, .06), transparent);
+  --obs-sheen-band: linear-gradient(90deg, transparent, rgba(118, 87, 37, .06) var(--obs-guide-reach) calc(100% - var(--obs-guide-reach)), transparent);
+  --obs-pool-shade-hero: rgba(252, 250, 246, .8);
+  --obs-hero-pool-inset: -56px -120px -40px -48px;
+  --obs-hero-pool-mask: linear-gradient(90deg, transparent, #000 48px, #000 calc(100% - 110px), transparent), linear-gradient(transparent, #000 48px, #000 calc(100% - 36px), transparent);
+  --obs-emblem-tone: none;
+  --obs-pool-shade-reach: -48px;
+  --obs-pool-shade-feather: 48px;
+  --obs-guide-reach: 24px;
+  --obs-pool-shade-note: rgba(252, 250, 246, .72);
+  --obs-band-pool: rgba(250, 247, 240, .6);
+  --obs-band-shade: rgba(52, 42, 28, .08);
+  --obs-fade-line: linear-gradient(90deg, transparent, rgba(29, 36, 52, .16) 10% 90%, transparent);
+  --obs-fade-line-v: linear-gradient(180deg, transparent, rgba(29, 36, 52, .14) 12% 88%, transparent);
+  --obs-fade-start: linear-gradient(90deg, rgba(29, 36, 52, .22), rgba(29, 36, 52, .12) 60%, transparent);
+  --obs-head-line: linear-gradient(90deg, var(--obs-accent), rgba(29, 36, 52, .16) 64px, rgba(29, 36, 52, .1) 60%, transparent);
+  --obs-print-shadow: 0 1px 2px rgba(40, 30, 15, .12), 0 6px 14px -6px rgba(60, 45, 20, .18), 0 26px 48px -22px rgba(60, 45, 20, .36);
+  --obs-grid-minor: rgba(29, 36, 52, .03);
+  --obs-grid-major: rgba(29, 36, 52, .06);
+  --obs-sweep-text: #765725;
 }
 
 /* The two glow tokens at the default intensity, Immersive (observatory-interactions.js), as the old site set them.
@@ -211,6 +312,9 @@
   --obs-sweep: rgba(252, 235, 202, .28);
   --obs-footer-halo: 0 1px 10px rgba(255, 255, 255, .78);
   --obs-touch-shadow: 0 7px 16px rgba(0, 0, 0, .16);
+  /* The effects button's shadows as pools under the borderless icon (E139 in Chromium, E130 in Edge). */
+  --obs-fx-shade: rgba(0, 0, 0, .18);
+  --obs-fx-shade-edge: rgba(0, 0, 0, .16);
   --obs-fx-settings-shadow: 0 14px 32px rgba(0, 0, 0, .18), 0 0 16px rgba(217, 192, 144, .027), inset 0 0 0 1px rgba(217, 192, 144, .027), inset 0 1px rgba(255, 255, 255, .11), inset 0 -1px rgba(217, 192, 144, .043);
   --obs-card-depth: inset 0 1px rgba(221, 232, 245, .2), 0 10px 30px rgba(0, 0, 0, .1);
   --obs-hint-shadow: 0 1px 5px #000;
@@ -227,6 +331,11 @@
   --obs-record-depth: inset 0 1px color-mix(in srgb, var(--obs-edge-cool) 12%, transparent), 0 4px 14px rgba(0, 0, 0, .1);
   --obs-record-depth-hover: inset 0 1px rgba(255, 255, 255, .047), 0 6px 18px rgba(0, 0, 0, .04);
   --obs-glass-glint: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .4), rgba(255, 255, 255, 0));
+  /* The print shadow a plate casts on the page, set here on :root alone so .on-night never redefines it: a night
+     plate keeps the Space colours inside, but its shadow falls on the page's own ground (the paper shadow in Light). */
+  --obs-print-drop: var(--obs-print-shadow);
+  /* The glint at the same peak, fading out over 30 % at each end (the lab's fading hairline). */
+  --obs-glass-glint-soft: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .4) 30% 70%, rgba(255, 255, 255, 0));
   /* The Home button's chip kept these steel values in both themes. */
   --obs-icon-chip-edge: rgba(174, 203, 236, .28);
   --obs-icon-chip-face: rgba(174, 203, 236, .11);
@@ -268,24 +377,34 @@
   --fx-dust-opacity: .7;
   --fx-orbit-alpha: .72;
 
-  /* Type. Sizes interpolate linearly from 390 px to 1440 px; the root size is never set in px. */
-  --type-serif: "Source Serif 4", "Serif Fallback", Georgia, "Noto Serif", serif;
-  --type-sans: "Source Sans 3", "Sans Fallback", Arial, Roboto, sans-serif;
+  /* Type: version 1's (2f20d7e), restored with its layouts (owner, 2026-11-25). Montserrat for text, headings, labels
+     and controls; the personal name in the Georgia stack. Sizes are version 1's rendered values; phones take theirs
+     below 760 px (the media rules at the end). The root size is never set in px. */
+  --type-sans: Montserrat, "Sans Fallback", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+  --type-heading: Montserrat, "Sans Fallback", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+  --type-name: Georgia, "Times New Roman", serif;
   --type-mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
-  --ed-name: clamp(3rem, 2.0714rem + 3.8095vw, 5.5rem);
-  --ed-display: clamp(2.5rem, 1.7571rem + 3.0476vw, 4.5rem);
-  --ed-h2: clamp(1.875rem, 1.55rem + 1.3333vw, 2.75rem);
-  --ed-h3: clamp(1.375rem, 1.2357rem + .5714vw, 1.75rem);
-  --ed-h4: clamp(1.125rem, 1.0786rem + .1905vw, 1.25rem);
-  --ed-lead: clamp(1.1875rem, 1.0946rem + .381vw, 1.4375rem);
-  --ed-body: clamp(1.0625rem, 1.0393rem + .0952vw, 1.125rem);
-  --ed-small: .9375rem;
-  --ed-caption: .875rem;
+  /* Quiet display type (2026-11-26): the name, titles and section headings lighter, a little larger, with more
+     leading; same families. */
+  --ed-name: 3.375rem;
+  --ed-display: clamp(2.25rem, 5.2vw, 4.6rem);
+  --ed-h2: 1.875rem;
+  --ed-h2-small: 1.5rem;
+  --ed-h3: 1.25rem;
+  --ed-h4: 1rem;
+  --ed-lead: 1.125rem;
+  --ed-body: 1rem;
+  --ed-small: .875rem;
+  --ed-caption: .8125rem;
   --ed-label: .75rem;
   --ed-runhead: .6875rem;
-  --measure-body: 36rem;
-  --measure-lead: 32rem;
-  --measure-caption: 34rem;
+  /* The one small label site-wide (kickers, section and contents labels, fact terms, legends, column labels). */
+  --label-size: .75rem;
+  --label-track: .14em;
+  --label-weight: 600;
+  --measure-body: 45rem;
+  --measure-lead: 45rem;
+  --measure-caption: 40rem;
 
   /* Spacing: 4, 8, 12, 16, 24, 32, 48, 64, 96 and 128 px. */
   --ed-space-1: .25rem;
@@ -298,11 +417,18 @@
   --ed-space-8: 4rem;
   --ed-space-9: 6rem;
   --ed-space-10: 8rem;
-  --section-gap: 6rem;
+  /* Version 1's section rhythm: 40 px above the line, 32 px below it. */
+  --section-gap: 2.5rem;
+  --section-pad: 2rem;
 
-  /* Radii: 0 for images and plates, 2 px for records and chips, 4 px for controls. */
+  /* Radii, version 1's shapes: panels 16 px, framed boxes and the contents bar 12 px, cells 8 px, controls 6 px, the
+     Home buttons 10 px, nav links 3 px, chips and pills round; plates and images keep 0, records 2 px. */
   --radius-record: 2px;
-  --radius-control: 4px;
+  --radius-control: 6px;
+  --radius-panel: 16px;
+  --radius-frame: 12px;
+  --radius-cell: 8px;
+  --radius-pill: 999px;
 
   /* Motion: interface motion answers input and lasts at most 320 ms. */
   --ed-dur-1: 120ms;
@@ -334,6 +460,12 @@
   --page-max-wide: 85rem;
   --page-pad: 2.5rem;
   --grid-gap: 1.5rem;
+  /* The lifted sheet under main (03-base.css), the lab's geometry: the column plus a side pad and a feathered fade,
+     never narrower than the content; it rises to full strength --sheet-rise down (E020: 440 px, 280 px on phones). */
+  --sheet-pad: clamp(32px, 6vw, 120px);
+  --sheet-fade: clamp(48px, (100vw - var(--page-max)) / 2, 140px);
+  --sheet-half: calc(var(--page-max) / 2 + var(--sheet-pad) + var(--sheet-fade) / 2);
+  --sheet-rise: 440px;
   /* The floating header's exact height where it floats (components/header.css), else 0: sticky bars, the scroll
      padding and the band read it. */
   --header-clearance: 0px;
@@ -341,13 +473,13 @@
 
 @media (min-width: 761px) and (min-height: 600px) and (forced-colors: none) {
   :root {
-    --header-clearance: 101px;
+    --header-clearance: 120px;
   }
 }
 
 @media (min-width: 1200px) and (min-height: 600px) and (forced-colors: none) {
   :root {
-    --header-clearance: 73px;
+    --header-clearance: 109px;
   }
 }
 
@@ -358,15 +490,46 @@
 
 @media (max-width: 1199px) {
   :root {
-    --section-gap: 4.5rem;
     --grid-gap: 1.25rem;
   }
 }
 
+/* Wide windows: the lab's wider column (1,320 px from 1600 px, 1,380 px from 1800 px), the header 160 px wider; the
+   sheet follows through --sheet-half and the margins carry the archive grid (03-base.css). */
+@media (min-width: 1600px) {
+  :root {
+    --page-max: 82.5rem;
+    --page-max-wide: 92.5rem;
+  }
+}
+
+/* From 1800 px the margins show far more of a page backdrop beside the sheet, so it is quieter there and stays the
+   low-contrast far plane (its brightest light near the band's planets, not above the graticule). */
+@media (min-width: 1800px) {
+  :root {
+    --page-max: 86.25rem;
+    --page-max-wide: 96.25rem;
+    --obs-far-opacity: .34;
+  }
+
+  :root:where([data-theme="light"]:not([data-theme-space])) {
+    --obs-far-opacity: .24;
+  }
+}
+
+/* Phones: version 1's smaller text and its looser section rhythm (24 px above the line after 40 px below the
+   content, 20 px beneath it). */
 @media (max-width: 760px) {
   :root {
-    --section-gap: 3.5rem;
+    --section-gap: 4rem;
+    --section-pad: 1.25rem;
     --grid-gap: 1rem;
     --page-pad: 1.25rem;
+    --sheet-rise: 280px;
+    --ed-name: 2.25rem;
+    --ed-h2: 1.5rem;
+    --ed-h3: 1.125rem;
+    --ed-lead: .9375rem;
+    --ed-body: .96875rem;
   }
 }

@@ -11,9 +11,9 @@
 .data-table caption {
   padding-block-end: var(--ed-space-2);
   color: var(--obs-muted);
-  font-size: var(--ed-label);
-  font-weight: 600;
-  letter-spacing: .08em;
+  font-size: var(--label-size);
+  font-weight: var(--label-weight);
+  letter-spacing: var(--label-track);
   text-align: start;
   text-transform: uppercase;
 }
@@ -63,9 +63,9 @@
     content: attr(data-label);
     display: block;
     color: var(--obs-muted);
-    font-size: var(--ed-label);
-    font-weight: 600;
-    letter-spacing: .08em;
+    font-size: var(--label-size);
+    font-weight: var(--label-weight);
+    letter-spacing: var(--label-track);
     text-transform: uppercase;
   }
 

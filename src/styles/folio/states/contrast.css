@@ -1,4 +1,4 @@
-/* @owner WP1 · @budget 1.5KB · @important 0 · Forced colours and higher contrast: markers, rules and focus stay visible */
+/* @owner WP1 · @budget 2.5KB · @important 0 · Forced colours and higher contrast: markers, rules and focus stay visible */
 /* Forced colours: markers draw their fill with currentColor in a background, which the browser would drop, so they
    keep their own painting in the system text colour. The value selectors match the weight of the brass "In
    progress" rule in components/marker.css and come later, so no marker keeps a theme colour on the system
@@ -25,10 +25,26 @@
   }
 }
 
-/* More contrast: decorative hairlines become 60% of the text colour, in both themes and on night plates. */
+/* More contrast: decorative hairlines become 60% of the text colour, in both themes and on night plates; the fading
+   lines run solid at that strength; no light pool (states keep their beams and brass words); the sheet is opaque
+   (03-base.css). */
 @media (prefers-contrast: more) {
   :root,
   .on-night {
     --obs-hairline: color-mix(in srgb, var(--obs-text) 60%, transparent);
+    --obs-fade-line: linear-gradient(var(--obs-hairline), var(--obs-hairline));
+    --obs-fade-line-v: linear-gradient(var(--obs-hairline), var(--obs-hairline));
+    --obs-fade-start: linear-gradient(var(--obs-hairline), var(--obs-hairline));
+    --obs-pool: transparent;
+    --obs-pool-hover: transparent;
+    --obs-pool-warm: transparent;
+    --obs-pool-press: transparent;
+    --obs-pool-shade: transparent;
+    --obs-pool-shade-hero: transparent;
+    --obs-pool-shade-note: transparent;
+    --obs-sheen-pool: none;
+    --obs-sheen-band: none;
+    --obs-pool-tag: transparent;
+    --obs-band-pool: transparent;
   }
 }

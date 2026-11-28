@@ -41,8 +41,9 @@ try{
   assert.equal(await page.locator('main').evaluate(el=>el.inert),false);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   await page.screenshot({path:`.codex_tmp/arrival-home-${width}.png`});
-  // Phones replay from the footer; the fixed button would cover the reading column there.
-  await page.locator(width<=760?'.footer-replay':'#arrival-replay').click();
+  // Every width replays from the footer (2026-11-26: one persistent control); the fixed button never shows.
+  assert.equal(await page.locator('#arrival-replay').isVisible(),false,'The fixed Replay button never shows');
+  await page.locator('.footer-replay').click();
   await page.locator('#arrival-skip').click();
   assert.equal(await page.locator('#cosmic-arrival').evaluate(el=>el.open),false);
   await page.reload();
@@ -70,6 +71,7 @@ try{
    await page.locator('.nav a[href="cv.html"]').click();
    await page.waitForURL('**/cv.html');
    assert.equal(await page.locator('#arrival-replay').isVisible(),false,'Replay is home-only');
+   assert.equal(await page.locator('.footer-replay').isVisible(),false,'Replay entrance is home-only');
    await page.locator('.site-header .brand').click();
    await page.waitForURL('**/index.html');
   }

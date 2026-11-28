@@ -1,7 +1,9 @@
 ---
-// The site footer, a colophon in three rows (spec §3.2): the long-term question, then the owner, ORCID iD and the
-// page actions, then the imprint line, closed by the credit line for the page backdrops. Rendered by SiteShell.astro
-// after main. Styles: src/styles/folio/components/footer.css.
+// The site footer: version 1's one row (owner, 2026-11-25): the owner and ORCID iD, the long-term question and the page
+// actions; then version 3's imprint line and the credit line for the page backdrops and the page photographs and
+// drawings (2026-11-27), small, beneath it: only the pictures shown on this page (owner, 2026-11-28; page is SiteShell's
+// pageClass, else current), so soft navigation swaps the line with main (data-footer-credits, legacy-navigation.js).
+// Rendered by SiteShell.astro after main. Styles: src/styles/folio/components/footer.css.
 import { colophon } from "../data/colophon";
 import { footerItems, orcid } from "../data/site";
 import { revisionDate } from "../lib/revision";
@@ -13,20 +15,27 @@ const footerNotes = notes.map((item) => {
   const split = item.indexOf(": ");
   return split > 0 ? { label: item.slice(0, split), text: item.slice(split + 2) } : { label: "", text: item };
 });
+interface Props {
+  page: string;
+}
+
+const { page } = Astro.props;
 const revision = revisionDate();
 const { credits } = colophon;
 const { montage } = credits;
+const bennu = (credits.bennu.pages as readonly string[]).includes(page);
+const items = credits.imagery.items.filter((item) => (item.pages as readonly string[]).includes(page));
 ---
 <footer class="site-footer">
   <div class="footer-inner page">
-    {footerNotes.map((note) => <p class="footer-question">{note.label && <Fragment><span class="footer-question__label">{note.label}:</span> </Fragment>}<span class="footer-question__text">{note.text}</span></p>)}
-    <p class="footer-meta">
+    <div class="footer-meta">
       <span class="footer-identity">{identity} <a class="orcid-link orcid-link--compact" href={orcid.url} target="_blank" rel="me noopener noreferrer"><img src={orcid.icon} width="16" height="16" alt="ORCID iD"><span>{orcid.id}</span><span class="orcid-new-tab"> (opens in a new tab)</span></a></span>
+      {footerNotes.map((note) => <p class="footer-question">{note.label && <Fragment><span class="footer-question__label">{note.label}:</span> </Fragment>}<span class="footer-question__text">{note.text}</span></p>)}
       {/* Phones only: the fixed Replay button would cover the reading column there. entry.js shows it when a replay is available. */}
       <button class="footer-replay" type="button" data-arrival-replay hidden>Replay entrance</button>
       <a class="footer-top" href="#main-content">Back to top ↑</a>
-    </p>
+    </div>
     <p class="footer-colophon"><span>{colophon.imprint}</span>&nbsp;· <span>{colophon.edition}</span>&nbsp;· <span>{colophon.revisionLabel} <time datetime={revision}>{revision}</time></span>&nbsp;· <span>{colophon.type}</span>&nbsp;· <span>{colophon.build}</span></p>
-    <p class="footer-credits">{credits.label}: {credits.bennu}; {montage.lead} “<a href={montage.source.url}>{montage.title}</a>” by {montage.author}, {montage.source.label}, licensed <a href={montage.licence.url} rel="license">{montage.licence.label}</a>, {montage.changes}.</p>
+    <p class="footer-credits" data-footer-credits>{credits.label}: {bennu && <Fragment>{credits.bennu.text}; </Fragment>}{montage.lead} “<a href={montage.source.url}>{montage.title}</a>” by {montage.author}, {montage.source.label}, licensed <a href={montage.licence.url} rel="license">{montage.licence.label}</a>, {montage.changes}.{items.length > 0 && <Fragment> {credits.imagery.lead}: </Fragment>}{items.map((item, index) => <Fragment>{index > 0 && "; "}<a href={item.source}>{item.title}</a>, {item.author}, {"url" in item.licence ? <a href={item.licence.url} rel="license">{item.licence.label}</a> : item.licence.label}, {item.changes}{"shareAlike" in item && <Fragment> (this version <a href={item.licence.url} rel="license">{item.licence.label}</a>)</Fragment>}</Fragment>)}{items.length > 0 && "."}</p>
   </div>
 </footer>

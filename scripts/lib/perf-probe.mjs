@@ -134,22 +134,24 @@ export async function probe({ pages = defaultPages, widths = defaultWidths, runs
 }
 
 // Regressions of a probe against a baseline: LCP above the baseline by more than the tolerance, CLS above 0 or above
-// the baseline, whichever is larger, or a page backdrop (components/backdrop.css) as the LCP element. Pages missing from
-// the baseline are reported, not failed.
+// the baseline, whichever is larger, or a page backdrop (components/backdrop.css: each page's picture, a backdrops/
+// *-mask-1600 or -800 file, Bennu's two tiers or the band), a retired far plate, or the Home opening's comet plate
+// (pages/home-opening.css), as the LCP element.
+// Pages missing from the baseline are reported, not failed, except for a backdrop as the LCP element.
 export function compare(current, baseline, tolerance = 0.1) {
   const lines = [], regressions = [];
   for (const result of current.results) {
+    if (/asteroid-bennu|Solar_System_true_color|far-plate|backdrops\/|-mask-\d+\.webp|body::before|comet-mcnaught-(opening|ink)|home-opening__sky/.test(result.lcpElement)) {
+      const backdrop = `${result.page} @${result.width}: a backdrop became the LCP element (${result.lcpElement})`;
+      lines.push(backdrop);
+      regressions.push(backdrop);
+    }
     const before = baseline.results.find((entry) => entry.page === result.page && entry.width === result.width);
     if (!before) { lines.push(`${result.page} @${result.width}: no baseline`); continue; }
     const lcpLimit = Math.round(before.lcpMs * (1 + tolerance));
     const line = `${result.page} @${result.width}: LCP ${before.lcpMs} -> ${result.lcpMs} ms (limit ${lcpLimit}), CLS ${before.cls} -> ${result.cls}, fonts ${before.fontBytes} -> ${result.fontBytes} B`;
     lines.push(line);
     if (result.lcpMs > lcpLimit || result.cls > Math.max(0, before.cls)) regressions.push(line);
-    if (/asteroid-bennu|Solar_System_true_color/.test(result.lcpElement)) {
-      const backdrop = `${result.page} @${result.width}: a backdrop became the LCP element (${result.lcpElement})`;
-      lines.push(backdrop);
-      regressions.push(backdrop);
-    }
   }
   return { lines, regressions };
 }

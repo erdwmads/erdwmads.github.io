@@ -1,9 +1,45 @@
-/* @owner WP4 · @budget 20KB · @important 0 · Ryugu & Bennu sample-mission workspace (.mission-* under .sample-missions) */
-/* Ruled rows frame the model on its night plate (scene.css); loader.js keeps the notebook open above 960 px. */
+/* @owner WP4 · @budget 24KB · @important 0 · Ryugu & Bennu sample-mission workspace (.mission-* under .sample-missions) */
+/* Version 1's sample-return missions (owner, 2026-11-25), in the lab site's language (2026-11-26): the heading beside
+   its intro, the two missions as captions side by side over their beam (agency, title, target and years), and the
+   player without a frame: the overview, the chapter strip as numbered text steps, the chapter heading, the scene (a
+   night plate mounted as a print, scene.css) beside the notebook, the transport, the share row, divided by fading
+   lines. The instrument insets over the scene keep their square plates. loader.js keeps the notebook open above
+   960 px. */
 .sample-missions {
   margin-block-start: var(--section-gap);
-  padding-block-start: var(--ed-space-3);
-  border-top: 1px solid var(--obs-rule);
+  padding-block-start: var(--section-pad);
+  background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat;
+}
+
+.sample-missions > .mission-intro {
+  color: var(--obs-muted);
+  font-size: var(--ed-small);
+  line-height: 1.8;
+}
+
+.sample-missions > h2 {
+  max-width: 20ch;
+}
+
+/* From 961 px the intro stands beside the heading and its evidence line, at their foot, as version 1 set it. */
+@media (min-width: 961px) and (max-width: 1199px) {
+  .sample-missions > :is(.kicker, h2, .evidence-status) {
+    grid-column: 1 / 6;
+  }
+
+  .sample-missions > .mission-intro {
+    grid-column: 6 / -1;
+    grid-row: 2 / span 2;
+    align-self: end;
+  }
+}
+
+@media (min-width: 1200px) {
+  .sample-missions > .mission-intro {
+    grid-column: notes;
+    grid-row: 2 / span 2;
+    align-self: end;
+  }
 }
 
 .sample-missions [data-mission-icon] {
@@ -20,87 +56,114 @@
   stroke-width: 1.5;
 }
 
-.sample-missions .secondary[aria-pressed="true"] {
-  border-color: var(--obs-text);
-  background: var(--obs-highlight);
-}
-
-/* Glazed controls, as the old workspace's (owner, 2026-11-18): the tabs, the chapter steps, the player's secondary
-   buttons and the player itself on the glass face; their borders and shadows ease in 160 ms, a hovered control edges
-   in brass. Play stays the view's one primary. */
+/* The old workspace's glazed controls (owner, 2026-11-18; E035): the tabs, the chapter steps and the player's
+   secondary controls rest on a pool in the glass tones; their beams and glows ease in 160 ms, and under a hovering
+   pointer the beam lights brass to steel (components/surface-light.css). Play stays the view's one primary. */
 .sample-missions :is(.mission-selector button, .mission-story li button, .mission-transport .icon-button, .mission-share .button) {
-  background-image: var(--obs-glass-face);
-  transition: color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+  background-image: radial-gradient(closest-side, var(--obs-pool), transparent);
+  transition: color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease, background-color 160ms ease;
 }
 
-.mission-player {
-  background-image: var(--obs-glass-face);
-}
-
-/* The chosen mission: a brass wash over the glass, under a brass rule. */
+/* The chosen mission (the old brass wash and full brass edge): a warm pool and a 2 px brass beam, in 180 ms. */
 .sample-missions .mission-selector [aria-selected="true"] {
-  background-image: linear-gradient(115deg, var(--obs-gold-glow), transparent), var(--obs-glass-face);
+  border-bottom-color: var(--obs-accent);
+  background-image: radial-gradient(closest-side, var(--obs-pool-warm), transparent);
+  box-shadow: inset 0 -1px var(--obs-accent);
 }
 
 @media (hover: hover) and (forced-colors: none) {
-  .sample-missions :is(.mission-selector, .mission-transport, .mission-share) button:hover:not(:disabled) {
-    border-color: var(--obs-accent);
+  .sample-missions .mission-selector button:hover:not(:disabled, [aria-selected="true"]) {
+    border-bottom-color: transparent;
+    background: var(--obs-beam-lit) 0 100% / 100% 1px no-repeat border-box, radial-gradient(closest-side, var(--obs-pool-warm), transparent) 4rem 50% / min(100%, 10rem) 100% no-repeat;
   }
 
-  .sample-missions .mission-transport .icon-button:hover:not(:disabled) {
-    background-image: var(--obs-glass-face);
+  /* The chosen mission still answers the pointer: the gold glow under its brass beam and a deeper pool. */
+  .sample-missions .mission-selector [aria-selected="true"]:hover {
+    background-image: radial-gradient(closest-side, var(--obs-pool-warm), transparent), radial-gradient(closest-side, var(--obs-pool-hover), transparent);
+    box-shadow: inset 0 -1px var(--obs-accent), var(--obs-beam-glow);
   }
 }
 
+/* The missions: two captions side by side over their beam, the agency behind a vertical fading line at the left, the
+   chosen one in brass. */
 .mission-selector {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: var(--grid-gap);
-  margin-block-start: var(--ed-space-6);
+  gap: 12px;
+  margin-block-start: var(--ed-space-2);
 }
 
 .mission-selector button {
   position: relative;
   display: grid;
-  justify-items: start;
-  gap: var(--ed-space-1);
+  grid-template-columns: auto minmax(0, 1fr);
+  align-content: center;
+  align-items: center;
+  gap: 3px 14px;
   min-width: 0;
-  padding: var(--ed-space-4) var(--ed-space-4) var(--ed-space-5);
-  border: 0;
-  border-top: 1px solid var(--obs-control-border);
-  background: none;
+  min-height: 96px;
+  padding: 16px 8px;
+  border: 1px solid transparent;
+  border-bottom-color: var(--obs-control-border);
+  border-radius: 0;
+  background-color: transparent;
+  /* Its pools lie behind the title, clear of the agency label, not in the middle of the wide caption, where they read
+     as a stain. */
+  background-position: 4rem 50%;
+  background-size: min(100%, 10rem) 100%;
+  background-repeat: no-repeat;
   color: var(--obs-muted);
-  font-size: var(--ed-small);
-  line-height: 1.35;
+  font-size: var(--ed-label);
+  line-height: 1.5;
   text-align: start;
+  transition: color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+.mission-selector button > :not(.mission-agency) {
+  grid-column: 2;
+}
+
+.mission-selector .mission-agency {
+  grid-row: 1 / span 2;
+  padding: 0 14px 0 0;
+  background: var(--obs-fade-line-v) 100% 0 / 1px 100% no-repeat;
+  color: var(--obs-muted);
+  text-shadow: none;
+}
+
+.mission-selector .mission-agency::before {
+  display: none;
 }
 
 .mission-selector button:hover,
-.mission-selector [aria-selected="true"],
-.mission-selector [aria-selected="true"] .kicker {
+.mission-selector [aria-selected="true"] {
   color: var(--obs-text);
-}
-
-.mission-selector [aria-selected="true"]::before {
-  content: "";
-  position: absolute;
-  inset: -1px 0 auto;
-  border-top: 2px solid var(--obs-accent);
 }
 
 .mission-selector strong {
   color: var(--obs-text);
-  font: 500 var(--ed-h3) / 1.2 var(--type-serif);
+  font: 600 1.1875rem / 1.35 var(--type-heading);
+}
+
+/* The player: no frame (the old glass face is on its controls' pools and its plate's print). */
+.mission-player {
+  margin-block-start: 20px;
 }
 
 .mission-story {
-  border-block: 1px solid var(--obs-hairline);
+  background: var(--obs-fade-line) 0 100% / 100% 1px no-repeat;
 }
 
 .mission-story > summary {
   flex-wrap: wrap;
   column-gap: var(--ed-space-3);
-  font-size: var(--ed-small);
+  padding: 14px 18px;
+  font-size: var(--ed-caption);
+  font-weight: 600;
+}
+
+.mission-story > :not(summary) {
+  margin-inline: 18px;
 }
 
 .mission-story > summary small,
@@ -154,12 +217,12 @@
 }
 
 :is(.mission-story li, .mission-chapters) button:hover {
-  background: var(--obs-surface-hover);
+  background: radial-gradient(closest-side, var(--obs-pool-hover), transparent);
 }
 
 .mission-story li [aria-current="step"] {
   border-left-color: var(--obs-text);
-  background: var(--obs-highlight);
+  background: radial-gradient(closest-side, var(--obs-pool-warm), transparent);
 }
 
 /* 6 px of padding keeps a focus ring inside the strip's clip. */
@@ -167,7 +230,8 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  border-bottom: 1px solid var(--obs-hairline);
+  padding-inline-end: var(--ed-space-4);
+  background: var(--obs-fade-line) 0 100% / 100% 1px no-repeat;
 }
 
 .mission-chapters {
@@ -194,27 +258,36 @@
   mask-image: linear-gradient(to right, transparent, #000 48px, #000 calc(100% - 48px), transparent);
 }
 
+/* Version 1's chapter steps as numbered text steps: number over name; the current one with its gold numeral on a warm
+   pool over a 2 px ink rule. */
 .mission-chapters button {
   flex: none;
   display: grid;
   align-content: center;
-  gap: 2px;
+  gap: 5px;
   min-height: 56px;
-  padding: var(--ed-space-1) var(--ed-space-3);
+  padding: 10px 13px;
   border: 0;
-  border-bottom: 2px solid transparent;
+  border-radius: 0;
   background: none;
-  font-size: var(--ed-small);
+  font-size: var(--ed-label);
   font-weight: 600;
   line-height: 1.2;
   text-align: start;
   white-space: nowrap;
 }
 
-/* The current chapter: its ink rule over a faint brass wash, as on the old strip. */
+.mission-chapters button > strong {
+  font-weight: inherit;
+}
+
 .mission-chapters [aria-current="step"] {
-  border-bottom-color: var(--obs-text);
-  background-color: color-mix(in srgb, var(--obs-accent) 12%, transparent);
+  background: radial-gradient(closest-side, var(--obs-pool-warm), transparent);
+  box-shadow: inset 0 -2px var(--obs-text);
+}
+
+.mission-chapters [aria-current="step"] > span {
+  color: var(--obs-accent);
 }
 
 .mission-chapters button > span,
@@ -232,11 +305,11 @@
   white-space: nowrap;
 }
 
+/* The scene beside the notebook, which fills its column on the paper face behind the line. */
 .mission-workspace {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 18.75rem;
-  align-items: start;
-  column-gap: var(--grid-gap);
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 29%);
+  align-items: stretch;
 }
 
 .mission-visual {
@@ -244,7 +317,8 @@
 }
 
 .mission-stage-heading {
-  padding-block: var(--ed-space-5) var(--ed-space-4);
+  padding: 20px 0;
+  background: var(--obs-fade-line) 0 100% / 100% 1px no-repeat;
 }
 
 .mission-stage-heading > div {
@@ -255,12 +329,18 @@
 
 .mission-stage-heading h3,
 .mission-purpose {
-  margin: var(--ed-space-1) 0 0;
+  margin: var(--ed-space-2) 0 0;
+}
+
+.mission-stage-heading h3 {
+  font-size: 1.5rem;
+  line-height: 1.3;
 }
 
 .mission-purpose {
+  max-width: 80ch;
   color: var(--obs-muted);
-  font-size: var(--ed-small);
+  font-size: var(--ed-caption);
 }
 
 /* A definite box; the width stops min-height widening it through the ratio. */
@@ -268,7 +348,7 @@
   position: relative;
   width: 100%;
   min-width: 0;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 1.48;
   min-height: 420px;
   overflow: hidden;
   isolation: isolate;
@@ -505,19 +585,22 @@
   text-align: center;
 }
 
+/* Version 1's transport on the surface under the line; Play keeps its short name. */
 .mission-transport {
   display: grid;
   grid-template-columns: auto 44px minmax(0, 1fr) 3rem 44px;
   align-items: center;
-  gap: var(--ed-space-3);
-  padding-block: var(--ed-space-3);
+  gap: 10px;
+  margin-block-start: var(--ed-space-5);
+  padding: 16px 0;
+  background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat;
 }
 
 .mission-transport .button {
-  min-width: 10rem;
+  min-width: 6.25rem;
 }
 
-.sample-missions :is([data-mission-play-short], [data-mission-percent-short]) {
+.sample-missions :is([data-mission-play-label], [data-mission-percent-short]) {
   display: none;
 }
 
@@ -551,11 +634,11 @@
   --vector-sun: color-mix(in srgb, var(--obs-text) 56%, #2fb973);
   min-width: 0;
   margin: 0;
-  background: var(--obs-paper);
+  background: var(--obs-fade-line-v) 0 0 / 1px 100% no-repeat, var(--obs-sheet-solid);
 }
 
 .mission-notebook-content {
-  padding-block: var(--ed-space-5);
+  padding: 22px 20px;
 }
 
 .mission-notebook-title {
@@ -567,7 +650,8 @@
   margin: 0;
   padding-block: var(--ed-space-4);
   border-top: 1px solid var(--obs-hairline);
-  font-size: var(--ed-small);
+  font-size: var(--ed-caption);
+  line-height: 1.8;
 }
 
 .mission-location {
@@ -699,11 +783,11 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--ed-space-3) var(--ed-space-4);
-  padding-block: var(--ed-space-3);
-  border-block: 1px solid var(--obs-hairline);
+  gap: 10px 16px;
+  padding: 14px 0;
+  background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat;
   color: var(--obs-muted);
-  font-size: var(--ed-caption);
+  font-size: var(--ed-label);
 }
 
 .mission-share > span {
@@ -725,16 +809,19 @@
   resize: vertical;
 }
 
+/* Version 1's footnote: the note at the left, the way to the samples at the right. */
 .mission-footnote {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   align-items: start;
-  justify-items: start;
-  gap: var(--ed-space-2) var(--grid-gap);
-  margin-block-start: var(--ed-space-5);
+  justify-content: space-between;
+  gap: var(--ed-space-2) 20px;
+  margin-block-start: var(--ed-space-2);
 }
 
 .mission-footnote p {
-  max-width: var(--measure-body);
+  max-width: 62ch;
+  margin: 0;
 }
 
 .mission-footnote p,
@@ -743,7 +830,7 @@
 }
 
 .mission-sources {
-  border-block: 1px solid var(--obs-hairline);
+  border-top: 1px solid var(--obs-hairline);
 }
 
 .mission-source-columns {
@@ -762,26 +849,6 @@
   margin-block-end: var(--ed-space-4);
 }
 
-@media (min-width: 1200px) {
-  .mission-workspace,
-  .mission-footnote {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-  }
-
-  .mission-visual {
-    grid-column: 1 / 10;
-  }
-
-  .mission-notebook,
-  .mission-footnote a {
-    grid-column: 10 / 13;
-  }
-
-  .mission-footnote p {
-    grid-column: 3 / 9;
-  }
-}
-
 @media (min-width: 961px) {
   .mission-notebook > summary {
     display: none;
@@ -795,7 +862,11 @@
   }
 
   .mission-notebook {
-    border-top: 1px solid var(--obs-hairline);
+    background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat, var(--obs-sheet-solid);
+  }
+
+  .mission-notebook > summary {
+    padding: 14px 0;
   }
 
   .mission-notebook-title {
@@ -803,19 +874,58 @@
   }
 
   .mission-notebook-content {
-    padding-block: 0 var(--ed-space-4);
+    padding: 0 0 var(--ed-space-4);
   }
 }
 
 /* Phones: only the percent shows above the range. */
 @media (max-width: 760px) {
   .mission-selector {
-    column-gap: var(--ed-space-4);
+    gap: 8px;
+  }
+
+  .mission-selector button {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 100px;
+    padding: 14px 6px;
+    background-position: 0 50%;
+  }
+
+  .mission-selector .mission-agency {
+    grid-row: auto;
+    padding: 0;
+    background: none;
+  }
+
+  .mission-selector button > :not(.mission-agency) {
+    grid-column: 1;
+  }
+
+  .mission-stage-heading {
+    padding: 18px 0;
+  }
+
+  .mission-stage-heading h3 {
+    font-size: 1.3125rem;
+  }
+
+  .mission-transport {
+    padding: 14px 0;
+  }
+
+  .mission-share {
+    padding: 12px 0;
   }
 
   .mission-viewport {
     aspect-ratio: 1;
     min-height: 320px;
+  }
+
+  /* Version 1's 130 px phone labels: Montserrat sets them wider, so a long name wraps instead of crowding its
+     neighbour out of the free space (mission-final.browser). */
+  .mission-labels span {
+    max-width: 8.125rem;
   }
 
   .mission-inset {
@@ -886,11 +996,11 @@
     padding-inline: var(--ed-space-3);
   }
 
-  .sample-missions :is([data-mission-play-label], .mission-scrubber-name, .mission-transport output) {
+  .sample-missions :is(.mission-scrubber-name, .mission-transport output) {
     display: none;
   }
 
-  .sample-missions :is([data-mission-play-short], [data-mission-percent-short]) {
+  .sample-missions [data-mission-percent-short] {
     display: inline;
   }
 
@@ -929,6 +1039,7 @@
     border-color: Highlight;
     background: Highlight;
     color: HighlightText;
+    transition: none;
   }
 
   .mission-chapters :not([aria-current="step"]) {
@@ -940,12 +1051,25 @@
   }
 }
 
-/* Forced colours and print: no glass. */
+/* Forced colours and print: no pools; the fading lines plain rules. */
 @media (forced-colors: active), print {
   .sample-missions :is(.mission-selector button, .mission-story li button, .mission-transport .icon-button, .mission-share .button),
-  .mission-player,
   .sample-missions .mission-selector [aria-selected="true"] {
     background-image: none;
+  }
+
+  .sample-missions,
+  .mission-transport,
+  .mission-share {
+    border-top: 1px solid var(--obs-line);
+    background: none;
+  }
+
+  .mission-story,
+  .mission-chapter-rail,
+  .mission-stage-heading {
+    border-bottom: 1px solid var(--obs-line);
+    background: none;
   }
 }
 

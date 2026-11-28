@@ -88,7 +88,12 @@ try {
   assert.deepEqual([top.tick[3], top.tick[4]], [2, 24], 'the tick is 2 x 24 px');
   assert.equal(top.colour, top.ink, 'the tick is ink (--obs-rule), drawn as its left border');
   assert.ok(Math.abs(top.tick[2] - top.track[2]) <= 1, `the tick sits on the track: ${JSON.stringify(top)}`);
-  assert.ok(Math.abs(top.tick[0] - top.track[0]) <= 1 && top.opacity === 1, `at the top the tick rests at the start of the track: ${JSON.stringify(top)}`);
+  // Calmer chrome (2026-11-26): the spine and its tick come in over the first 160 px of scroll, so at the very top the
+  // tick rests at the start of the track unseen, and is fully shown from 160 px.
+  assert.ok(Math.abs(top.tick[0] - top.track[0]) <= 1 && top.opacity === 0, `at the top the tick rests, unseen, at the start of the track: ${JSON.stringify(top)}`);
+  await page.evaluate(() => scrollTo(0, 200));
+  await page.waitForTimeout(200);
+  assert.equal((await spineAt()).opacity, 1, 'past the first 160 px of scroll the tick shows');
   assert.match(top.head, /^INTERFACE 2046\s*·\s*RESEARCH$/i, `running head: ${top.head}`);
   assert.equal(top.vertical, 'vertical-rl');
   await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));

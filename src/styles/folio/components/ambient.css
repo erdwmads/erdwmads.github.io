@@ -117,9 +117,10 @@
   backface-visibility: hidden;
 }
 
-/* Pauses: the script's own (.ambient-paused), a hidden page, idle or low power (power-manager.js). */
+/* Pauses: the script's own (.ambient-paused), a hidden page, idle, covered (an opaque plate over the whole window,
+   Home's opening) or low power (power-manager.js). */
 .ambient-space-layer.ambient-paused > *,
-:where(html.mads-page-hidden, html.mads-power-idle, html.mads-power-low) .ambient-space-layer > * {
+:where(html.mads-page-hidden, html.mads-power-idle, html.mads-power-covered, html.mads-power-low) .ambient-space-layer > * {
   animation-play-state: paused;
 }
 

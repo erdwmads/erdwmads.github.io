@@ -1,42 +1,205 @@
-/* @owner WP3 · @budget 6.5KB · @important 0 · Home, scoped under .ui-page-home */
+/* @owner WP3 · @budget 14KB · @important 0 · Home, scoped under .ui-page-home */
+/* Version 1's Home (owner, 2026-11-25: "Can you merge 1 and 3? I also really like 1."): a compact hero of the name,
+   version 1's lead (the department and affiliation), interests, keywords, the two ways onward and the ORCID iD beside
+   the square portrait and its affiliation card; Current Focus beside its fact list; short Explore rows; the academic
+   timeline as a small table beside its label. In the lab site's language (2026-11-26): no pills, chips or boxed
+   buttons; the opening words on a soft shade pool over the far plane; the portrait a mounted print. Version 3's light
+   stays on the new forms: the keywords' glint and pool, the Research arrow glyph, the record glow, the heading glow. */
+
+/* The hero: text and the portrait column (330 px from 1200 px, 280 px from 761 px), the portrait column centred. */
 .ui-page-home .home-title {
-  padding-top: var(--ed-space-8);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 20.625rem;
+  align-items: center;
+  column-gap: var(--ed-space-8);
+  padding-block-end: var(--ed-space-3);
 }
 
-.ui-page-home .masthead {
-  display: contents;
+.ui-page-home .home-title__main > * + * {
+  margin-block-start: 1.25rem;
 }
 
-.ui-page-home :is(.masthead > *, .home-portrait) {
-  align-self: start;
+/* The opening words lie over Bennu and the orbits: one soft shade pool behind the text column (dark in Space, paper in
+   Light; no edge, no blur paint), in place of the masthead's own. It is lighter than the masthead's and hugs the
+   words in Space (48 px beyond them, feathered there, inside the sheet) and fades wide on the Light paper (where a
+   tight pale pool would read as a card), so Bennu keeps more of its strength around the name (E020, E057) while the
+   ground under every line stays smooth; phones a band feathered on all four sides (the
+   masthead rule of components/masthead.css). The affiliation card under the portrait has its own small pool. */
+.ui-page-home .home-title__main,
+.ui-page-home .home-affiliation {
+  position: relative;
+  isolation: isolate;
+}
+
+.ui-page-home .home-title__main::after,
+.ui-page-home .home-affiliation::after {
+  content: "";
+  position: absolute;
+  inset: -56px -120px -40px -140px;
+  z-index: -1;
+  background: var(--obs-pool-shade);
+  mask-image: linear-gradient(90deg, transparent, #000 120px, #000 calc(100% - 110px), transparent), linear-gradient(transparent, #000 48px, #000 calc(100% - 36px), transparent);
+  mask-composite: intersect;
+  pointer-events: none;
+}
+
+.ui-page-home .home-title__main::after {
+  inset: var(--obs-hero-pool-inset);
+  background: var(--obs-pool-shade-hero);
+  mask-image: var(--obs-hero-pool-mask);
+}
+
+.ui-page-home .home-affiliation::after {
+  inset: -24px -40px;
+  background: radial-gradient(farthest-side, var(--obs-pool-shade) 55%, transparent);
+  mask-image: none;
+}
+
+.ui-page-home .home-title .masthead::after {
+  display: none;
+}
+
+.ui-page-home .home-title .masthead {
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: var(--ed-space-4);
+}
+
+.ui-page-home .home-title .masthead > * {
+  grid-column: 1;
   margin: 0;
+}
+
+/* The name line: the full name in the Georgia stack at 20 px, the pronunciation beside it at 13 px. */
+.ui-page-home .masthead__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--ed-space-1) .875rem;
+  margin-block-start: -4px;
+  font-size: .8125rem;
 }
 
 .ui-page-home .masthead__meta > .person-name {
   color: var(--obs-text);
-  font: var(--ed-h4) var(--type-serif);
+  font: 1.25rem/1.35 var(--type-name);
 }
 
-.ui-page-home .home-question {
+.ui-page-home .pronunciation {
+  white-space: nowrap;
+}
+
+.ui-page-home .pronunciation .person-name {
+  font-family: var(--type-name);
+}
+
+/* Version 1's lead under the name: the department and the affiliation on two lines, 18 px on a 1.75 line in the text
+   colour (15 px on phones). */
+.ui-page-home .home-lead {
   max-width: var(--measure-lead);
-  font: var(--ed-h3)/1.3 var(--type-serif);
-  text-wrap: balance;
+  color: var(--obs-text);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  text-wrap: pretty;
 }
 
-.ui-page-home .home-question::before {
-  content: "";
-  display: block;
-  width: var(--ed-space-8);
-  margin-bottom: var(--ed-space-5);
-  border-top: 1px solid var(--obs-rule);
+.ui-page-home .home-interests {
+  color: var(--obs-muted);
+  font-size: .9375rem;
+  line-height: 1.8;
+  text-wrap: pretty;
+}
+
+/* The keywords (E052): same words, same order, as a wrapped line of small muted words, no capsule; the old glass
+   highlight (E097, without blur) as a short glint hairline above each word and a faint pool behind it. 12 px (the
+   prose floor, evidence-status.browser); the old .16 s transitions stay. */
+.ui-page-home .home-keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1.1rem;
+  margin-block-start: var(--ed-space-5);
+  padding: 0;
+  list-style: none;
+}
+
+.ui-page-home .pill {
+  padding: 4px 2px 2px;
+  color: var(--obs-muted);
+  font-size: .75rem;
+  font-weight: 500;
+  line-height: 1.375;
+  transition: color .16s, background-color .16s, opacity .16s;
+}
+
+@media (forced-colors: none) {
+  .ui-page-home .pill {
+    background: var(--obs-glass-glint) 50% 0 / 100% 1px no-repeat, radial-gradient(closest-side, var(--obs-pool), transparent);
+  }
+}
+
+/* The two ways onward: text controls at their natural width (components/button.css), the labels on the text edge. */
+.ui-page-home .home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.75rem;
+  margin-block-start: var(--ed-space-5);
+  margin-inline-start: -.5rem;
+}
+
+.ui-page-home .home-actions .button {
+  gap: .625rem;
+}
+
+/* The Research control's old arrow chip (c4, E053) is a steel arrow glyph that nudges up and right on hover, as the
+   Onward arrow does (E014); the CV control's "ID" box is small muted capitals. */
+@media (forced-colors: none) {
+  .ui-page-home .home-actions .button::after {
+    content: "\2192" / "";
+    color: var(--obs-edge-cool);
+    font-size: .875rem;
+    line-height: 1.4;
+    transition: transform 200ms var(--ed-ease-out);
+  }
+
+  .ui-page-home .home-actions .button.secondary::after {
+    content: "ID" / "";
+    color: var(--obs-muted);
+    font-size: .625rem;
+    font-weight: 600;
+    letter-spacing: var(--label-track);
+    line-height: 1.6;
+  }
+
+  .ui-page-home .home-actions .button:not(.secondary):hover::after {
+    transform: translate(3px, -3px);
+  }
+}
+
+.ui-page-home .identity-links {
+  font-size: var(--ed-small);
+}
+
+.ui-page-home .identity-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ed-space-2);
+  min-height: 44px;
+  overflow-wrap: anywhere;
+}
+
+/* The portrait column: version 1's square portrait as a mounted print (components/plate.css: 2 px corners, the contact
+   shade and the long soft drop), the affiliation card below it. */
+.ui-page-home .home-portrait {
+  margin: 0;
 }
 
 .ui-page-home .home-affiliation {
   display: flex;
-  gap: var(--ed-space-3);
-  margin-top: var(--ed-space-4);
-  font-size: var(--ed-small);
-  text-wrap: balance;
+  align-items: center;
+  gap: .875rem;
+  margin-block-start: var(--ed-space-4);
+  color: var(--obs-muted);
+  font-size: var(--ed-label);
+  line-height: 1.6;
 }
 
 .ui-page-home .affiliation-emblem {
@@ -49,9 +212,151 @@
   touch-action: pan-y;
 }
 
-.ui-page-home :is(.home-keywords, .identity-links) {
+/* The laboratory's logo (white in its file) as a small mounted print: 2 px corners, the print shadow, a little dimmer
+   on the night sheet (--obs-emblem-tone), so it is no white sticker beside the lines. */
+.ui-page-home .affiliation-emblem img {
+  border-radius: var(--radius-record);
+  box-shadow: var(--obs-print-shadow);
+  filter: var(--obs-emblem-tone);
+}
+
+@media (forced-colors: active), print {
+  .ui-page-home .affiliation-emblem img {
+    box-shadow: none;
+    filter: none;
+  }
+}
+
+/* Current Focus: version 1's summary column beside its fact list (5 : 4, 48 px apart), every row under the line. */
+.ui-page-home .current-focus-section .focus-summary {
+  max-width: none;
+  color: var(--obs-muted);
+  font-size: var(--ed-body);
+  line-height: 1.7;
+}
+
+.ui-page-home .research-title-detail {
+  padding-block-start: var(--ed-space-4);
+  border-top: 1px solid var(--obs-hairline);
+}
+
+.ui-page-home .research-title-detail > summary {
+  color: var(--obs-link);
+  font-size: .8125rem;
+  font-weight: 400;
+}
+
+.ui-page-home .research-title-detail p {
+  font-size: var(--ed-small);
+  line-height: 1.8;
+}
+
+.ui-page-home .focus-next .quiet-link {
+  font-size: var(--ed-body);
+}
+
+.ui-page-home .focus-list {
+  margin: 0;
+  color: var(--obs-text);
+}
+
+/* Each fact on a hairline rule (a rule, not a box), its term in the one label style. */
+.ui-page-home .focus-list > div {
+  padding-block: 15px;
+  border-top: 1px solid var(--obs-hairline);
+}
+
+.ui-page-home .focus-list dt {
+  padding: 0;
+  line-height: 1.6;
+}
+
+.ui-page-home .focus-list dt::before {
+  display: none;
+}
+
+/* The values at 500, under the section heading's 400 and above the muted text (the quiet hierarchy). */
+.ui-page-home :is(.focus-list dd, .focus-methods) {
+  margin: var(--ed-space-1) 0 0;
+  padding: 0;
+  font-size: var(--ed-small);
+  font-weight: 500;
+  line-height: 1.65;
+  list-style: none;
+}
+
+/* Explore: version 1's short rows: the link in a 200 px column (after its small number), the detail beside it at
+   14 px. */
+.ui-page-home .home-explore > h2 {
+  font-size: var(--ed-h2-small);
+}
+
+.ui-page-home .home-explore > * {
+  grid-column: 1 / -1;
+  max-width: none;
+}
+
+.ui-page-home .home-explore-list {
+  border-top-color: var(--obs-hairline);
+}
+
+.ui-page-home .home-explore-list > li {
+  grid-template-columns: 1.5rem 10.5rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--ed-space-1) 1.75rem;
+  padding-block: var(--ed-space-3);
+}
+
+.ui-page-home .home-explore-list > li:last-child {
+  border-bottom: 0;
+}
+
+.ui-page-home .home-explore-list .ledger__key {
+  font-size: var(--ed-label);
+}
+
+.ui-page-home .home-explore-list .ledger__title {
+  font-weight: 400;
+}
+
+.ui-page-home .home-explore-list .ledger__detail {
+  grid-column: 3;
+  font-size: var(--ed-small);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* The academic timeline: version 1's small table: the date at 12 px in steel capitals, the entry at 14 px. */
+.ui-page-home .home-timeline-list {
+  border-top: 0;
+}
+
+.ui-page-home .home-timeline-list > li {
+  grid-template-columns: 4.75rem minmax(0, 1fr);
+  column-gap: 1.25rem;
+  padding-block: 10px;
+}
+
+.ui-page-home .home-timeline-list > li:first-child {
+  padding-block-start: 0;
+}
+
+.ui-page-home .home-timeline-list .ledger__key {
+  color: var(--obs-link);
+  font-size: var(--ed-label);
+  font-weight: 600;
+  line-height: 1.7;
+}
+
+.ui-page-home .home-timeline-list .ledger__title {
   color: var(--obs-muted);
   font-size: var(--ed-small);
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.ui-page-home .home-timeline-more {
+  font-size: .8125rem;
 }
 
 /* A timeline record under the pointer takes the old record glow (E105, as at 4e14512): a steel top light and a soft
@@ -62,214 +367,126 @@
   }
 }
 
-/* The Research button carries the old tinted arrow chip (c4, E053). */
-@media (forced-colors: none) {
-  .ui-page-home .home-actions .button::after {
-    content: "\2192" / "";
-    display: grid;
-    place-items: center;
-    width: 24px;
-    height: 24px;
-    border: 1px solid var(--obs-icon-chip-edge);
-    border-radius: 50%;
-    background: var(--obs-icon-chip-face);
-    font-size: .75rem;
-    opacity: .78;
+@media (min-width: 761px) {
+  .ui-page-home .current-focus-section {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 4fr);
+    grid-template-rows: repeat(5, auto) 1fr;
+    column-gap: var(--ed-space-7);
   }
-}
 
-/* The keywords as the old site's pills (c4, E052): same words, same order; 12 px everywhere (the old 11 px on desktop
-   is under the 12 px floor for prose, evidence-status.browser), on the old 16.5 px line so a pill keeps its 29 px, and 8 px sides (old 9) so the larger words keep three rows in the
-   notes column and Current Focus stays in the first view (home-focus.browser). */
-.ui-page-home .home-keywords {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  padding: 0;
-  list-style: none;
-}
-
-.ui-page-home .pill {
-  padding: 5px 8px;
-  border: 1px solid var(--obs-hairline);
-  border-radius: 999px;
-  background: var(--obs-surface);
-  color: var(--obs-text);
-  font-size: .75rem;
-  font-weight: 600;
-  line-height: 1.375;
-  transition: color .16s, border-color .16s, box-shadow .16s, opacity .16s;
-}
-
-/* The old liquid-glass highlight on the pills (E097, look-alike without blur): a band fading from the top and a top
-   glint. */
-@media (forced-colors: none) {
-  .ui-page-home .pill {
-    background-image: var(--obs-glass-band);
-    box-shadow: var(--obs-chip-glint);
+  .ui-page-home .current-focus-section > * {
+    grid-column: 1;
+    max-width: none;
   }
-}
 
-.ui-page-home .identity-links a {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--ed-space-2);
-  min-height: 44px;
-  overflow-wrap: anywhere;
-}
-
-.ui-page-home :is(.focus-summary, .research-title-detail p) {
-  font: var(--ed-h4)/1.55 var(--type-serif);
-}
-
-.ui-page-home .focus-list {
-  margin-top: var(--ed-space-6);
-  border-top: 2px solid var(--obs-rule);
-  color: var(--obs-text);
-}
-
-.ui-page-home .focus-list > div {
-  padding-block: var(--ed-space-3);
-  border-bottom: 1px solid var(--obs-hairline);
-}
-
-.ui-page-home :is(.focus-list dd, .focus-methods) {
-  margin: var(--ed-space-1) 0 0;
-  padding: 0;
-  font-size: 1rem;
-  list-style: none;
-}
-
-.ui-page-home .folio-section {
-  container-type: inline-size;
-  --hang: max(2.5rem, (100cqi + var(--grid-gap)) / var(--k, 99) - var(--ed-space-3));
-}
-
-.ui-page-home .pronunciation {
-  white-space: nowrap;
-}
-
-.ui-page-home .ledger {
-  border-top-color: var(--obs-hairline);
-}
-
-/* Explore rows read as the Onward rows do: ink titles with an arrow, underlined on hover or focus. */
-.ui-page-home .home-explore-list .ledger__title {
-  color: var(--obs-text);
-  text-decoration: none;
-}
-
-.ui-page-home .home-explore-list .ledger__title:is(:hover, :focus-visible) {
-  text-decoration: underline 1px;
-  text-underline-offset: .2em;
-}
-
-.ui-page-home .ledger > li {
-  grid-template-columns: var(--hang) minmax(0, 1fr);
-  align-items: baseline;
-  column-gap: var(--ed-space-3);
-}
-
-.ui-page-home .ledger__key {
-  font: 1.25rem var(--type-serif);
-}
-
-.ui-page-home .home-timeline-list .ledger__title {
-  font-weight: 400;
+  .ui-page-home .current-focus-section > .focus-list {
+    grid-area: 1 / 2 / span 6;
+    align-self: start;
+    margin-block-start: 6px;
+  }
 }
 
 @media (min-width: 761px) and (max-width: 1199px) {
   .ui-page-home .home-title {
-    grid-template-columns: minmax(0, 1fr) 15rem;
+    grid-template-columns: minmax(0, 1fr) 17.5rem;
+    column-gap: var(--ed-space-6);
+  }
+}
+
+/* Version 1 set the timeline's label over its table, Full CV at the right, below 961 px. */
+@media (max-width: 960px) {
+  .ui-page-home .home-timeline.two-col {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: none;
   }
 
-  .ui-page-home :is(.masthead > *, .home-question) {
+  .ui-page-home .home-timeline.two-col > * {
+    grid-column: 1 / -1;
+  }
+
+  .ui-page-home .home-timeline.two-col > h2 {
     grid-column: 1;
+    align-self: center;
+    padding-block-start: 0;
+    border-top: 0;
   }
 
-  .ui-page-home .home-portrait {
-    grid-area: 1 / 2 / span 4;
+  .ui-page-home .home-timeline.two-col > .two-col__body {
+    grid-row: auto;
   }
 
-  .ui-page-home .folio-section {
-    --k: 8;
-  }
-
-  .ui-page-home .ledger {
-    max-width: calc(var(--measure-body) + var(--hang));
-  }
-}
-
-@media (min-width: 961px) and (max-width: 1199px) {
-  .ui-page-home .current-focus-section > * {
-    grid-column: span 5;
+  .ui-page-home .home-timeline.two-col > .home-timeline-more {
+    grid-area: 2 / 2;
+    align-self: center;
   }
 }
 
-@media (min-width: 961px) {
-  .ui-page-home .focus-list {
-    grid-area: 2 / -4 / span 4 / -1;
-    margin-top: 0;
-  }
-}
-
-@media (min-width: 1200px) {
-  .ui-page-home .home-portrait {
-    grid-row: 1 / span 5;
+/* Phones: one column; the portrait (146 px) beside the affiliation card under the ORCID iD; the buttons two by two;
+   Explore and the timeline stacked. */
+@media (max-width: 760px) {
+  .ui-page-home .home-title {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--ed-space-5);
   }
 
-  .ui-page-home .home-keywords {
-    grid-column: notes;
+  .ui-page-home .home-card {
+    display: grid;
+    grid-template-columns: 9.25rem minmax(0, 1fr);
+    align-items: start;
+    gap: var(--ed-space-4);
+  }
+
+  .ui-page-home .home-affiliation {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .ui-page-home .home-title__main::after {
+    inset: -28px calc(-1 * var(--page-pad)) -20px;
+    background: linear-gradient(90deg, transparent, var(--obs-pool-shade-hero) 18px, var(--obs-pool-shade-hero) calc(100% - 18px), transparent);
+    mask-image: linear-gradient(180deg, transparent, #000 28px, #000 calc(100% - 20px), transparent);
+  }
+
+  .ui-page-home .home-lead {
+    font-size: .9375rem;
+    line-height: 1.7;
   }
 
   .ui-page-home .home-actions {
-    grid-row: 7;
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: start;
   }
 
-  /* The ORCID line stands in the notes column under the keywords, level with the actions. */
-  .ui-page-home .identity-links {
-    grid-column: notes;
-    grid-row: 7;
+  .ui-page-home .home-interests {
+    font-size: var(--ed-small);
   }
 
-  .ui-page-home .folio-section {
-    --k: 6;
+  .ui-page-home .current-focus-section .focus-summary {
+    font-size: .90625rem;
   }
 
-  .ui-page-home .ledger {
-    grid-column: margin-start / text-end;
-  }
-}
-
-@media (max-width: 760px) {
-  .ui-page-home .home-title {
-    grid-template-columns: minmax(0, 1fr) min(7.5rem, 30vw);
-    padding-top: var(--ed-space-6);
+  .ui-page-home .home-explore-list > li {
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+    column-gap: var(--ed-space-3);
   }
 
-  .ui-page-home .masthead__meta {
-    grid-column: 1;
-  }
-
-  .ui-page-home .home-portrait {
-    grid-area: 3 / 2;
-  }
-
-  .ui-page-home .home-actions .button {
-    flex: 1 1 100%;
-  }
-
-  .ui-page-home .home-actions .button::after {
-    width: 22px;
-    height: 22px;
-  }
-
-  .ui-page-home .home-timeline-list > li {
+  /* A flex line drops the space before the arrow; the gap puts it back. */
+  .ui-page-home .home-explore-list .ledger__title {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: .3em;
+    min-height: 44px;
   }
 
-  .ui-page-home .home-timeline-list .ledger__key {
-    font: var(--ed-small) var(--type-sans);
+  .ui-page-home .home-explore-list > li {
+    padding-block: var(--ed-space-1) 10px;
+  }
+
+  .ui-page-home .home-explore-list .ledger__detail {
+    grid-column: 1 / -1;
   }
 }

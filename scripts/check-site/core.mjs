@@ -297,6 +297,46 @@ export default async function checkCore({ root, distDir, publicDir, assetsDir, p
       fail(`${file}: plain email address in static HTML`);
     }
   }
+  // Share cards (2026-11-28, src/data/share-cards.json, scripts/derive-imagery.mjs share): every public page names its own
+  // card as og:image and twitter:image, an absolute URL on the canonical origin, with its size (1200 x 630, a JPEG, as
+  // Open Graph needs), og:image:alt and twitter:image:alt, and twitter:card summary_large_image. Each card carries only
+  // the page's public title (the protected Research Log's too), and no two pages share one.
+  const shareConfig = JSON.parse(fs.readFileSync(path.join(root, "src", "data", "share-cards.json"), "utf8"));
+  const metaContent = (html, key) => (html.match(new RegExp(`<meta (?:property|name)="${key.replace(/[.:]/g, "\\$&")}" content="([^"]*)"`)) || [])[1];
+  const shareImages = new Map();
+  for (const file of fs.readdirSync(distDir).filter((name) => name.endsWith(".html") && name !== "sample-cabinet.html")) {
+    const html = fs.readFileSync(path.join(distDir, file), "utf8");
+    const card = shareConfig.cards[file];
+    if (!card) { fail(`${file}: no share card in src/data/share-cards.json`); continue; }
+    const image = metaContent(html, "og:image") || "";
+    const expected = `https://erdwmads.github.io/assets/img/share/${card.file}`;
+    if (image !== expected) fail(`${file}: og:image must be its share card ${expected} (found ${image || "none"})`);
+    if (metaContent(html, "twitter:image") !== image) fail(`${file}: twitter:image must equal og:image`);
+    if (metaContent(html, "og:image:width") !== "1200" || metaContent(html, "og:image:height") !== "630") fail(`${file}: og:image:width and og:image:height must be 1200 and 630`);
+    const alt = decodeText(metaContent(html, "og:image:alt") || "");
+    if (!alt || alt !== card.alt) fail(`${file}: og:image:alt must be the card's alt text from share-cards.json`);
+    if (metaContent(html, "twitter:image:alt") !== metaContent(html, "og:image:alt")) fail(`${file}: twitter:image:alt must equal og:image:alt`);
+    if (metaContent(html, "twitter:card") !== "summary_large_image") fail(`${file}: twitter:card must be summary_large_image`);
+    const title = decodeText((html.match(/<title>([^<]*)<\/title>/) || [])[1] || "");
+    if (`${card.title} | ${expectedDisplayName}` !== title && !(file === "index.html" && title.startsWith(card.title))) fail(`${file}: the share card's title must be the page's public title ("${title}")`);
+    if (!alt.startsWith(`${expectedDisplayName}, ${card.title}`)) fail(`${file}: the share card's alt text must open with the name and the page's public title`);
+    if (shareImages.has(image)) fail(`${file}: shares its card with ${shareImages.get(image)}`);
+    shareImages.set(image, file);
+    const cardPath = path.join(assetsDir, "img", "share", card.file);
+    if (!fs.existsSync(cardPath)) { fail(`${file}: share card public/assets/img/share/${card.file} is missing (npm run images:imagery -- share)`); continue; }
+    const buffer = fs.readFileSync(cardPath);
+    let offset = 2, size = null;
+    while (buffer[0] === 0xff && buffer[1] === 0xd8 && offset + 9 <= buffer.length && buffer[offset] === 0xff) {
+      const marker = buffer[offset + 1];
+      if (marker >= 0xc0 && marker <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(marker)) { size = [buffer.readUInt16BE(offset + 7), buffer.readUInt16BE(offset + 5)]; break; }
+      offset += 2 + buffer.readUInt16BE(offset + 2);
+    }
+    if (!size || size[0] !== 1200 || size[1] !== 630) fail(`${file}: share card ${card.file} must be a 1200 x 630 JPEG`);
+  }
+  // The protected Research Log's card and alt text name only its public title, never an entry or an unlock detail.
+  const protectedCard = shareConfig.cards["research-graduation.html"];
+  if (protectedCard && /mission log \d|sol \d|passkey|password|unlock|entry/i.test(`${protectedCard.title} ${protectedCard.alt} ${protectedCard.credit}`)) fail("share-cards.json: the protected Research Log's card must show its public title only");
+
   for (const [file, marker] of [
     ["index.html", `<h1 id="home-name">${expectedDisplayName}</h1>`],
     ["index.html", `<span class="person-name">${expectedFullName}</span>`],
@@ -533,12 +573,53 @@ export default async function checkCore({ root, distDir, publicDir, assetsDir, p
       continue;
     }
     if (!/Interface 2046/i.test(visibleText(footer))) fail(`${file}: the footer colophon must name Interface 2046`);
-    // The backdrop credits (owner decision, 2026-11-18): Bennu's source, and the montage's author, source and licence.
-    const credits = footer.match(/<p class="footer-credits">([\s\S]*?)<\/p>/)?.[1] || "";
-    if (!/NASA\/Goddard\/University of Arizona/.test(credits) || !/CactiStaccingCrane/.test(credits) ||
+    // The band's credit (owner decision, 2026-11-18) on every page: the montage's author, source and licence.
+    const credits = footer.match(/<p class="footer-credits"[^>]*>([\s\S]*?)<\/p>/)?.[1] || "";
+    if (!/CactiStaccingCrane/.test(credits) ||
       !credits.includes('href="https://commons.wikimedia.org/wiki/File:Solar_System_true_color.jpg"') ||
       !credits.includes('href="https://creativecommons.org/licenses/by-sa/4.0/"')) {
-      fail(`${file}: the footer must credit the backdrop images (src/data/colophon.ts), linking the source and the licence`);
+      fail(`${file}: the footer must credit the band's montage (src/data/colophon.ts), linking the source and the licence`);
+    }
+    // The footer credits the pictures shown on its page and no others (owner, 2026-11-28): the page's backdrop (Bennu
+    // on Research) and its context plates, each source page linked with its licence where it has one; a share-alike
+    // image says that the version shown keeps the licence. Soft navigation swaps the line (data-footer-credits).
+    if (!/<p class="footer-credits" data-footer-credits>/.test(footer)) fail(`${file}: the footer credit line must carry data-footer-credits (soft navigation swaps it)`);
+    const sources = {
+      mcnaught: ["https://www.eso.org/public/images/mc_naught34/", "CC BY 4.0"],
+      orgueil: ["https://commons.wikimedia.org/wiki/File:M%C3%A9t%C3%A9orite_Orgueil,_exposition_M%C3%A9t%C3%A9orites,_Mus%C3%A9um_national_d%27histoire_naturelle_de_Paris.jpg", "CC BY-SA 4.0"],
+      ryugu: ["https://commons.wikimedia.org/wiki/File:162173_Ryugu.png", "CC BY 4.0"],
+      cliffs: ["https://esawebb.org/images/weic2205a/", "CC BY 4.0"],
+      hlTauri: ["https://www.eso.org/public/images/eso1436a/", "CC BY 4.0"],
+      neowise: ["https://commons.wikimedia.org/wiki/File:Comet_2020_F3_(NEOWISE)_on_Jul_14_2020_aligned_to_comet.jpg", "CC BY-SA 4.0"],
+      orion: ["https://commons.wikimedia.org/wiki/File:Trouvelot-_The_great_nebula_in_Orion_-_1875.jpg", "public domain"],
+      greatComet: ["https://commons.wikimedia.org/wiki/File:Trouvelot_-_The_great_comet_of_1881_-_1881.jpg", "public domain"],
+      milkyWay: ["https://commons.wikimedia.org/wiki/File:Trouvelot_-_Part_of_the_Milky_Way.jpg", "public domain"],
+      panorama: ["https://www.eso.org/public/images/eso0932a/", "CC BY 4.0"],
+      ponsBrooks: ["https://commons.wikimedia.org/wiki/File:12P_Pons-Brooks_(53635474808).jpg", "CC BY 2.0"],
+      b68: ["https://www.eso.org/public/images/eso9924a/", "CC BY 4.0"],
+      haleBopp: ["https://www.eso.org/public/images/phot-mar14-hbs-2/", "CC BY 4.0"],
+      meteors: ["https://commons.wikimedia.org/wiki/File:Trouvelot-_The_November_meteors._-_1868.jpg", "public domain"],
+      iss: ["https://images.nasa.gov/details/iss072e027484", "public domain"]
+    };
+    const shown = {
+      "index.html": ["mcnaught"], "research.html": ["orgueil"], "ryugu-bennu.html": ["ryugu"], "origins-study.html": ["cliffs", "hlTauri"],
+      "research-log.html": ["neowise"], "paper-shelf.html": ["orion", "greatComet"], "cv.html": ["milkyWay"], "photography.html": ["panorama"],
+      "contact.html": ["ponsBrooks"], "404.html": ["b68", "haleBopp"], "research-graduation.html": ["meteors"]
+    }[file] || [];
+    const creditText = credits.replace(/&amp;/g, "&");
+    for (const [key, [source, licence]] of Object.entries(sources)) {
+      const at = creditText.indexOf(`href="${source}"`);
+      if (!shown.includes(key)) {
+        if (at >= 0) fail(`${file}: the footer credits ${source}, a picture this page does not show (src/data/colophon.ts)`);
+        continue;
+      }
+      const entry = at < 0 ? "" : creditText.slice(at, (creditText.indexOf("; <a href=\"http", at + 1) + 1 || creditText.length + 1) - 1);
+      if (!entry || !visibleText(entry).includes(licence)) fail(`${file}: the footer must credit ${source} with its licence (${licence}) (src/data/colophon.ts)`);
+    }
+    if (/NASA\/Goddard\/University of Arizona/.test(credits) !== (file === "research.html")) fail(`${file}: the footer credits the Bennu photograph on the Research page only, where it is the backdrop`);
+    const shareAlike = shown.filter((key) => sources[key][1] === "CC BY-SA 4.0").length;
+    if ((creditText.match(/this version <a href="https:\/\/creativecommons\.org\/licenses\/by-sa\/4\.0\/" rel="license">CC BY-SA 4\.0<\/a>/g) || []).length !== shareAlike) {
+      fail(`${file}: each share-alike picture on this page (the Orgueil plate, the NEOWISE backdrop) must say "this version CC BY-SA 4.0" with the licence link`);
     }
     const revision = footer.match(/<time datetime="(\d{4}-\d{2}-\d{2})">([^<]*)<\/time>/);
     if (!revision || revision[1] !== revision[2]) fail(`${file}: the colophon revision must be a static ISO date, <time datetime="YYYY-MM-DD">YYYY-MM-DD</time>`);

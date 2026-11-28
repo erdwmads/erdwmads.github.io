@@ -1,35 +1,140 @@
-/* @owner WP2 · @budget 4KB · @important 0 · Page backdrops: Bennu behind every page, the graticule over it, the solar-system band under the floating header */
-/* The owner's choice of 2026-11-18, after the old site's body::before and header::before (2f20d7e). Both are static
-   images on fixed pseudo-elements of body, so neither is ever the Largest Contentful Paint or preloaded. Bennu, in
-   grayscale, lies under the FX field and main's reading veil, which dims it behind long reading; Home shows it
-   stronger. Where the header floats (the same media query as components/header.css and --header-clearance), the band
-   is its ground: the solar-system strip under a paper veil, slightly translucent, with the old soft glow below.
-   Second pass (owner, 2026-11-18: "all of my previous effects"): the old strengths, the graticule (the old body::after,
-   here html::after: a blueprint grid in both themes; in Space an edge haze and a diagonal brass light) and a loader
-   that keeps Bennu's image out of the first requests. */
+/* @owner WP2 · @budget 9KB · @important 0 · Page backdrops: one picture per page, the graticule over it, the solar-system band under the floating header */
+/* The owner's choice of 2026-11-18, after the old site's body::before and header::before (2f20d7e): static pictures on
+   fixed pseudo-elements of body, never the LCP and never preloaded. Where the header floats
+   (header.css's media query, --header-clearance), the band is its ground: the solar-system strip under a paper veil,
+   slightly translucent, with the old soft glow below. Second pass (owner, 2026-11-18: "all of my previous effects"):
+   the graticule (the old body::after, here html::after: a blueprint grid; in Space an edge haze and a diagonal brass
+   light) and a loader that keeps the pictures out of the first requests. One picture per page (owner, 2026-11-28): a
+   greyscale light mask (public/assets/img/backdrops/; Bennu keeps its own files) filled with --obs-far-ink, pale light
+   in Space and sepia ink on the Light paper, at --obs-far-opacity, lighter on phones. It lies under the FX field and
+   the sheet, which dims it behind the column, so it shows around the opening words, in the sheet's rise and beside
+   the column. Each page names its picture and anchor on its body class (--bd-mask, --bd-at; --bd-k scales the
+   strength), and each file is composed for its page: the subject beside the column, the opening words on dark sky.
+   The 1600 px file serves windows wider than 760 px, the upright 800 px file phones. Credits: the page's footer. */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: var(--z-backdrop);
-  background: url("../img/asteroid-bennu-1280.webp") 50% 50% / cover no-repeat;
-  opacity: var(--obs-backdrop-opacity);
-  filter: var(--obs-backdrop-tone);
+  background: var(--obs-far-ink);
+  opacity: calc(var(--obs-far-opacity) * var(--bd-k, 1));
+  mask-image: var(--bd-mask, linear-gradient(transparent, transparent));
+  mask-mode: luminance;
+  mask-position: var(--bd-at, 50% 50%);
+  mask-size: cover;
+  mask-repeat: no-repeat;
   transition: opacity 600ms var(--ed-ease-out);
   pointer-events: none;
 }
 
-.ui-page-home::before {
-  opacity: var(--obs-backdrop-opacity-home);
+/* Home: Comet West behind the sheet once the opening has risen (owner, 2026-11-28). At laptop widths only the sheet's
+   soft edges show it; the right one holds the spine, orrery labels and FX dock, so it lies at the left: the head
+   (file x 260) two fifths into the soft edge, or further left in a narrow margin, so the file's cut (x 310) stays at
+   least 10 px short of the column; the tails pass behind the sheet. */
+.ui-page-home {
+  --bd-mask: url("../img/backdrops/comet-west-mask-1600.webp");
+  --bd-s: max(100vw / 1600, 100vh / 1000);
+  --bd-at: calc(min(max(0px, 50vw - var(--sheet-half)) + var(--sheet-fade) * .4, max(var(--page-pad), 50vw - var(--page-max) / 2) - 60 * var(--bd-s)) - 260 * var(--bd-s)) 100%;
+  --bd-k: 1.6;
 }
 
-/* With a script, both images wait for html.backdrop-ready (observatory-interactions.js, after the load event): Bennu
-   then fades in, the band's planets appear under its veil, which is there from the first paint. Without a script both
-   show at once. */
+.ui-page-research {
+  --bd-mask: url("../img/asteroid-bennu-1280.webp");
+  --bd-k: .6;
+}
+
+.ui-page-ryugu-bennu {
+  --bd-mask: url("../img/backdrops/asteroid-ryugu-mask-1600.webp");
+  --bd-at: 100% 0;
+}
+
+.ui-page-origins {
+  --bd-mask: url("../img/backdrops/cosmic-cliffs-mask-1600.webp");
+  --bd-at: 50% 0;
+  --bd-k: 1.5;
+}
+
+.ui-page-research-log {
+  --bd-mask: url("../img/backdrops/comet-neowise-mask-1600.webp");
+  --bd-at: 0 0;
+  --bd-k: 1.3;
+}
+
+.ui-page-paper-shelf {
+  --bd-mask: url("../img/backdrops/trouvelot-orion-nebula-mask-1600.webp");
+  --bd-at: 100% 0;
+}
+
+.ui-page-cv {
+  --bd-mask: url("../img/backdrops/trouvelot-milky-way-mask-1600.webp");
+  --bd-at: 100% 50%;
+}
+
+.ui-page-photography {
+  --bd-mask: url("../img/backdrops/milky-way-panorama-mask-1600.webp");
+  --bd-at: 100% 0;
+  --bd-k: 1.4;
+}
+
+.ui-page-contact {
+  --bd-mask: url("../img/backdrops/comet-pons-brooks-mask-1600.webp");
+  --bd-at: 100% 0;
+}
+
+.ui-page-not-found {
+  --bd-mask: url("../img/backdrops/dark-cloud-b68-mask-1600.webp");
+  --bd-at: 0 0;
+}
+
+/* The protected Research Log (it also carries .ui-page-research-log): its picture while it is locked, none once the
+   archive is open, where the entries' own figures lead. */
+.ui-page-research-graduation {
+  --bd-mask: url("../img/backdrops/trouvelot-november-meteors-mask-1600.webp");
+  --bd-at: 100% 0;
+}
+
+html.research-unlocked .ui-page-research-graduation::before {
+  opacity: 0;
+}
+
+/* Soft navigation (legacy-navigation.js, 2026-11-28): the old page's picture, or Home's opening plate, moves onto one
+   layer of its own that dissolves in 760 ms while the new page's picture develops; the script copies the picture, its
+   anchor, its strength and, for the plate, its place. While the old page leaves ("hold") the page's own picture waits
+   hidden, and during the fade neither eases on its own. The plate's layer lies just under main, above the field. */
+.backdrop-fade {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-backdrop);
+  background: var(--obs-far-ink);
+  mask-mode: luminance;
+  mask-size: cover;
+  mask-repeat: no-repeat;
+  pointer-events: none;
+}
+
+.backdrop-fade--plate {
+  z-index: var(--z-content);
+  overflow: hidden;
+  mask-mode: alpha;
+  mask-size: auto;
+}
+
+html[data-backdrop-fade] body::before {
+  transition: none;
+}
+
+html[data-backdrop-fade="hold"] body::before {
+  opacity: 0;
+}
+
+/* With a script, the pictures wait for html.backdrop-ready (observatory-interactions.js, after the load event): the
+   page's picture then fades in, the band's planets appear under its veil, which is there from the first paint.
+   Without a script both show at once. */
 @media (scripting: enabled) {
   html:not(.backdrop-ready) body::before {
-    background-image: none;
+    visibility: hidden;
     opacity: 0;
+    mask-image: none;
   }
 
   html:not(.backdrop-ready) body::after {
@@ -63,16 +168,85 @@ html::after {
   }
 }
 
-/* Phones: the 800 px tier, the asteroid at the top of the window as the old site placed it. */
+/* Home (2026-11-28): over the opening the header floats with no band; the band fades in as the sheet rises, from 45 to
+   80 % of the opening's height (--open-h, pages/home-opening.css). Without scroll-driven animations, or with reduced
+   motion, home-path.js sets html[data-home-opening] and the band waits while the name is in view. */
+@keyframes band-arrive {
+  from {
+    opacity: 0;
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (min-width: 761px) and (min-height: 600px) and (forced-colors: none) and (prefers-reduced-motion: no-preference) {
+    body.ui-page-home::after {
+      animation: band-arrive linear both;
+      animation-timeline: scroll(root);
+      animation-range: calc(var(--open-h) * .45) calc(var(--open-h) * .8);
+    }
+  }
+}
+
+html[data-home-opening="in"] body.ui-page-home::after {
+  opacity: 0;
+}
+
+/* Phones: lighter, each picture's upright composition from the top of the window (Bennu as the old site placed it). */
 @media (max-width: 760px) {
   body::before {
-    background-image: url("../img/asteroid-bennu-800.webp");
-    background-position: 50% 0%;
+    opacity: calc(var(--obs-far-opacity-phone) * var(--bd-k, 1));
+    mask-position: 50% 0;
+  }
+
+  .ui-page-home {
+    --bd-mask: url("../img/backdrops/comet-west-mask-800.webp");
+    --bd-k: 1.4;
+  }
+
+  .ui-page-research {
+    --bd-mask: url("../img/asteroid-bennu-800.webp");
+  }
+
+  .ui-page-ryugu-bennu {
+    --bd-mask: url("../img/backdrops/asteroid-ryugu-mask-800.webp");
+  }
+
+  .ui-page-origins {
+    --bd-mask: url("../img/backdrops/cosmic-cliffs-mask-800.webp");
+  }
+
+  .ui-page-research-log {
+    --bd-mask: url("../img/backdrops/comet-neowise-mask-800.webp");
+  }
+
+  .ui-page-paper-shelf {
+    --bd-mask: url("../img/backdrops/trouvelot-orion-nebula-mask-800.webp");
+  }
+
+  .ui-page-cv {
+    --bd-mask: url("../img/backdrops/trouvelot-milky-way-mask-800.webp");
+  }
+
+  .ui-page-photography {
+    --bd-mask: url("../img/backdrops/milky-way-panorama-mask-800.webp");
+  }
+
+  .ui-page-contact {
+    --bd-mask: url("../img/backdrops/comet-pons-brooks-mask-800.webp");
+  }
+
+  .ui-page-not-found {
+    --bd-mask: url("../img/backdrops/dark-cloud-b68-mask-800.webp");
+  }
+
+  .ui-page-research-graduation {
+    --bd-mask: url("../img/backdrops/trouvelot-november-meteors-mask-800.webp");
   }
 }
 
 /* Edge keeps fixed layers on their own compositing layer (components/ambient.css). */
 :where(html.is-edge-browser) body::before,
+:where(html.is-edge-browser) .backdrop-fade,
 :where(html.is-edge-browser) body::after,
 html.is-edge-browser::after {
   transform: translate3d(0, 0, 0);

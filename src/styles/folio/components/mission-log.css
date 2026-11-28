@@ -1,13 +1,19 @@
 /* @owner WP6 · @budget 14KB · @important 0 · Mission Log: lock gate, session notice, Mission Index ledger, entries, bodyHtml classes, comparison */
-.research-lock-card { display: grid; gap: var(--ed-space-4); max-width: 35rem; padding: var(--ed-space-6); border: 1px solid var(--obs-hairline); border-radius: var(--radius-record); background: var(--obs-surface); }
+/* The lock card in version 1's place and size (owner, 2026-11-25: 720 px, 42 px inside), as a fragment of the sheet
+   since 2026-11-26: no border or corners; its glass face feathered at the edges, a shade under it and the highlight
+   band and glint as its top light (components/surface-light.css); a 30 px title; the password field (an underline
+   field) across it with its text control below; the passkey block between two fading lines. */
+.research-lock-card { display: grid; gap: var(--ed-space-4); max-width: 45rem; padding: 2.625rem; }
 :is(.research-lock-card, .research-passkey-controls, .mission-index-panel) > * { margin: 0; }
-:is(.research-lock-card, .mission-index-panel) > h2 { font-size: var(--ed-h3); }
+.research-lock-card > h2 { font-size: var(--ed-h2); }
+.mission-index-panel > h2 { font-size: var(--ed-h3); }
 .research-lock-form, .research-passkey-controls, .mission-index-panel { display: grid; gap: var(--ed-space-2); }
-.research-lock-entry input { flex: 1 1 14rem; min-width: 0; }
-.research-lock-entry .button { min-height: 48px; }
+.research-lock-form > label { font-weight: 600; }
+.research-lock-entry input { flex: 1 1 100%; min-width: 0; min-height: 54px; }
+.research-lock-entry .button { min-height: 44px; }
 .research-lock-form[aria-busy="true"] input, .research-passkey-forget:disabled { opacity: .55; pointer-events: none; }
-.research-passkey-controls, .research-passkey-help { border-top: 1px solid var(--obs-hairline); color: var(--obs-muted); font-size: var(--ed-small); }
-.research-passkey-controls { --reserve-display: grid; gap: var(--ed-space-3); padding-top: var(--ed-space-5); }
+.research-passkey-controls, .research-passkey-help { background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat; color: var(--obs-muted); font-size: var(--ed-caption); }
+.research-passkey-controls { --reserve-display: grid; gap: var(--ed-space-3); margin-top: var(--ed-space-2); padding-block: 1.25rem; background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat, var(--obs-fade-line) 0 100% / 100% 1px no-repeat; }
 .research-passkey-status { display: flow-root; }
 .research-passkey-status::before { content: attr(data-reserve-text); float: left; width: 100%; margin-right: -100%; visibility: hidden; }
 .research-passkey-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ed-space-2) var(--ed-space-5); }
@@ -15,20 +21,33 @@
 .research-passkey-slot > * { grid-area: 1 / 1; }
 .research-passkey-forget, .atlas-source-button, .mission-original-record .mission-back-to-index { display: inline-flex; align-items: center; min-height: 44px; padding: 0; border: 0; background: none; font-weight: 600; text-align: start; text-decoration: underline 1px; }
 .mission-ledger__summary, .mission-jump-card, .mission-progress { font-size: var(--ed-small); }
-.research-note-date, .mission-progress-heading, .atlas-kicker, .mission-original-record :is(.mission-entry-kicker, .mission-card-badge, .mission-sol-chip, caption) { color: var(--obs-muted); font-size: var(--ed-label); font-weight: 600; letter-spacing: .08em; text-align: start; text-transform: uppercase; }
-.mission-ledger__summary { min-height: 48px; border-block: 1px solid var(--obs-hairline); border-top-color: var(--obs-rule); }
+.research-note-date, .mission-progress-heading, .atlas-kicker, .mission-original-record :is(.mission-entry-kicker, .mission-card-badge, .mission-sol-chip, caption) { color: var(--obs-muted); font-size: var(--label-size); font-weight: var(--label-weight); letter-spacing: var(--label-track); text-align: start; text-transform: uppercase; }
+.mission-ledger__summary { min-height: 48px; padding-inline: 0; background: var(--obs-fade-line) 0 100% / 100% 1px no-repeat; }
 .mission-ledger__count, .mission-index-mode, .mission-jump-date, .mission-record-meta > time, .mission-comparison-record time { color: var(--obs-muted); font-size: var(--ed-caption); font-weight: 400; }
-.mission-jump-grid { border-top: 1px solid var(--obs-rule); }
-.mission-jump-card { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); column-gap: var(--ed-space-3); align-content: center; min-height: 48px; padding: var(--ed-space-2) var(--ed-space-3); border-bottom: 1px solid var(--obs-hairline); border-left: 2px solid transparent; color: var(--obs-text); line-height: 1.4; text-decoration: none; }
-.mission-jump-card:hover { background: var(--obs-surface-hover); }
-/* The current record glows brass, with a glowing bead on its rule, as the old index card did (c4, E046); forced
-   colours paint neither. */
-.mission-jump-card[aria-current="true"] { position: relative; border-left-color: var(--obs-accent); background: var(--obs-highlight); box-shadow: 0 0 16px var(--obs-gold-glow); }
-.mission-jump-card[aria-current="true"]::before { content: ""; position: absolute; top: calc(50% - 4px); left: -2px; width: 8px; height: 8px; border-radius: 50%; background: var(--obs-accent); box-shadow: 0 0 10px var(--obs-accent); }
+/* Version 1's archive (owner, 2026-11-25) on the sheet (2026-11-26): the Mission Index and each Mission Log entry under
+   a head hairline with a faint pool, no frame; the index records as text rows on fading hairlines with a 2 px rule at
+   the left (brass on the current one, the non-colour cue); an entry's LOG label small text, its record brief in three
+   columns where the entry is wide, divided by vertical fading lines, each column's term in the one label style; the
+   comparison between two fading lines. */
+.mission-index-panel, .mission-log-entry { position: relative; padding: 22px 0; background: var(--obs-head-line) 0 0 / 100% 1px no-repeat, var(--obs-sheen-pool) 50% 50% / 100% 100% no-repeat, radial-gradient(closest-side, var(--obs-pool), transparent) 50% 50% / 100% 100% no-repeat; }
+/* Rows size to their content (max-content): in the sticky ledger the list has a fixed height, and auto rows would stay at
+   the cards' 48 px minimum, so a title wrapping to three or four lines spilled over its neighbours. */
+.mission-jump-grid { display: grid; grid-auto-rows: max-content; align-content: start; gap: 0; padding-top: var(--ed-space-1); }
+.mission-jump-card { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); column-gap: var(--ed-space-3); align-content: center; min-height: 48px; padding: var(--ed-space-2) var(--ed-space-3); border: 0; border-left: 2px solid transparent; color: var(--obs-text); line-height: 1.4; text-decoration: none; background: var(--obs-fade-start) 0 100% / 100% 1px no-repeat; }
+.mission-jump-card:hover { background: var(--obs-fade-start) 0 100% / 100% 1px no-repeat, radial-gradient(closest-side, var(--obs-pool-hover), transparent); }
+/* The current record (c4, E046): its old brass edge and glow are now the brass rule at the left, brass words, a warm
+   pool and the glowing bead on its rule; forced colours paint neither the pool nor the bead. */
+.mission-jump-card[aria-current="true"] { position: relative; border-left-color: var(--obs-accent); color: var(--obs-accent); background: var(--obs-fade-start) 0 100% / 100% 1px no-repeat, radial-gradient(closest-side, var(--obs-pool-warm), transparent); }
+.mission-jump-card[aria-current="true"]::before { content: ""; position: absolute; top: calc(50% - 4px); left: -5px; width: 8px; height: 8px; border-radius: 50%; background: var(--obs-accent); box-shadow: 0 0 10px var(--obs-accent); }
 .mission-jump-sol { grid-row: span 2; font-weight: 600; }
+.mission-jump-sol, .mission-jump-date { align-self: baseline; }
+/* A row's title stops at two lines with an ellipsis (owner, 2026-11-28), at every width, so long titles no longer stretch
+   the rows; no state changes its size. The whole title stays in the text (and the accessibility tree) and in the
+   tooltip mission-index.js gives it. */
+.mission-jump-title { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow-wrap: anywhere; }
 .mission-log-label { margin: var(--ed-space-6) 0 var(--ed-space-4); }
 @media (max-width: 1199px) {
-  .mission-index-panel { padding-top: var(--ed-space-3); }
+  .mission-index-panel { margin-top: var(--ed-space-2); }
   .mission-index-panel > :is(.kicker, h2) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 }
 @media (min-width: 1200px) {
@@ -37,7 +56,10 @@
   .mission-ledger__summary { display: none; }
   .mission-index-panel { grid-template-rows: auto auto auto 1fr; max-height: calc(100vh - var(--ed-space-7) - var(--header-clearance)); }
   .mission-jump-grid { overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--obs-accent) var(--obs-paper); }
-  .mission-jump-grid::before { content: ""; position: sticky; top: 0; display: block; height: var(--ed-space-5); background: linear-gradient(var(--obs-paper) 25%, #0000); pointer-events: none; }
+  /* The fade under the list's top edge sits in the list's top padding at rest, above the first row, and over the rows only
+     once they scroll (sticky offsets count from the content box, hence the negative top). */
+  .mission-jump-grid { padding-top: var(--ed-space-3); }
+  .mission-jump-grid::before { content: ""; position: sticky; top: calc(-1 * var(--ed-space-3)); z-index: 1; display: block; height: var(--ed-space-3); margin-top: calc(-1 * var(--ed-space-3)); background: linear-gradient(var(--obs-paper) 25%, #0000); pointer-events: none; }
   .mission-log-label { margin-top: 0; }
   .research-note-body:has(> .mission-record-header) { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); column-gap: var(--ed-space-5); align-items: start; }
   .research-note-body > * { grid-column: 2; }
@@ -52,13 +74,13 @@
 .mission-log-entry .research-note-body { min-width: 0; width: 100%; max-width: 100%; }
 .mission-record-header { display: flex; flex-wrap: wrap; gap: var(--ed-space-4); padding-bottom: var(--ed-space-5); margin-bottom: var(--ed-space-5); border-bottom: 1px solid var(--obs-hairline); }
 .mission-record-meta, .mission-record-actions { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--ed-space-2) var(--ed-space-3); }
-.mission-record-meta > :first-child { color: var(--obs-text); font-family: var(--type-serif); font-size: var(--ed-h4); font-weight: 500; letter-spacing: 0; text-transform: none; }
+.mission-record-meta > :first-child { padding: 0; color: var(--obs-text); font-family: var(--type-heading); font-size: var(--ed-label); font-weight: 600; letter-spacing: 0; line-height: 1.5; text-transform: none; }
 .mission-record-sol ~ .research-note-date { order: 1; }
 .mission-record-actions { align-items: center; }
 .mission-progress-heading { margin-bottom: var(--ed-space-3); }
-.mission-progress { margin: 0; border-top: 2px solid var(--obs-rule); }
+.mission-progress { margin: 0; border-top: 1px solid var(--obs-hairline); }
 .mission-progress > div { display: grid; gap: var(--ed-space-1) var(--ed-space-5); padding-block: var(--ed-space-3); border-bottom: 1px solid var(--obs-hairline); }
-.mission-progress dt { color: var(--obs-muted); }
+.mission-progress dt { color: var(--obs-accent); font-size: var(--label-size); font-weight: var(--label-weight); letter-spacing: var(--label-track); text-transform: uppercase; }
 .mission-progress dd { margin: 0; }
 .mission-original-record { margin-top: var(--ed-space-7); line-height: 1.65; }
 .mission-original-record > :where(p, ul, ol, blockquote, h3, h4) { max-width: var(--measure-body); }
@@ -69,20 +91,37 @@
 .mission-original-record :is(.log-tags, .research-note-tags) { margin-top: var(--ed-space-6); color: var(--obs-muted); font-size: var(--ed-small); }
 .mission-original-record :is(.log-tags, .research-note-tags)::before { content: "Keywords: "; color: var(--obs-text); font-weight: 600; }
 .mission-original-record :is(.log-tags, .research-note-tags) > * + *::before { content: " · "; }
-[data-mission-comparison] { margin-top: var(--ed-space-6); padding-block: var(--ed-space-5); border-block: 1px solid var(--obs-hairline); }
+[data-mission-comparison] { margin-top: var(--ed-space-6); padding-block: var(--ed-space-5); background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat, var(--obs-fade-line) 0 100% / 100% 1px no-repeat; }
 .mission-comparison-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ed-space-3); margin-bottom: var(--ed-space-5); font-size: var(--ed-small); font-weight: 600; }
 .mission-comparison-toolbar select { max-width: 100%; }
 .mission-comparison-grid { display: grid; gap: var(--ed-space-6); }
 .mission-comparison-record > h4 { margin: 0 0 var(--ed-space-3); font-size: var(--ed-small); }
 @container entry (min-width: 700px) {
   .mission-comparison-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mission-progress { display: grid; grid-auto-columns: minmax(0, 1fr); grid-auto-flow: column; border-bottom: 1px solid var(--obs-hairline); }
+  .mission-progress > div { grid-template-columns: minmax(0, 1fr); align-content: start; padding: var(--ed-space-3) var(--ed-space-4); border-bottom: 0; }
+  .mission-progress > div:first-child { padding-inline-start: 0; }
+  .mission-progress > div + div { background: var(--obs-fade-line-v) 0 0 / 1px 100% no-repeat; }
 }
 @media (max-width: 760px) {
-  .research-lock-entry .button { flex: 1 1 100%; }
+  .research-lock-card { padding: var(--ed-space-5); }
+  .research-lock-entry .button, .research-passkey-slot { flex: 1 1 100%; }
+  .research-passkey-slot > .button { width: 100%; }
+  .mission-index-panel, .mission-log-entry { padding: 18px 0; }
   .mission-record-actions { display: grid; width: 100%; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); }
   .mission-record-actions > * { padding-inline: var(--ed-space-3); }
   .mission-record-actions > :last-child:nth-child(odd) { grid-column: 1 / -1; }
 }
-/* The entry's atlas launcher (added by mineral-interactions.js as a primary) takes the secondary face, as on Research. */
-.mission-log-entry .atlas-launch[data-private-atlas] { border-color: var(--obs-control-border); background: transparent; color: var(--obs-text); }
-.mission-log-entry .atlas-launch[data-private-atlas]:hover { background: var(--obs-surface-hover); }
+/* The entry's atlas launcher (added by mineral-interactions.js as a primary) is the same text control as on Research. */
+.mission-log-entry .atlas-launch[data-private-atlas] { background-image: none; color: var(--obs-text); }
+@media (forced-colors: active), print {
+  .mission-index-panel, .mission-log-entry { border-top: 1px solid var(--obs-line); background: none; }
+  [data-mission-comparison] { border-block: 1px solid var(--obs-hairline); background: none; }
+  .mission-jump-card, .mission-ledger__summary { border-bottom: 1px solid var(--obs-line); background: none; }
+  .research-passkey-controls, .research-passkey-help { border-top: 1px solid var(--obs-line); background: none; }
+}
+@container entry (min-width: 700px) {
+  @media (forced-colors: active), print {
+    .mission-progress > div + div { border-left: 1px solid var(--obs-hairline); background: none; }
+  }
+}

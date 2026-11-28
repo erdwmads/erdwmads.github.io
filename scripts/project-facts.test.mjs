@@ -17,7 +17,7 @@ test("the project label and canonical question follow CLAUDE.md", () => {
     assert.ok(read("CLAUDE.md").includes(project.question), "CLAUDE.md and project.mjs must state the same question");
   }
   assert.equal(project.displayTitle, "Dolomite in the Orgueil CI1 Chondrite");
-  assert.match(project.formalTitle, /^Astromineralogical Study of Ca–Mg Carbonates Reported as Dolomite in the Orgueil CI1 Chondrite/);
+  assert.match(project.formalTitle, /^Ordered Dolomite in the Orgueil CI1 Chondrite: An Astromineralogical Study/);
   assert.equal(project.targetPhase, "Ca–Mg carbonates reported as dolomite");
   assert.equal(project.subQuestions.length, 3);
 });

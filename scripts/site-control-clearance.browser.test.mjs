@@ -1,6 +1,7 @@
-// Header bands and control clearance (spec §4.0, §6.3): one row of at most 76 px from 1200 px, two rows of at most
-// 104 px at 761-1199 px, a bar of at most 56 px at 760 px and below; the brand's tagline and the gate's "Active Archive"
-// show in the header exactly from 1360 px (the phone sheet carries both as text instead); 7 links with the divider
+// Header bands and control clearance (spec §4.0, §6.3; version 1's header, owner 2026-11-25): one row of at most
+// 110 px from 1200 px, two rows of at most 121 px at 761-1199 px, a bar of at most 104 px at 760 px and below; the
+// brand's tagline shows under the name at every width (version 1), the sheet's copy of it never; the gate's "Active
+// Archive" shows in the header exactly from 1360 px (the phone sheet carries it as text instead); 7 links with the divider
 // before CV, on one row above 760 px; every link and action takes its own clicks; the brand is named by its visible
 // text plus ", home"; footer links stay clear of the fixed settings control, and phones have no dock. The Paper Shelf
 // targets at the end (WP5's page) are checked at every width, the old 768, 1100 and 1280 px included.
@@ -45,13 +46,11 @@ try {
       await page.evaluate(theme => { if (document.documentElement.dataset.theme !== theme) document.querySelector('.theme-toggle').click(); }, theme);
       await page.evaluate(() => document.fonts.ready);
       const bands = await page.evaluate(readBands);
-      if (phone) assert(bands.bar <= 56, `${where}: phone bar ${bands.bar}px tall`);
-      else if (width < 1200) assert(bands.header <= 104, `${where}: two-row header ${bands.header}px tall`);
-      else assert(bands.header <= 76, `${where}: header row ${bands.header}px tall`);
-      if (!phone) {
-        assert.equal(bands.tagline, width >= 1360, `${where}: the brand tagline shows exactly from 1360 px`);
-        assert.equal(bands.subLabel, width >= 1360, `${where}: "Active Archive" shows exactly from 1360 px`);
-      }
+      if (phone) assert(bands.bar <= 104, `${where}: phone bar ${bands.bar}px tall`);
+      else if (width < 1200) assert(bands.header <= 121, `${where}: two-row header ${bands.header}px tall`);
+      else assert(bands.header <= 110, `${where}: header row ${bands.header}px tall`);
+      assert.equal(bands.tagline, true, `${where}: the brand tagline shows under the name`);
+      if (!phone) assert.equal(bands.subLabel, width >= 1360, `${where}: "Active Archive" shows exactly from 1360 px`);
       assert.equal(bands.sheetTagline, false, `${where}: the sheet's tagline is hidden while the sheet is closed or absent`);
       // The accessible name keeps all of the visible text (label in name) and then names the destination.
       assert.equal(await page.locator('.brand').getAttribute('aria-label'), null, 'the brand has no aria-label');
@@ -61,7 +60,7 @@ try {
       if (phone) {
         await page.locator('[data-nav-toggle]').click();
         const sheet = await page.evaluate(readBands);
-        assert.deepEqual([sheet.sheetTagline, sheet.tagline, sheet.subLabel], [true, false, true], `${where}: the open sheet carries the tagline and the gate's status, the bar does not`);
+        assert.deepEqual([sheet.sheetTagline, sheet.tagline, sheet.subLabel], [false, true, true], `${where}: the open sheet carries the gate's status; the tagline stays in the bar, never twice`);
       }
       const links = await clearTargets(page.locator('.nav a'));
       // No Home entry (the brand links home): the research group, a divider, then the personal group.

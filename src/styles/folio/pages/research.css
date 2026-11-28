@@ -1,5 +1,10 @@
-/* @owner WP3 · @budget 4KB · @important 0 · Research, scoped under .ui-page-research */
-/* h2 boxes reach the section rule, so a contents link lands the kicker below the bar. */
+/* @owner WP3 · @budget 6.5KB · @important 0 · Research, scoped under .ui-page-research */
+/* Version 1's Research (owner, 2026-11-25): the research question 36 px under the contents bar with no line above it,
+   its copy beside the Project scope panel (1.5 : 1 from 761 px; on phones the panel follows the record note), the
+   sub-questions as ruled rows led by brass Q numbers; the pathway as exhibits (components/pathway.css) and the
+   comparison as a group under its head (components/comparison.css). Since 2026-11-26 (the lab site's language) the
+   panel draws no box: its words stand on the column's edges under the head hairline, and its fact terms take the one
+   label style. h2 boxes reach the section rule, so a contents link lands the kicker below the bar. */
 .ui-page-research .masthead {
   margin: 0;
   border: 0;
@@ -7,11 +12,6 @@
 
 .ui-page-research h1 {
   font-size: min(var(--ed-display), 10vw);
-}
-
-.ui-page-research .folio-section {
-  container-type: inline-size;
-  --hang: max(2.5rem, (100cqi + var(--grid-gap)) / var(--k, 99) - var(--ed-space-3));
 }
 
 .ui-page-research .folio-section > h2 {
@@ -35,103 +35,199 @@
   outline-offset: 3px;
 }
 
-.ui-page-research .research-question > h2 {
-  max-width: none;
-  margin-bottom: var(--section-gap);
+.ui-page-research .research-question {
+  margin-top: 2.25rem;
+  padding-top: 4px;
+  border-top: 0;
 }
 
-.ui-page-research :is(.research-subquestions, .research-scope, .marks-key) {
-  max-width: calc(var(--measure-body) + var(--hang));
+/* Forced colours draw every section's rule (the page has no faces there), this one included. */
+@media (forced-colors: active) {
+  .ui-page-research .research-question {
+    padding-top: var(--section-pad);
+    border-top: 1px solid;
+  }
+}
+
+.ui-page-research .research-question > .kicker {
+  margin-bottom: var(--ed-space-3);
+}
+
+.ui-page-research .research-question > h2 {
+  max-width: 24ch;
 }
 
 .ui-page-research .research-subquestions {
+  margin-top: 6px;
   padding: 0;
+  border-top: 1px solid var(--obs-line);
   list-style: none;
 }
 
 .ui-page-research .research-subquestions > li {
-  display: grid;
-  grid-template-columns: var(--hang) minmax(0, 1fr);
-  column-gap: var(--ed-space-3);
-  padding-block: var(--ed-space-4);
-  border-top: 1px solid var(--obs-hairline);
+  position: relative;
+  padding: 14px 0 14px 40px;
+  border-bottom: 1px solid var(--obs-line);
 }
 
+/* The Q numbers are gold numerals, set as the caption's number. */
 .ui-page-research .research-subquestions__key {
-  grid-row: span 2;
-  color: var(--obs-muted);
-  font: 1.25rem/1.45 var(--type-serif);
+  position: absolute;
+  top: 16px;
+  left: 0;
+  color: var(--obs-accent);
+  font-size: var(--label-size);
+  font-weight: var(--label-weight);
+  letter-spacing: var(--label-track);
 }
 
 .ui-page-research .research-subquestions h3 {
-  margin: 0;
-  font-size: var(--ed-lead);
+  margin: 0 0 4px;
+  font-size: var(--ed-h4);
+  line-height: 1.45;
 }
 
-.ui-page-research :is(.research-record-note, .research-methods-reading, .marks-key__note) {
+.ui-page-research .research-subquestions p {
+  margin: 0;
   color: var(--obs-muted);
-  font-size: var(--ed-small);
+  font-size: var(--ed-caption);
+  line-height: 1.75;
 }
 
-.ui-page-research :is(.research-scope, .marks-key dl) {
-  border-top: 2px solid var(--obs-rule);
+.ui-page-research .research-record-links {
+  margin-top: var(--ed-space-2);
 }
 
+.ui-page-research .research-record-note {
+  max-width: 43em;
+  color: var(--obs-muted);
+  font-size: var(--ed-label);
+  line-height: 1.7;
+}
+
+.ui-page-research .research-methods-reading {
+  max-width: 85ch;
+  color: var(--obs-muted);
+  font-size: var(--ed-caption);
+  line-height: 1.8;
+}
+
+/* Project scope: version 1's research-context card as a panel (components/frames.css): a pool behind it and the head
+   hairline above, no inner inset, so its words keep the column's edges. */
 .ui-page-research .research-scope {
-  padding-top: var(--ed-space-3);
-}
-
-.ui-page-research .marks-key {
-  margin-top: var(--ed-space-7);
-  font-size: var(--ed-small);
-}
-
-.ui-page-research :is(.research-scope, .marks-key) dl {
-  margin-block: var(--ed-space-3);
-}
-
-.ui-page-research :is(.research-scope, .marks-key) dl > div {
-  padding-block: var(--ed-space-2);
-  border-bottom: 1px solid var(--obs-hairline);
-}
-
-.ui-page-research :is(.research-scope, .marks-key) dd {
-  margin: 0;
+  padding: 22px 0;
   color: var(--obs-text);
+  font-size: var(--ed-body);
+}
+
+.ui-page-research .research-scope > .kicker {
+  margin: 0 0 18px;
+}
+
+.ui-page-research .research-scope dl {
+  margin: 0;
+}
+
+.ui-page-research .research-scope dl > div {
+  padding-block: 12px;
+  border-top: 1px solid var(--obs-line);
+}
+
+/* The fact terms in the one label style (as Home's Current Focus), muted as before the de-box pass, without the bead. */
+.ui-page-research .research-scope dt.kicker {
+  margin-bottom: 4px;
+  padding-inline-start: 0;
+  color: var(--obs-muted);
+}
+
+.ui-page-research .research-scope dt.kicker::before {
+  display: none;
+}
+
+.ui-page-research .research-scope dd {
+  margin: 0;
+  font-size: .9375rem;
+  font-weight: 500;
+  line-height: 1.7;
 }
 
 .ui-page-research .research-scope dd span {
   display: block;
+  margin-top: 2px;
   color: var(--obs-muted);
+  font-size: var(--ed-label);
+  font-weight: 400;
 }
 
+/* The note under the facts: dl + p, not :last-of-type, which does not match while the page is still streaming in, so a
+   first paint in the middle of the aside drew the note at the body size and then moved it (a layout shift). */
+.ui-page-research .research-scope > dl + p {
+  margin: 0;
+  color: var(--obs-muted);
+  font-size: var(--ed-label);
+  line-height: 1.75;
+}
+
+.ui-page-research .comparison-frame {
+  margin-top: var(--ed-space-3);
+}
+
+/* From 761 px the copy and the panel stand side by side, the panel from the section's top across every row. */
 @media (min-width: 761px) {
-  .ui-page-research .folio-section {
-    --k: 8;
+  .ui-page-research .research-question {
+    grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr);
+    grid-template-rows: repeat(6, auto) 1fr;
+    column-gap: clamp(24px, 4vw, 60px);
+  }
+
+  .ui-page-research .research-question > * {
+    grid-column: 1;
+  }
+
+  .ui-page-research .research-question > .research-scope {
+    grid-column: 2;
+    grid-row: 1 / -1;
+    align-self: start;
   }
 }
 
-@media (min-width: 1200px) {
-  .ui-page-research .folio-section {
-    --k: 6;
-  }
-
-  .ui-page-research .research-question > h2 {
-    grid-column: wide;
+/* Phones read the small prose at version 1's 14.5 px. */
+@media (max-width: 760px) {
+  .ui-page-research :is(.research-subquestions p, .research-record-note, .research-methods-reading, .research-scope > dl + p) {
+    font-size: .90625rem;
   }
 
   .ui-page-research .research-scope {
-    grid-row: span 4;
+    margin-top: var(--ed-space-2);
+    padding: 18px 0;
   }
 
-  .ui-page-research .research-subquestions {
-    grid-column: margin-start / text-end;
-    max-width: none;
+  .ui-page-research .research-scope dl {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 16px;
+  }
+
+  .ui-page-research .research-scope dl > div:last-child {
+    grid-column: 1 / -1;
   }
 }
 
-@media (max-width: 760px) {
-  .ui-page-research .research-record-links .button {
-    flex: 1 1 100%;
+@media (max-width: 440px) {
+  .ui-page-research .research-subquestions > li {
+    padding-left: 34px;
+  }
+}
+
+/* The Orgueil specimen (a context plate, components/plate.css) closes the Project scope aside; beside the question
+   (761 to 1199 px) the column is narrow, so its label stands under the print. */
+.ui-page-research .research-specimen {
+  --plate-w: 11rem;
+}
+
+@media (min-width: 761px) and (max-width: 1199px) {
+  .ui-page-research .research-specimen {
+    --plate-w: 9rem;
+    grid-template-columns: minmax(0, 1fr);
   }
 }

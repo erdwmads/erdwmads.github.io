@@ -1,61 +1,53 @@
-/* @owner WP5 · @budget 5.5KB · @important 0 · CV, scoped under .ui-page-cv, including the CV print rules */
+/* @owner WP5 · @budget 7.5KB · @important 0 · CV, scoped under .ui-page-cv, including the CV print rules */
+/* Version 1's CV (2f20d7e; owner, 2026-11-25) in the lab site's language (2026-11-26): the intro beside the portrait,
+   now a mounted print (the name and ORCID iD, "Cite as" in the small muted line, the lead, the print button as a text
+   control), then two-column sections (components/frames.css, the heading as the one label with its bead) holding
+   version 1's entries, date beside title, on hairline rows, and bulleted lists. Version 3's light stays on the new
+   forms: the portrait's shadow as the print's (E050), the frosted dates as frosted pools (E051), the record glow on
+   a row's rule (E105). */
 .ui-page-cv .masthead {
   margin-block-end: 0;
   padding-block-end: 0;
   border: 0;
 }
 
-/* At the lead measure the standfirst breaks to three lines in the web font and two in its fallback: the body measure
-   keeps two in both, so the font swap moves nothing. */
-.ui-page-cv .masthead__lead {
-  max-width: var(--measure-body);
-}
-
 .ui-page-cv .cv-identity-block {
   display: grid;
   justify-items: start;
   gap: var(--ed-space-2);
-  margin-block-start: var(--ed-space-5);
-  padding-block-start: var(--ed-space-5);
-  border-top: 1px solid var(--obs-hairline);
 }
 
 .ui-page-cv .cv-identity {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0 var(--ed-space-3);
+  align-items: center;
+  gap: 6px var(--ed-space-4);
 }
 
 .ui-page-cv .person-name {
-  font: var(--ed-h3)/1.25 var(--type-serif);
+  font: 400 var(--ed-h4)/1.7 var(--type-name);
 }
 
-.ui-page-cv .cv-citation {
-  display: grid;
-  align-items: baseline;
-  gap: var(--ed-space-1) var(--grid-gap);
-  margin-block-start: var(--ed-space-3);
-  font-size: var(--ed-label);
-  font-weight: 600;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-
-.ui-page-cv .cv-citation .person-name {
-  color: var(--obs-text);
-  font: 500 var(--ed-h2)/1.12 var(--type-serif);
-  letter-spacing: -.01em;
-  text-transform: none;
-}
-
-.ui-page-cv .orcid-link {
+/* The ORCID iD keeps a 44 px target inside version 1's 24 px line; main only, so the footer's iD keeps its size. */
+.ui-page-cv main .orcid-link {
   display: inline-flex;
   align-items: center;
   gap: var(--ed-space-2);
   min-height: 44px;
+  margin-block: -10px;
   font-size: var(--ed-small);
   overflow-wrap: anywhere;
+}
+
+.ui-page-cv .cv-citation {
+  color: var(--obs-muted);
+  font-size: var(--ed-small);
+}
+
+.ui-page-cv .cv-citation .person-name {
+  font-size: inherit;
+  font-weight: 400;
+  line-height: inherit;
 }
 
 .ui-page-cv .cv-print-identity {
@@ -64,72 +56,57 @@
 
 .ui-page-cv .cv-print-action {
   --reserve-display: inline-flex;
-  margin-block-start: var(--ed-space-3);
+  justify-self: start;
+  margin-block-start: 2px;
 }
 
 .ui-page-cv .cv-photo {
+  width: 100%;
+  max-width: 30rem;
   margin: 0;
 }
 
-/* The old light on screen (c4): the portrait floats on a deep soft shadow (E050); each education date sits on the
-   frosted glass Edge drew under it (E051), the one backdrop blur of 2f20d7e (blurAllowList, scripts/lib/css-lint.mjs). */
+.ui-page-cv .cv-photo .figure__media {
+  overflow: hidden;
+  border-radius: var(--radius-record);
+}
+
+/* The old light on screen (c4), on the new forms: the portrait is a mounted print, its deep soft shadow now the
+   print's contact shade and long soft drop (E050); each education date sits on the frosted glass Edge drew under it
+   (E051), the one backdrop blur of 2f20d7e (blurAllowList, scripts/lib/css-lint.mjs), masked to a pool that feathers
+   out around the words (24 px beyond them each side, so no word reaches the fade). Nothing moves: the padding is
+   given back by the margins. */
 @media screen and (forced-colors: none) {
   .ui-page-cv .cv-photo .figure__media {
-    box-shadow: var(--obs-photo-shadow);
+    box-shadow: var(--obs-print-shadow);
   }
 
   .ui-page-cv .cv-edu-card > .ledger__key {
     align-self: start;
+    justify-self: start;
+    margin: -3px -24px -6px;
+    padding: 6px 24px;
     backdrop-filter: blur(12px) saturate(1.04);
+    mask-image: radial-gradient(closest-side, #000 72%, transparent);
   }
 }
 
-/* An education record under the pointer takes the old record glow (E105, as at 4e14512): a faint depth easing in over
-   180 ms. A hairline row: nothing moves. */
-@media (hover: hover) and (forced-colors: none) {
-  .ui-page-cv .cv-edu-card:hover {
-    box-shadow: var(--obs-record-depth-hover);
-    transition: box-shadow .18s;
+/* Below 1200 px the column starts inside the sheet's feathered edge, so the frosted pool does not reach left of the
+   words (it would smear the edge's shade under them): it starts at the words and feathers out to the right. */
+@media screen and (forced-colors: none) and (max-width: 1199px) {
+  .ui-page-cv .cv-edu-card > .ledger__key {
+    margin-inline-start: 0;
+    padding-inline-start: 0;
+    mask-image: radial-gradient(farthest-side at 0 50%, #000 90%, transparent);
   }
 }
 
-.ui-page-cv .cv-ledger > li {
-  grid-template-columns: 9rem minmax(0, 1fr);
-}
-
-.ui-page-cv .ledger__key {
-  line-height: calc(var(--ed-lead) * 1.3);
-}
-
-.ui-page-cv .cv-edu-body > h3 {
-  font-size: var(--ed-lead);
-  line-height: 1.3;
-}
-
-.ui-page-cv .cv-edu-body > p {
-  margin-block-start: var(--ed-space-1);
-  font-size: var(--ed-small);
-}
-
-.ui-page-cv :is(.muted, .cv-citation) {
-  color: var(--obs-muted);
-}
-
-.ui-page-cv :is(.cv-ledger, .cv-list) {
-  padding: 0;
-  border-top: 1px solid var(--obs-hairline);
-  list-style: none;
-}
-
-.ui-page-cv .cv-list > li {
-  padding-block: var(--ed-space-3);
-  border-bottom: 1px solid var(--obs-hairline);
-}
-
-/* Tablets: the identity in a column, the plate beside it (as in print). */
-@media (min-width: 761px) and (max-width: 1199px) {
+/* The intro: the text column beside the portrait (480 px at most, centred on the text), from 761 px. */
+@media screen and (min-width: 761px) {
   .ui-page-cv .masthead {
-    grid-template-columns: minmax(0, 1fr) 16rem;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    grid-template-rows: none;
+    column-gap: 2.5rem;
   }
 
   .ui-page-cv .masthead > * {
@@ -138,39 +115,111 @@
 
   .ui-page-cv .masthead > .cv-photo {
     grid-column: 2;
-    grid-row: 1 / span 4;
-    align-self: start;
+    grid-row: 1 / span 5;
+    align-self: center;
+    justify-self: end;
   }
 }
 
-@media (min-width: 1200px) {
-  .ui-page-cv :is(.cv-ledger, .cv-identity-block) {
-    grid-column: margin-start / text-end;
+/* Entries: version 1's cards, the date (154 px) beside the title and details, 30 px apart over a line. */
+.ui-page-cv .cv-ledger {
+  border-top: 0;
+}
+
+.ui-page-cv .cv-ledger > li {
+  grid-template-columns: 9.625rem minmax(0, 1fr);
+  column-gap: 1.625rem;
+  padding-block: 1.875rem;
+  border-bottom: 1px solid var(--obs-line);
+}
+
+.ui-page-cv .cv-ledger > li:first-child {
+  padding-block-start: 0;
+}
+
+/* An entry under the pointer takes the old record glow (E105, as at 4e14512) on the sheet's terms: its rule lights
+   brass to steel and the record glow pools above it, easing in over 180 ms, on a layer behind the text (as a ledger
+   row's lit rule, components/surface-light.css). Nothing moves. */
+@media (hover: hover) and (forced-colors: none) {
+  .ui-page-cv .cv-edu-card {
+    position: relative;
   }
 
-  .ui-page-cv :is(.cv-ledger > li, .cv-identity-block) {
-    grid-template-columns: calc((100% + var(--grid-gap)) / 4 - var(--grid-gap)) minmax(0, 1fr);
-    column-gap: var(--grid-gap);
+  .ui-page-cv .cv-edu-card::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 -1px;
+    z-index: -1;
+    background: linear-gradient(90deg, var(--obs-accent), var(--obs-edge-cool) 38%, transparent 72%) 0 100% / 100% 1px no-repeat, radial-gradient(farthest-side at 50% 100%, var(--obs-row-glow), transparent) 50% 100% / 100% 80% no-repeat;
+    opacity: 0;
+    transition: opacity .18s;
+    pointer-events: none;
   }
 
-  .ui-page-cv .cv-identity-block > * {
-    grid-column: 2;
+  .ui-page-cv .cv-edu-card:hover::after {
+    opacity: 1;
   }
+}
 
-  .ui-page-cv .cv-identity-block > .cv-citation {
-    grid-column: 1 / -1;
-    grid-template-columns: subgrid;
+.ui-page-cv .ledger__key {
+  margin-block-start: 3px;
+  color: var(--obs-accent);
+  font-size: var(--ed-label);
+  font-weight: 600;
+  line-height: 1.8;
+}
+
+.ui-page-cv .cv-edu-body > h3 {
+  margin-block-end: .875rem;
+  font-size: var(--ed-h3);
+  font-weight: 500;
+  line-height: 1.35;
+  text-wrap: balance;
+}
+
+.ui-page-cv .cv-edu-body > p {
+  margin-block-start: var(--ed-space-3);
+  color: var(--obs-muted);
+  font-size: .9375rem;
+  line-height: 1.8;
+}
+
+.ui-page-cv .cv-edu-body > h3 + p {
+  margin-block-start: 0;
+}
+
+.ui-page-cv .cv-edu-body strong {
+  color: var(--obs-text);
+}
+
+/* Interests and skills: version 1's bulleted lists. */
+.ui-page-cv .cv-list {
+  margin: 0;
+  padding-inline-start: 1.1em;
+  list-style: disc;
+}
+
+.ui-page-cv .cv-list > li {
+  margin-block: var(--ed-space-2);
+}
+
+/* At 860 px and below, as in version 1, the date stands above the title. */
+@media (max-width: 860px) {
+  .ui-page-cv .cv-ledger > li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--ed-space-3);
+    padding-block: var(--ed-space-5);
   }
 }
 
 @media (max-width: 760px) {
-  .ui-page-cv :is(.cv-ledger > li, .ledger__key) {
-    display: block;
+  .ui-page-cv .cv-edu-body > h3 {
+    font-size: 1.1875rem;
   }
 
-  .ui-page-cv .ledger__key {
-    font-size: var(--ed-small);
-    line-height: 1.6;
+  .ui-page-cv .cv-list > li {
+    font-size: .90625rem;
   }
 }
 
@@ -212,15 +261,15 @@
   }
 
   .ui-page-cv .cv-photo {
-    grid-area: 1 / 2 / span 4;
+    grid-area: 1 / 2 / span 5;
   }
 
   .ui-page-cv h1 {
     font-size: 24pt;
   }
 
-  .ui-page-cv :is(h2, .cv-citation .person-name) {
-    font-size: 16pt;
+  .ui-page-cv h2 {
+    font-size: 11pt;
     break-after: avoid;
   }
 
@@ -240,7 +289,7 @@
   }
 
   .ui-page-cv .cv-list > li {
-    padding-block: 3pt;
+    margin-block: 3pt;
   }
 
   .ui-page-cv .cv-list {

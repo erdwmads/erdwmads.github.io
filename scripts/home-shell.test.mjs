@@ -52,7 +52,8 @@ test("Home metadata: title, short descriptions, root canonical and structured da
 
 test("Home renders Current Focus as a component and skips Continue exploring", () => {
   const index = read("../src/pages/index.astro");
-  assert.match(index, /<CurrentFocus \/>/);
+  // With its caption number (the Home opening of 2026-11-28 numbers the four kickers 01 to 04).
+  assert.match(index, /<CurrentFocus number="02" \/>/);
   assert.doesNotMatch(index, /current-focus-section/);
   assert.doesNotMatch(read("../src/components/ContinueReading.astro"), /\bhome:\[/);
   assert.match(index, /class="ledger home-explore-list"/);

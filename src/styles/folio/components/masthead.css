@@ -1,20 +1,23 @@
-/* @owner WP1 · @budget 3KB · @important 0 · Page masthead (Masthead.astro) and the kicker, with its brass rule */
-/* Kicker: muted capitals; on a masthead a 24 x 2 px brass rule leads it (one of the few brass marks). The rule is
-   a border, so forced colours keep it. Every kicker begins with the old site's signal star, a glowing brass bead,
-   and the label carries a faint gold glow (owner, 2026-11-18); forced colours drop both. */
+/* @owner WP1 · @budget 6.5KB · @important 0 · Page masthead (Masthead.astro), its shade pool, and the kicker as the one label and museum caption */
+/* The kicker is the site's one small label (2026-11-26, after the lab site's museum captions): 12 px capitals at 600,
+   tracked .14em, on a 1.7 line, in the accent again since 2026-11-28 (owner: "金色元素呢", the gold of version 1 and
+   the lab site's labels), with the old site's signal star, a glowing brass bead, and its faint gold glow (owner,
+   2026-11-18, E015); a numbered caption sets its number in brass and a short brass hairline before the words ("01 ——
+   The research question"). Forced colours drop the bead and the hairline. */
 .kicker {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--ed-space-2) var(--ed-space-3);
-  color: var(--obs-muted);
+  gap: var(--ed-space-1) var(--ed-space-2);
+  color: var(--obs-accent);
   font-family: var(--type-sans);
-  font-size: var(--ed-label);
-  font-weight: 600;
-  line-height: 1.3;
-  letter-spacing: .08em;
+  font-size: var(--label-size);
+  font-weight: var(--label-weight);
+  line-height: 1.7;
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
   text-shadow: 0 0 14px var(--obs-gold-glow);
+  text-wrap: balance;
 }
 
 /* The bead hangs in the kicker's start padding, centred on its first line, so it never wraps away from the label. */
@@ -26,7 +29,7 @@
 .kicker::before {
   content: "";
   position: absolute;
-  top: calc(.65em - 2.75px);
+  top: calc(.85em - 2.75px);
   left: 0;
   width: 5.5px;
   height: 5.5px;
@@ -45,40 +48,88 @@
   }
 }
 
-.kicker__rule {
-  flex: none;
-  width: 24px;
-  border-top: 2px solid var(--obs-accent);
+/* The museum caption: the section number in brass, then a 28 px brass hairline fading out, then the words. The
+   hairline replaces version 1's slash; no word changes. */
+.kicker > .folio-section__number {
+  color: var(--obs-accent);
 }
 
-/* Masthead: kicker, display title, serif standfirst, a tabular meta line, then a full-width hairline and 48 px. */
+.kicker > .folio-section__number::after {
+  content: "";
+  display: inline-block;
+  width: 28px;
+  height: 1px;
+  margin: 0 .2em 0 .7em;
+  vertical-align: .32em;
+  background: var(--obs-caption-rule);
+}
+
+@media (forced-colors: active) {
+  .kicker > .folio-section__number::after {
+    content: " /";
+    width: auto;
+    height: auto;
+    margin: 0;
+    vertical-align: baseline;
+    background: none;
+  }
+}
+
+/* Version 1's eyebrows had no rule; the 24 px brass rule of the Folio mastheads stays in the markup, unseen. */
+.kicker__rule {
+  display: none;
+}
+
+/* Masthead: version 1's page intro: caption, title, a 720 px lead in the muted text, no closing line; an aside
+   (portrait, side facts) stands in the right column beside it on desktop. The page's own padding sets the space
+   above it. */
 .masthead {
-  padding-block: var(--ed-space-8) var(--ed-space-7);
-  margin-block-end: var(--ed-space-7);
-  border-bottom: 1px solid var(--obs-hairline);
+  position: relative;
+  isolation: isolate;
+  row-gap: var(--ed-space-4);
+}
+
+/* Every masthead lies over the far plane in the opening view, so a soft shade pool (Space dark, Light paper) sits
+   behind its words only: no edge, no blur paint; Bennu and the orbits keep their strength around it. Its left side
+   reaches past the sheet's side in Space and stays inside the solid paper in Light (--obs-pool-shade-reach), so the
+   pale pool never cuts a notch into the sheet's side shade. Phones: a band feathered on all four sides. Forced
+   colours and print: none. */
+.masthead::after {
+  content: "";
+  position: absolute;
+  inset: -56px -120px -40px var(--obs-pool-shade-reach);
+  z-index: -1;
+  background: var(--obs-pool-shade);
+  mask-image: linear-gradient(90deg, transparent, #000 var(--obs-pool-shade-feather), #000 calc(100% - 110px), transparent), linear-gradient(transparent, #000 48px, #000 calc(100% - 36px), transparent);
+  mask-composite: intersect;
+  pointer-events: none;
 }
 
 .masthead > :is(h1, h2) {
-  margin-block-start: var(--ed-space-2);
-  font-family: var(--type-serif);
+  max-width: 60rem;
+  font-family: var(--type-heading);
   font-size: var(--ed-display);
-  font-weight: 500;
-  line-height: 1.04;
-  letter-spacing: -.015em;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -.02em;
 }
 
+/* The personal name: version 1's Georgia title, set lighter and larger: 54 px at 400 on a 1.2 line (36 px on phones). */
 .masthead--name > :is(h1, h2) {
+  font-family: var(--type-name);
   font-size: var(--ed-name);
-  line-height: 1;
-  letter-spacing: -.02em;
+  line-height: 1.2;
+  letter-spacing: 0;
 }
 
 .masthead__lead {
   max-width: var(--measure-lead);
-  margin-block-start: var(--ed-space-2);
-  font-family: var(--type-serif);
+  margin-block-start: 2px;
+  color: var(--obs-muted);
+  font-family: var(--type-sans);
   font-size: var(--ed-lead);
-  line-height: 1.45;
+  line-height: 1.75;
+  text-wrap: pretty;
 }
 
 .masthead__meta {
@@ -87,10 +138,10 @@
   line-height: 1.5;
 }
 
-/* The aside (a portrait, side facts) sits in the notes column beside the title on desktop. It spans the four text
-   rows and a flexible fifth, so a tall aside lengthens the last row instead of spreading the title rows apart. */
+/* The aside sits in the right column beside the title on desktop. It spans the four text rows and a flexible fifth,
+   so a tall aside lengthens the last row instead of spreading the title rows apart. */
 @media (min-width: 1200px) {
-  .masthead {
+  .masthead:has(> .in-notes) {
     grid-template-rows: repeat(4, auto) 1fr;
   }
 
@@ -98,11 +149,49 @@
     grid-row: 1 / span 5;
     align-self: start;
   }
+
+  /* From 1200 px the orrery stands at the window's right edge beside the headline, so the pool ends with the text
+     column (784 px and a 40 px fade) and the orbits keep their strength beside it (E025, E026, E027). Words in the
+     right column (plate and figure captions, a button) lie on small feathered pools of their own. */
+  .masthead::after {
+    inset-inline-end: calc(100% - min(100%, 49rem) - 40px);
+  }
+
+  .masthead :is(.plate__caption, .figure__caption),
+  .masthead > .button {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .masthead :is(.plate__caption, .figure__caption)::after,
+  .masthead > .button::after {
+    content: "";
+    position: absolute;
+    inset: -20px -36px;
+    z-index: -1;
+    background: var(--obs-pool-shade-note);
+    mask-image: linear-gradient(90deg, transparent, #000 36px, #000 calc(100% - 36px), transparent), linear-gradient(transparent, #000 20px, #000 calc(100% - 20px), transparent);
+    mask-composite: intersect;
+    pointer-events: none;
+  }
 }
 
 @media (max-width: 760px) {
-  .masthead {
-    padding-block: var(--ed-space-6) var(--ed-space-5);
-    margin-block-end: var(--ed-space-5);
+  .masthead::after {
+    inset: -28px calc(-1 * var(--page-pad)) -20px;
+    background: linear-gradient(90deg, transparent, var(--obs-pool-shade) 18px, var(--obs-pool-shade) calc(100% - 18px), transparent);
+    mask-image: linear-gradient(180deg, transparent, #000 28px, #000 calc(100% - 20px), transparent);
+  }
+
+  .masthead__lead {
+    line-height: 1.7;
+  }
+}
+
+@media (forced-colors: active), print {
+  .masthead::after,
+  .masthead :is(.plate__caption, .figure__caption)::after,
+  .masthead > .button::after {
+    display: none;
   }
 }

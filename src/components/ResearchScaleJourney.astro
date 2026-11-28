@@ -3,13 +3,12 @@
 // anatomy (label, title, description, facts and credit), then the boundary line. Nothing is laid over the licensed
 // figure: the hint sits in the line above it. The hint and the controls appear once the figure has loaded;
 // data-reserve-space keeps their boxes from the first paint, so revealing them shifts nothing (a failed figure
-// releases them). The section number hangs in the margin, as on Research.
+// releases them). The section number leads the kicker, as on Research.
 // Styles: src/styles/folio/components/{research-scale,image-inspector}.css.
 import EvidenceStatus from './EvidenceStatus.astro';
 ---
 <section class="research-scale folio" aria-labelledby="research-scale-title">
-  <span class="folio-section__number in-margin">03</span>
-  <p class="kicker">Published microscopy</p>
+  <p class="kicker"><span class="folio-section__number tabular">03</span> Published microscopy</p>
   <h2 id="research-scale-title">What a closer observation can reveal</h2>
   <EvidenceStatus kind="literature">Published Bennu observations (Lauretta &amp; Connolly et al., 2024), not my Orgueil results.</EvidenceStatus>
   <p>After comparing whole bodies and samples above, this published Bennu figure shows the textures studied with optical and electron microscopy.</p>

@@ -1,94 +1,272 @@
-/* @owner WP3 · @budget 2.5KB · @important 0 · Public Research Log, scoped under .ui-page-research-log:not(.ui-page-research-graduation) */
-/* The reading veil reaches full strength 380 px down here, as on the old site. */
+/* @owner WP3 · @budget 7KB · @important 0 · Public Research Log, scoped under .ui-page-research-log:not(.ui-page-research-graduation) */
+/* Version 1's Research Log (owner, 2026-11-25): the dashboard (the record beside the public facts, the ways on across
+   both columns under a line), the compact pathway as a strip of steps (components/pathway.css), and the archive's
+   parts in two columns over version 1's callout. The reading sheet (03-base.css) reaches full strength 380 px down, as
+   the old veil did. Since 2026-11-26 (the lab site's language) nothing here draws a box: the project status is small
+   text, the callout a group under its head hairline on a pool (components/frames.css), every term the one label. */
 .ui-page-research-log .research-log-main {
-  background-image: linear-gradient(180deg, transparent, var(--obs-reading) 380px);
+  --sheet-rise: 380px;
 }
 
-/* The accession record (.log-record) and the compact pathway; these block classes exist only on this page. */
+/* The dashboard: one column on phones; from 761 px the record (1.25) beside the facts (1), 64 px apart. These block
+   classes exist only on this page. */
 .log-record {
-  padding-top: var(--ed-space-8);
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: 0;
+}
+
+.log-record > * {
+  grid-column: 1 / -1;
+  max-width: none;
 }
 
 .log-record .masthead {
   display: flex;
   flex-direction: column;
-  gap: var(--ed-space-3);
+  gap: 0;
   margin: 0;
   padding: 0;
   border: 0;
 }
 
+/* Version 1 set the project status above the title: the status and its period, between the eyebrow and the title. */
+.log-record .masthead > .kicker {
+  order: -2;
+}
+
+.log-record .masthead__meta {
+  display: flex;
+  flex-wrap: wrap;
+  order: -1;
+  align-items: center;
+  gap: 6px 14px;
+  margin: 14px 0 18px;
+  font-size: var(--ed-small);
+}
+
+/* The project status as small text (no capsule). It is the project's status, not a pathway step's, so it carries no
+   status marker (research-hub.browser): the words in the text colour at 600 before the muted period. */
+.log-status {
+  color: var(--obs-text);
+  font-size: var(--ed-label);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.log-record .masthead > h1 {
+  font-size: 2.375rem;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
 .log-record .masthead__lead {
-  font-style: italic;
+  max-width: none;
+  margin-top: 20px;
+  font-size: .9375rem;
+  line-height: 1.7;
+}
+
+/* The summary and the facts are positioned, so they paint over the masthead's shade pool (a positioned layer that
+   reaches 40 px below the masthead and 120 px beside it) instead of under it. */
+.log-summary,
+.ui-page-research-log .log-facts {
+  position: relative;
+}
+
+.log-summary {
+  margin-top: 18px;
+  color: var(--obs-muted);
+  font-size: var(--ed-small);
+  line-height: 1.65;
 }
 
 .ui-page-research-log :is(.log-facts, .log-parts) {
-  margin: var(--ed-space-5) 0 0;
-  border-top: 1px solid var(--obs-rule);
+  margin: 24px 0 0;
   color: var(--obs-text);
 }
 
-.ui-page-research-log .log-facts {
-  border-top-width: 2px;
+/* The facts stand in the opening view beside the record, over the orrery from 901 px: like the masthead, they lie on
+   a soft shade pool (a rectangle feathered on all sides; Space dark, Light paper), so no orbit runs behind the words.
+   The dashboard draws it in the facts' own grid area, so the facts keep their box. Forced colours and print: none. */
+@media (min-width: 761px) {
+  .ui-page-research-log .log-record {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .ui-page-research-log .log-record::after {
+    content: "";
+    position: absolute;
+    inset: -12px -96px -40px -56px;
+    z-index: -1;
+    grid-area: 1 / 2 / 4 / 3;
+    background: var(--obs-pool-shade);
+    mask-image: linear-gradient(90deg, transparent, #000 56px, #000 calc(100% - 96px), transparent), linear-gradient(transparent, #000 48px, #000 calc(100% - 40px), transparent);
+    mask-composite: intersect;
+    pointer-events: none;
+  }
+}
+
+@media (forced-colors: active), print {
+  .ui-page-research-log .log-record::after {
+    display: none;
+  }
 }
 
 .ui-page-research-log :is(.log-facts, .log-parts) > div {
-  padding-block: var(--ed-space-3);
-  border-bottom: 1px solid var(--obs-hairline);
+  min-width: 0;
+  padding: 18px 0 20px;
+  border-top: 1px solid var(--obs-line);
+}
+
+/* Version 1's fact labels: brass capitals at 800, without the eyebrow's bead. */
+.ui-page-research-log .log-facts dt.kicker {
+  margin-bottom: 8px;
+  padding-inline-start: 0;
+}
+
+.ui-page-research-log .log-facts dt.kicker::before {
+  display: none;
 }
 
 .ui-page-research-log :is(.log-facts, .log-parts) dd {
   display: grid;
-  margin: var(--ed-space-1) 0 0;
+  margin: 0;
+  font-size: .9375rem;
+  line-height: 1.45;
 }
 
 .log-facts__line:has(small) + .log-facts__line {
   margin-top: var(--ed-space-2);
 }
 
-.ui-page-research-log :is(.log-facts small, .log-note) {
+.ui-page-research-log .log-facts small {
   display: block;
   color: var(--obs-muted);
-  font-size: var(--ed-small);
+  font-size: var(--ed-caption);
 }
 
-.log-pathway {
-  container-type: inline-size;
-  --hang: max(2.5rem, (100cqi + var(--grid-gap)) / var(--k, 99) - var(--ed-space-3));
+.ui-page-research-log .log-note {
+  color: var(--obs-muted);
+  font-size: var(--ed-caption);
+  line-height: 1.8;
+}
+
+.log-actions {
+  margin-top: 16px;
+  padding-top: 24px;
+  border-top: 1px solid var(--obs-line);
+}
+
+/* The archive: its intro in version 1's muted 15 px, the parts in two columns from 761 px, then the callout. */
+.research-log-archive > h2 + p {
+  max-width: 70ch;
+  color: var(--obs-muted);
+  font-size: .9375rem;
+  line-height: 1.75;
+}
+
+.ui-page-research-log .log-parts {
+  margin-top: 12px;
+}
+
+/* The parts' terms in the one label style (components/masthead.css), in its accent, without the bead. */
+.ui-page-research-log .log-parts dt {
+  margin: 0 0 8px;
+  color: var(--obs-accent);
+  font-size: var(--label-size);
+  font-weight: var(--label-weight);
+  letter-spacing: var(--label-track);
+  text-shadow: 0 0 14px var(--obs-gold-glow);
+  text-transform: uppercase;
+}
+
+.ui-page-research-log .log-parts dd {
+  line-height: 1.65;
+}
+
+.research-log-archive > :is(.log-parts, .log-callout),
+.log-pathway > .log-note {
+  grid-column: 1 / -1;
+  max-width: none;
+}
+
+/* The callout: its caveat and the way in side by side under the head hairline, on the column's edges. */
+.log-callout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 32px;
+  margin-top: 8px;
+  padding: 22px 0;
+}
+
+.ui-page-research-log .log-callout .log-note {
+  max-width: 62ch;
+  margin: 0;
+  font-size: var(--ed-small);
+  line-height: 1.7;
+}
+
+.log-access {
+  margin: 0;
 }
 
 @media (min-width: 761px) {
-  .log-pathway {
-    --k: 8;
+  .log-record {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    column-gap: clamp(2.5rem, 5vw, 4rem);
   }
-}
 
-@media (min-width: 961px) {
-  .ui-page-research-log .log-facts {
-    grid-row: 1 / span 4;
-    margin-top: 0;
-  }
-}
-
-@media (min-width: 961px) and (max-width: 1199px) {
   .log-record > * {
-    grid-column: span 5;
+    grid-column: 1;
   }
 
-  .ui-page-research-log .log-facts {
-    grid-column: 6 / -1;
+  .log-record {
+    grid-template-rows: auto auto 1fr;
+  }
+
+  /* The facts span a flexible third row, so their height never spreads the title from the summary. */
+  .log-record > .log-facts {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    margin-top: 36px;
+  }
+
+  .log-record > .log-actions {
+    grid-column: 1 / -1;
+    margin-top: 32px;
+  }
+
+  .ui-page-research-log .log-parts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 36px;
   }
 }
 
 @media (max-width: 760px) {
-  .log-record {
-    padding-top: var(--ed-space-6);
+  .log-record .masthead > h1 {
+    font-size: 1.75rem;
+    line-height: 1.2;
+    letter-spacing: 0;
+  }
+
+  .log-actions {
+    padding-top: 0;
+    border-top: 0;
   }
 
   .log-actions .button {
     flex: 1 1 100%;
   }
 
+  .log-callout {
+    padding: 18px 0;
+  }
+
+  .log-access,
   .log-access .button {
     width: 100%;
   }

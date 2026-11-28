@@ -1,64 +1,170 @@
-/* @owner WP5 · @budget 2KB · @important 0 · 404, scoped under .ui-page-not-found */
-/* The masthead opens straight onto the archive index; the section rule divides them, a hairline heads the list. */
+/* @owner WP5 · @budget 6KB · @important 0 · 404, scoped under .ui-page-not-found */
+/* Version 1's 404 (2f20d7e; owner, 2026-11-25) in the lab site's language (2026-11-26): the intro with its title
+   across 960 px, then a two-column section (components/frames.css) whose label stands beside the archive index, which
+   lies on the sheet under a glint hairline with a light pool behind it (no card), its sections on 44 px rows over
+   hairlines. Version 3's contents stay: number, section, leader and address. */
 .ui-page-not-found .masthead {
   margin-block-end: 0;
   padding-block-end: 0;
   border: 0;
 }
 
-.ui-page-not-found .archive-index {
-  border-top-color: var(--obs-hairline);
+.ui-page-not-found .masthead > h1 {
+  text-wrap: balance;
 }
 
-/* The index lies on the old glazed card, drawn behind it so nothing moves; its depth softens
-   under the pointer as the old card's did (c4, E055). */
+/* The title spans 960 px from 1200 px, so its shade pool reaches past it (components/masthead.css ends it at the text
+   column). */
+@media (min-width: 1200px) {
+  .ui-page-not-found .masthead > h1 {
+    grid-column: wide;
+  }
+
+  .ui-page-not-found .masthead::after {
+    inset-inline-end: calc(100% - min(100%, 60rem) - 80px);
+  }
+}
+
+.ui-page-not-found .archive-card {
+  padding: var(--ed-space-5) 0;
+}
+
+.ui-page-not-found .archive-index {
+  border-top: 0;
+}
+
+.ui-page-not-found .archive-index > li {
+  align-items: center;
+  min-height: 44px;
+  padding-block: 0;
+}
+
+.ui-page-not-found .archive-index > li:last-child {
+  border-bottom: 0;
+}
+
+.ui-page-not-found .ledger__key {
+  font-size: var(--ed-label);
+}
+
+.ui-page-not-found .ledger__title {
+  color: var(--obs-text);
+  font-weight: 500;
+}
+
+.ui-page-not-found .ledger__leader {
+  align-self: center;
+  border-bottom-color: var(--obs-line);
+}
+
+/* The old glazed card (c4, E055, E097) on the sheet's terms, drawn behind the index so nothing moves (24 px around
+   the list): its glint lies on the section's own line (2026-11-28; the label draws no line of its own there, so one
+   rule opens the section), 20 px in from each side, its glass a resting light pool; under the pointer a deeper pool
+   comes in over 180 ms, as the old card's depth changed. */
+.ui-page-not-found .two-col > h2 {
+  background: none;
+}
+
 @media screen and (forced-colors: none) {
   .ui-page-not-found .archive-index {
     position: relative;
     isolation: isolate;
   }
 
-  .ui-page-not-found .archive-index::before {
+  .ui-page-not-found .archive-index::before,
+  .ui-page-not-found .archive-index::after {
     content: "";
     position: absolute;
     inset: -24px;
     z-index: -1;
-    border: 1px solid var(--obs-hairline);
-    border-radius: var(--radius-record);
-    background: var(--obs-glass-glint) 50% 0 / calc(100% - 40px) 1px no-repeat, var(--obs-glass-band), var(--obs-glass-face);
-    box-shadow: var(--obs-record-depth);
-    transition: box-shadow .18s;
     pointer-events: none;
   }
 
-  .ui-page-not-found .archive-index:hover::before {
-    border-color: var(--obs-glass-edge);
-    box-shadow: var(--obs-record-depth-hover);
+  .ui-page-not-found .archive-index::before {
+    top: calc(-24px - var(--section-pad));
+    background: var(--obs-glass-glint) 50% 0 / calc(100% - 40px) 1px no-repeat, radial-gradient(closest-side, var(--obs-pool), transparent) 50% 50% / 100% 100% no-repeat;
+  }
+
+  .ui-page-not-found .archive-index::after {
+    background: radial-gradient(closest-side, var(--obs-pool-hover), transparent) 50% 50% / 100% 100% no-repeat;
+    opacity: 0;
+    transition: opacity .18s;
+  }
+
+  .ui-page-not-found .archive-index:hover::after {
+    opacity: 1;
   }
 }
 
 /* The contents list: the address after the leader, in the small size. */
 .ui-page-not-found .ledger__detail {
-  font-size: var(--ed-small);
+  color: var(--obs-muted);
+  font-size: var(--ed-caption);
 }
 
 /* Phones: the address drops under its section, without the leader, aligned with the link. */
 @media (max-width: 760px) {
+  .ui-page-not-found .archive-card {
+    padding: 18px 0;
+  }
+
   .ui-page-not-found .ledger > li {
     row-gap: 0;
+    padding-block: var(--ed-space-1);
   }
 
   .ui-page-not-found .ledger__leader {
     display: none;
   }
 
-  .ui-page-not-found .archive-index::before {
+  .ui-page-not-found .archive-index::before,
+  .ui-page-not-found .archive-index::after {
     inset: -18px;
+  }
+
+  .ui-page-not-found .archive-index::before {
+    top: calc(-18px - var(--section-pad));
   }
 
   .ui-page-not-found .ledger__detail {
     --index-indent: calc(2.5rem + var(--ed-space-4));
     flex-basis: calc(100% - var(--index-indent));
     margin-inline-start: var(--index-indent);
+  }
+}
+
+/* The index lies in the opening view on narrower windows, where the sheet is still rising over the far plane and the
+   old glazed card hid Bennu. A soft shade pool (Space dark, Light paper) lies under it, feathered on all four sides,
+   below its lines, pools and words: the far plane keeps its strength around it. Forced colours and print: none. */
+@media screen and (forced-colors: none) {
+  .ui-page-not-found .archive-card {
+    position: relative;
+  }
+
+  .ui-page-not-found .archive-card::before {
+    content: "";
+    position: absolute;
+    inset: -4px -48px;
+    z-index: -1;
+    background: var(--obs-pool-shade);
+    mask-image: linear-gradient(90deg, transparent, #000 48px, #000 calc(100% - 48px), transparent), linear-gradient(transparent, #000 20px, #000 calc(100% - 20px), transparent);
+    mask-composite: intersect;
+    pointer-events: none;
+  }
+}
+
+@media screen and (forced-colors: none) and (max-width: 760px) {
+  .ui-page-not-found .archive-card::before {
+    inset: -4px calc(-1 * var(--page-pad));
+    mask-image: linear-gradient(90deg, transparent, #000 18px, #000 calc(100% - 18px), transparent), linear-gradient(transparent, #000 20px, #000 calc(100% - 20px), transparent);
+  }
+}
+
+/* Comet Hale-Bopp (a context plate, components/plate.css): under the label beside the index from 861 px, its label
+   under the print in the narrow column; after the index on narrower screens. */
+@media (min-width: 861px) {
+  .ui-page-not-found .lost-comet {
+    --plate-w: 10.75rem;
+    grid-template-columns: minmax(0, 1fr);
   }
 }

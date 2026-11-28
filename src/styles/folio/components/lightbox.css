@@ -1,4 +1,4 @@
-/* @owner WP6 · @budget 6.5KB · @important 0 · Mission Log lightbox (.mission-lightbox) and the Mobile Mission Log: Disable Large Image Lightbox block */
+/* @owner WP6 · @budget 7KB · @important 0 · Mission Log lightbox (.mission-lightbox) and the Mobile Mission Log: Disable Large Image Lightbox block */
 .mission-lightbox { position: fixed; inset: 0; z-index: var(--z-lightbox); display: grid; padding: var(--ed-space-5); background: var(--obs-lightbox-veil); opacity: 0; visibility: hidden; pointer-events: none; touch-action: none; overscroll-behavior: contain; transition: opacity var(--ed-dur-3) var(--ed-ease-out), visibility 0s var(--ed-dur-3); }
 .mission-lightbox.is-open { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity var(--ed-dur-3) var(--ed-ease-out); }
 .mission-lightbox__viewer { display: grid; grid-template: auto minmax(0, 1fr) / 44px minmax(0, 1fr) 44px; gap: var(--ed-space-3) var(--ed-space-5); align-items: center; min-height: 0; }
@@ -12,7 +12,9 @@
 .mission-lightbox__captionbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: var(--ed-space-5); padding-top: var(--ed-space-3); border-top: 1px solid var(--obs-hairline); font-size: var(--ed-caption); }
 .mission-lightbox__caption { min-width: 0; max-width: var(--measure-caption); }
 .mission-lightbox__counter { color: var(--obs-muted); font-variant-numeric: lining-nums tabular-nums; }
-.mission-lightbox__btn, .atlas-close { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--obs-control-border); border-radius: var(--radius-control); background: transparent; }
+/* Controls over an image or the atlas map keep a glass face, the one place boxes stay (2026-11-26): they must read over
+   any picture; 2 px corners, no capsule. */
+.mission-lightbox__btn, .atlas-close { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--obs-control-border); border-radius: var(--radius-record); background: transparent; }
 .atlas-close:hover { background: var(--obs-surface-hover); }
 /* The old viewer (c4, E045): a veil that follows the theme (00-tokens.css), glass buttons that glow, and the image
    dimmed while it decodes; forced colours drop the gradient faces and shadows. Edge rendered no lift, no rounded or
@@ -27,18 +29,23 @@
 .mission-lightbox__next::before { translate: -2px 0; rotate: 135deg; }
 .mission-photo-grid figure { position: relative; min-width: 0; margin: 0; }
 .mission-comparison-figure { margin: var(--ed-space-4) 0 0; }
-.mission-log-entry .mission-photo-grid img, .mission-comparison-figure img, .atlas-image-source img { display: block; width: 100%; height: auto; object-fit: contain; border: 1px solid var(--obs-hairline); background: var(--obs-plate); }
+/* Photographs as mounted prints (2026-11-26): no line border, 2 px corners, the contact shade and the long soft drop. */
+.mission-log-entry .mission-photo-grid img, .mission-comparison-figure img, .atlas-image-source img { display: block; width: 100%; height: auto; object-fit: contain; border-radius: var(--radius-record); background: var(--obs-plate); box-shadow: var(--obs-print-shadow); }
+@media (forced-colors: active), print { .mission-log-entry .mission-photo-grid img, .mission-comparison-figure img, .atlas-image-source img { border: 1px solid var(--obs-hairline); box-shadow: none; } }
 .mission-photo-grid img { aspect-ratio: 4 / 3; }
 .mission-log-entry figure[role="button"] { cursor: zoom-in; }
 .mission-photo-grid figcaption, .mission-comparison-figure figcaption, .mission-comparison-note { margin-top: var(--ed-space-3); color: var(--obs-muted); font-size: var(--ed-caption); line-height: 1.45; }
 .mission-photo-grid figcaption > strong:first-child { display: block; color: var(--obs-text); }
-/* A photograph under a fine pointer (c4, E044): the old shadow, Open chip and scan line (--lit turns them on); it
+/* A photograph under a fine pointer (c4, E044): the old shadow, the Open mark (small capitals on a shade pool since
+   2026-11-26) and scan line (--lit turns them on), all on the print itself (2026-11-28: the shadow joins the print's
+   own and the scan line covers the 4 : 3 image, never the caption, so no card appears around the figure); it
    rises 2 px and the scan line runs only with motion allowed, FX on and the page awake. Only mission-lightbox.js's
    viewer buttons ([role], never set on phones or touch) answer, so phones keep plain captioned figures. */
 @media (forced-colors: none) {
-  .mission-photo-grid [role]::before { content: "Open" / ""; position: absolute; top: 10px; right: 10px; z-index: 2; padding: 5px 8px; border: 1px solid var(--obs-chip-edge); border-radius: 999px; background: var(--obs-chip-face); color: var(--obs-chip-text); font: 600 9px/normal var(--type-sans); letter-spacing: .11em; text-transform: uppercase; opacity: var(--lit, 0); transition: opacity .2s, transform .2s; pointer-events: none; }
-  .mission-photo-grid [role]::after { content: ""; position: absolute; inset: 0; z-index: 1; background: var(--obs-scanline) 0 0 / 100% 180%; mix-blend-mode: screen; opacity: calc(var(--lit, 0) * .72); transition: opacity .22s; pointer-events: none; }
-  .mission-photo-grid [role]:is(:hover, :focus-visible) { --lit: 1; box-shadow: var(--obs-photo-hover-shadow); }
+  .mission-photo-grid [role]::before { content: "Open" / ""; position: absolute; top: 10px; right: 10px; z-index: 2; padding: 5px 10px; background: radial-gradient(closest-side, var(--obs-scrim-deep), transparent); color: var(--obs-chip-text); font: 600 9px/normal var(--type-sans); letter-spacing: .11em; text-transform: uppercase; opacity: var(--lit, 0); transition: opacity .2s, transform .2s; pointer-events: none; }
+  .mission-photo-grid [role]::after { content: ""; position: absolute; inset: 0 0 auto; z-index: 1; aspect-ratio: 4 / 3; border-radius: var(--radius-record); background: var(--obs-scanline) 0 0 / 100% 180%; mix-blend-mode: screen; opacity: calc(var(--lit, 0) * .72); transition: opacity .22s; pointer-events: none; }
+  .mission-photo-grid [role]:is(:hover, :focus-visible) { --lit: 1; }
+  .mission-photo-grid [role]:is(:hover, :focus-visible) img { box-shadow: var(--obs-print-shadow), var(--obs-photo-hover-shadow); }
 }
 @media (prefers-reduced-motion: no-preference) and (forced-colors: none) {
   .mission-photo-grid [role]::before { transform: translateY(calc(var(--lit, 0) * 4px - 4px)); }

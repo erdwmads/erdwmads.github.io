@@ -1,5 +1,6 @@
 ---
 import { homeStructuredData, siteMetadata } from "../data/site";
+import shareCards from "../data/share-cards.json";
 import CosmicArrival from './CosmicArrival.astro';
 import ContinueReading from './ContinueReading.astro';
 import SiteHeader from './SiteHeader.astro';
@@ -28,7 +29,11 @@ const { title, description, current, pageClass, mainClass = "main", path, script
 const canonicalPath = path || "index.html";
 // Home is canonical at the site root (https://erdwmads.github.io/), matching the sitemap and structured data.
 const canonicalUrl = new URL(canonicalPath.replace(/(^|\/)index\.html$/, "$1"), `${siteMetadata.url}/`).toString();
-const imageUrl = new URL(siteMetadata.image, `${siteMetadata.url}/`).toString();
+// Each page's share card (src/data/share-cards.json, drawn by scripts/derive-imagery.mjs share from the page's own
+// picture), as an absolute URL on the canonical origin.
+const shareCard = (shareCards.cards as Record<string, { file: string; alt: string }>)[canonicalPath];
+if (!shareCard) throw new Error(`SiteShell: no share card for ${canonicalPath} in src/data/share-cards.json`);
+const imageUrl = new URL(`assets/img/share/${shareCard.file}`, `${siteMetadata.url}/`).toString();
 // The only source of ui-page-* classes: soft navigation copies them from the fetched page's body.
 const bodyClass = [`ui-page-${current}`, pageClass && pageClass !== current && `ui-page-${pageClass}`].filter(Boolean).join(" ");
 const { version: stylesheetVersion } = await stylesheetBundle();
@@ -57,10 +62,12 @@ const { version: stylesheetVersion } = await stylesheetBundle();
   <meta property="og:image" content={imageUrl}>
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content={shareCard.alt}>
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content={title}>
   <meta name="twitter:description" content={description}>
   <meta name="twitter:image" content={imageUrl}>
+  <meta name="twitter:image:alt" content={shareCard.alt}>
   {current === "home" && <script type="application/ld+json" is:inline set:html={JSON.stringify(homeStructuredData)} />}
   <script is:inline set:html={inlineScripts.themePreload}></script>
   <style is:inline>
@@ -80,8 +87,7 @@ const { version: stylesheetVersion } = await stylesheetBundle();
       color: #eee9e0;
     }
   </style>
-  <link rel="preload" href="assets/fonts/source-serif-4-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="assets/fonts/source-sans-3-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/montserrat-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href={`assets/css/site.css?v=${stylesheetVersion}`}>
     <script>
       // Small enhancers that shape the first paint (the sticky research guide, the photograph layout) and the
@@ -103,7 +109,7 @@ const { version: stylesheetVersion } = await stylesheetBundle();
   <slot />
   <ContinueReading current={current} />
 </main>
-<SiteFooter />
+<SiteFooter page={pageClass ?? current} />
 <Fragment set:html={scriptHtml} />
 </body>
 </html>

@@ -10,7 +10,7 @@
 // url() or address, or body#; names [data-theme outside 00-tokens.css;
 // nests a rule inside a style rule or uses &; breaks the specificity limits of spec §2.4 (no id outside :where(), at
 // most three classes, attributes or pseudo-classes in one compound selector, each :is(), :not() and :has() weighed
-// by its heaviest argument); or when the whitespace-minified bundle exceeds 200 KB. The rules themselves live in
+// by its heaviest argument); or when the whitespace-minified bundle exceeds 260 KB. The rules themselves live in
 // scripts/lib/css-lint.mjs, and scripts/audit-css.test.mjs holds them to known selectors.
 //   node scripts/audit-css.mjs           report every file against its budget
 //   node scripts/audit-css.mjs --check   fail on any violation (npm run audit:css:check)
@@ -25,7 +25,7 @@ const headerPattern = /^\/\* @owner (WP[1-6]) · @budget (\d+(?:\.\d+)?)KB · @i
 const importantFiles = new Set(["02-reset.css", "05-utilities.css", "states/motion.css", "states/print.css"].map((file) => `${folioStylesDir}/${file}`));
 const tokensFile = `${folioStylesDir}/00-tokens.css`;
 const importantLimit = 30;
-const bundleLimit = 200 * 1024; // the rebuild planned 100 KB; the owner raised it to 145 KB on 2026-11-17 to keep the reviewed design, to 150 KB on 2026-11-18 for the effects, to 170 KB the same day for all of the old site's effects, and to 200 KB so that the size never removes one
+const bundleLimit = 260 * 1024; // the rebuild planned 100 KB; the owner raised it to 145 KB on 2026-11-17 to keep the reviewed design, to 150 KB on 2026-11-18 for the effects, to 170 KB the same day for all of the old site's effects, to 200 KB so that the size never removes one, and to 260 KB on 2026-11-25 for version 1's layouts with every effect
 const compoundLimit = 3;
 
 const failures = [];

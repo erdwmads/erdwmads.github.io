@@ -50,6 +50,7 @@ npm run test:browser
 - `src/pages/` - Astro routes that generate public pages. `research.astro` renders the research question and the Analytical Pathway from `src/data/project.mjs`; `ryugu-bennu.astro` holds the comparison materials (sample-return missions, planetary field guide, published microscopy). `sample-cabinet.astro` is only a noindex redirect stub to `research.html` for old links to the retired Sample Cabinet page.
 - `src/pages/assets/css/site.css.ts` and `src/lib/stylesheet-bundle.ts` - build-time stylesheet bundle; see CSS Maintenance.
 - `src/components/SiteShell.astro` - shared head, SEO metadata, Content Security Policy and script shell; it renders `SiteHeader.astro` (navigation) and `SiteFooter.astro` (colophon).
+- `src/data/share-cards.json` - each page's share card (`og:image`, `twitter:image` and their alt text), drawn by `npm run images:imagery -- share` into `public/assets/img/share/`; a new page needs an entry, or the build stops.
 - `src/components/Masthead.astro`, `Section.astro`, `Kicker.astro`, `Marker.astro`, `Plate.astro`, `Figure.astro`, `Ledger.astro` - the page primitives, each with a small validator module next to it (see `src/styles/folio/README.md`).
 - `src/components/PaperShelf.astro` - Paper Shelf rendering and filter controls.
 - `src/components/MissionLogShell.astro` - password-gated Graduation Research Mission Log shell.

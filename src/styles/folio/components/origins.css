@@ -1,24 +1,29 @@
-/* @owner WP4 · @budget 20KB · @important 0 · Origins study (.origins-study) */
-/* Source order is reading order. The rail stays outside .observatory (a subgrid), whose controls loader.js disables. */
+/* @owner WP4 · @budget 22KB · @important 0 · Origins study (.origins-study) */
+/* Version 1's study panel (owner, 2026-11-25) on the sheet without its frame (2026-11-26, the lab site's language):
+   the four chapters as numbered text steps across the top over one fading line, then the scene (its caption above it,
+   the plate a mounted night print) with the view tools and the timeline under it, and the chapter text beside them
+   from 761 px behind a vertical fading line, as version 1 set it. Source order is reading order. The rail stays outside
+   .observatory (a subgrid), whose controls loader.js disables. */
 .study-panel { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: repeat(7, auto); }
 .observatory { display: grid; grid-area: 1 / 1 / -1 / -1; grid-template-columns: subgrid; grid-template-rows: subgrid; }
 :is(.scene-frame, .chapters) { position: relative; z-index: 1; grid-column: 1 / -1; }
-.scene-frame { grid-row: 1; }
-.chapters { grid-row: 2; }
+.chapters { grid-row: 1; }
+.scene-frame { grid-row: 2; }
 .scene-controls { grid-row: 3; }
 .transport { grid-row: 4; }
 .chapter-copy { grid-row: 5; }
 .mineral-budget { grid-column: 1 / -1; grid-row: 7; }
-@media (min-width: 1200px) {
-  .study-panel { grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: repeat(5, auto) 1fr auto; column-gap: var(--grid-gap); }
-  :is(.scene-frame, .chapters, .transport, .scene-controls) { grid-column: 1 / 10; }
-  .chapter-copy { grid-column: 10 / -1; grid-row: 1 / 7; }
+@media (min-width: 761px) {
+  .study-panel { grid-template-columns: minmax(0, 1fr) minmax(17.5rem, 30%); grid-template-rows: repeat(5, auto) 1fr auto; }
+  :is(.scene-frame, .transport, .scene-controls) { grid-column: 1; }
+  .chapter-copy { grid-column: 2; grid-row: 2 / 7; background: var(--obs-fade-line-v) 0 0 / 1px 100% no-repeat; }
 }
 :where(.transport, .scene-controls, .reaction-sequence, .scene-note, .mineral-budget details, .sources-dialog dt) { border-top: 1px solid var(--obs-hairline); }
 :where(.chapter-copy :is(h2, ol, p), .mineral-budget > *, .mineral-budget h3, .sources-dialog dd) { margin: 0; }
 
-/* The night plate, sized by its width; corner brackets 4 px in, overlays 16 px in. */
-.scene-viewport { position: relative; width: 100%; aspect-ratio: 4 / 5; max-height: 80svh; overflow: hidden; isolation: isolate; border: 1px solid var(--obs-hairline); }
+/* The night plate, sized by its width; corner brackets 4 px in, overlays 16 px in. A mounted print with square corners:
+   a rounded clip over the WebGL canvas anti-aliases its corner pixels differently from frame to frame. */
+.scene-viewport { position: relative; width: 100%; aspect-ratio: 4 / 5; max-height: 80svh; overflow: hidden; isolation: isolate; border-radius: 0; box-shadow: var(--obs-print-drop); }
 .scene-viewport::after { content: ""; position: absolute; z-index: 4; inset: var(--ed-space-1); border: 1px solid var(--obs-text); pointer-events: none; mask: conic-gradient(at 8px 8px, #0000 75%, #000 0) 0 0 / calc(100% - 8px) calc(100% - 8px); }
 @media (min-width: 761px) {
   .scene-viewport { aspect-ratio: 16 / 9; }
@@ -45,58 +50,63 @@ canvas.study-dissolve { z-index: 1; pointer-events: none; }
 .fragment-guide span { padding: var(--ed-space-1) var(--ed-space-2); border-left: 2px solid #b8c6ca; white-space: nowrap; }
 .fragment-guide span:last-child { margin-inline-start: auto; border-left-color: #c5a779; }
 
-/* Labels; muted captions. */
+/* Labels in the one label style (size, weight, tracking; components/masthead.css); muted captions. */
 :where(.region-label, .locator-title, .origins-study .eyebrow, .scene-frame-tag, .scene-frame-counter, .chapters button > span, .reaction-sequence button > span, .locator-copy small) {
-  display: block; font-size: var(--ed-label); font-weight: 600; line-height: 1.3; letter-spacing: .08em; text-transform: uppercase; font-variant-numeric: tabular-nums;
+  display: block; font-size: var(--label-size); font-weight: var(--label-weight); line-height: 1.3; letter-spacing: var(--label-track); text-transform: uppercase; font-variant-numeric: tabular-nums;
 }
 :where(.scene-hint, .scene-load-state, .locator-copy, .fragment-guide, .scene-frame-bar, .legend, .view-key > p, .chapters small, .reaction-sequence small, .scene-note p, .mineral-budget-source) { font-size: var(--ed-caption); color: var(--obs-muted); }
 :where(.region-label, .origins-study .eyebrow, .mineral-budget details p, .sources-dialog dd) { color: var(--obs-muted); }
 :where(.study-project-context, .transport-copy > span:last-child, .transport output, .reaction-sequence strong, .chapter-description p, .sources-dialog :is(p, dd, dt), .mineral-budget-note, .mineral-budget details) { font-size: var(--ed-small); }
 
-/* Caption line. */
-.scene-frame-bar { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--ed-space-1) var(--ed-space-4); margin-top: var(--ed-space-3); }
-.scene-frame-tag { display: inline-flex; align-items: center; gap: var(--ed-space-2); color: var(--obs-text); }
+/* Caption line: version 1's scene bar as a caption above the plate, no strip or face; first in the markup, so it is
+   parsed before the scene and the plate never moves down under it. */
+.scene-frame { display: flex; flex-direction: column; margin: 0; }
+.scene-frame-bar { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--ed-space-1) var(--ed-space-4); padding: 12px 0 10px; }
+.scene-frame-tag { display: inline-flex; align-items: center; gap: var(--ed-space-2); color: var(--obs-muted); }
 .scene-frame-counter { margin-inline-start: auto; }
 
-/* Rail: drawn rules; the current one darkens, a 2 px bar shows progress. */
-.chapters { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: var(--grid-gap); margin-top: var(--ed-space-5); }
+/* Rail: version 1's four chapters as numbered text steps over one fading line, the current one with its gold numeral,
+   a warm pool and its rule inked and, as in version 1, a 2 px brass bar along its foot showing the chapter's progress. */
+.chapters { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; background: var(--obs-fade-line) 0 100% / 100% 1px no-repeat; }
 :is(.chapters, .segmented, .reaction-sequence) button { position: relative; min-height: 44px; border: 0; background: transparent; color: var(--obs-muted); text-align: start; transition: color var(--ed-dur-1) var(--ed-ease-out); }
-.chapters button { display: grid; align-content: start; gap: 2px; padding: var(--ed-space-4) 0; }
-.chapters strong { color: var(--obs-text); font-size: var(--ed-h4); line-height: 1.3; text-wrap: balance; }
+.chapters button { display: grid; align-content: start; gap: 2px; padding: 20px 22px 25px; transition: color var(--ed-dur-1) var(--ed-ease-out), background-color var(--ed-dur-1) var(--ed-ease-out); }
+/* The chosen chapter: its numeral in brass over a warm pool (version 1's highlight face as light), behind the words. */
+.chapters button[aria-current="step"] { background: radial-gradient(closest-side, var(--obs-pool-warm), transparent) 0 50% / min(100%, 12rem) 100% no-repeat; }
+.chapters button[aria-current="step"] > span { color: var(--obs-accent); }
+.chapters strong { color: var(--obs-text); font-size: .875rem; font-weight: 600; line-height: 1.3; text-wrap: balance; }
 :is(.chapters, .segmented, .reaction-sequence) button:hover, .chapters button[aria-current="step"] { color: var(--obs-text); }
 .chapters button::before, .chapters [aria-current]::after, .reaction-sequence [aria-current] > button::after { content: ""; position: absolute; }
-.chapters button::before { inset: 0 0 auto; border-top: 1px solid var(--obs-hairline); }
+.chapters button::before { inset: auto 0 0; border-top: 1px solid transparent; }
 .chapters [aria-current]::before { border-top-color: currentColor; }
-.chapters [aria-current]::after { inset: 0 0 auto; border-top: 2px solid; transform: scaleX(var(--chapter-progress, 1)); transform-origin: 0; }
+.chapters [aria-current]::after { inset: auto 0 0; border-top: 2px solid var(--obs-accent); transform: scaleX(var(--chapter-progress, 1)); transform-origin: 0; }
 
 /* View tools; only the pressed colour mode is underlined. */
-.scene-controls { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; align-items: center; column-gap: var(--ed-space-4); padding-block: var(--ed-space-3); }
+.scene-controls { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; align-items: center; column-gap: var(--ed-space-4); padding: 15px 20px; }
 .view-tools { display: contents; }
 .camera-tools { display: flex; grid-column: 4; gap: var(--ed-space-2); }
 .view-key { grid-column: 3; grid-row: 1; min-width: 0; }
-/* The switch, as the old study's: a highlighted block slides under the chosen option in 220 ms (owner, 2026-11-18). */
-.segmented { position: relative; isolation: isolate; display: grid; grid-auto-columns: 1fr; grid-auto-flow: column; border-radius: var(--radius-control); background-color: var(--obs-paper); box-shadow: inset 0 0 0 1px var(--obs-hairline); }
-.segmented::before { content: ""; position: absolute; z-index: -1; inset: 0 auto 0 0; width: 50%; border: 1px solid color-mix(in srgb, var(--obs-accent) 30%, var(--obs-hairline)); border-radius: var(--radius-control); background: var(--obs-highlight); transition: transform 220ms cubic-bezier(.2, 0, .38, .9); }
+/* The switch, as the old study's (owner, 2026-11-18; E036): two text options over the control-border line, and the
+   old sliding block as a 2 px brass beam with its glow that slides under the chosen option in 220 ms. */
+.segmented { position: relative; isolation: isolate; display: grid; grid-auto-columns: 1fr; grid-auto-flow: column; background: linear-gradient(var(--obs-control-border), var(--obs-control-border)) 0 100% / 100% 1px no-repeat; }
+.segmented::before { content: ""; position: absolute; z-index: 1; inset: auto auto 0 0; width: 50%; height: 2px; background: var(--obs-accent); box-shadow: 0 0 9px var(--obs-gold-glow); transition: transform 220ms cubic-bezier(.2, 0, .38, .9); pointer-events: none; }
 .segmented:has(> :last-child[aria-pressed="true"])::before { transform: translateX(100%); }
 .segmented button { padding: 0 var(--ed-space-3); font-weight: 600; text-decoration-thickness: 2px; text-underline-offset: .5em; }
-.segmented button[aria-pressed="true"] { color: var(--obs-accent); text-decoration-line: underline; }
+.segmented button[aria-pressed="true"] { color: var(--obs-accent); }
 .legend { display: flex; flex-wrap: wrap; column-gap: var(--ed-space-4); }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
 /* Colour keys: outlined bars, not marker shapes. */
 :is(.legend, .mineral-budget-table) i { display: inline-block; width: 12px; height: 6px; background: var(--swatch, var(--phase-color)); box-shadow: inset 0 0 0 1px var(--obs-hairline); forced-color-adjust: none; }
 
 /* Timeline: the moment keeps two lines. */
-.transport { display: grid; grid-template-columns: auto minmax(0, 20rem) minmax(0, 1fr) auto; align-items: center; gap: var(--ed-space-2) var(--ed-space-4); padding-block: var(--ed-space-4); }
+.transport { display: grid; grid-template-columns: auto minmax(0, 20rem) minmax(0, 1fr) auto; align-items: center; gap: var(--ed-space-2) var(--ed-space-4); padding: 18px 22px; }
 .transport-copy { display: grid; gap: 2px; }
 .transport-copy > span:last-child { min-height: 2.8em; line-height: 1.4; }
 .transport input { width: 100%; height: 44px; margin: 0; }
 .transport output { min-width: 3.5em; font-variant-numeric: tabular-nums; text-align: end; }
-/* Playback, as the old study's: the icon buttons take the metal face under a hovering pointer and ease their edge in
-   160 ms; the track fills with brass to the chapter's progress, and the thumb is a brass bead in a ring. */
-.observatory .icon-button { transition: color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease; }
-@media (hover: hover) and (forced-colors: none) {
-  .observatory .icon-button:hover:not(:disabled) { background-image: var(--obs-metal); }
-}
+/* Playback, as the old study's: the icon buttons ease their beam and glow in 160 ms (their old metal hover face is
+   the warm pool of components/surface-light.css); the track fills with brass to the chapter's progress, and the
+   thumb is a brass bead in a ring. */
+.observatory .icon-button { transition: color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease, background-color 160ms ease; }
 @media (forced-colors: none) {
   .transport input { appearance: none; background: linear-gradient(to right, var(--obs-accent) calc(var(--chapter-progress, 0) * 100%), var(--obs-hairline) 0) center / 100% 3px no-repeat; cursor: pointer; }
   .transport input::-webkit-slider-thumb { appearance: none; width: 15px; height: 15px; border: 3px solid var(--obs-surface); border-radius: 50%; background: var(--obs-accent); box-shadow: 0 0 0 1px var(--obs-accent); }
@@ -104,28 +114,42 @@ canvas.study-dissolve { z-index: 1; pointer-events: none; }
 }
 :is(.transport input, .segmented button, .reaction-sequence button):disabled { opacity: .55; cursor: not-allowed; }
 
-/* Chapter text: beside the scene on desktop, at the measure below. */
-.chapter-copy { display: flex; flex-direction: column; gap: var(--ed-space-5); min-width: 0; margin-top: var(--ed-space-7); }
+/* Chapter text: beside the scene from 761 px behind the line, under the timeline on phones. */
+.chapter-copy { display: flex; flex-direction: column; gap: 22px; min-width: 0; padding: 28px 0 28px 24px; background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat; }
 :is(.chapter-heading, .mineral-budget-heading) { display: grid; gap: var(--ed-space-2); }
 .reaction-sequence { padding: 0; list-style: none; }
 .reaction-sequence li { border-bottom: 1px solid var(--obs-hairline); }
 .reaction-sequence button { display: grid; grid-template-columns: 2rem minmax(0, 1fr); align-items: baseline; width: 100%; padding: var(--ed-space-3) 0 var(--ed-space-3) var(--ed-space-3); }
 .reaction-sequence :is(strong, small) { display: block; line-height: 1.45; }
+.reaction-sequence strong { font-weight: 600; }
 .reaction-sequence li[aria-current="step"] > button { color: var(--obs-text); }
 .reaction-sequence [aria-current] > button::after { inset: 0 auto 0 0; border-left: 2px solid; }
 .scene-note { display: grid; gap: var(--ed-space-2); padding-top: var(--ed-space-4); }
-.scene-note strong { font-size: var(--ed-label); letter-spacing: .08em; text-wrap: balance; }
-@media (min-width: 1200px) {
-  .chapter-copy { margin-top: 0; }
-  .chapter-heading h2 { font-size: var(--ed-h3); line-height: 1.25; letter-spacing: 0; }
+.scene-note strong { color: var(--obs-muted); font-size: var(--label-size); font-weight: var(--label-weight); letter-spacing: var(--label-track); text-wrap: balance; }
+/* 761-960 px: the scene column is narrow: a square scene, as version 1's, and the key and the timeline's range on a
+   row of their own, as on phones. */
+@media (min-width: 761px) and (max-width: 960px) {
+  .scene-viewport { aspect-ratio: 1; }
+  .view-tools > .region-label { display: none; }
+  .scene-controls { grid-template-columns: minmax(0, 1fr) auto; }
+  .camera-tools { grid-column: 2; }
+  .view-key { grid-column: 1 / -1; grid-row: 2; min-height: 2.9em; }
+  .transport { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .transport-copy { grid-column: 2 / -1; }
+  .transport input { grid-column: 1 / 3; }
 }
-@media (max-width: 1199px) {
+@media (min-width: 761px) {
+  .chapter-copy { border-top: 0; }
+  .scene-controls, .transport { padding-inline: 0 22px; }
+  .chapter-heading h2 { line-height: 1.25; letter-spacing: 0; }
+}
+@media (max-width: 760px) {
   .chapter-copy > * { max-width: var(--measure-body); }
   .chapter-description p { font-size: var(--ed-body); }
 }
 
 /* Mineral budget. */
-.mineral-budget { display: grid; align-content: start; gap: var(--ed-space-4) var(--grid-gap); margin-top: var(--ed-space-8); padding-top: var(--ed-space-3); border-top: 1px solid var(--obs-rule); }
+.mineral-budget { display: grid; align-content: start; gap: var(--ed-space-4) var(--grid-gap); padding: 24px 0; background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat; }
 .mineral-budget > * { min-width: 0; max-width: var(--measure-body); }
 .mineral-budget-bar { display: flex; height: 8px; margin-bottom: var(--ed-space-4); }
 .mineral-budget-bar span { background: var(--phase-color); forced-color-adjust: none; }
@@ -133,17 +157,17 @@ canvas.study-dissolve { z-index: 1; pointer-events: none; }
 .mineral-budget-table tbody th { font-weight: 400; }
 .mineral-budget-table i { margin-inline-end: var(--ed-space-2); vertical-align: middle; }
 .mineral-budget details p { margin: 0 0 var(--ed-space-3); }
-@media (min-width: 1200px) {
-  .mineral-budget { grid-template-columns: subgrid; grid-template-rows: repeat(4, auto) 1fr; }
-  .mineral-budget > * { grid-column: 1 / 7; }
-  .mineral-budget > .mineral-budget-data { grid-column: 10 / -1; grid-row: 1 / -1; }
+@media (min-width: 961px) {
+  .mineral-budget { grid-template-columns: minmax(0, 1fr) minmax(17.5rem, 30%); grid-template-rows: repeat(4, auto) 1fr; column-gap: 48px; }
+  .mineral-budget > * { grid-column: 1; }
+  .mineral-budget > .mineral-budget-data { grid-column: 2; grid-row: 1 / -1; }
 }
 
 /* Scientific context: a level 2 sheet with a sticky head band. */
 .sources-dialog[open] {
   --pad: var(--ed-space-6);
   width: min(40rem, calc(100% - 2 * var(--page-pad))); max-height: 85svh;
-  padding: 0 var(--pad) var(--pad); overflow: auto; border: 1px solid var(--obs-hairline); border-radius: var(--radius-control);
+  padding: 0 var(--pad) var(--pad); overflow: auto; border: 0; border-radius: var(--radius-record);
   background: var(--obs-surface); color: var(--obs-text); box-shadow: var(--obs-shadow-overlay);
 }
 /* The old dark screen behind the sheet (#03060fb8); its 5 px blur is not on the blur list, so the screen alone. */
@@ -157,8 +181,14 @@ canvas.study-dissolve { z-index: 1; pointer-events: none; }
 /* Phones. */
 @media (max-width: 760px) {
   .sources-dialog[open] { --pad: var(--ed-space-5); }
-  .chapters { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--ed-space-4); }
-  .chapters button { padding-block: var(--ed-space-3); }
+  .chapters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .chapters button { padding: 14px 14px 16px; }
+  :is(.scene-controls, .transport) { padding-inline: 10px; }
+  /* The boxed switch and the three camera tools share one row at 390 px. */
+  .scene-controls { column-gap: 10px; }
+  .segmented button { padding-inline: 10px; }
+  .chapter-copy { padding: 22px 0; }
+  .mineral-budget { padding: 20px 0; }
   .view-tools > .region-label { display: none; }
   .transport { grid-template-columns: auto minmax(0, 1fr) auto; }
   .transport-copy { grid-column: 2 / -1; }
@@ -197,17 +227,22 @@ canvas.study-dissolve { z-index: 1; pointer-events: none; }
 :where(.origins-study:not([data-render-state="ready"])) .scene-viewport .scene-explore { display: none; }
 /* A failed scene keeps the tool boxes (nothing moves) but not the icon buttons: their icons come with the scene module. */
 :where(.origins-study[data-render-state="error"]) .observatory .icon-button { visibility: hidden; }
-/* Phones and touch screens: Explore sits on the old soft drop shadow. */
+/* Explore lies over the moving scene, so it keeps a night face (a control over imagery, the one place a box stays,
+   2 px corners); on phones and touch screens it sits on the old soft drop shadow (E043). */
+.scene-viewport .scene-explore { border-color: var(--obs-control-border); border-radius: var(--radius-record); background: var(--obs-plate-night); }
 @media (max-width: 760px), (hover: none) and (pointer: coarse) {
   .scene-viewport .scene-explore { box-shadow: var(--obs-touch-shadow); }
 }
 /* Forced colours paint every chapter rule in the system text colour, so the current one is heavier. */
 @media (forced-colors: active) {
   .chapters [aria-current]::before { border-top-width: 3px; }
+  .chapters [aria-current]::after { border-top-color: currentColor; }
 }
-/* Forced colours and print: no sliding block, metal face or shadow. */
+/* Forced colours and print: no sliding beam, pool or shadow; the chosen option underlined, the lines plain rules. */
 @media (forced-colors: active), print {
   .segmented::before { display: none; }
-  .segmented, .scene-viewport .scene-explore { box-shadow: none; }
+  .segmented, .scene-viewport .scene-explore, .scene-viewport { box-shadow: none; }
+  .segmented button[aria-pressed="true"] { text-decoration-line: underline; }
+  .chapters, .chapter-copy, .mineral-budget { border-top: 1px solid var(--obs-line); background: none; }
   .scene-hint { text-shadow: none; }
 }

@@ -1,20 +1,18 @@
-// Measures the metric overrides of the local fallback faces in src/styles/folio/01-fonts.css (spec §2.6), so text set
-// in "Serif Fallback" (local Georgia) or "Sans Fallback" (local Arial) during the font swap takes the same width and
-// line box as Source Serif 4 and Source Sans 3, and the swap shifts nothing. Runs in Edge through Playwright
+// Measures the metric overrides of the local fallback face in src/styles/folio/01-fonts.css, so text set in "Sans
+// Fallback" (local Arial) during the font swap takes the same width and line box as Montserrat, and the swap shifts
+// as little as it can. The name face is Georgia, a system face with no swap. Runs in Edge through Playwright
 // (scripts/lib/browser.mjs) and prints the @font-face block to paste into 01-fonts.css with the run date:
 //   node scripts/font-metrics.mjs
-// For each face: size-adjust = width of a fixed pangram at 100 px in the real face / the same width in the local
-// face; ascent and descent = the real face's canvas fontBoundingBoxAscent and fontBoundingBoxDescent at 100 px,
-// divided by size-adjust; line-gap-override is 0%.
+// size-adjust = width of a fixed pangram at 100 px in the real face / the same width in the local face; ascent and
+// descent = the real face's canvas fontBoundingBoxAscent and fontBoundingBoxDescent at 100 px, divided by
+// size-adjust; line-gap-override is 0%.
 import fs from "node:fs";
 import { launchBrowser } from "./lib/browser.mjs";
 import { abs, fontsDir } from "./lib/site-paths.mjs";
 
 const pangram = "The quick brown fox jumps over the lazy dog. Sphinx of black quartz, judge my vow: 0123456789 Orgueil CI1 Ca–Mg";
 const faces = [
-  { family: "Serif Fallback", real: "Source Serif 4", file: "source-serif-4-latin.woff2", style: "normal", locals: ["Georgia"] },
-  { family: "Serif Fallback", real: "Source Serif 4", file: "source-serif-4-italic-latin.woff2", style: "italic", locals: ["Georgia Italic", "Georgia-Italic"] },
-  { family: "Sans Fallback", real: "Source Sans 3", file: "source-sans-3-latin.woff2", style: "normal", locals: ["Arial", "ArialMT"] }
+  { family: "Sans Fallback", real: "Montserrat", file: "montserrat-latin.woff2", style: "normal", locals: ["Arial", "ArialMT"] }
 ];
 
 const browser = await launchBrowser();
@@ -54,7 +52,7 @@ try {
     const { realWidth, localWidth, ascent, descent } = results[index];
     const sizeAdjust = realWidth / localWidth;
     lines.push(
-      `@font-face { font-family: "${face.family}"; font-style: ${face.style}; font-weight: 400 600; src: ${face.locals.map((name) => `local("${name}")`).join(", ")}; ` +
+      `@font-face { font-family: "${face.family}"; font-style: ${face.style}; font-weight: 400 800; src: ${face.locals.map((name) => `local("${name}")`).join(", ")}; ` +
         `size-adjust: ${percent(sizeAdjust)}; ascent-override: ${percent(ascent / 100 / sizeAdjust)}; descent-override: ${percent(descent / 100 / sizeAdjust)}; line-gap-override: 0%; }`
     );
   });

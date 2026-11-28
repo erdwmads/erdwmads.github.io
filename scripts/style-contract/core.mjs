@@ -71,5 +71,28 @@ export const contract = [
   {
     name: "smooth scrolling only without a reduced-motion preference",
     has: [rule("html", "scroll-behavior: smooth", { media: "(prefers-reduced-motion: no-preference)" })]
+  },
+  {
+    // The fix stage (2026-11-28): the orrery beside the headline from 1200 px keeps its strength; in Light the pale pool
+    // never cuts a notch into the sheet's side shade.
+    name: "the masthead's shade pool reaches left by --obs-pool-shade-reach (past the sheet's side in Space, inside the paper in Light), ends with the text column from 1200 px, and words in the right column lie on small feathered pools of their own; forced colours and print show none",
+    has: [
+      rule(".masthead::after", "inset: -56px -120px -40px var(--obs-pool-shade-reach)", "background: var(--obs-pool-shade)", { media: null }),
+      rule(".masthead::after", "inset-inline-end: calc(100% - min(100%, 49rem) - 40px)", { media: "(min-width: 1200px)" }),
+      rule(".masthead :is(.plate__caption, .figure__caption)::after", "inset: -20px -36px", "background: var(--obs-pool-shade-note)", { media: "(min-width: 1200px)" }),
+      text("--obs-pool-shade-reach: -140px"),
+      text("--obs-pool-shade-reach: -48px")
+    ]
+  },
+  {
+    name: "the labels take the accent again (owner, 2026-11-28: \"What happened to the gold elements?\"): the kicker and the two-column label in brass or champagne with the kicker's glow; a brass kind's evidence tag as a gold word with its mark on a faint pool, no outline or wash box; a model's tag stays muted",
+    has: [
+      rule(".kicker", "color: var(--obs-accent)", "text-shadow: 0 0 14px var(--obs-gold-glow)", { media: null }),
+      rule(".two-col--eyebrow > h2", "color: var(--obs-accent)", "text-shadow: 0 0 14px var(--obs-gold-glow)", { media: null }),
+      rule(".evidence-status__tag", "color: var(--obs-muted)", { media: null }),
+      rule('.evidence-status:not([data-evidence-status="model"]) > .evidence-status__tag', "color: var(--evidence-accent)", "background: radial-gradient(closest-side, var(--obs-pool-tag), transparent)", { media: null }),
+      rule('.evidence-status:not([data-evidence-status="model"]) > .evidence-status__tag', "background: none", { media: "(forced-colors: active), print" })
+    ],
+    lacks: [rule(".evidence-status__tag", "border"), rule(".evidence-status__tag", "border-radius")]
   }
 ];

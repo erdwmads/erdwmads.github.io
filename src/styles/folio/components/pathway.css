@@ -1,88 +1,142 @@
-/* @owner WP3 · @budget 5KB · @important 0 · Analytical Pathway, full and compact, with rails and leaders, and its key */
-/* A page's --hang sets the title line. Phones: chips under titles. */
+/* @owner WP3 · @budget 9KB · @important 0 · Analytical Pathway, full and compact, in version 1's columns as exhibits, and its key */
+/* Version 1's Analytical Pathway (owner, 2026-11-25: "Can you merge 1 and 3?"), in the lab site's language
+   (2026-11-26): the steps keep version 1's columns as exhibits on the sheet (components/frames.css: no frame, gutter or
+   face; each opens under a fading start line, and under a pointer the line lights brass to steel over the record
+   glow). Full (Research): three a row down to 761 px, two on phones, one under 441 px; a lone last step spans its row.
+   A step carries its gold number and its status as small text on one line, the title, the purpose and, at its foot
+   behind a fading line, the disclosure with the old turning chevron (E040). Compact (Research Log, graduation page):
+   seven a row from 1200 px, four from 761 px (the last step takes the empty cells), two on phones, and under 441 px one
+   row per step: number, title and status on one line, as version 1 set it. The status note above is a sentence after
+   the kicker's bead. */
+.pathway-status-note {
+  justify-self: start;
+  width: fit-content;
+  max-width: 100%;
+  margin-block-start: var(--ed-space-2);
+  padding: 0 0 0 calc(5.5px + var(--ed-space-2));
+  color: var(--obs-muted);
+  font-size: var(--ed-label);
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: 0;
+  text-transform: none;
+  text-wrap: pretty;
+}
+
+/* The kicker's bead and glow stay, before the sentence. */
+.pathway-status-note::before {
+  top: calc(.8em - 2.75px);
+  left: 0;
+}
+
 .analytical-pathway {
-  padding: 0;
-  border-top: 1px solid var(--obs-rule);
-  list-style: none;
+  --card-columns: 3;
+  --card-columns-tablet: 3;
+}
+
+.analytical-pathway--compact {
+  --card-columns: 7;
+  --card-columns-tablet: 4;
 }
 
 .folio > .analytical-pathway {
-  max-width: calc(var(--measure-body) + var(--hang, 0px));
+  grid-column: 1 / -1;
+  max-width: none;
 }
 
 .pathway-item {
-  display: grid;
-  grid-template-columns: var(--hang, 2.5rem) minmax(0, 1fr);
-  align-items: baseline;
-  gap: var(--ed-space-2) var(--ed-space-3);
-  padding-block: var(--ed-space-5);
-  border-bottom: 1px solid var(--obs-hairline);
+  display: flex;
+  flex-direction: column;
 }
 
+/* Number and chip share the card's first line. */
 .pathway-item-head {
-  display: contents;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  margin-block-end: 10px;
 }
 
 .research-step-number {
-  grid-area: 1 / 1;
-  color: var(--obs-muted);
-  font: 1.25rem var(--type-serif);
-}
-
-.pathway-item > :is(h3, p, details) {
-  grid-column: 2 / -1;
-  margin: 0;
+  color: var(--obs-accent);
+  font-size: var(--ed-label);
+  font-weight: 600;
+  line-height: 1.7;
 }
 
 .analytical-pathway h3 {
-  grid-area: 1 / 2;
-  font-size: var(--ed-lead);
+  margin: 0 0 10px;
+  font-size: var(--ed-h3);
+  line-height: 1.35;
 }
 
-.pathway-chip {
-  grid-column: 2;
-  justify-self: start;
+.pathway-purpose {
+  margin: 0;
+  color: var(--obs-muted);
+  font-size: var(--ed-caption);
+  line-height: 1.8;
 }
 
-.analytical-pathway--full > li::before {
-  content: "";
-  grid-area: 2 / 1 / span 3;
-  align-self: stretch;
-  margin: 0 0 calc(-1 * var(--ed-space-5)) .6875rem;
-  border-left: 1px solid var(--obs-rule);
+/* The status as small text after its marker (components/marker.css): In progress in brass, Next in the link colour,
+   Planned and the interpretation muted (the interpretation in italic). The words carry the status; the marker's shape
+   repeats it, never the colour alone. */
+.analytical-pathway .pathway-chip {
+  flex: none;
+  color: var(--obs-muted);
 }
 
-.pathway-item[data-status="next"]::before {
-  border-color: var(--obs-control-border);
+.analytical-pathway .pathway-chip[data-status="in-progress"] {
+  color: var(--obs-accent);
 }
 
-.pathway-item:is([data-status="planned"], [data-status="interpretation"])::before {
-  border-left: 1px dashed var(--obs-control-border);
+.analytical-pathway .pathway-chip[data-status="next"] {
+  color: var(--obs-link);
 }
 
-.analytical-pathway--full > [data-status="interpretation"] {
-  margin-top: var(--ed-space-6);
+.analytical-pathway .pathway-chip[data-status="interpretation"] {
+  font-style: italic;
+}
+
+/* The disclosure stands at the card's foot, so the summaries of a row line up. */
+.pathway-detail {
+  margin-block-start: auto;
+  padding-block-start: 14px;
 }
 
 .pathway-detail > summary {
-  max-width: var(--measure-body);
-  color: var(--obs-text);
+  padding-block-start: var(--ed-space-2);
+  background: var(--obs-fade-start) 0 0 / 100% 1px no-repeat;
+  color: var(--obs-link);
+  font-size: var(--ed-label);
+  line-height: 1.5;
 }
 
-/* The old chevron in place of the plus (owner, 2026-11-18): it points along the row and, opening, turns down with a
-   2 px nudge upward in 180 ms. */
+.pathway-detail > summary:hover > span {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* The old chevron in place of the plus (owner, 2026-11-18), before the words as version 1 set it: it points along the
+   row and, opening, turns down with a 2 px nudge upward in 180 ms. */
 .pathway-detail > summary::after {
   content: "";
   flex: none;
+  order: -1;
   width: 7px;
   height: 7px;
-  margin-block-end: 3px;
-  margin-inline-end: 2px;
+  margin: 0 2px 3px;
   border-right: 1.5px solid;
   border-bottom: 1.5px solid;
   color: inherit;
   transform: rotate(-45deg);
   transition: transform 180ms ease;
+}
+
+/* The chevron replaces the disclosure's own triangle (components/disclosure.css). */
+.pathway-detail > summary::before {
+  display: none;
 }
 
 .pathway-detail[open] > summary::after {
@@ -92,108 +146,182 @@
 
 .pathway-detail dl {
   display: grid;
-  gap: var(--ed-space-4) var(--ed-space-5);
-  padding-top: var(--ed-space-3);
-  border-top: 1px solid var(--obs-hairline);
-  font-size: var(--ed-small);
+  gap: var(--ed-space-3);
+  margin: var(--ed-space-2) 0 0;
+}
+
+.pathway-detail dt {
+  margin-block-end: 3px;
 }
 
 .pathway-detail dd {
-  margin: var(--ed-space-1) 0 0;
+  margin: 0;
+  color: var(--obs-text);
+  font-size: var(--ed-caption);
+  line-height: 1.75;
 }
 
-@media (min-width: 761px) {
-  .analytical-pathway--full > li {
-    grid-template-columns: var(--hang, 2.5rem) minmax(0, 1fr) auto;
-  }
+/* A lone last step spans the row; its lines keep a reading measure. */
+.analytical-pathway--full > li:last-child:nth-child(3n+1) {
+  grid-column: 1 / -1;
+}
 
-  .analytical-pathway--full .pathway-chip {
-    grid-area: 1 / 3;
-  }
-
-  .analytical-pathway--full > li::before {
-    grid-row: 2 / span 2;
-  }
-
-  .pathway-detail dl {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .analytical-pathway--compact > li {
-    grid-template-columns: var(--hang, 2.5rem) minmax(0, max-content) minmax(1.5rem, 1fr) auto;
-  }
-
-  .analytical-pathway--compact > li::after {
-    content: "";
-    grid-area: 1 / 3;
-    border-bottom: 1px dotted var(--obs-control-border);
-  }
-
-  .analytical-pathway--compact .pathway-chip {
-    grid-area: 1 / 4;
-  }
-
-  .marks-key dl > div {
-    display: grid;
-    grid-template-columns: 15rem 1fr;
-    align-items: baseline;
-    column-gap: var(--ed-space-5);
-  }
+.analytical-pathway--full > li:last-child :is(.pathway-purpose, .pathway-detail dl) {
+  max-width: 82ch;
 }
 
 .analytical-pathway--compact > li {
-  padding-block: var(--ed-space-3);
+  padding: 14px 0 6px;
 }
 
 .analytical-pathway--compact h3 {
-  font-size: var(--ed-h4);
+  margin: 0;
+  font-size: .9375rem;
+  line-height: 1.4;
 }
 
-@media (min-width: 1200px) {
-  .folio > .analytical-pathway {
-    --hang: calc((100% + var(--grid-gap)) / 4 - var(--ed-space-3));
-    grid-column: margin-start / text-end;
-    max-width: none;
+@media (min-width: 761px) {
+  .analytical-pathway--compact .pathway-item-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ed-space-2);
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1199px) {
+  .analytical-pathway--compact .pathway-item-head {
+    flex-direction: row;
+    align-items: center;
   }
 
-  .folio > .analytical-pathway--full,
-  .folio > .analytical-pathway--full > li {
+  .analytical-pathway--compact > li:last-child:nth-child(4n+3) {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 760px) {
+  .analytical-pathway.card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .analytical-pathway > li {
+    padding: 14px 0 4px;
+  }
+
+  .pathway-purpose {
+    font-size: .90625rem;
+  }
+
+  .analytical-pathway > li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  /* The compact strip keeps version 1's density on phones: its rows meet, each under its own start line. */
+  .analytical-pathway--compact.card-grid {
+    row-gap: 0;
+  }
+}
+
+@media (max-width: 440px) {
+  .analytical-pathway.card-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .analytical-pathway--compact > li {
     display: grid;
-    grid-column: full;
-    grid-template-columns: subgrid;
-    column-gap: normal;
+    grid-template-columns: 26px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--ed-space-2);
+    padding: 12px 0;
   }
 
-  .folio > .analytical-pathway--full .research-step-number,
-  .folio > .analytical-pathway--full > li::before {
-    grid-column: margin;
+  .analytical-pathway--compact .pathway-item-head {
+    display: contents;
   }
 
-  .folio > .analytical-pathway--full > li > :is(h3, p) {
-    grid-column: text;
+  .analytical-pathway--compact .research-step-number {
+    grid-area: 1 / 1;
   }
 
-  .folio > .analytical-pathway--full .pathway-chip {
-    grid-column: notes;
-    justify-self: end;
+  .analytical-pathway--compact h3 {
+    grid-area: 1 / 2;
   }
 
-  .folio > .analytical-pathway--full .pathway-detail {
-    grid-column: text-start / notes-end;
+  .analytical-pathway--compact .pathway-chip {
+    grid-area: 1 / 3;
+  }
+}
+
+@media (forced-colors: active) {
+  .pathway-status-note {
+    padding-inline-start: 0;
+  }
+
+  .pathway-detail > summary {
+    border-top: 1px solid CanvasText;
+  }
+}
+
+/* The key to the marks: a group under its head hairline and pool (components/frames.css), set apart from the steps:
+   its caption and note, then the five meanings side by side, each under a fading start line over its marks. */
+.marks-key {
+  margin-block-start: 2.5rem;
+  font-size: var(--ed-small);
+}
+
+.folio > .marks-key {
+  grid-column: 1 / -1;
+  max-width: none;
+}
+
+.marks-key > p {
+  margin: 0;
+  padding: 18px 0 0;
+}
+
+.marks-key > .kicker::before {
+  top: calc(18px + .85em - 2.75px);
+}
+
+.marks-key > .marks-key__note {
+  padding-block: 4px 14px;
+  color: var(--obs-muted);
+}
+
+.marks-key dl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.5rem;
+  margin: 0;
+}
+
+.marks-key dl > div {
+  display: flex;
+  flex: 1 1 10rem;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 0 16px;
+  background: var(--obs-fade-start) 0 0 / 100% 1px no-repeat;
+}
+
+@media (forced-colors: active), print {
+  .marks-key dl > div {
+    border-top: 1px solid var(--obs-line);
+    background: none;
   }
 }
 
 .marks-key dd {
-  display: grid;
-  grid-template-columns: 7rem auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  margin: 0;
+  color: var(--obs-text);
 }
 
 .marks-key__mark {
   white-space: nowrap;
-}
-
-.marks-key__mark:only-child {
-  grid-column: 2;
 }
 
 .marks-key .marker {

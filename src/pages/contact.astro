@@ -11,25 +11,26 @@ const orcid = "https://orcid.org/0009-0007-3960-3959";
   <div class="page">
     <Masthead kicker="Contact" title="Contact">For academic communication, please contact me by email.</Masthead>
 
-    {/* One correspondence block of ruled rows (src/styles/folio/pages/contact.css). The page carries only the
+    {/* Version 1's correspondence (src/styles/folio/pages/contact.css): three two-column rows (components/frames.css),
+        each heading the one label beside its content, the address in a callout (a pool under a head hairline, no frame). The page carries only the
         "[at] [dot]" form of the address; contact.js builds the real one, fills the compose link and reveals the
         actions, whose box is kept meanwhile (data-reserve-space) so nothing below moves. */}
-    <div class="correspondence folio">
-      <div class="contact-row contact-email">
-        <h2><span class="kicker">Email</span></h2>
-        <div>
+    <div class="correspondence">
+      <div class="contact-row contact-email two-col two-col--eyebrow">
+        <h2>Email</h2>
+        <div class="contact-callout framed two-col__body">
           <p><code data-email-address>madslieu [at] gmail [dot] com</code></p>
           <div class="contact-actions" data-email-actions hidden data-reserve-space><a class="button" data-email-compose>Write an email</a><button class="button secondary" type="button" data-email-copy>Copy address</button></div>
-          <p class="contact-note in-notes" data-email-status role="status" aria-live="polite">Replace [at] with @ and [dot] with a full stop when typing the address.</p>
+          <p class="contact-note" data-email-status role="status" aria-live="polite">Replace [at] with @ and [dot] with a full stop when typing the address.</p>
         </div>
       </div>
-      <div class="contact-row contact-orcid">
-        <h2><span class="kicker">ORCID</span></h2>
-        <p><a class="orcid-link" href={orcid} target="_blank" rel="me noopener noreferrer"><img src="assets/img/orcid/ORCID-iD_icon-vector.svg" width="24" height="24" alt="ORCID iD"><span>{orcid}</span><span class="orcid-new-tab"> (opens in a new tab)</span></a></p>
+      <div class="contact-row contact-orcid two-col two-col--eyebrow">
+        <h2>ORCID</h2>
+        <p class="two-col__body"><a class="orcid-link" href={orcid} target="_blank" rel="me noopener noreferrer"><img src="assets/img/orcid/ORCID-iD_icon-vector.svg" width="24" height="24" alt="ORCID iD"><span>{orcid}</span><span class="orcid-new-tab"> (opens in a new tab)</span></a></p>
       </div>
-      <div class="contact-row">
-        <h2><span class="kicker">Affiliation</span></h2>
-        <div>
+      <div class="contact-row two-col two-col--eyebrow">
+        <h2>Affiliation</h2>
+        <div class="two-col__body">
           <h3 class="person-name">I. Mads Lieu</h3>
           <p>
             Department of Earth Sciences, School of Education, Waseda University<br>

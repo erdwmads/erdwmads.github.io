@@ -58,7 +58,7 @@ export const researchExperience: readonly CvEntry[] = [
     title: "Undergraduate graduation research",
     details: [
       {
-        text: "Astromineralogical Study of Ca–Mg Carbonates Reported as Dolomite in the Orgueil CI1 Chondrite: Crystallographic Identification and Implications for Parent-Body Aqueous Alteration"
+        text: "Ordered Dolomite in the Orgueil CI1 Chondrite: An Astromineralogical Study of Its Composition, Structure and Low-Temperature Formation during Parent-Body Aqueous Alteration"
       },
       { text: ["Mineralogy Laboratory, Waseda University", "Mikouchi Laboratory, The University Museum, The University of Tokyo"] },
       { label: "Advisers", text: "Taiga Okumura; Takashi Mikouchi" },

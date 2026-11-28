@@ -75,7 +75,7 @@ test("text, links, focus, errors, brass and control borders meet WCAG contrast o
 
 test("Light and Space differ where the invariants require two editions, not an inversion", () => {
   // The effects (owner, 2026-11-18): Light carries them paler, never as Space's values.
-  const effects = ["--obs-header-surface", "--obs-band-veil", "--obs-backdrop-opacity", "--obs-backdrop-opacity-home", "--obs-backdrop-tone", "--obs-glow",
+  const effects = ["--obs-header-surface", "--obs-band-veil", "--obs-far-ink", "--obs-far-opacity", "--obs-far-opacity-phone", "--obs-glow",
     "--obs-gold-glow", "--obs-edge-cool", "--obs-sheen", "--obs-sheen-card", "--obs-sheen-primary", "--obs-control-shadow", "--obs-control-glow", "--obs-row-glow",
     // The rest of the old site's light (second effects pass, 2026-11-18), each at its own old Light value.
     "--obs-control-face", "--obs-control-secondary-face", "--obs-control-active-face", "--obs-control-pressed", "--obs-metal", "--obs-glass-face",
@@ -96,14 +96,15 @@ test(".on-night redeclares every colour the Light theme changes, and sets its ow
   assert.equal(night.color, "var(--obs-text)");
 });
 
-test("only the two families are served, within the preload budget, each with its licence", () => {
+// Version 1's one web family, restored with its layouts (owner, 2026-11-25); the name's Georgia is a system face.
+test("only Montserrat is served, within the preload budget, with its licence", () => {
   const fonts = read(`${folioStylesDir}/01-fonts.css`);
-  const families = new Set([...fonts.matchAll(/font-family: "([^"]+)"; (?:font-style: \w+; )?font-weight: [\d ]+; font-display: swap; src: url\("\.\.\/fonts\/([^"]+)"\)/g)].map((match) => match[1]));
-  assert.deepEqual([...families].sort(), ["Source Sans 3", "Source Serif 4"]);
+  const families = new Set([...fonts.matchAll(/font-family: "?([^";]+)"?; (?:font-style: \w+; )?font-weight: [\d ]+; font-display: swap; src: url\("\.\.\/fonts\/([^"]+)"\)/g)].map((match) => match[1]));
+  assert.deepEqual([...families].sort(), ["Montserrat"]);
   const referenced = [...fonts.matchAll(/url\("\.\.\/fonts\/([^"]+)"\)/g)].map((match) => match[1]);
   const files = fs.readdirSync(abs(fontsDir)).filter((name) => name.endsWith(".woff2"));
   assert.deepEqual(files.sort(), [...new Set(referenced)].sort(), "every font file is used and every used file exists");
-  for (const licence of ["SourceSerif4-OFL.txt", "SourceSans3-OFL.txt"]) {
+  for (const licence of ["Montserrat-OFL.txt"]) {
     assert.match(read(`${fontsDir}/${licence}`), /SIL Open Font License, Version 1\.1/);
   }
   const shell = readShell();

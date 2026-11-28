@@ -126,12 +126,18 @@ try {
     await page.waitForTimeout(700);
     assert.equal((await style(page, '.ui2046-solar-system', ['content'], '::after')).content, 'none', `${theme}: other routes have no ring`);
 
-    // Polarisation (E030): the navigation and the page's buttons take the interference colour with a glow.
+    // Polarisation (E030; no outlines since 2026-11-26): a line under the navigation takes the interference colour with
+    // the old 18 px glow, and the page's buttons take it on their beams over a pool of it.
     await page.evaluate(() => { document.documentElement.style.setProperty('--mineral-colour', 'rgb(80, 200, 240)'); document.documentElement.style.setProperty('--mineral-extinction', '1'); document.documentElement.setAttribute('data-polarising', ''); });
     await page.waitForTimeout(400);
-    const nav = await style(page, '.header-actions .nav', ['outline-style', 'outline-width', 'outline-color']);
-    assert.deepEqual([nav['outline-style'], nav['outline-width'], nav['outline-color']], ['solid', '1px', 'rgb(80, 200, 240)'], `${theme}: polarising outlines the navigation`);
-    if (await page.locator('main .button').count()) assert.match((await style(page, 'main .button', ['box-shadow']))['box-shadow'], /18px/, `${theme}: and glows around the page's buttons`);
+    const nav = await style(page, '.header-actions .nav', ['opacity', 'background-color', 'box-shadow', 'height'], '::after');
+    assert.deepEqual([nav.opacity, nav['background-color'], nav.height], ['1', 'rgb(80, 200, 240)', '1px'], `${theme}: polarising lights the line under the navigation (${JSON.stringify(nav)})`);
+    assert.match(nav['box-shadow'], /0px 0px 18px/, `${theme}: with the old 18 px glow`);
+    if (await page.locator('main .button').count()) {
+      const beam = await style(page, 'main .button', ['border-bottom-color', 'background-image']);
+      assert.equal(beam['border-bottom-color'], 'rgb(80, 200, 240)', `${theme}: the page's buttons take the colour on their beams`);
+      assert.match(beam['background-image'], /radial-gradient/, `${theme}: over a pool of it`);
+    }
     await page.evaluate(() => document.documentElement.removeAttribute('data-polarising'));
     const cleavage = await style(page, '.mineral-cleavage path', ['stroke-width', 'filter']);
     assert.deepEqual([cleavage['stroke-width'], /drop-shadow/.test(cleavage.filter)], ['1.3px', true], `${theme}: the cleavage glows steel`);
@@ -194,17 +200,30 @@ try {
     assert.equal(await phone.page.locator('.ambient-space-layer:not(.is-lite), .ambient-pebble').count(), 0, `${theme}: phones run only the lite field`);
     await phone.context.close();
 
-    // The entrance (E032): dark legibility shadows under the title and the sky labels, and Skip's glass face.
+    // The entrance (E032): dark legibility shadows under the title and the sky labels, and Skip's glass face as a pool
+    // of the surface at 80 % behind its words (a text control since 2026-11-26), on a layer of its own that reaches past
+    // the words and fades to nothing (2026-11-28), so the control's box never clips it. The entrance focuses Skip without
+    // the focus ring (owner, 2026-11-28), so before any key it rests: no beam on the control itself, only the pool
+    // (its keyboard focus beam is checked by arrival-focus.browser).
     const entrance = await open(theme, { path: 'index.html', arrival: true });
     await entrance.page.locator('.arrival-skip').waitFor();
-    const arrival = await entrance.page.evaluate(() => ({
-      title: getComputedStyle(document.querySelector('.arrival-signature')).textShadow,
-      label: getComputedStyle(document.querySelector('.celestial-labels span') || document.body).textShadow,
-      skip: getComputedStyle(document.querySelector('.arrival-skip')).backgroundColor
-    }));
+    const arrival = await entrance.page.evaluate(() => {
+      const skip = document.querySelector('.arrival-skip'), layer = getComputedStyle(skip, '::after');
+      return {
+        title: getComputedStyle(document.querySelector('.arrival-signature')).textShadow,
+        label: getComputedStyle(document.querySelector('.celestial-labels span') || document.body).textShadow,
+        skip: getComputedStyle(skip).backgroundImage,
+        pool: layer.backgroundImage,
+        layer: { position: layer.position, top: parseFloat(layer.top), left: parseFloat(layer.left), zIndex: layer.zIndex }
+      };
+    });
     assert.match(arrival.title, /0px 2px 12px/, `${theme}: the title carries its shadow`);
     assert.match(arrival.label, /0px 1px 5px/, `${theme}: the sky labels carry theirs`);
-    assert.match(arrival.skip, /^(rgba|color)\(.*0\.8\)$/, `${theme}: Skip sits on glass: ${arrival.skip}`);
+    const pool = arrival.pool.match(/radial-gradient\(closest-side, ((?:rgba|color)\([^)]*\)) 55%/);
+    assert.ok(pool, `${theme}: Skip sits on its glass pool: ${arrival.pool}`);
+    assert.ok(Number(pool[1].match(/([\d.]+)\)$/)[1]) >= .8, `${theme}: the pool keeps the old 80 % glass: ${pool[1]}`);
+    assert.ok(arrival.layer.position === 'absolute' && arrival.layer.zIndex === '-1' && arrival.layer.top <= -16 && arrival.layer.left <= -40, `${theme}: the pool is a layer behind the words that reaches past them: ${JSON.stringify(arrival.layer)}`);
+    assert.equal(arrival.skip, 'none', `${theme}: Skip opens at rest, with no focus or hover beam on the control: ${arrival.skip}`);
     await entrance.context.close();
   }
   assert.deepEqual(errors, []);

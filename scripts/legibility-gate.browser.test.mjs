@@ -1,8 +1,9 @@
 // Legibility gate (spec §2.6): the string "CI1 · Il1 · 11 of 11 · Ioong · Ca–Mg · μ-XRD · 6×7" set at 12, 15 and 17 px
-// in every face the site serves (Source Sans 3 at 400 and 600; Source Serif 4 at 400, 500, 600 and italic 400), in
+// in every weight the site sets in Montserrat (400, 500, 600, 700 and 800: version 1's type, restored on 2026-11-25, set
+// lighter on 2026-11-26, when 500 joined for status words and keywords; 700 and 800 remain on a few page labels), in
 // both themes side by side: the page in Light, and a panel carrying .on-night, which holds the Space tokens. Every
 // face must be loaded (document.fonts.check, and a loaded FontFace for its family, weight and style), so no fallback
-// glyphs stand in for the faces. μ, → and ↗ are outside both families' subsets and come from the fallback stack by
+// glyphs stand in for the faces. μ, → and ↗ are outside the family's subsets and come from the fallback stack by
 // design (public/assets/fonts/README.md). The screenshot is for the owner: --shot <file> or LEGIBILITY_SHOT, by
 // default .codex_tmp/legibility-gate.png.
 import assert from 'node:assert/strict';
@@ -12,12 +13,11 @@ import { openGuardBrowser } from './lib/guard.mjs';
 
 const sample = 'CI1 · Il1 · 11 of 11 · Ioong · Ca–Mg · μ-XRD · 6×7';
 const faces = [
-  { label: 'Source Sans 3 400', family: 'Source Sans 3', weight: 400, style: 'normal' },
-  { label: 'Source Sans 3 600', family: 'Source Sans 3', weight: 600, style: 'normal' },
-  { label: 'Source Serif 4 400', family: 'Source Serif 4', weight: 400, style: 'normal' },
-  { label: 'Source Serif 4 500', family: 'Source Serif 4', weight: 500, style: 'normal' },
-  { label: 'Source Serif 4 600', family: 'Source Serif 4', weight: 600, style: 'normal' },
-  { label: 'Source Serif 4 italic 400', family: 'Source Serif 4', weight: 400, style: 'italic' }
+  { label: 'Montserrat 400', family: 'Montserrat', weight: 400, style: 'normal' },
+  { label: 'Montserrat 500', family: 'Montserrat', weight: 500, style: 'normal' },
+  { label: 'Montserrat 600', family: 'Montserrat', weight: 600, style: 'normal' },
+  { label: 'Montserrat 700', family: 'Montserrat', weight: 700, style: 'normal' },
+  { label: 'Montserrat 800', family: 'Montserrat', weight: 800, style: 'normal' }
 ];
 const sizes = [12, 15, 17];
 const args = process.argv.slice(2);

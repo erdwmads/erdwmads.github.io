@@ -1,41 +1,29 @@
-/* @owner WP1 · @budget 3KB · @important 0 · Buttons: primary, secondary, quiet action, icon button */
-/* At most one primary per view: ink on ivory in Light, ivory on ink in Space. Faces are background-color only, so the
-   sheen, shadow and hover glow of components/surface-light.css lie over them; nothing changes size. */
+/* @owner WP1 · @budget 4KB · @important 0 · Text controls: button, secondary, quiet action, icon button */
+/* Controls are words over a beam (2026-11-26, after the lab site; the owner: "the bubbly AI feel is too strong"): no
+   face, corner, capsule or shadow. At rest a 1 px line in the control-border token runs under the label (its 3:1
+   boundary) and 8 px past it each side; the label sits low in the 44 px box, so the beam lies 6 px under the words and
+   the hit area rises above them. Light answers the pointer in components/surface-light.css: the beam lights brass to
+   steel over a warm pool; the current, chosen or pressed control keeps a 2 px brass beam. Icons and arrows stay
+   glyphs. Nothing changes size. Links stay links (steel, their own underline); controls are text-coloured. */
 .button {
   display: inline-flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   gap: var(--ed-space-2);
   min-height: 44px;
-  padding: 0 1.25rem;
-  border: 1px solid var(--obs-primary-face);
-  border-radius: var(--radius-control);
-  background-color: var(--obs-primary-face);
-  color: var(--obs-primary-text);
+  padding: 0 .5rem 6px;
+  border: 1px solid transparent;
+  border-bottom-color: var(--obs-control-border);
+  border-radius: 0;
+  background-color: transparent;
+  color: var(--obs-text);
   font-family: var(--type-sans);
-  font-size: .9375rem;
+  font-size: .875rem;
   font-weight: 600;
-  line-height: 1.2;
+  line-height: 1.4;
   text-align: center;
   text-decoration: none;
   cursor: pointer;
-  transition: background-color var(--ed-dur-1) var(--ed-ease-out), border-color var(--ed-dur-1) var(--ed-ease-out);
-}
-
-.button:hover {
-  border-color: var(--obs-primary-hover);
-  background-color: var(--obs-primary-hover);
-}
-
-/* Secondary: transparent with a control border; hover fills it with the surface tone. */
-.button.secondary {
-  border-color: var(--obs-control-border);
-  background-color: transparent;
-  color: var(--obs-text);
-}
-
-.button.secondary:hover {
-  background-color: var(--obs-surface-hover);
 }
 
 /* An icon keeps its 18 px slot from the first paint, so a script that swaps a Lucide placeholder (<i data-lucide>)
@@ -44,30 +32,27 @@
   flex: none;
   width: 18px;
   height: 18px;
+  margin-block-end: 1px;
 }
 
+/* Disabled: the label dimmed, the beam a hairline; no light answers the pointer (surface-light.css). */
 .button:disabled,
 .button[aria-disabled="true"] {
+  border-bottom-color: var(--obs-hairline);
   opacity: .55;
   cursor: not-allowed;
 }
 
-/* Quiet action: text plus an arrow in the markup ("CV →"), with a 44 px target. */
+/* Quiet action: a text link plus an arrow in the markup ("CV →"), version 1's underlined link, with a 44 px target. */
 .quiet-link {
   display: inline-flex;
   align-items: center;
   gap: var(--ed-space-1);
   min-height: 44px;
-  color: var(--obs-text);
-  font-weight: 600;
-  text-decoration-color: transparent;
 }
 
-.quiet-link:hover {
-  text-decoration-color: currentColor;
-}
-
-/* Icon button: 44 x 44 px, an 18 px Lucide icon in currentColor, and an accessible name in the markup. */
+/* Icon button: a borderless 18 px Lucide icon in currentColor over the beam, in a 44 x 44 px hit area, with an
+   accessible name in the markup; toggled (aria-pressed), a 2 px brass beam under it. */
 .icon-button {
   display: inline-grid;
   place-items: center;
@@ -75,16 +60,12 @@
   width: 44px;
   height: 44px;
   padding: 0;
-  border: 1px solid var(--obs-control-border);
-  border-radius: var(--radius-control);
+  border: 1px solid transparent;
+  border-bottom-color: var(--obs-control-border);
+  border-radius: 0;
   background-color: transparent;
   color: var(--obs-text);
   cursor: pointer;
-  transition: background-color var(--ed-dur-1) var(--ed-ease-out);
-}
-
-.icon-button:hover {
-  background-color: var(--obs-surface-hover);
 }
 
 .icon-button svg {
@@ -94,6 +75,21 @@
 }
 
 .icon-button:disabled {
+  border-bottom-color: var(--obs-hairline);
   opacity: .55;
   cursor: not-allowed;
+}
+
+/* Forced colours: the beam is a border in the system button text; a chosen or pressed control a double border in the
+   highlight colour, which keeps the box (border-box sizing). No pool or gradient. */
+@media (forced-colors: active) {
+  .button,
+  .icon-button {
+    border-color: transparent;
+    border-bottom-color: ButtonText;
+  }
+
+  :is(.button, .icon-button):is([aria-current]:not([aria-current="false"]), [aria-pressed="true"], [aria-selected="true"]) {
+    border-bottom: 3px double Highlight;
+  }
 }

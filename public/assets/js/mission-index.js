@@ -104,17 +104,19 @@
     });
 
     // Ledger rows read SOL | date | title; without a SOL the LOG label takes its place, otherwise it stays as
-    // hidden text so every row still names its record number.
+    // hidden text so every row still names its record number. The title shows two lines at most (mission-log.css); its
+    // tooltip holds the whole title, on the title itself, so a screen reader does not hear it twice.
     indexList.innerHTML = navigatorEntries.map((item) => {
       const id = escapeAttr(item.id);
       const logLabel = escapeHtml(item.label || `LOG ${String(item.number || 0).padStart(3, '0')}`);
       const sol = escapeHtml(solLabel(item));
       const date = normaliseDate(item.date || item.isoDate);
+      const title = entryTitle(item);
       return `
         <a class="mission-jump-card" href="#${id}" data-mission-target="${id}">
           <span class="mission-jump-sol tabular">${sol || logLabel}</span>
           <time class="mission-jump-date"${date ? ` datetime="${isoDate(date)}"` : ''}>${date}</time>
-          <span class="mission-jump-title">${escapeHtml(entryTitle(item))}</span>
+          <span class="mission-jump-title" title="${escapeAttr(title)}">${escapeHtml(title)}</span>
           ${sol ? `<span class="mission-jump-log visually-hidden">${logLabel}</span>` : ''}
         </a>
       `;

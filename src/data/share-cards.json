@@ -1,0 +1,84 @@
+{
+  "_comment": "Share cards (Open Graph and Twitter), one per page, keyed by the page's path (SiteShell's path prop). Each card is drawn by scripts/derive-imagery.mjs share from the page's own picture in Space colours, with the name, the page's public title and the picture's credit, and written to public/assets/img/share/<file> (1200 x 630 JPEG). SiteShell.astro reads file and alt. picture: mask = a page backdrop (path under public/assets/img), at = its anchor and k = its strength, as on the page (components/backdrop.css); opening = Home's opening print. After a change here, run npm run images:imagery -- share.",
+  "width": 1200,
+  "height": 630,
+  "cards": {
+    "index.html": {
+      "file": "home.jpg",
+      "title": "Astromineralogy Research Archive",
+      "picture": { "opening": "opening/comet-mcnaught-opening-wide-1600.webp" },
+      "credit": "Comet McNaught: S. Deiries/ESO, CC BY 4.0, cropped and toned",
+      "alt": "I. Mads Lieu, Astromineralogy Research Archive: the name and the archive's title beside Comet McNaught over the Pacific at dusk."
+    },
+    "research.html": {
+      "file": "research.jpg",
+      "title": "Research",
+      "picture": { "mask": "asteroid-bennu-1280.webp", "at": "50% 50%", "k": 0.6 },
+      "credit": "Asteroid Bennu: NASA/Goddard/University of Arizona, toned",
+      "alt": "I. Mads Lieu, Research: the name and the page title over a pale toned photograph of the asteroid Bennu."
+    },
+    "ryugu-bennu.html": {
+      "file": "ryugu-bennu.jpg",
+      "title": "Ryugu & Bennu",
+      "picture": { "mask": "backdrops/asteroid-ryugu-mask-1600.webp", "at": "100% 0", "k": 1 },
+      "credit": "Asteroid Ryugu: ISAS/JAXA, processed by Anonymsiy, CC BY 4.0, cropped and toned",
+      "alt": "I. Mads Lieu, Ryugu & Bennu: the name and the page title beside a pale toned image of the asteroid Ryugu."
+    },
+    "origins-study.html": {
+      "file": "origins.jpg",
+      "title": "Origins",
+      "picture": { "mask": "backdrops/cosmic-cliffs-mask-1600.webp", "at": "50% 0", "k": 1.5 },
+      "credit": "The Cosmic Cliffs: NASA, ESA, CSA, and STScI, CC BY 4.0, cropped and toned",
+      "alt": "I. Mads Lieu, Origins: the name and the page title over the Cosmic Cliffs of the Carina Nebula, toned pale."
+    },
+    "research-log.html": {
+      "file": "research-log.jpg",
+      "title": "Research Log",
+      "picture": { "mask": "backdrops/comet-neowise-mask-1600.webp", "at": "0 0", "k": 1.3 },
+      "credit": "Comet NEOWISE: SimgDe (simg.de), CC BY-SA 4.0, toned; this card CC BY-SA 4.0",
+      "alt": "I. Mads Lieu, Research Log: the name and the page title over the tails of Comet NEOWISE, toned pale."
+    },
+    "paper-shelf.html": {
+      "file": "paper-shelf.jpg",
+      "title": "Paper Shelf",
+      "picture": { "mask": "backdrops/trouvelot-orion-nebula-mask-1600.webp", "at": "100% 0", "k": 1 },
+      "credit": "The Great Nebula in Orion: E. L. Trouvelot, public domain, cropped and toned",
+      "alt": "I. Mads Lieu, Paper Shelf: the name and the page title beside E. L. Trouvelot's drawing of the Orion Nebula, toned pale."
+    },
+    "cv.html": {
+      "file": "cv.jpg",
+      "title": "CV",
+      "picture": { "mask": "backdrops/trouvelot-milky-way-mask-1600.webp", "at": "100% 50%", "k": 1 },
+      "credit": "Part of the Milky Way: E. L. Trouvelot, public domain, cropped and toned",
+      "alt": "I. Mads Lieu, CV: the name and the page title beside E. L. Trouvelot's drawing of the Milky Way, toned pale."
+    },
+    "photography.html": {
+      "file": "photography.jpg",
+      "title": "Photography",
+      "picture": { "mask": "backdrops/milky-way-panorama-mask-1600.webp", "at": "100% 0", "k": 1.4 },
+      "credit": "The Milky Way panorama: ESO/S. Brunier, CC BY 4.0, cropped and toned",
+      "alt": "I. Mads Lieu, Photography: the name and the page title under the band of the Milky Way, toned pale."
+    },
+    "contact.html": {
+      "file": "contact.jpg",
+      "title": "Contact",
+      "picture": { "mask": "backdrops/comet-pons-brooks-mask-1600.webp", "at": "100% 0", "k": 1 },
+      "credit": "Comet 12P/Pons-Brooks: Don Heffernan, CC BY 2.0, cropped and toned",
+      "alt": "I. Mads Lieu, Contact: the name and the page title beside Comet 12P/Pons-Brooks, toned pale."
+    },
+    "404.html": {
+      "file": "not-found.jpg",
+      "title": "Page not found",
+      "picture": { "mask": "backdrops/dark-cloud-b68-mask-1600.webp", "at": "0 0", "k": 1 },
+      "credit": "Barnard 68: ESO, CC BY 4.0, cropped and toned",
+      "alt": "I. Mads Lieu, Page not found: the name and the page title beside the dark cloud Barnard 68, toned pale."
+    },
+    "research-graduation.html": {
+      "file": "research-graduation.jpg",
+      "title": "Graduation Research",
+      "picture": { "mask": "backdrops/trouvelot-november-meteors-mask-1600.webp", "at": "100% 0", "k": 1 },
+      "credit": "The November Meteors: E. L. Trouvelot, public domain, cropped and toned",
+      "alt": "I. Mads Lieu, Graduation Research: the name and the page title beside E. L. Trouvelot's drawing of the November meteors, toned pale."
+    }
+  }
+}

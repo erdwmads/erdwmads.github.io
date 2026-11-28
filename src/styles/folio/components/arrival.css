@@ -1,4 +1,4 @@
-/* @owner WP2 · @budget 5KB · @important 0 · Arrival title page (#cosmic-arrival, styled through .arrival) and #arrival-replay */
+/* @owner WP2 · @budget 7KB · @important 0 · Arrival title page (#cosmic-arrival, styled through .arrival) and #arrival-replay */
 /* Name over its rule, imprint, question (CSS order; the DOM puts the question first). entry.js writes opacities. */
 .arrival {
   width: 100%;
@@ -68,23 +68,24 @@
   order: -2;
   padding-block-end: var(--ed-space-5);
   border-bottom: 1px solid var(--obs-rule);
-  font: 500 var(--ed-name)/1 var(--type-serif);
+  font: 400 var(--ed-name)/1 var(--type-name);
   letter-spacing: -.02em;
   opacity: 0;
 }
 
+/* The imprint in the one label style; "Interface 2046" word for word. */
 .arrival-imprint {
   order: -1;
   margin-block: var(--ed-space-4);
   color: var(--obs-muted);
-  font-size: var(--ed-label);
-  font-weight: 600;
-  letter-spacing: .08em;
+  font-size: var(--label-size);
+  font-weight: var(--label-weight);
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
 }
 
 .arrival-question {
-  font: italic var(--ed-lead)/1.4 var(--type-serif);
+  font: italic var(--ed-lead)/1.4 var(--type-heading);
   text-wrap: balance;
 }
 
@@ -100,17 +101,25 @@
   gap: var(--ed-space-4);
 }
 
+/* The chapter caption: the gold numeral, the label in the one label style, the track as its hairline. Calmer chrome
+   (2026-11-26): it joins only once the scene has begun (progress .10; entry.js writes progress as p.toFixed(3) and '0'
+   at play), so the opening shows the scene and Skip alone. */
 .arrival-sequence {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: var(--ed-space-2) var(--ed-space-3);
   color: var(--obs-muted);
-  font: 600 var(--ed-runhead)/1 var(--type-sans);
-  letter-spacing: .16em;
+  font: var(--label-weight) var(--label-size)/1 var(--type-sans);
+  letter-spacing: var(--label-track);
+  transition: opacity .6s var(--ed-ease-out);
+}
+
+:where(#cosmic-arrival):is(:not([data-progress]), [data-progress="0"], [data-progress^="0.0"]) .arrival-sequence {
+  opacity: 0;
 }
 
 .arrival-number {
-  color: var(--obs-text);
+  color: var(--obs-accent);
 }
 
 .arrival-track {
@@ -128,40 +137,73 @@
   transform-origin: left;
 }
 
-.arrival-skip,
-.arrival-replay {
+/* Skip intro: a text control on the canvas, the words over the beam with a small Esc hint; the old glass face (E032)
+   is a pool of the surface at its old 80 % behind the words, so they read over the moving scene. The pool lies on its
+   own layer reaching 44 px past the words and fading to nothing there, so no box ever clips it into a slab; hovered,
+   the pool warms and the beam lights brass to steel. Keyboard focus (owner, 2026-11-28): the beam lit 2 px in the
+   focus colour over the warmed pool, no rectangle (forced colours keep the outline); Skip opens without the ring. */
+.arrival-skip {
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
   gap: var(--ed-space-2);
   min-height: 44px;
-  padding: 0 var(--ed-space-4);
-  border: 1px solid var(--obs-control-border);
-  border-radius: var(--radius-control);
-  background: var(--obs-surface);
+  padding: 0 .5rem;
+  border: 1px solid transparent;
+  border-bottom-color: var(--obs-control-border);
+  border-radius: 0;
+  background: none;
   color: var(--obs-text);
   font-size: .875rem;
   font-weight: 600;
-  transition: background-color 160ms var(--ed-ease-out), border-color 160ms var(--ed-ease-out);
+  transition: background-color 160ms var(--ed-ease-out), border-color 160ms var(--ed-ease-out), box-shadow 160ms var(--ed-ease-out);
 }
 
-/* The Skip capsule on the canvas: the old glass face. */
-.arrival-skip {
-  background: color-mix(in srgb, var(--obs-surface) 80%, transparent);
+.arrival-skip::after {
+  content: "";
+  position: absolute;
+  inset: -18px -44px;
+  z-index: -1;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--obs-surface) 80%, transparent) 55%, transparent);
+  transition: background-color 160ms var(--ed-ease-out);
+  pointer-events: none;
 }
 
-:is(.arrival-skip, .arrival-replay):hover {
-  background: var(--obs-surface-hover);
+@media (hover: hover) and (forced-colors: none) {
+  .arrival-skip:hover {
+    border-bottom-color: transparent;
+    background: var(--obs-beam-lit) 0 100% / 100% 1px no-repeat border-box;
+    box-shadow: var(--obs-beam-glow);
+  }
+
+  .arrival-skip:hover::after {
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--obs-accent) 18%, color-mix(in srgb, var(--obs-surface) 80%, transparent)) 55%, transparent);
+  }
+}
+
+@media (forced-colors: none) {
+  .arrival-skip:focus-visible {
+    outline: none;
+    border-bottom-color: transparent;
+    background: linear-gradient(var(--obs-focus), var(--obs-focus)) 0 100% / 100% 2px no-repeat border-box;
+    box-shadow: none;
+  }
+
+  .arrival-skip:focus-visible::after {
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--obs-accent) 18%, color-mix(in srgb, var(--obs-surface) 80%, transparent)) 55%, transparent);
+  }
 }
 
 .arrival-skip-key {
-  padding: 2px 4px;
-  border: 1px solid var(--obs-hairline);
-  border-radius: var(--radius-record);
   color: var(--obs-muted);
   font-size: var(--ed-runhead);
+  font-weight: var(--label-weight);
+  letter-spacing: var(--label-track);
   line-height: 1;
+  text-transform: uppercase;
 }
 
 :is(.arrival-skip, .arrival-replay) svg {
@@ -169,14 +211,10 @@
   height: 16px;
 }
 
-/* Above the FX dock; phones replay from the footer. */
+/* One persistent control (2026-11-26): the entrance replays from the footer's "Replay entrance" at every width, so
+   the fixed round button stays in the page for the script but never shows. */
 .arrival-replay {
-  position: fixed;
-  right: var(--ed-space-4);
-  bottom: calc(var(--ed-space-4) + 44px + var(--ed-space-2));
-  z-index: var(--z-float);
-  width: 44px;
-  padding: 0;
+  display: none;
 }
 
 @media (hover: none), (max-width: 600px) {
@@ -185,8 +223,25 @@
   }
 }
 
-@media (max-width: 760px) {
-  .arrival-replay {
+@media (forced-colors: active) {
+  .arrival-skip {
+    border-color: transparent;
+    border-bottom-color: ButtonText;
+  }
+
+  .arrival-skip::after {
     display: none;
   }
+}
+
+/* While the entrance plays only the scene and Skip show: the page, the effects dock and the spine wait under the
+   dialog, so no text lies under the Earth as the scene fades into the backdrop; after it closes they rise in 700 ms. */
+:where(html.cosmic-arrival-active) :is(main, .obs-fx-dock, .ui2046-rail) {
+  opacity: 0;
+}
+
+:where(main),
+.obs-fx-dock,
+.ui2046-rail {
+  transition: opacity 700ms var(--ed-ease-out);
 }

@@ -1,51 +1,59 @@
-/* @owner WP4 · @budget 2KB · @important 0 · Ryugu & Bennu, scoped under .ui-page-ryugu-bennu */
-/* Hero: Plates I and II side by side under the masthead. The two columns follow the images' own ratios (1:1 and
-   1024:968), so both plates stand at one height with no letterbox and no crop. From 1200 px the pair spans the wide
-   measure, from the text line to the right edge. Above 760 px the view height caps the plates (17.5-29.5rem tall),
-   so the pair and its labels meet the first view on laptop screens. On phones the plates stack, Plate I first, each
-   17.5rem wide. */
+/* @owner WP4 · @budget 2.5KB · @important 0 · Ryugu & Bennu, scoped under .ui-page-ryugu-bennu */
+/* Version 1's intro (owner, 2026-11-25), with version 3's Plates I and II as two small night plates beside it in the
+   right column from 1200 px and under the lead on narrower screens (two columns at every width), mounted as prints
+   with 2 px corners (components/plate.css; 2026-11-26, the lab site's language). The columns follow the images' own
+   ratios (1:1 and 1024:968), so both plates stand at one height with no letterbox and no crop; the captions keep the
+   12 px floor and the evidence line its 14 px. */
 .ui-page-ryugu-bennu .plate-pair {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.0579fr);
   align-items: start;
-  gap: var(--ed-space-6) var(--grid-gap);
-  margin-block-end: var(--ed-space-8);
+  gap: var(--ed-space-4);
+  max-width: 32rem;
+  color: var(--obs-text);
 }
 
 .ui-page-ryugu-bennu .plate-pair > .plate {
   margin: 0;
 }
 
-@media (min-width: 761px) {
-  .ui-page-ryugu-bennu .masthead {
-    padding-block-end: var(--ed-space-6);
-    margin-block-end: var(--ed-space-6);
-  }
+.ui-page-ryugu-bennu .plate-pair .plate__caption {
+  gap: var(--ed-space-1);
+  margin-block-start: var(--ed-space-2);
+  font-size: var(--ed-label);
+}
 
-  .ui-page-ryugu-bennu .plate-pair {
-    max-width: calc(2.0579 * clamp(17.5rem, 100svh - 35rem, 29.5rem) + var(--grid-gap));
-  }
+.ui-page-ryugu-bennu .plate-pair .plate__credit {
+  font-size: var(--ed-label);
+}
+
+.ui-page-ryugu-bennu .plate-pair .evidence-status {
+  margin-block-start: var(--ed-space-1);
 }
 
 @media (min-width: 1200px) {
+  .ui-page-ryugu-bennu .masthead > .in-notes {
+    padding-block-start: var(--ed-space-2);
+  }
+}
+
+@media (max-width: 1199px) {
+  .ui-page-ryugu-bennu .masthead > .in-notes {
+    margin-block-start: var(--ed-space-2);
+  }
+
   .ui-page-ryugu-bennu .plate-pair {
-    margin-inline-start: calc((100% - 11 * var(--grid-gap)) / 6 + 2 * var(--grid-gap));
+    max-width: 27rem;
   }
 }
 
 @media (max-width: 760px) {
   .ui-page-ryugu-bennu .plate-pair {
-    grid-template-columns: minmax(0, 1fr);
-    margin-block-end: var(--ed-space-7);
-  }
-
-  .ui-page-ryugu-bennu .plate-pair .plate__media {
-    max-width: 17.5rem;
+    gap: var(--ed-space-3);
   }
 }
 
-/* A contents-bar jump lands on the h2; the kicker and section number stand about 40 px above it, so they clear the
-   bar too. */
+/* A contents-bar jump lands on the h2; the kicker stands about 40 px above it, so it clears the bar too. */
 .ui-page-ryugu-bennu :is(.folio > h2, .planetary-heading > h2) {
   scroll-margin-top: calc(var(--research-guide-offset, 1rem) + 3rem);
 }

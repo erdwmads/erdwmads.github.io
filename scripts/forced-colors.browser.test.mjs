@@ -1,9 +1,12 @@
 // Forced colours and more contrast (spec §2.1 states/contrast.css, §6.5): under forced-colors: active the calibration
 // markers keep their own painting in the system text colour (outline, fill or corner brackets visible against the
 // page, at 3:1 or more, so no marker keeps a theme colour such as the brass "In progress"), the header does not float,
-// neither page backdrop is drawn, buttons and the theme toggle lose their sheen and draw no edge light, chips, buttons and fields
-// keep a visible border, section rules and hairlines stay drawn, and keyboard focus
-// draws a solid outline in a system colour, and pressed or current states stay distinct from their siblings; under prefers-contrast: more the decorative hairline token becomes 60%
+// neither page backdrop is drawn, buttons and the theme toggle lose their sheen and draw no edge light, buttons and fields
+// keep a visible border, status chips (small text after their marker since 2026-11-26, no capsule) keep their marker
+// in the text colour, section rules and hairlines stay drawn, and keyboard focus
+// draws a solid outline in a system colour, and pressed or current states stay distinct from their siblings; since
+// 2026-11-28 a sticky contents band keeps an opaque ground while page text scrolls under it, and the FX switch keeps a
+// visible border; under prefers-contrast: more the decorative hairline token becomes 60%
 // of the text colour. Markers, chips and rules on the page are checked where a page has them (pathway chips, evidence
 // tags) and on WP1's stand-in fixture everywhere (scripts/lib/guard.mjs). Filters and the per-page report as there.
 import { gotoGuardPage, insertFixture, runGuard } from './lib/guard.mjs';
@@ -33,8 +36,15 @@ const inspect = () => {
     else if (ratio(style.color, canvas) < 3) out.push({ owner: window.__guardOwner(el), message: `${name(el, pseudo)} paints in ${style.color}, ${ratio(style.color, canvas).toFixed(2)}:1 against the system canvas ${canvas}, needs 3:1` });
     if (style.forcedColorAdjust !== 'none') out.push({ owner: window.__guardOwner(el), message: `${name(el, pseudo)} lets the browser drop its painting (forced-color-adjust ${style.forcedColorAdjust})` });
   }
-  // Bordered controls and chips keep their border; rules keep their line.
-  for (const el of document.querySelectorAll('.chip, .pathway-chip, .button, .icon-button, main input[type="search"], main input[type="text"], main select')) {
+  // Status chips are small text after their marker (2026-11-26: no capsule), so their marker is what must show: a
+  // .marker inside the chip or the chip's own ::before (both checked above).
+  for (const el of document.querySelectorAll('.chip, .pathway-chip')) {
+    if (!shown(el)) continue;
+    const marked = el.querySelector('.marker') || getComputedStyle(el, '::before').content !== 'none';
+    if (!marked) out.push({ owner: window.__guardOwner(el), message: `${name(el)} shows no marker under forced colours` });
+  }
+  // Controls and fields keep their border; rules keep their line.
+  for (const el of document.querySelectorAll('.button, .icon-button, main input[type="search"], main input[type="text"], main select')) {
     if (!shown(el)) continue;
     const style = getComputedStyle(el);
     if (!(parseFloat(style.borderTopWidth) >= 1 && style.borderTopStyle !== 'none' && visibleColour(style.borderTopColor))) out.push({ owner: window.__guardOwner(el), message: `${name(el)} has no visible border under forced colours (${style.borderTopWidth} ${style.borderTopStyle} ${style.borderTopColor})` });
@@ -57,7 +67,7 @@ const inspect = () => {
   const header = document.querySelector('.site-header');
   if (header && getComputedStyle(header).position === 'sticky') out.push({ owner: 'WP2', message: 'the header floats under forced colours' });
   const before = getComputedStyle(document.body, '::before'), after = getComputedStyle(document.body, '::after');
-  if (before.content !== 'none' && before.display !== 'none') out.push({ owner: 'WP2', message: `the Bennu backdrop (body::before) is drawn under forced colours (display ${before.display})` });
+  if (before.content !== 'none' && before.display !== 'none') out.push({ owner: 'WP2', message: `the page's picture (body::before) is drawn under forced colours (display ${before.display})` });
   if (after.content !== 'none' && after.display !== 'none') out.push({ owner: 'WP2', message: `the header band (body::after) is drawn under forced colours (display ${after.display})` });
   for (const el of document.querySelectorAll('.button, .theme-toggle')) {
     if (shown(el) && getComputedStyle(el).backgroundImage !== 'none') out.push({ owner: 'WP2', message: `${name(el)} keeps its sheen under forced colours (${getComputedStyle(el).backgroundImage.slice(0, 60)})` });
@@ -92,6 +102,39 @@ await runGuard('forced-colors', async (page, { entry, base }) => {
   await target.focus();
   const ring = await target.evaluate(el => { const s = getComputedStyle(el); return { style: s.outlineStyle, width: parseFloat(s.outlineWidth), color: s.outlineColor, canvas: getComputedStyle(document.body).backgroundColor }; });
   if (ring.style !== 'solid' || ring.width < 2 || ring.color === ring.canvas) findings.push({ owner: 'WP1', message: `focus under forced colours: ${ring.style} ${ring.width}px ${ring.color} on ${ring.canvas}` });
+  // Since 2026-11-28: a sticky contents band keeps an opaque ground while the page scrolls under it, so no text of the
+  // page shows through its links (checked 1,200 and 2,200 px down).
+  if (await page.locator('.research-guide[data-ready]').count()) {
+    for (const y of [1200, 2200]) {
+      const band = await page.evaluate((top) => {
+        document.documentElement.style.scrollBehavior = 'auto';
+        window.scrollTo(0, Math.min(top, document.documentElement.scrollHeight - innerHeight));
+        const el = document.querySelector('.research-guide[data-ready]');
+        const r = el.getBoundingClientRect(), s = getComputedStyle(el);
+        if (s.position !== 'sticky' || r.bottom <= 0 || r.top >= innerHeight || !el.getClientRects().length) return null;
+        const alpha = ((s.backgroundColor.match(/[\d.]+/g) || []).map(Number))[3] ?? 1;
+        const under = new Set();
+        for (const fx of [.1, .3, .5, .7, .9]) for (const fy of [.3, .7]) {
+          const stack = document.elementsFromPoint(r.left + r.width * fx, r.top + r.height * fy);
+          const i = stack.findIndex((node) => node === el || el.contains(node));
+          if (i < 0) continue;
+          for (const node of stack.slice(i + 1)) if (!el.contains(node) && !node.contains(el) && [...node.childNodes].some((c) => c.nodeType === 3 && c.textContent.trim())) under.add(window.__guardName(node));
+        }
+        return { alpha, under: [...under].slice(0, 3) };
+      }, y);
+      if (band && band.alpha < 1 && band.under.length) findings.push({ owner: 'WP3', message: `forced colours, ${y} px down: the sticky contents band has no opaque ground (alpha ${band.alpha}) and page text shows under it: ${band.under.join(', ')}` });
+    }
+    await page.evaluate(() => window.scrollTo(0, 0));
+  }
+  // Since 2026-11-28: the FX switch, a text control, keeps a visible border under forced colours (where the dock shows).
+  const settings = page.locator('.obs-fx-dock .obs-fx-settings');
+  if (await settings.count() && await settings.isVisible()) {
+    await settings.click();
+    await page.waitForTimeout(150);
+    const fx = await page.evaluate(() => { const el = document.querySelector('.obs-fx-dock .ambient-fx-toggle'); if (!el || !el.getClientRects().length) return null; const s = getComputedStyle(el); return { width: parseFloat(s.borderBottomWidth), style: s.borderBottomStyle }; });
+    if (fx && (fx.width < 1 || fx.style === 'none')) findings.push({ owner: 'WP2', message: `forced colours: the FX switch draws no border (${fx.width}px ${fx.style})` });
+    await settings.click();
+  }
   await page.emulateMedia({ forcedColors: 'none', contrast: 'more' });
   // More contrast: the hairline token is the text colour at 60% (alpha .6), in the page and on night plates.
   const hairlines = await page.evaluate(() => [document.querySelector('main'), document.querySelector('.on-night')].filter(Boolean).map(scope => {

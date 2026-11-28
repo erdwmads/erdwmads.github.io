@@ -1,6 +1,8 @@
-/* @owner WP1 · @budget 3KB · @important 0 · Plates (Plate.astro) and plain figures (Figure.astro) */
-/* Plate anatomy: the image on its ground in a 1 px hairline, no padding; label and caption; a muted credit; the
-   evidence line. Specimen plates use --obs-plate, night plates --obs-plate-night. Plate images are never cropped. */
+/* @owner WP1 · @budget 5KB · @important 0 · Plates (Plate.astro) and plain figures (Figure.astro) as mounted prints, context plates */
+/* Plate anatomy: the image on its ground as a mounted print (2026-11-26, after the lab site): no line border, 2 px
+   corners, a crisp contact shade and a long soft drop under it; label and caption; a muted credit; the evidence line.
+   Specimen plates use --obs-plate, night plates --obs-plate-night. Plate images are never cropped. Forced colours and
+   print: a plain 1 px frame and no shadow. */
 .plate,
 .figure {
   margin-block: var(--ed-space-7);
@@ -10,8 +12,17 @@
 .figure__media {
   position: relative;
   overflow: hidden;
-  border: 1px solid var(--obs-hairline);
+  border-radius: var(--radius-record);
   background: var(--obs-plate);
+  box-shadow: var(--obs-print-drop);
+}
+
+@media (forced-colors: active), print {
+  .plate__media,
+  .figure__media {
+    border: 1px solid var(--obs-hairline);
+    box-shadow: none;
+  }
 }
 
 .plate[data-ground="night"] > .plate__media {
@@ -117,5 +128,38 @@
 
   .folio > .plate :is(.plate__credit, .evidence-status) {
     grid-column: notes;
+  }
+}
+
+/* Context plates (Figure.astro with .figure--context, 2026-11-27): a small mounted print that is not evidence (a museum
+   specimen, an analogue, a drawing, a comet), drawn at most at its file's own size, with its caption and credit as a
+   museum label beside it, set at its foot. --plate-w sets the print's width; where the column is narrow a page rule
+   sets one column, so the label stands under the print. */
+.figure--context {
+  display: grid;
+  grid-template-columns: var(--plate-w, 10rem) minmax(0, 1fr);
+  align-items: end;
+  gap: var(--ed-space-4);
+  margin: var(--ed-space-5) 0 0;
+}
+
+.figure--context > .figure__media {
+  max-width: var(--plate-w, 10rem);
+}
+
+.figure--context > .figure__caption {
+  gap: var(--ed-space-1);
+  margin: 0;
+  font-size: var(--ed-label);
+  text-wrap: pretty;
+}
+
+.figure--context .figure__credit {
+  font-size: var(--ed-label);
+}
+
+@media (max-width: 760px) {
+  .figure--context {
+    --plate-w: 7.5rem;
   }
 }

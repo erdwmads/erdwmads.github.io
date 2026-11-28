@@ -3,6 +3,7 @@ import SiteShell from "../components/SiteShell.astro";
 import Masthead from "../components/Masthead.astro";
 import Section from "../components/Section.astro";
 import Marker from "../components/Marker.astro";
+import Figure from "../components/Figure.astro";
 import ResearchGuide from "../components/ResearchGuide.astro";
 import AnalyticalPathway from "../components/AnalyticalPathway.astro";
 import EvidenceAtlasData from "../components/EvidenceAtlasData.astro";
@@ -36,15 +37,6 @@ const marks = [
 
     <Section id="research-focus-title" number="01" kicker="The research question" title={question} class="research-question">
       <p class="research-question__context">My graduation research connects mineral textures, chemistry and crystal structure to investigate aqueous alteration and material evolution within a primitive parent body.</p>
-      <aside class="research-scope in-notes" aria-label="Project scope">
-        <p class="kicker">Project scope</p>
-        <dl>
-          <div><dt class="kicker">Research target</dt><dd>Orgueil <span>CI1 chondrite</span></dd></div>
-          <div><dt class="kicker">Mineral record</dt><dd>Ca–Mg carbonate <span>Reported as dolomite</span></dd></div>
-          <div><dt class="kicker">Comparison materials</dt><dd>Ryugu &amp; Bennu <span>Returned asteroid samples</span></dd></div>
-        </dl>
-        <p>These returned samples provide independent comparisons for the mineral record of water. They do not establish Orgueil’s parent body.</p>
-      </aside>
       <ol class="research-subquestions" aria-label="Questions within the research question">
         {subQuestions.map((item, index) => (
           <li><span class="research-subquestions__key tabular">Q{index + 1}</span><h3>{item.title}</h3><p>{item.text}</p></li>
@@ -52,12 +44,27 @@ const marks = [
       </ol>
       <div class="research-record-links cluster"><a class="button" href="research-log.html">Research Log</a><button class="button secondary atlas-launch" type="button" data-public-atlas><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98m-.01-10.98-6.82 3.98"/></svg>Research atlas</button></div>
       <p class="research-record-note">Detailed experimental records are in the protected Research Log archive. The research atlas is a short quick view of the material, the questions, the methods and the public sources.</p>
+      {/* Version 1's framed Project scope panel: beside the question from 761 px (pages/research.css), after the record
+          note on phones, as version 1 read. */}
+      <aside class="research-scope panel in-notes" aria-label="Project scope">
+        <p class="kicker">Project scope</p>
+        <dl>
+          <div><dt class="kicker">Research target</dt><dd>Orgueil <span>CI1 chondrite</span></dd></div>
+          <div><dt class="kicker">Mineral record</dt><dd>Ca–Mg carbonate <span>Reported as dolomite</span></dd></div>
+          <div><dt class="kicker">Comparison materials</dt><dd>Ryugu &amp; Bennu <span>Returned asteroid samples</span></dd></div>
+        </dl>
+        <p>These returned samples provide independent comparisons for the mineral record of water. They do not establish Orgueil’s parent body.</p>
+        {/* A context plate (components/plate.css): a museum photograph of the stone, not my sample and not evidence. */}
+        <Figure class="figure--context research-specimen" caption="The Orgueil meteorite, a hand specimen on display at the Muséum national d’Histoire naturelle, Paris." credit="Photograph: Eunostos, Wikimedia Commons, CC BY-SA 4.0, cropped">
+          <img src="assets/img/plates/orgueil-mnhn-320.webp" srcset="assets/img/plates/orgueil-mnhn-320.webp 320w, assets/img/plates/orgueil-mnhn-640.webp 640w" sizes="(max-width: 760px) 7.5rem, (max-width: 1199px) 9rem, 11rem" width="640" height="777" loading="lazy" decoding="async" alt="A dark, fractured stone with a cracked crust, resting on a pale display plate.">
+        </Figure>
+      </aside>
     </Section>
 
     <Section id="research-methods-title" number="02" kicker="The Analytical Pathway" title="From observation to interpretation" class="research-pathway">
       <p>The project connects texture, chemistry and crystal structure. Each step contributes a different part of the mineral record; open a step to see what it can answer and what it cannot establish.</p>
       <AnalyticalPathway variant="full" />
-      <div class="marks-key" role="group" aria-labelledby="marks-key-title">
+      <div class="marks-key framed" role="group" aria-labelledby="marks-key-title">
         <p class="kicker" id="marks-key-title">How to read the marks</p>
         <p class="marks-key__note">Circles show the status of a pathway step; squares show the kind of evidence beside a figure or scene.</p>
         <dl>
@@ -76,7 +83,11 @@ const marks = [
     </Section>
 
     <Section id="comparison-title" number="03" kicker="Comparison materials" title="Orgueil vs returned samples" class="research-comparison">
-      <table class="data-table comparison-table span-full">
+      {/* Version 1's framed two-column comparison box around the table (components/frames.css,
+          components/comparison.css). From 761 px each cell repeats its row's label (hidden from assistive technology,
+          which reads the row head) above its text, as version 1's columns did. */}
+      <div class="framed comparison-frame span-full">
+      <table class="data-table comparison-table">
         <caption>What each material can and cannot show</caption>
         <thead>
           <tr>
@@ -90,7 +101,7 @@ const marks = [
           {rows.map(([label, key]) => (
             <tr>
               <th scope="row"><span class="kicker">{label}</span></th>
-              {materials.map((material) => <td><span class="comparison-table__cell-label kicker" aria-hidden="true">{material.title}</span>{material[key]}</td>)}
+              {materials.map((material) => <td><span class="comparison-table__cell-label kicker" aria-hidden="true">{material.title}</span><span class="comparison-table__row-label" aria-hidden="true">{label}</span>{material[key]}</td>)}
             </tr>
           ))}
         </tbody>
@@ -98,6 +109,7 @@ const marks = [
           <tr><td colspan="3"><p>Orgueil is the research material. Samples returned from asteroids Ryugu and Bennu are comparison materials for the mineral record of water; they do not establish Orgueil’s parent body.</p></td></tr>
         </tfoot>
       </table>
+      </div>
       <p class="research-methods-reading">The sample-return missions, orbital context and published microscopy have their own page. <a href="ryugu-bennu.html">Explore Ryugu &amp; Bennu →</a></p>
     </Section>
   </div>

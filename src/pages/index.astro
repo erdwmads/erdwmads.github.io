@@ -1,53 +1,78 @@
 ---
 import SiteShell from "../components/SiteShell.astro";
-import Masthead from "../components/Masthead.astro";
 import Figure from "../components/Figure.astro";
 import Section from "../components/Section.astro";
 import Ledger from "../components/Ledger.astro";
 import CurrentFocus from "../components/CurrentFocus.astro";
-import { getPageScripts, homeTitle } from "../data/site";
+import { footerItems, getPageScripts, homeTitle } from "../data/site";
 import { affiliations, interests, keywords, explore, timeline } from "../data/home";
-import { question } from "../data/project.mjs";
 
 const scriptHtml = getPageScripts("home");
+// The opening's line is the footer's long-term question (footerItems), so the two never drift apart.
+const longTermQuestion = footerItems[1].slice(footerItems[1].indexOf(": ") + 2);
 ---
 
 <SiteShell title={homeTitle} description='Astromineralogy archive of I. Mads Lieu, Waseda University: Ca–Mg carbonates reported as dolomite in the Orgueil CI1 chondrite and aqueous alteration.' current='home' mainClass='main' path="index.html" scriptHtml={scriptHtml}>
   <div class="page">
-    {/* The title page: the name and its pronunciation, the research question, the portrait, then the affiliations,
-        interests, keywords and the two ways onward. On desktop the portrait and the keywords stand in the notes
-        column. The question follows the masthead, so the reading order is the order on screen. */}
-    <div class="home-title folio">
-      <Masthead size="name" kicker="Personal academic website" title="I. Mads Lieu" id="home-name">
-        <Fragment slot="meta"><span class="person-name">Ioong Mads Lieu</span> <span class="pronunciation"><span class="pronunciation-label visually-hidden">Pronunciation: </span><span class="person-name">Ioong</span>: YOONG · <span class="person-name">Lieu</span>: LYEW</span></Fragment>
-      </Masthead>
-      <p class="home-question">{question}</p>
-      <Figure ratio="4:5" class="home-portrait in-notes">
-        <picture>
-          <source srcset="assets/img/profile-640.webp 640w, assets/img/profile.webp 960w" sizes="(max-width: 760px) 120px, (max-width: 1199px) 240px, 282px" type="image/webp">
-          <img src="assets/img/profile.jpg" alt="I. Mads Lieu" width="960" height="960" fetchpriority="high">
-        </picture>
-      </Figure>
-      <p class="home-affiliation">
-        <button class="affiliation-emblem" type="button" data-polarisation aria-label="Mineralogy Laboratory: polarisation" title="Polarisation: hold and drag, or use arrow keys with FX on">
-          <img src="assets/img/affiliation/mineralogy-laboratory-logo.png" width="40" height="40" alt="">
-        </button>
-        <span>{affiliations.map((line, index) => <Fragment>{index > 0 && <br />}{line}</Fragment>)}</span>
-      </p>
-      <p class="home-interests">{interests}</p>
-      <ul class="home-keywords" aria-label="Keywords">{keywords.map((word) => <li class="pill">{word}</li>)}</ul>
-      <div class="home-actions cluster">
-        <a class="button" href="research.html">Research</a>
-        <a class="quiet-link" href="cv.html">CV <span aria-hidden="true">→</span></a>
+    {/* The opening (owner, 2026-11-28: direction A, "Comet opening", with direction B's imprint): one full plate,
+        Comet McNaught, a night print in Space and a sepia ink print in Light, and the page's h1 at the lower left on
+        the ground beside it, never on the picture: the name over its brass rule, the entrance's imprint in gold label
+        capitals, the long-term question; then a scroll cue and the plate's credit. The sheet rises over it as the page
+        scrolls and the comet dissolves into the far plane. Styles: src/styles/folio/pages/home-opening.css; the blocks
+        below set in once as they reach the window (public/assets/js/home-path.js). */}
+    <section class="home-opening" aria-labelledby="home-name">
+      <div class="home-opening__sky" aria-hidden="true"></div>
+      <div class="home-opening__lockup">
+        <h1 id="home-name">I. Mads Lieu</h1>
+        <p class="home-opening__imprint">Astromineralogy research archive&nbsp;· Interface&nbsp;2046</p>
+        <p class="home-opening__line">{longTermQuestion}</p>
       </div>
-      <p class="identity-links">
-        <a class="orcid-link" href="https://orcid.org/0009-0007-3960-3959" target="_blank" rel="me noopener noreferrer"><img src="assets/img/orcid/ORCID-iD_icon-vector.svg" width="24" height="24" alt="ORCID iD"><span>https://orcid.org/0009-0007-3960-3959</span><span class="orcid-new-tab"> (opens in a new tab)</span></a>
-      </p>
+      <span class="home-opening__cue" aria-hidden="true"></span>
+      <p class="home-opening__credit">Comet McNaught, January 2007 · S. Deiries/ESO, CC BY 4.0</p>
+    </section>
+
+    {/* The title page in version 1's hero (owner, 2026-11-25), its kicker the first of the four museum captions (01 to
+        04; the h1 stands in the opening above): the full name and its pronunciation, version 1's lead (the
+        department and the affiliation, restored 2026-11-26; the research question opens the Current Focus facts
+        below), the interests, the keywords, the two ways onward and the ORCID iD; beside them the square portrait over
+        the affiliation card (the emblem and the two affiliations). The portrait column follows the text, so the
+        reading order is the order on screen. */}
+    <div class="home-title">
+      <div class="home-title__main">
+        <header class="masthead folio masthead--name">
+          <p class="kicker"><span class="kicker__rule" aria-hidden="true"></span><span class="folio-section__number tabular">01</span> Personal academic website</p>
+          <p class="masthead__meta tabular"><span class="person-name">Ioong Mads Lieu</span> <span class="pronunciation"><span class="pronunciation-label visually-hidden">Pronunciation: </span><span class="person-name">Ioong</span>: YOONG · <span class="person-name">Lieu</span>: LYEW</span></p>
+        </header>
+        <p class="home-lead">{affiliations.map((line, index) => <Fragment>{index > 0 && <br />}{line}</Fragment>)}</p>
+        <p class="home-interests">{interests}</p>
+        <ul class="home-keywords" aria-label="Keywords">{keywords.map((word) => <li class="pill">{word}</li>)}</ul>
+        <div class="home-actions">
+          <a class="button" href="research.html">Research</a>
+          <a class="button secondary" href="cv.html">CV</a>
+        </div>
+        <p class="identity-links">
+          <a class="orcid-link" href="https://orcid.org/0009-0007-3960-3959" target="_blank" rel="me noopener noreferrer"><img src="assets/img/orcid/ORCID-iD_icon-vector.svg" width="24" height="24" alt="ORCID iD"><span>https://orcid.org/0009-0007-3960-3959</span><span class="orcid-new-tab"> (opens in a new tab)</span></a>
+        </p>
+      </div>
+      <div class="home-card">
+        <Figure ratio="1:1" class="home-portrait">
+          <picture>
+            <source srcset="assets/img/profile-640.webp 640w, assets/img/profile.webp 960w" sizes="(max-width: 760px) 146px, (max-width: 1199px) 280px, 330px" type="image/webp">
+            <img src="assets/img/profile.jpg" alt="I. Mads Lieu" width="960" height="960" fetchpriority="high">
+          </picture>
+        </Figure>
+        <p class="home-affiliation">
+          <button class="affiliation-emblem" type="button" data-polarisation aria-label="Mineralogy Laboratory: polarisation" title="Polarisation: hold and drag, or use arrow keys with FX on">
+            <img src="assets/img/affiliation/mineralogy-laboratory-logo.png" width="40" height="40" alt="">
+          </button>
+          <span>{affiliations.map((line, index) => <Fragment>{index > 0 && <br />}{line}</Fragment>)}</span>
+        </p>
+      </div>
     </div>
 
-    <CurrentFocus />
+    <CurrentFocus number="02" />
 
-    <Section id="home-explore-title" kicker="Archive contents" title="Explore" class="home-explore">
+    <Section id="home-explore-title" number="03" kicker="Archive contents" title="Explore" class="home-explore">
       {/* Ledger markup (src/components/Ledger.astro), written out so a detail can strike a word through. */}
       <ol class="ledger home-explore-list">
         {explore.map((item) => (
@@ -60,9 +85,10 @@ const scriptHtml = getPageScripts("home");
       </ol>
     </Section>
 
-    <Section id="home-timeline-title" kicker="Education" title="Academic timeline" class="home-timeline">
-      <Ledger items={timeline} class="home-timeline-list" />
-      <p class="home-timeline-more"><a class="quiet-link" href="cv.html">Full CV <span aria-hidden="true">→</span></a></p>
+    {/* Version 1's two columns: the label column (kicker, heading, Full CV) beside the compact timeline table. */}
+    <Section id="home-timeline-title" number="04" kicker="Education" title="Academic timeline" class="home-timeline two-col">
+      <p class="home-timeline-more two-col__head"><a class="quiet-link" href="cv.html">Full CV <span aria-hidden="true">→</span></a></p>
+      <Ledger items={timeline} class="home-timeline-list two-col__body" />
     </Section>
   </div>
 </SiteShell>

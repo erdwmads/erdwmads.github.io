@@ -59,6 +59,12 @@
     background: none;
   }
 
+  /* No sheet, grid or pool on paper; fading hairlines print as plain rules (each component's own print rule). */
+  main::before,
+  main::after {
+    display: none;
+  }
+
   *,
   ::before,
   ::after {

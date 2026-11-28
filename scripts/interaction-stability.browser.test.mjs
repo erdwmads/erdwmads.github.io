@@ -21,6 +21,13 @@ const overlap = (boxes, width) => {
   }
 };
 const scenes = ['ryugu-bennu', 'origins-study'];
+// A block that scrolling brought into view may be setting in (Home's path, public/assets/js/home-path.js, 2026-11-28:
+// one finite move from 18 px low); let such finite time-based animations in main finish before the pointer moves, so
+// the guard measures what the hover does, as strictly as before. Looping and scroll-driven animations are not waited on.
+const settle = page => page.evaluate(() => Promise.race([
+  Promise.all(document.getAnimations().filter(animation => animation.timeline instanceof DocumentTimeline && animation.playState === 'running' && Number.isFinite(animation.effect?.getComputedTiming().endTime) && animation.effect?.target?.closest?.('main')).map(animation => animation.finished.catch(() => {}))),
+  new Promise(resolve => setTimeout(resolve, 3000))
+]));
 
 // Rests the pointer on each of the first limit items in turn and reports the first box that moves, for the owner of
 // the hovered item.
@@ -30,6 +37,7 @@ async function hoverEach(page, items, limit, findings) {
     await item.scrollIntoViewIfNeeded();
     await page.mouse.move(1, 1);
     await page.waitForTimeout(100);
+    await settle(page);
     const before = await geometry(items);
     const box = await item.boundingBox();
     await page.mouse.move(box.x + Math.min(20, box.width / 2), box.y + Math.min(20, box.height / 2));

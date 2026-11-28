@@ -35,6 +35,15 @@ export const scripts = {
       "[data-shown]"
     ]
   },
+  "public/assets/js/home-path.js": {
+    queried: [
+      "#home-name", ".current-focus-section", ".folio-section__number", ".home-explore", ".home-opening__sky",
+      ".home-timeline", ".home-title", ".kicker", ".mads-power-low", ".ui-page-home"
+    ],
+    created: [
+      "[data-home-opening]"
+    ]
+  },
   "public/assets/js/interface-2046.js": {
     queried: [
       ".ambient-fx-disabled", ".entry-gate, .ui2046-layer, .ui2046-progress", ".is-edge-teardown",
@@ -53,12 +62,12 @@ export const scripts = {
   },
   "public/assets/js/legacy-navigation.js": {
     queried: [
-      "#missions-title", ".mads-soft-nav-active", ".nav a, .nav-log-gate",
-      ".site-header a[href], main a[href], .site-footer a[href]", "[data-full-nav]",
+      "#missions-title", ".home-opening__sky", ".mads-soft-nav-active", ".nav a, .nav-log-gate",
+      ".site-header a[href], main a[href], .site-footer a[href]", "[data-footer-credits]", "[data-full-nav]",
       "body script[data-page-script], body script[type=\"module\"][src]"
     ],
     created: [
-      ".mads-soft-nav-active"
+      ".backdrop-fade", ".backdrop-fade--plate", ".mads-soft-nav-active", "[data-backdrop-fade]"
     ]
   },
   "public/assets/js/mineral-interactions.js": {
@@ -152,7 +161,7 @@ export const scripts = {
   "public/assets/js/power-manager.js": {
     queried: [],
     created: [
-      ".mads-page-hidden", ".mads-power-idle", ".mads-power-low", ".mads-power-mobile"
+      ".mads-page-hidden", ".mads-power-covered", ".mads-power-idle", ".mads-power-low", ".mads-power-mobile"
     ]
   },
   "public/assets/js/research-coordinates.js": {

@@ -1,5 +1,5 @@
 // The floating header (R1, owner 2026-11-18; effects spec §5, §10.3): from 761 x 600 px the header sticks to the top
-// of the window on the solar-system band (body::after), at exactly --header-clearance (73 px from 1200 px, 101 px
+// of the window on the solar-system band (body::after), at exactly --header-clearance (109 px from 1200 px, 120 px
 // below); phones, short windows, forced colours and print keep it in the flow with no band. Nothing it floats over is
 // hidden: the contents bar sticks flush under it, anchor targets land below it, the lightbox-style overlays (atlas,
 // presentation) and the Interface 2046 spine stay clear of it, and neither backdrop becomes the LCP element. Both
@@ -54,7 +54,7 @@ try {
   for (const theme of ['space', 'light']) {
     // 1. Where the header floats: sticky at the token's height, on the band, transparent itself, above the band.
     for (const [width, height] of [[1440, 900], [1360, 900], [1200, 900], [1199, 900], [1024, 768], [761, 1024]]) {
-      const label = `${theme} ${width}x${height}`, expected = width >= 1200 ? 73 : 101;
+      const label = `${theme} ${width}x${height}`, expected = width >= 1200 ? 109 : 120;
       const { context, page } = await open(theme, { width, height });
       let s = await shell(page);
       assert.equal(s.position, 'sticky', `${label}: the header floats`);

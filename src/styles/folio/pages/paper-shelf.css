@@ -1,139 +1,306 @@
-/* @owner WP5 · @budget 7KB · @important 0 · Paper Shelf, scoped under .ui-page-paper-shelf */
+/* @owner WP5 · @budget 18KB · @important 0 · Paper Shelf, scoped under .ui-page-paper-shelf */
+/* Version 1's Paper Shelf (2f20d7e, paper-shelf.css over style.css; owner, 2026-11-25) in the lab site's language
+   (2026-11-26): the note under the lead, the search as an underline field and the filters as words over their beams
+   under a fading line, topic groups under a head hairline with the count at the right, and each paper on one grid:
+   year | text | Copy reference (a text control). Version 3's content stays (the contents line, "My reading", the
+   Keywords line), and so does its light on the new forms: the pressed filter's warm pool and brass beam and the search
+   field's brass foot (E056), the pointer edge light on the beams (E021), the record glow under the pointer (E105). */
 .ui-page-paper-shelf .masthead__meta {
-  margin-block-start: var(--ed-space-3);
-  color: var(--obs-text);
-  font-family: var(--type-serif);
-  font-size: var(--ed-lead);
+  color: var(--obs-muted);
+  font-size: var(--ed-caption);
 }
 
-.ui-page-paper-shelf .paper-shelf-tools {
-  row-gap: var(--ed-space-2);
+/* The note sits under the lead in the text column, as version 1's did, at every width. */
+.ui-page-paper-shelf .masthead > .in-notes {
+  grid-row: auto;
 }
 
-.ui-page-paper-shelf :is(.paper-filter-row, .paper-results) {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0 var(--ed-space-5);
-  min-height: 44px;
-}
-
-/* 44 px text buttons; pressed ones underlined. */
-.ui-page-paper-shelf :is(.paper-filter, .paper-copy) {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--ed-space-2);
-  min-width: 44px;
-  min-height: 44px;
-  padding: 0;
-  border: 0;
-  background: none;
+.ui-page-paper-shelf .paper-shelf-note {
+  max-width: 70ch;
   color: var(--obs-muted);
   font-size: var(--ed-small);
-  font-weight: 600;
-  text-decoration: underline 2px transparent;
-  text-underline-offset: .5em;
+  line-height: 1.7;
 }
 
-/* The filters are the old site's flat boxes (owner, 2026-11-18; c4, E056), which the edge light lights (E021). */
-.ui-page-paper-shelf .paper-filter-row {
-  gap: var(--ed-space-2);
+/* The frontispiece (Trouvelot's Great Comet of 1881, a context plate, components/plate.css) stands beside the title
+   from 761 px (in its own column to 1199 px, in the notes column from 1200 px, as the Ryugu & Bennu plates do), on a
+   flexible last row so the title's lines keep their spacing; on phones it follows the note. */
+.ui-page-paper-shelf .shelf-frontispiece {
+  --plate-w: 5rem;
 }
 
-.ui-page-paper-shelf .paper-filter {
-  padding-inline: var(--ed-space-3);
-  border: 1px solid var(--obs-control-border);
-  border-radius: var(--radius-control);
-  background: var(--obs-surface);
-  color: var(--obs-text);
-  transition: border-color .18s ease-out, box-shadow .14s ease-out, color .14s ease-out;
+/* Phones: a small print (56 px) beside its museum label, both centred on one row, rather than a tall sliver. */
+@media (max-width: 760px) {
+  .ui-page-paper-shelf .shelf-frontispiece {
+    --plate-w: 3.5rem;
+    align-items: center;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1199px) {
+  .ui-page-paper-shelf .masthead {
+    grid-template-columns: minmax(0, 1fr) 12.5rem;
+    grid-template-rows: repeat(5, auto) 1fr;
+  }
+
+  .ui-page-paper-shelf .masthead > *,
+  .ui-page-paper-shelf .paper-shelf-note {
+    grid-column: 1;
+  }
+
+  .ui-page-paper-shelf .masthead > .in-notes {
+    display: contents;
+  }
+
+  .ui-page-paper-shelf .shelf-frontispiece {
+    --plate-w: 4.5rem;
+    grid-column: 2;
+    grid-row: 1 / span 6;
+    align-self: start;
+    margin: 0;
+  }
+}
+
+@media (min-width: 1200px) {
+  .ui-page-paper-shelf .masthead {
+    grid-template-rows: repeat(5, auto) 1fr;
+  }
+
+  .ui-page-paper-shelf .masthead > .in-notes {
+    display: contents;
+  }
+
+  .ui-page-paper-shelf .paper-shelf-note {
+    grid-column: text;
+  }
+
+  .ui-page-paper-shelf .shelf-frontispiece {
+    --plate-w: 7rem;
+    grid-column: notes;
+    grid-row: 1 / span 6;
+    align-self: start;
+    margin: 0;
+  }
+}
+
+/* Tools: version 1's section line (fading at both ends), 24 px, then the labelled search field (560 px) and the
+   filter row. */
+.ui-page-paper-shelf .paper-shelf-tools {
+  display: grid;
+  justify-items: start;
+  row-gap: 7px;
+  margin-block-start: var(--section-gap);
+  padding-block-start: var(--ed-space-5);
+  background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat;
+}
+
+/* The search label in the one label style (components/masthead.css). */
+.ui-page-paper-shelf .paper-search-label {
+  color: var(--obs-muted);
+  font-size: var(--label-size);
+  font-weight: var(--label-weight);
+  line-height: 1.7;
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  text-shadow: 0 0 14px var(--obs-gold-glow);
+}
+
+/* The search field (components/form.css): its control-border line and faint pool; focused, a 2 px brass foot and a
+   gold pool below it come in over 140 ms beside the brass focus ring (E056). */
+.ui-page-paper-shelf .paper-search {
+  width: min(100%, 35rem);
+  min-height: 53px;
+  padding: var(--ed-space-3) .875rem;
+  transition: border-color .14s ease-out, box-shadow .14s ease-out;
 }
 
 .ui-page-paper-shelf .paper-search::-webkit-search-cancel-button {
   display: none;
 }
 
-.ui-page-paper-shelf :is(.project-tags > span, .nobreak) {
-  white-space: nowrap;
+.ui-page-paper-shelf :is(.paper-filter-row, .paper-results) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ed-space-2);
+  min-height: 44px;
 }
 
-.ui-page-paper-shelf :is(.paper-filter:is(:hover, [aria-pressed="true"]), .paper-copy) {
+.ui-page-paper-shelf .paper-filter-row {
+  gap: .75rem 1rem;
+  margin-block-start: 9px;
+}
+
+.ui-page-paper-shelf .paper-results {
+  gap: var(--ed-space-3);
+  margin-block-start: var(--ed-space-4);
+  color: var(--obs-muted);
+  font-size: var(--ed-caption);
+}
+
+/* The filters are text controls (2026-11-26; components/button.css): words low in a 44 px box over a 1 px beam in the
+   control-border token, no face or corner; the edge light lights the line above the beam (E021). The old flat boxes
+   (owner, 2026-11-18; c4, E056) keep their light on the new form, with their 180 / 140 ms timing. */
+.ui-page-paper-shelf .paper-filter {
+  display: inline-flex;
+  align-items: flex-end;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 .5rem 6px;
+  border: 1px solid transparent;
+  border-bottom-color: var(--obs-control-border);
+  border-radius: 0;
+  background: none;
   color: var(--obs-text);
+  font-size: var(--ed-caption);
+  font-weight: 600;
+  line-height: 1.4;
+  text-decoration: underline 2px transparent;
+  text-underline-offset: .5em;
+  transition: border-color .18s ease-out, box-shadow .14s ease-out, color .14s ease-out;
 }
 
-.ui-page-paper-shelf :is(.paper-filter[aria-pressed="true"], .paper-copy:hover) {
+.ui-page-paper-shelf .paper-filter[aria-pressed="true"] {
   text-decoration-color: currentColor;
 }
 
-/* The old pressed filter: a highlight face behind a brass border, sinking into the pressed shadow while held; a brass
-   edge under the pointer; the search box rings in brass, 3 px out like every focus ring (old 4 px; controls.browser).
-   Forced colours keep the underline and the system ring. */
+/* The old light on the new form (E056): under the pointer or keyboard focus the beam lights brass to steel over a warm
+   pool with the soft gold glow below (the old brass edge); the pressed filter reads in brass over a 2 px brass beam on
+   a warm pool (the old highlight face and brass border) and, while held, over the press pool (the old pressed shadow).
+   The search field's foot turns brass, with the gold glow under it, beside the brass ring, 3 px out like every focus
+   ring (old 4 px; controls.browser). Forced colours keep the underline, a double border and the system ring. */
 @media (hover: hover) and (forced-colors: none) {
-  .ui-page-paper-shelf .paper-filter:hover {
-    border-color: var(--obs-accent);
+  .ui-page-paper-shelf .paper-filter:hover:not([aria-pressed="true"]) {
+    border-bottom-color: transparent;
+    background: var(--obs-beam-lit) 0 100% / 100% 1px no-repeat border-box, radial-gradient(closest-side, var(--obs-pool-warm), transparent);
+    box-shadow: var(--obs-beam-glow);
+  }
+
+  /* A pressed filter still answers the pointer: the gold glow under its brass beam and a deeper pool. */
+  .ui-page-paper-shelf .paper-filter[aria-pressed="true"]:hover {
+    background: radial-gradient(closest-side, var(--obs-pool-warm), transparent), radial-gradient(closest-side, var(--obs-pool-hover), transparent);
+    box-shadow: inset 0 -1px var(--obs-accent), var(--obs-beam-glow);
   }
 }
 
 @media (forced-colors: none) {
+  .ui-page-paper-shelf .paper-filter:focus-visible:not([aria-pressed="true"]) {
+    border-bottom-color: transparent;
+    background: var(--obs-beam-lit) 0 100% / 100% 1px no-repeat border-box, radial-gradient(closest-side, var(--obs-pool-warm), transparent);
+    box-shadow: var(--obs-beam-glow);
+  }
+
   .ui-page-paper-shelf .paper-filter[aria-pressed="true"] {
-    border-color: var(--obs-accent);
-    background: var(--obs-highlight);
+    border-bottom-color: var(--obs-accent);
+    background: radial-gradient(closest-side, var(--obs-pool-warm), transparent);
+    box-shadow: inset 0 -1px var(--obs-accent);
+    color: var(--obs-accent);
     text-decoration-color: transparent;
   }
 
-  .ui-page-paper-shelf .paper-filter:active {
-    box-shadow: var(--obs-control-pressed);
+  .ui-page-paper-shelf .paper-filter:active:not(:disabled) {
+    border-bottom-color: var(--obs-accent);
+    background: radial-gradient(closest-side, var(--obs-pool-press), transparent);
+    box-shadow: inset 0 -1px var(--obs-accent);
   }
 
   .ui-page-paper-shelf .paper-search:focus-visible {
+    border-bottom-color: var(--obs-accent);
+    background: radial-gradient(closest-side, var(--obs-pool-warm), transparent) 50% 50% / 100% 100% no-repeat;
+    box-shadow: 0 1px 0 var(--obs-accent), var(--obs-beam-glow);
     outline-color: var(--obs-accent);
   }
 }
 
-.ui-page-paper-shelf .paper-shelf {
-  row-gap: 0;
-  margin-block-start: var(--ed-space-8);
+@media (forced-colors: active) {
+  .ui-page-paper-shelf .paper-filter {
+    border-color: transparent;
+    border-bottom-color: ButtonText;
+  }
+
+  .ui-page-paper-shelf .paper-filter[aria-pressed="true"] {
+    border-bottom: 3px double Highlight;
+  }
 }
 
-.ui-page-paper-shelf .paper-group {
-  padding-block-start: var(--ed-space-3);
-  border-top: 1px solid var(--obs-rule);
+/* Groups: a 26 px title at 400 over a head hairline (a short brass head fading into the ink), the count at the right;
+   44 px between visible groups (32 on phones). */
+.ui-page-paper-shelf .paper-shelf {
+  --shelf-gap: 2.75rem;
+  margin-block-start: .875rem;
 }
 
 .ui-page-paper-shelf .paper-group:not([hidden]) ~ :where(.paper-group:not([hidden])) {
-  margin-block-start: var(--shelf-gap, var(--ed-space-8));
+  margin-block-start: var(--shelf-gap);
 }
 
 .ui-page-paper-shelf .paper-group-title {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 0 var(--ed-space-3);
-  font-size: var(--ed-h3);
+  justify-content: space-between;
+  gap: 0 var(--ed-space-4);
+  padding-block-end: var(--ed-space-3);
+  background: var(--obs-head-line) 0 100% / 100% 1px no-repeat;
+  font-size: 1.625rem;
+  font-weight: 400;
+  line-height: 1.3;
 }
 
+.ui-page-paper-shelf .paper-group-count {
+  color: var(--obs-muted);
+  font-family: var(--type-sans);
+  font-size: var(--ed-caption);
+  font-weight: 500;
+  letter-spacing: .02em;
+}
+
+/* A paper: year | text (820 px) | Copy reference, on one grid; the body and tools wrappers dissolve into it, so the
+   button sits level with the title while the DOM order stays title link, then button. A line divides a visible paper
+   from the visible paper above it. */
 .ui-page-paper-shelf .paper-card {
   position: relative;
-  padding-block: var(--ed-space-5);
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 51.25rem) auto;
+  justify-content: start;
+  column-gap: 1.75rem;
+  padding-block: 1.375rem;
+}
+
+.ui-page-paper-shelf :is(.paper-card-body, .paper-card-tools) {
+  display: contents;
+}
+
+.ui-page-paper-shelf :is(.paper-card-body, .paper-card-tools) > * {
+  margin-block-start: 0;
 }
 
 .ui-page-paper-shelf .paper-card:not([hidden]) ~ :where(.paper-card:not([hidden])) {
-  border-top: 1px solid var(--obs-hairline);
+  border-top: 1px solid var(--obs-line);
 }
 
-/* A paper under the pointer takes the old record glow (E105, as at 4e14512): its rule turns to the glass edge and a
-   faint depth lies under it, easing in over 180 ms. After the rule above, so the edge wins. A hairline row: nothing
-   moves. */
+/* A paper under the pointer takes the old record glow (E105, as at 4e14512) on the sheet's terms: over its rule the
+   head lights brass to steel and the record glow pools behind it, easing in over 180 ms, on a layer behind the text.
+   Nothing moves. */
 @media (hover: hover) and (forced-colors: none) {
-  .ui-page-paper-shelf .paper-card:hover {
-    border-top-color: var(--obs-glass-edge);
-    box-shadow: var(--obs-record-depth-hover);
-    transition: box-shadow .18s;
+  .ui-page-paper-shelf .paper-card::after {
+    content: "";
+    position: absolute;
+    inset: -1px 0 0;
+    z-index: -1;
+    background: linear-gradient(90deg, var(--obs-accent), var(--obs-edge-cool) 45%, transparent) 0 0 / 100% 1px no-repeat, radial-gradient(closest-side, var(--obs-row-glow), transparent) 50% 50% / 100% 100% no-repeat;
+    opacity: 0;
+    transition: opacity .18s;
+    pointer-events: none;
+  }
+
+  .ui-page-paper-shelf .paper-card:hover::after {
+    opacity: 1;
   }
 }
 
 .ui-page-paper-shelf :is(.paper-card:target, .paper-card:has(> :target)) {
-  border-top: 2px solid var(--obs-rule);
+  border-top: 2px solid var(--obs-accent);
 }
 
 .ui-page-paper-shelf .paper-anchor-alias {
@@ -141,111 +308,271 @@
   top: 0;
 }
 
-.ui-page-paper-shelf :is(.paper-group-count, .paper-year, .paper-citation, .project-tags, .paper-reference-status, .paper-title__mark) {
-  color: var(--obs-muted);
+.ui-page-paper-shelf .paper-year {
+  grid-area: 1 / 1;
+  color: var(--obs-accent);
+  font-size: .9375rem;
+  font-weight: 600;
+  line-height: 27px;
+  letter-spacing: .02em;
 }
 
-.ui-page-paper-shelf .paper-group-count {
-  font-family: var(--type-sans);
-  font-size: var(--ed-small);
+.ui-page-paper-shelf .paper-title {
+  grid-area: 1 / 2;
+  margin-block-end: 6px;
+  font-size: 1.1875rem;
+  line-height: 1.4;
+  text-wrap: pretty;
 }
 
-.ui-page-paper-shelf :is(.paper-year, .paper-title) {
-  font-family: var(--type-serif);
-  font-size: var(--ed-h4);
-  line-height: calc(var(--ed-lead) * 1.3);
-}
-
-.ui-page-paper-shelf :is(.paper-citation, .project-tags, .paper-reference-status, .paper-reference-fallback) {
-  margin-block-start: var(--ed-space-1);
-  font-size: var(--ed-caption);
-}
-
-.ui-page-paper-shelf :is(.paper-journal, .project-tags strong) {
-  color: var(--obs-text);
-}
-
-.ui-page-paper-shelf :is(.paper-summary, .project-tags, .paper-reference-fallback) {
-  margin-block-start: var(--ed-space-3);
-}
-
-/* My reading: the owner's note. */
-.ui-page-paper-shelf .paper-relevance {
-  margin-block-start: var(--ed-space-5);
-  font-size: var(--ed-small);
-}
-
-.ui-page-paper-shelf .paper-relevance::before {
-  content: "";
+/* The title is the paper's one link: version 1's block link in the text colour, underlined in steel under the
+   pointer; 9 px above and below give it a 44 px target without moving a line. */
+.ui-page-paper-shelf .paper-title a {
   display: block;
-  width: var(--ed-space-6);
-  margin-block-end: var(--ed-space-3);
-  border-top: 1px solid var(--obs-rule);
+  margin-block: -9px;
+  padding-block: 9px;
+  color: var(--obs-text);
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
 }
 
-.ui-page-paper-shelf .paper-reference-fallback {
-  display: grid;
-}
-
-/* Year column from 761 px, margin from 1200 px. */
-@media (min-width: 761px) {
-  .ui-page-paper-shelf .paper-group {
-    display: grid;
-    grid-template-columns: 5.5rem minmax(0, var(--measure-body)) minmax(0, 1fr);
-    column-gap: var(--grid-gap);
-  }
-
-  .ui-page-paper-shelf :is(.paper-group-title, .paper-card) {
-    display: grid;
-    grid-column: 1 / -1;
-    grid-template-columns: subgrid;
-    column-gap: normal;
-  }
-
-  .ui-page-paper-shelf .paper-group-count {
-    grid-area: 1 / 1;
-  }
-
-  .ui-page-paper-shelf .paper-year {
-    grid-column: 1;
-  }
-
-  .ui-page-paper-shelf :is(.paper-card-body, .paper-card-tools, .paper-reference-fallback) {
-    grid-column: 2;
-  }
-}
-
-@media (min-width: 1200px) {
-  .ui-page-paper-shelf .paper-group {
-    grid-template-columns: subgrid;
-  }
-
-  .ui-page-paper-shelf :is(.paper-year, .paper-group-count) {
-    grid-column: margin;
-  }
-
-  .ui-page-paper-shelf :is(.paper-card-body, .paper-reference-fallback, .paper-group-title > :first-child) {
-    grid-column: text;
-  }
-
-  .ui-page-paper-shelf .paper-card-tools {
-    grid-area: 1 / notes;
-    margin-block-start: calc((var(--ed-lead) * 1.3 - 44px) / 2);
-  }
-}
-
-@media (max-width: 760px) {
-  .ui-page-paper-shelf .paper-shelf {
-    --shelf-gap: var(--ed-space-7);
-  }
-
-  .ui-page-paper-shelf .paper-year {
-    float: left;
-    margin-inline-end: var(--ed-space-2);
-  }
+.ui-page-paper-shelf .paper-title a:hover {
+  color: var(--obs-link);
+  text-decoration-color: currentColor;
 }
 
 /* The arrow is in neither font subset; as its own box it moves alone when the title reflows at the font swap. */
 .ui-page-paper-shelf .paper-title__mark {
   display: inline-block;
+  color: var(--obs-muted);
+  font-size: .8em;
+}
+
+/* Copy reference: a text control (components/button.css) with its glyph, at 12 px in the text colour. */
+.ui-page-paper-shelf .paper-copy {
+  grid-area: 1 / 3 / 3 / 4;
+  align-self: start;
+  margin-block-start: -6px;
+  font-size: var(--ed-label);
+}
+
+.ui-page-paper-shelf .paper-citation {
+  grid-area: 2 / 2;
+  margin-block-end: var(--ed-space-2);
+  color: var(--obs-muted);
+  font-size: var(--ed-caption);
+  line-height: 1.6;
+}
+
+.ui-page-paper-shelf .paper-journal {
+  font-style: italic;
+}
+
+.ui-page-paper-shelf :is(.paper-summary, .paper-relevance, .project-tags, .paper-reference-status, .paper-reference-fallback) {
+  grid-column: 2 / 4;
+  max-width: 78ch;
+}
+
+.ui-page-paper-shelf .paper-summary {
+  grid-row: 3;
+  margin-block-end: var(--ed-space-2);
+  color: var(--obs-muted);
+  font-size: var(--ed-small);
+  line-height: 1.7;
+}
+
+/* My reading: the owner's note behind a brass bar, its label inline in small brass capitals. */
+.ui-page-paper-shelf .paper-relevance {
+  grid-row: 4;
+  margin-block-end: 10px;
+  padding-inline-start: var(--ed-space-3);
+  border-left: 2px solid color-mix(in srgb, var(--obs-accent) 60%, transparent);
+  color: var(--obs-muted);
+  font-size: var(--ed-caption);
+  line-height: 1.65;
+}
+
+.ui-page-paper-shelf .paper-relevance-label {
+  display: inline;
+  margin-inline-end: 6px;
+  padding: 0;
+  text-shadow: none;
+}
+
+.ui-page-paper-shelf .paper-relevance-label::before {
+  display: none;
+}
+
+.ui-page-paper-shelf .project-tags {
+  grid-row: 5;
+  color: var(--obs-muted);
+  font-size: var(--ed-label);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.ui-page-paper-shelf :is(.project-tags > span, .nobreak) {
+  white-space: nowrap;
+}
+
+.ui-page-paper-shelf .paper-reference-status {
+  grid-row: 6;
+  color: var(--obs-muted);
+  font-size: var(--ed-caption);
+}
+
+.ui-page-paper-shelf .paper-reference-status:not(:empty) {
+  margin-block-start: 6px;
+}
+
+.ui-page-paper-shelf .paper-reference-fallback {
+  display: grid;
+  grid-row: 7;
+  gap: 6px;
+  margin-block-start: var(--ed-space-2);
+  color: var(--obs-muted);
+  font-size: var(--ed-caption);
+}
+
+@media (max-width: 1000px) {
+  .ui-page-paper-shelf .paper-card {
+    grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+    column-gap: 1.25rem;
+  }
+}
+
+/* Phones, as version 1: the title shares its row with an icon-only copy button (the label stays in the name), and
+   the year opens the citation line. */
+@media (max-width: 760px) {
+  .ui-page-paper-shelf .paper-shelf-note {
+    font-size: var(--ed-caption);
+    line-height: 1.6;
+  }
+
+  .ui-page-paper-shelf .paper-shelf-tools {
+    margin-block-start: var(--ed-space-5);
+  }
+
+  .ui-page-paper-shelf .paper-filter {
+    padding-inline: var(--ed-space-2);
+    font-size: var(--ed-label);
+  }
+
+  .ui-page-paper-shelf .paper-shelf {
+    --shelf-gap: var(--ed-space-6);
+  }
+
+  .ui-page-paper-shelf .paper-group-title {
+    padding-block-end: 10px;
+    font-size: 1.375rem;
+  }
+
+  .ui-page-paper-shelf .paper-card {
+    grid-template-columns: auto minmax(0, 1fr) 52px;
+    column-gap: 0;
+    padding-block: var(--ed-space-3) 14px;
+  }
+
+  .ui-page-paper-shelf .paper-title {
+    grid-area: 1 / 1 / 2 / 3;
+    align-self: center;
+    margin-block-end: var(--ed-space-1);
+    font-size: var(--ed-h4);
+  }
+
+  .ui-page-paper-shelf .paper-title a {
+    margin-block: -11px;
+    padding-block: 11px;
+  }
+
+  .ui-page-paper-shelf .paper-copy {
+    grid-area: 1 / 3;
+    justify-self: end;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    margin: 0;
+    padding: 0 0 8px;
+  }
+
+  .ui-page-paper-shelf .paper-copy-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .ui-page-paper-shelf .paper-year {
+    grid-area: 2 / 1;
+    font-size: var(--ed-label);
+    line-height: 1.6;
+  }
+
+  .ui-page-paper-shelf .paper-year::after {
+    content: "·" / "";
+    margin-inline: 5px;
+    color: var(--obs-muted);
+  }
+
+  .ui-page-paper-shelf .paper-citation {
+    grid-column: 2 / 4;
+    margin-block-end: 6px;
+    font-size: var(--ed-label);
+  }
+
+  .ui-page-paper-shelf :is(.paper-summary, .paper-relevance, .project-tags, .paper-reference-status, .paper-reference-fallback) {
+    grid-column: 1 / -1;
+  }
+
+  .ui-page-paper-shelf .paper-summary {
+    margin-block-end: 6px;
+    line-height: 1.6;
+  }
+
+  .ui-page-paper-shelf .paper-relevance {
+    margin-block-end: 6px;
+    line-height: 1.55;
+  }
+}
+
+/* Forced colours and print: the fading section line and the group's head hairline are plain rules. */
+@media (forced-colors: active), print {
+  .ui-page-paper-shelf .paper-shelf-tools {
+    border-top: 1px solid var(--obs-line);
+    background: none;
+  }
+
+  .ui-page-paper-shelf .paper-group-title {
+    border-bottom: 1px solid var(--obs-line);
+    background: none;
+  }
+}
+
+/* The tools lie in the opening view, where the sheet is still rising over the far plane and the old field and filter
+   faces hid Bennu. A soft shade pool (Space dark, Light paper) lies under it, feathered on all four sides, below
+   its lines, pools and words: the far plane keeps its strength around it. Forced colours and print: none. */
+@media screen and (forced-colors: none) {
+  .ui-page-paper-shelf .paper-shelf-tools {
+    position: relative;
+  }
+
+  .ui-page-paper-shelf .paper-shelf-tools::before {
+    content: "";
+    position: absolute;
+    inset: -16px -48px -20px;
+    z-index: -1;
+    background: var(--obs-pool-shade);
+    mask-image: linear-gradient(90deg, transparent, #000 48px, #000 calc(100% - 48px), transparent), linear-gradient(transparent, #000 20px, #000 calc(100% - 20px), transparent);
+    mask-composite: intersect;
+    pointer-events: none;
+  }
+}
+
+@media screen and (forced-colors: none) and (max-width: 760px) {
+  .ui-page-paper-shelf .paper-shelf-tools::before {
+    inset: -16px calc(-1 * var(--page-pad)) -20px;
+    mask-image: linear-gradient(90deg, transparent, #000 18px, #000 calc(100% - 18px), transparent), linear-gradient(transparent, #000 20px, #000 calc(100% - 20px), transparent);
+  }
 }

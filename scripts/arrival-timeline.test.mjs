@@ -51,3 +51,15 @@ test('arrival and orbit view use viewport-sized Earth maps derived from the 4096
   assert.match(orbit, /earth-day-\$\{innerWidth<700\?1024:2048\}\.webp/);
   for (const text of [solar, orbit]) assert.doesNotMatch(text, /earth-(day|night)\.jpg/, 'the entrance and orbit view use the WebP derivatives; earth-day.jpg stays only for the sample-missions close-up');
 });
+
+test('the chapter caption joins at progress .10, so entry.js keeps writing the progress the stylesheet reads', () => {
+  // components/arrival.css hides .arrival-sequence while #cosmic-arrival has no data-progress, "0" or a value starting
+  // "0.0" (2026-11-26, calmer chrome); that holds only while entry.js writes p.toFixed(3) and '0' at play.
+  const entry = String(source('src/scripts/arrival/entry.js'));
+  assert.match(entry, /gate\.dataset\.progress=p\.toFixed\(3\)/, 'entry.js writes the progress with three decimals');
+  assert.match(entry, /gate\.dataset\.progress='0'/, 'entry.js writes "0" when the entrance starts');
+  const css = String(source('src/styles/folio/components/arrival.css'));
+  assert.match(css, /:where\(#cosmic-arrival\):is\(:not\(\[data-progress\]\), \[data-progress="0"\], \[data-progress\^="0\.0"\]\) \.arrival-sequence \{\s*opacity: 0;/);
+  assert.equal((0.099).toFixed(3).startsWith('0.0'), true);
+  assert.equal((0.1).toFixed(3).startsWith('0.0'), false);
+});

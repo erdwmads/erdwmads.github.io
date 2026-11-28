@@ -50,7 +50,11 @@ if(gate){
   gate.showModal();root.classList.add('cosmic-arrival-active');gate.dataset.state='preparing';gate.dataset.progress='0';
   // Prime the underlying homepage compositor before the final single-overlay fade.
   gate.style.opacity='.999';signature.style.opacity='0';name.style.opacity='0';track.style.transform='scaleX(0)';
-  number.textContent='01';label.textContent='GALACTIC DUST';skip.focus({preventScroll:true});
+  number.textContent='01';label.textContent='GALACTIC DUST';
+  // The dialog focuses Skip as it opens. A run nobody started (the first visit), or one started with a pointer, takes
+  // that focus without the focus ring (owner, 2026-11-28), so a pointer user sees Skip at rest; a replay started from
+  // the keyboard (a click with detail 0) keeps the browser's choice, and so the focus beam.
+  if(!event||event.detail>0){skip.blur();skip.focus({preventScroll:true,focusVisible:false});}else skip.focus({preventScroll:true});
   timer=setTimeout(finish,Math.max(0,opened+PREPARE_CAP-performance.now()));
   try{
    const {createGalaxy}=await import('./galaxy.js');if(run!==serial)return;
@@ -67,6 +71,13 @@ if(gate){
  }
  skip.addEventListener('click',finish);for(const button of replays)button.addEventListener('click',play);
  gate.addEventListener('cancel',event=>{event.preventDefault();finish();});
+ // Skip may hold the focus without the ring (play); the first key that is not an action key brings the focus beam, and
+ // that first Tab stays on Skip, the dialog's only control, instead of leaving the page.
+ gate.addEventListener('keydown',event=>{
+  if(document.activeElement!==skip||skip.matches(':focus-visible')||['Shift','Control','Alt','Meta','Escape','Enter',' '].includes(event.key))return;
+  if(event.key==='Tab')event.preventDefault();
+  skip.blur();skip.focus({preventScroll:true,focusVisible:true});
+ });
  document.addEventListener('visibilitychange',()=>{if(document.hidden&&active)finish();});
  window.addEventListener('pagehide',()=>{if(active)finish();});
  window.addEventListener('resize',()=>scene?.resize());

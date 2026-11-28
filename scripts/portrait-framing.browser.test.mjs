@@ -1,7 +1,8 @@
-// Home portrait and polarisation emblem (spec §4.1, §6.3). The portrait is a 4:5 Figure with square corners and no
-// shadow or second frame. The source photograph is square, so the 4:5 frame (WP1's ratio figure, object-fit: cover)
-// trims only its sides, never its top or bottom; the owner's own photograph may be framed that way (concept §3.5),
-// where letterboxing would leave bands of plate ground above and below it. The emblem stays a real button with
+// Home portrait and polarisation emblem (spec §4.1, §6.3; version 1's portrait, owner 2026-11-25). The portrait is a
+// square Figure mounted as a print (2026-11-26, the lab site's language): 2 px corners, no line border, the contact
+// shade and long soft drop on the media box and no shadow on the image itself. The source photograph is
+// square, so the 1:1 frame (WP1's ratio figure, object-fit: cover) shows all of it, trimming nothing and leaving no
+// bands of plate ground; the image keeps the frame's corners because the media box clips it. The emblem stays a real button with
 // data-polarisation, a 44 px target, no filter or shadow at rest or hovered, and a solid focus outline.
 // Widths 1440, 768, 390 and 320 px in both themes; no sideways scroll.
 import assert from 'node:assert/strict';
@@ -21,13 +22,15 @@ try{
       const photo=figure.locator('img');await photo.evaluate(img=>img.decode());
       const frame=await figure.evaluate(el=>{
         const media=el.querySelector('.figure__media'),img=el.querySelector('img'),box=media.getBoundingClientRect(),s=getComputedStyle(media),i=getComputedStyle(img);
-        return {ratio:box.width/box.height,radius:[getComputedStyle(el).borderRadius,s.borderRadius,i.borderRadius],shadow:[s.boxShadow,i.boxShadow],fit:i.objectFit,natural:img.naturalWidth/img.naturalHeight,imgHeight:img.getBoundingClientRect().height,boxHeight:media.clientHeight};
+        return {ratio:box.width/box.height,radius:[getComputedStyle(el).borderRadius,s.borderRadius,i.borderRadius],shadow:[s.boxShadow,i.boxShadow],border:s.borderTopWidth,fit:i.objectFit,natural:img.naturalWidth/img.naturalHeight,imgHeight:img.getBoundingClientRect().height,boxHeight:media.clientHeight};
       });
-      assert.ok(Math.abs(frame.ratio-.8)<.01,`4:5 frame, found ${frame.ratio.toFixed(3)}`);
-      assert.deepEqual(frame.radius,['0px','0px','0px'],'square corners');
-      assert.deepEqual(frame.shadow,['none','none'],'no shadow or spread ring');
+      assert.ok(Math.abs(frame.ratio-1)<.01,`1:1 frame, found ${frame.ratio.toFixed(3)}`);
+      assert.deepEqual(frame.radius,['0px','2px','0px'],"a print's 2 px corners on the clipping media box");
+      assert.equal(frame.border,'0px','no line border around the print');
+      assert.equal(/0px 1px 2px/.test(frame.shadow[0])&&/0px 6px 14px -6px/.test(frame.shadow[0])&&/0px 26px 48px -22px/.test(frame.shadow[0]),true,`the mounted-print shade and drop on the media box (${frame.shadow[0]})`);
+      assert.equal(frame.shadow[1],'none','no shadow on the image itself');
       assert.equal(frame.fit,'cover');
-      assert.ok(frame.natural>=frame.ratio&&Math.abs(frame.imgHeight-frame.boxHeight)<=1,'the frame trims only the sides of the photograph');
+      assert.ok(Math.abs(frame.natural-frame.ratio)<.01&&Math.abs(frame.imgHeight-frame.boxHeight)<=1,'the frame shows the whole photograph');
       const logo=page.locator('main .affiliation-emblem');
       await logo.locator('img').evaluate(img=>img.decode());
       assert.equal(await logo.evaluate(el=>el.tagName),'BUTTON');

@@ -1,69 +1,142 @@
-/* @owner WP3 · @budget 2KB · @important 0 · Comparison table (.comparison-table) */
-/* Row labels in the margin (16%: cells treat a mixed calc() width as auto). Phones: rows stack, each cell names its
-   material; the empty corner cell stays (zero height), so every cell keeps its column header. */
+/* @owner WP3 · @budget 6KB · @important 0 · Comparison table (.comparison-table) in version 1's two columns, without a frame */
+/* Version 1's comparison of Orgueil and the returned samples (owner, 2026-11-25), in the lab site's language
+   (2026-11-26): a group under its head hairline and pool (.framed in components/frames.css), the two materials as
+   columns divided by one vertical line fading at both ends. The table keeps its model: the caption is the group's
+   label over a fading line; each material heads its column (label, 19 px title, designation); from 761 px the row heads
+   stay in the table for assistive technology but take no width, and each cell repeats its row's label above its text,
+   under a fading start line, as version 1's columns did; the closing note stands under a fading line. Phones: rows
+   stack, the row head shows, each cell names its material; the empty corner cell stays (zero height), so every cell
+   keeps its column header. Forced colours and print: plain rules. */
+
 .comparison-table {
+  border-top: 0;
   table-layout: fixed;
 }
 
 .comparison-table caption {
+  padding: 12px 0;
+  background: var(--obs-fade-line) 0 100% / 100% 1px no-repeat;
   text-wrap: balance;
 }
 
-.comparison-table thead > tr > :first-child {
-  width: 10rem;
+.comparison-frame .comparison-table :is(th, td) {
+  padding: 14px 26px 16px;
+  border-top: 0;
+  border-bottom: 0;
+  background: none;
 }
 
 .comparison-table thead th {
-  vertical-align: bottom;
+  vertical-align: top;
   font-weight: 400;
 }
 
-.comparison-table thead td {
+.comparison-frame .comparison-table thead th {
+  padding-block: 24px 2px;
+}
+
+/* The empty corner cell keeps no height (on phones the head stacks). */
+.comparison-frame .comparison-table thead td {
   padding-block: 0;
-  border-bottom-color: var(--obs-rule);
 }
 
 .comparison-table__title {
   display: block;
   margin-top: var(--ed-space-2);
-  font: 500 var(--ed-h3)/1.25 var(--type-serif);
+  font: 600 1.1875rem/1.4 var(--type-heading);
   text-wrap: balance;
 }
 
 .comparison-table__designation {
   display: block;
-  margin-top: var(--ed-space-1);
+  margin-top: 2px;
   color: var(--obs-muted);
-  font-size: var(--ed-caption);
+  font-size: var(--ed-label);
+}
+
+.comparison-table tbody td {
+  color: var(--obs-text);
+  font-size: var(--ed-small);
+  line-height: 1.75;
 }
 
 .comparison-table .comparison-table__cell-label {
   display: none;
 }
 
-.comparison-table tfoot td {
-  padding-top: var(--ed-space-4);
-  border: 0;
+/* Version 1's column labels: muted small capitals over each answer, under the line. */
+.comparison-table__row-label {
+  display: block;
+  margin: 0 0 4px;
+  padding-top: 12px;
+  background: var(--obs-fade-start) 0 0 / 100% 1px no-repeat;
+  color: var(--obs-muted);
+  font-size: var(--label-size);
+  font-weight: var(--label-weight);
+  line-height: 1.6;
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+}
+
+.comparison-frame .comparison-table tbody td {
+  padding-block: 12px 0;
+}
+
+.comparison-frame .comparison-table tbody tr:last-child td {
+  padding-block-end: 24px;
+}
+
+.comparison-frame .comparison-table tfoot td {
+  padding-block: 14px 18px;
+  background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat;
+  color: var(--obs-muted);
+  font-size: var(--ed-caption);
 }
 
 .comparison-table tfoot p {
-  max-width: var(--measure-body);
+  max-width: 85ch;
   margin: 0;
 }
 
+/* From 761 px: the row heads take no width and are read, not seen; the two materials share the box. */
 @media (min-width: 761px) {
-  .comparison-table tfoot td:first-child {
-    padding-left: calc(10rem + var(--ed-space-3));
-  }
-}
-
-@media (min-width: 1200px) {
-  .comparison-table thead > tr > :first-child {
-    width: 16%;
+  .comparison-frame .comparison-table thead td,
+  .comparison-frame .comparison-table tbody th {
+    width: 0;
+    padding: 0;
+    border: 0;
   }
 
-  .comparison-table tfoot td:first-child {
-    padding-left: calc(16% + var(--ed-space-3));
+  .comparison-table tbody th > * {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .comparison-frame .comparison-table :is(thead th, tbody td):nth-child(2) {
+    padding-inline: 0 26px;
+  }
+
+  /* One vertical line between the two materials, continuous down the rows and fading in at the head and out at the
+     last row. */
+  .comparison-frame .comparison-table :is(thead th, tbody td):nth-child(3) {
+    padding-inline: 26px 0;
+    background: linear-gradient(var(--obs-hairline), var(--obs-hairline)) 0 0 / 1px 100% no-repeat;
+  }
+
+  .comparison-frame .comparison-table thead th:nth-child(3) {
+    background-image: linear-gradient(transparent, var(--obs-hairline));
+  }
+
+  .comparison-frame .comparison-table tbody tr:last-child td:nth-child(3) {
+    background-image: linear-gradient(var(--obs-hairline) 40%, transparent);
+  }
+
+  .comparison-frame .comparison-table tfoot td {
+    padding-inline: 0;
   }
 }
 
@@ -72,18 +145,40 @@
     display: block;
   }
 
-  .comparison-table thead th + th {
-    margin-top: var(--ed-space-3);
-    padding-top: var(--ed-space-3);
-    border-top: 1px solid var(--obs-hairline);
+  .comparison-table__row-label {
+    display: none;
   }
 
-  .comparison-table tbody th {
-    padding-top: var(--ed-space-4);
+  .comparison-frame .comparison-table :is(th, td) {
+    padding: 12px 0;
+    border-inline-start: 0;
   }
 
-  .comparison-table td + td {
-    padding-top: var(--ed-space-3);
+  .comparison-table tr {
+    padding: 0;
+    border-bottom: 0;
+  }
+
+  .comparison-frame .comparison-table thead th {
+    padding-block: 16px 12px;
+  }
+
+  .comparison-table thead th + th,
+  .comparison-frame .comparison-table tbody th,
+  .comparison-frame .comparison-table tfoot td {
+    background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat;
+  }
+
+  .comparison-frame .comparison-table tbody th {
+    padding-block-end: 0;
+  }
+
+  .comparison-frame .comparison-table tbody td {
+    padding-block: 12px;
+  }
+
+  .comparison-frame .comparison-table tbody > tr > td + td {
+    background: var(--obs-fade-start) 0 0 / 100% 1px no-repeat;
   }
 
   .comparison-table .comparison-table__cell-label {
@@ -91,5 +186,22 @@
     font-size: var(--ed-small);
     letter-spacing: 0;
     text-transform: none;
+  }
+}
+
+@media (forced-colors: active), print {
+  .comparison-table caption,
+  .comparison-table__row-label,
+  .comparison-frame .comparison-table :is(th, td) {
+    background: none;
+  }
+
+  .comparison-table caption {
+    border-bottom: 1px solid var(--obs-line);
+  }
+
+  .comparison-table__row-label,
+  .comparison-frame .comparison-table tfoot td {
+    border-top: 1px solid var(--obs-line);
   }
 }

@@ -37,7 +37,7 @@ export const bundleDist = "dist/assets/css/site.css";
 
 // Fonts: the folder and the faces the shell preloads (as the page links them).
 export const fontsDir = "public/assets/fonts";
-export const fontPreloads = ["assets/fonts/source-serif-4-latin.woff2", "assets/fonts/source-sans-3-latin.woff2"];
+export const fontPreloads = ["assets/fonts/montserrat-latin.woff2"];
 
 // Behaviour scripts. Their names are frozen hooks (scripts/lib/js-hooks.mjs), so they are not expected to move.
 export const publicScriptsDir = "public/assets/js";

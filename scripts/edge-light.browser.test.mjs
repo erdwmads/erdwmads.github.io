@@ -1,6 +1,7 @@
 // The pointer edge light (R2, owner 2026-11-18; effects spec §6, §10.3): under a mouse at 761 px and wider the control
 // beneath the pointer gets [data-edge-active] and --edge-angle, the pointer's direction from its centre, and its
-// ::before draws a 1 px ring that takes no input and moves no box. The handler reads the control's box once, on
+// ::before draws the old 1 px ring, masked since 2026-11-26 to the line just above the control's beam (a text control
+// has no box to ring), which takes no input and moves no box. The handler reads the control's box once, on
 // entry, and writes the angle at most once per frame. It stays off with FX off, reduced motion, phones, coarse
 // pointers, disabled controls and while the atlas (like the lightbox, entrance and presentation) is open, and it is
 // cleared by scrolling, by the pointer leaving the window and by a soft navigation. Both themes.
@@ -49,7 +50,7 @@ const state = locator => locator.evaluate(el => {
   const ring = getComputedStyle(el, '::before'), r = el.getBoundingClientRect();
   return {
     lit: el.hasAttribute('data-edge-active'), angle: el.style.getPropertyValue('--edge-angle'),
-    ring: { content: ring.content, display: ring.display, position: ring.position, events: ring.pointerEvents },
+    ring: { content: ring.content, display: ring.display, position: ring.position, events: ring.pointerEvents, mask: ring.maskImage || ring.webkitMaskImage, maskSize: ring.maskSize || ring.webkitMaskSize, maskPosition: ring.maskPosition || ring.webkitMaskPosition },
     box: [r.x, r.y, r.width, r.height]
   };
 });
@@ -74,6 +75,9 @@ async function lights(page, locator, label) {
     assert.equal(s.ring.content, '""', `${label}: no ring is generated`);
     assert.equal(s.ring.position, 'absolute', `${label}: the ring is not absolutely placed`);
     assert.equal(s.ring.events, 'none', `${label}: the ring takes input`);
+    assert.match(s.ring.mask, /linear-gradient/, `${label}: the ring is not masked (${s.ring.mask})`);
+    assert.equal(s.ring.maskSize, '100% 1px', `${label}: the ring lights more than the 1 px line above the beam (${s.ring.maskSize})`);
+    assert.match(s.ring.maskPosition, /^(50%|center|0%|left) (100%|bottom)$/, `${label}: the lit line is not at the foot (${s.ring.maskPosition})`);
     assert.ok(s.box.every((value, i) => Math.abs(value - rest.box[i]) <= 0.5), `${label}: the lit control moved ${rest.box} -> ${s.box}`);
   }
   await page.mouse.move(1, 1);

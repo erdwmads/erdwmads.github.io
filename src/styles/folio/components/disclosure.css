@@ -1,6 +1,6 @@
 /* @owner WP1 · @budget 2KB · @important 0 · Disclosures: the details and summary grammar, opening in at most 200 ms */
-/* A summary is a 44 px row with a plus that turns into a minus. Zero-weight defaults, so a component restyles its
-   own disclosure with one class. Where ::details-content exists, the content opens by its block size; elsewhere
+/* A summary is a 44 px row led by version 1's small triangle, which turns down when open (2026-11-25). Zero-weight
+   defaults, so a component restyles its own disclosure with one class. Where ::details-content exists, the content opens by its block size; elsewhere
    it opens at once. The content is clipped only while it opens or closes: once open, overflow turns visible after
    the opening time, so the focus outline of a link at the edge of the content is drawn whole. A disclosure that is
    open when the page loads is never clipped. */
@@ -18,16 +18,16 @@
   display: none;
 }
 
-:where(summary)::after {
-  content: "+";
-  margin-inline-start: auto;
-  color: var(--obs-muted);
-  font-weight: 400;
-  line-height: 1;
+:where(summary)::before {
+  content: "";
+  flex: none;
+  border-block: 4px solid transparent;
+  border-inline-start: 5px solid currentColor;
+  transition: transform var(--ed-dur-1) var(--ed-ease-out);
 }
 
-:where(details[open] > summary)::after {
-  content: "\2212";
+:where(details[open] > summary)::before {
+  transform: rotate(90deg);
 }
 
 @supports selector(::details-content) {

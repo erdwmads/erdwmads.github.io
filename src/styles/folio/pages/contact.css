@@ -1,44 +1,174 @@
-/* @owner WP5 · @budget 1.5KB · @important 0 · Contact, scoped under .ui-page-contact */
+/* @owner WP5 · @budget 6.5KB · @important 0 · Contact, scoped under .ui-page-contact */
+/* Version 1's Contact (2f20d7e; owner, 2026-11-25) in the lab site's language (2026-11-26): three two-column rows
+   under version 1's section line, fading at both ends, each label beside its content (components/frames.css); the
+   address in monospace on a faint pool in a callout (a pool under a head hairline, no frame) with its text controls;
+   the ORCID iD, whose mark rises 1 px over a warm pool under the pointer (E054); the name in version 1's Georgia,
+   now at 400, over the affiliation. */
 .ui-page-contact .masthead {
   border: 0;
 }
 
 .ui-page-contact .contact-row {
-  display: grid;
-  row-gap: var(--ed-space-2);
-  padding-block: var(--ed-space-5);
-  border-top: 1px solid var(--obs-hairline);
+  margin-block-start: var(--section-gap);
+  padding-block-start: var(--section-pad);
+  background: var(--obs-fade-line) 0 0 / 100% 1px no-repeat;
 }
 
-.ui-page-contact .contact-email {
-  border-top: 2px solid var(--obs-rule);
+/* One line opens each row (2026-11-28): the row's own fading line; the labels draw none of their own beside it. In
+   the email row the callout keeps its pool but no head hairline of its own: its brass head (E097) and its hover light
+   (E105, the line lit brass to steel over the content column while the pointer is on the callout) lie on the row's
+   line, so no second rule runs 32 px under the first. */
+.ui-page-contact .contact-row > h2 {
+  background: none;
 }
 
-.ui-page-contact :is(code, .person-name) {
-  font: 500 var(--ed-h3)/1.3 var(--type-serif);
+.ui-page-contact .contact-callout {
+  padding: 1.375rem 0;
+  background: var(--obs-sheen-pool) 50% 50% / 100% 100% no-repeat, radial-gradient(closest-side, var(--obs-pool), transparent) 50% 50% / 100% 100% no-repeat;
+}
+
+@media (min-width: 861px) {
+  .ui-page-contact .contact-email {
+    background: linear-gradient(90deg, var(--obs-accent), transparent) calc(10.75rem + var(--ed-space-6)) 0 / 64px 1px no-repeat, var(--obs-fade-line) 0 0 / 100% 1px no-repeat;
+  }
+}
+
+@media (min-width: 861px) and (hover: hover) and (forced-colors: none) {
+  .ui-page-contact .contact-email:has(> .contact-callout:hover) {
+    background: linear-gradient(90deg, var(--obs-accent), var(--obs-edge-cool) 45%, transparent) calc(10.75rem + var(--ed-space-6)) 0 / calc(100% - 10.75rem - var(--ed-space-6)) 1px no-repeat, var(--obs-fade-line) 0 0 / 100% 1px no-repeat;
+  }
+}
+
+/* The callout's pool warms to the record glow under a pointer at every width, as the old gold glow did. */
+@media (hover: hover) and (forced-colors: none) {
+  .ui-page-contact .contact-callout:hover {
+    background: radial-gradient(closest-side, var(--obs-row-glow), transparent) 50% 50% / 100% 100% no-repeat;
+  }
+}
+
+.ui-page-contact .contact-callout > * {
+  margin-block: 0;
+}
+
+/* The address: monospace on a faint pool that fades out before every edge of its line box (14 px beyond the words each
+   side, given back by the margins, so nothing moves). */
+.ui-page-contact code {
+  margin-inline: -8px;
+  padding: 2px 14px;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--obs-edge-cool) 10%, transparent), transparent);
+  font: 400 var(--ed-body)/1.7 var(--type-mono);
 }
 
 .ui-page-contact .contact-actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--ed-space-3);
-  margin-block-start: var(--ed-space-4);
+  margin-block-start: 1.25rem;
 }
 
-.ui-page-contact .orcid-link img {
+.ui-page-contact .contact-note {
+  margin-block-start: var(--ed-space-4);
+  color: var(--obs-muted);
+  font-size: var(--ed-caption);
+}
+
+.ui-page-contact main .orcid-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-block: -10px;
+  font-size: var(--ed-small);
+  overflow-wrap: anywhere;
+}
+
+.ui-page-contact main .orcid-link img {
   margin-inline-end: var(--ed-space-2);
+  border-radius: 50%;
+  transition: transform .18s ease-out, box-shadow .18s ease-out;
+}
+
+/* E054 on the iD mark: under a hovering pointer it rises 1 px over a warm pool (a soft glow of the pool's tone, no
+   edge); the link keeps its own underline. Only with motion allowed does it rise. */
+@media (hover: hover) and (forced-colors: none) {
+  .ui-page-contact main .orcid-link:hover img {
+    box-shadow: 0 0 14px 8px var(--obs-pool-warm);
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .ui-page-contact main .orcid-link:hover img {
+    transform: translateY(-1px);
+  }
+}
+
+/* The name in version 1's Georgia stack (typography.browser). */
+.ui-page-contact .person-name {
+  margin-block-end: var(--ed-space-4);
+  font: 400 var(--ed-h3)/1.35 var(--type-name);
+}
+
+.ui-page-contact .contact-row p {
+  line-height: 1.85;
+}
+
+.ui-page-contact .contact-row .person-name + p {
+  margin-block-start: 0;
+}
+
+@media (max-width: 760px) {
+  .ui-page-contact .contact-callout {
+    padding: var(--ed-space-5) 0;
+  }
 }
 
 @media (max-width: 400px) {
-  .ui-page-contact .orcid-link {
+  .ui-page-contact main .orcid-link {
     font-size: var(--ed-caption);
   }
 }
 
-@media (min-width: 1200px) {
+/* Forced colours and print: the fading section line a plain rule (the row's only one), the address without its
+   pool. */
+@media (forced-colors: active), print {
   .ui-page-contact .contact-row {
-    grid-column: full;
-    grid-template-columns: calc((100% + var(--grid-gap)) / 6) calc(50% - var(--grid-gap) / 2);
-    align-items: baseline;
+    border-top: 1px solid var(--obs-line);
+    background: none;
+  }
+
+  .ui-page-contact :is(.contact-row > h2, .contact-callout) {
+    border-top: 0;
+  }
+
+  .ui-page-contact code {
+    background: none;
+  }
+}
+
+/* The callout lies in the opening view on narrower windows, where the sheet is still rising over the far plane and the
+   old framed face hid Bennu; it does not isolate itself here, so the pool lies below its head hairline and glow. A soft
+   shade pool (Space dark, Light paper) lies under it, feathered on all four sides, below its lines, pools and words:
+   the far plane keeps its strength around it. Forced colours and print: none. */
+@media screen and (forced-colors: none) {
+  .ui-page-contact .contact-callout {
+    position: relative;
+    isolation: auto;
+  }
+
+  .ui-page-contact .contact-callout::before {
+    content: "";
+    position: absolute;
+    inset: -4px -48px;
+    z-index: -1;
+    background: var(--obs-pool-shade);
+    mask-image: linear-gradient(90deg, transparent, #000 48px, #000 calc(100% - 48px), transparent), linear-gradient(transparent, #000 20px, #000 calc(100% - 20px), transparent);
+    mask-composite: intersect;
+    pointer-events: none;
+  }
+}
+
+@media screen and (forced-colors: none) and (max-width: 760px) {
+  .ui-page-contact .contact-callout::before {
+    inset: -4px calc(-1 * var(--page-pad));
+    mask-image: linear-gradient(90deg, transparent, #000 18px, #000 calc(100% - 18px), transparent), linear-gradient(transparent, #000 20px, #000 calc(100% - 20px), transparent);
   }
 }

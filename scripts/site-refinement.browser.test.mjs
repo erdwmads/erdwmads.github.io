@@ -1,7 +1,7 @@
 // Shell refinements (WP2) with the Home and contents-bar checks that sit on them (WP3): the coordinates readout lives
 // only in the desktop settings dock, one dock entry, Current Focus and the research title disclosure, the contents bar's
 // section paths without rebuilding the page, the footer at the end of a short page, and no readout on phones.
-import assert from 'node:assert/strict';import {createRequire} from 'node:module';
+import assert from 'node:assert/strict';import {createRequire} from 'node:module';import {formalTitle} from '../src/data/project.mjs';
 const require=createRequire(import.meta.url),{chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const browser=await chromium.launch({headless:true,executablePath:process.env.EDGE_EXECUTABLE});const base=process.env.SITE_TEST_URL||'http://127.0.0.1:52523';
 try{const page=await browser.newPage({viewport:{width:1440,height:1000},reducedMotion:'reduce'});await page.addInitScript(()=>sessionStorage.setItem('mads-cosmic-arrival-v1','done'));
@@ -12,7 +12,8 @@ await page.locator('.obs-fx-settings').click();assert(await page.locator('.obs-f
 assert(await page.locator('.obs-fx-panel .research-coordinates').isVisible());await page.keyboard.press('Escape');assert(await page.locator('.obs-fx-panel').isHidden());
 assert.match(await page.locator('.current-focus-section h2').innerText(),/^Dolomite in Orgueil CI1$/);
 assert.match(await page.locator('.research-title-detail').innerText(),/Full research title/);
-await page.locator('.research-title-detail summary').click();assert.match(await page.locator('.research-title-detail p').innerText(),/Astromineralogical Study of Ca–Mg Carbonates Reported as Dolomite/);
+// The full title follows src/data/project.mjs (the owner's thesis title of 2026-11-26).
+await page.locator('.research-title-detail summary').click();assert.equal((await page.locator('.research-title-detail p').innerText()).trim(),formalTitle);
 // The five Research section paths are now two [data-research-guide] navigators: Research and the split-out Ryugu & Bennu page.
 for(const [route,count] of [['research',3],['ryugu-bennu',3]]){await page.goto(base+'/'+route+'.html',{waitUntil:'networkidle'});
 await page.evaluate(()=>window.researchMain=document.querySelector('main'));
